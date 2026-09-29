@@ -1,0 +1,15 @@
+{
+  "workflow": "office-music-live.yml",
+  "inputs": {
+    "session_id": "77c65d38-4244-4161-b574-c75776778d3b",
+    "track_urls_b64": "WyJodHRwczovL2dpdGh1Yi5jb20vdGhlYnVzaW5lc3NmbG93dHYvdGhlb2ZmaWNlbXVzaWMvcmVsZWFzZXMvZG93bmxvYWQvb2ZmaWNlLW11c2ljLTg0N2Q3MmFmLTNhNDQtNDUyNi05MmE3LTE5ZGUxNzBmN2IzZC9yZWZlcmVuY2UtdGVzdC0yMDI2MDkyOS0wMjQ1MDRfdHJhY2tfMDEud2F2Il0=",
+    "duration_minutes": "0",
+    "title": "The Office Music — Live Office Lounge",
+    "description": "The Office Music — stylish original beats for work, focus and home office.\n\n#officemusic #focusmusic #workmusic #homeoffice #loungehouse",
+    "thumbnail_url": "https://fykwalznmcrjgnyveagy.supabase.co/storage/v1/object/public/office-music-assets/thumbnail/1790724056156-afa37a45-3139-4cf3-9cfb-72b9dbd62299-THUMBNAIL-A-NOITE---THE-OFFICE-MUSIC.png",
+    "loop_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-assets-v1/office-music-master-loop.mp4",
+    "resume_broadcast_id": "",
+    "resume_stream_id": "",
+    "segment_index": "1"
+  }
+}
