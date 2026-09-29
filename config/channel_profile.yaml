@@ -1,12 +1,11 @@
 channel:
   name: "The Office Music"
-  concept: "instrumental music for office, home office, retail and focused work"
+  concept: "premium fashion-retail, office and home-office music"
 
-# Este arquivo será calibrado antes da primeira geração oficial.
 generation:
   model: "medium"
-  tracks_per_batch: 5
-  track_duration_seconds: 330
+  tracks_per_batch: 10
+  track_duration_seconds: 360
   steps: 8
   cfg_scale: 1.0
   chunked_decode: true
@@ -14,46 +13,50 @@ generation:
 
 music_dna:
   instrumental_only: true
-  energy: 5            # 1 = muito calma | 10 = muito energética
-  bpm_min: 100
-  bpm_max: 118
-  groove: "smooth, steady, refined"
+  energy: 6
+  bpm_min: 120
+  bpm_max: 123
+  groove: "steady four-on-the-floor fashion-retail house groove, confident, smooth, lightly syncopated, hypnotic and commercial without becoming aggressive"
   mood:
-    - "sophisticated"
+    - "stylish"
     - "modern"
+    - "confident"
+    - "premium"
     - "focused"
-    - "warm"
   style_pool:
-    - "modern chill house"
-    - "downtempo electronic"
-    - "lounge house"
-    - "minimal deep house"
+    - "modern fashion-retail deep house with polished commercial chill-house production"
+    - "premium lounge house with a catchy minimalist dance-pop pulse"
+    - "clean commercial deep house for fashion stores and modern offices"
   preferred_instruments:
-    - "warm electric piano"
-    - "soft analog synths"
-    - "rounded synth bass"
-    - "clean electronic drums"
-    - "subtle guitar textures"
+    - "rounded sidechained synth bass"
+    - "clean punchy four-on-the-floor house kick"
+    - "crisp closed hi-hats and tasteful claps"
+    - "minimal bright synth plucks"
+    - "warm atmospheric pads"
+    - "subtle electric keys"
+    - "short tasteful electronic percussion accents"
   avoid_instruments:
-    - "aggressive distorted guitars"
-    - "brass fanfares"
-    - "cinematic orchestral percussion"
-  percussion: "clean, tasteful, controlled, danceable without sounding like a club peak-time track"
-  bass: "warm, rounded, present but not overpowering"
-  melody_density: "medium-low"
-  brightness: "balanced and polished"
-  arrangement: "gradual evolution, no abrupt drops, suitable for continuous background listening"
-  production: "premium retail lounge production, clean stereo image, warm and polished mix"
+    - "distorted guitars"
+    - "cinematic orchestral elements"
+    - "festival EDM supersaws"
+    - "hard techno drums"
+    - "trap percussion"
+  percussion: "clean four-on-the-floor kick, controlled hi-hats, subtle claps and percussion, danceable fashion-store pulse, no aggressive fills"
+  bass: "warm rounded deep-house bassline with gentle sidechain movement, present, catchy and rhythmic without overpowering the mix"
+  melody_density: "medium-low, one memorable minimalist hook with tasteful repetition and gradual variation"
+  brightness: "polished and modern, slightly glossy top end, warm low mids"
+  arrangement: "six-minute continuous retail-friendly arrangement with smooth evolution, restrained breakdowns, no huge drops, no abrupt genre changes, consistent groove from start to finish"
+  production: "premium contemporary fashion-store sound, clean stereo image, tight low end, polished commercial mix, sophisticated lounge atmosphere suitable for office and home-office listening"
 
 negative_prompt:
   - "poor quality"
   - "distortion"
   - "clipping"
   - "harsh treble"
-  - "aggressive festival EDM"
+  - "festival EDM"
   - "hard techno"
-  - "trap hi-hat rolls"
-  - "dramatic cinematic trailer"
+  - "trap"
+  - "dramatic cinematic trailer music"
   - "intelligible vocals"
   - "spoken words"
   - "rap"
