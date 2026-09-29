@@ -1,0 +1,41 @@
+name: Fix Office Music Small Kernel Slug
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-small-kernel-slug.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch Small-Music Kaggle kernel title
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/office-music-publish.yml')
+          s=p.read_text(encoding='utf-8')
+          old="'title': 'The Office Music Small Fallback'"
+          new="'title': 'The Office Music Generator Small'"
+          if old not in s:
+              print('Small kernel title already patched or pattern not found.')
+          else:
+              p.write_text(s.replace(old,new,1),encoding='utf-8')
+              print('Patched Small kernel title so Kaggle slug matches the kernel id.')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/workflows/office-music-publish.yml
+          git commit -m "fix: align Small-Music Kaggle kernel slug" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
