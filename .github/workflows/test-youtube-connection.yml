@@ -68,7 +68,6 @@ jobs:
               raise SystemExit(f"OAuth response did not include access_token: {token}")
           print("Refresh token exchange: OK")
 
-          # Verify granted scope without exposing the token.
           info_url = "https://oauth2.googleapis.com/tokeninfo?" + urllib.parse.urlencode({"access_token": access_token})
           try:
               with urllib.request.urlopen(info_url, timeout=30) as resp:
@@ -82,7 +81,7 @@ jobs:
               raise SystemExit(f"Required scope missing. Granted scopes: {sorted(scopes)}")
           print("OAuth scope https://www.googleapis.com/auth/youtube: OK")
 
-          params = urllib.parse.urlencode({"part": "id,snippet", "mine": "true"})
+          params = urllib.parse.urlencode({"part": "id,snippet,status", "mine": "true"})
           req = urllib.request.Request(
               "https://www.googleapis.com/youtube/v3/channels?" + params,
               headers={"Authorization": f"Bearer {access_token}"},
@@ -102,13 +101,15 @@ jobs:
           channel_id = channel.get("id")
           channel_title = (channel.get("snippet") or {}).get("title")
           expected = os.environ["YOUTUBE_CHANNEL_ID"].strip()
+          status = channel.get("status") or {}
+          long_uploads = status.get("longUploadsStatus")
 
           print(f"Authenticated YouTube channel: {channel_title} ({channel_id})")
           if channel_id != expected:
-              raise SystemExit(
-                  f"CHANNEL MISMATCH: OAuth token belongs to {channel_id}, but YOUTUBE_CHANNEL_ID is {expected}."
-              )
-
+              raise SystemExit(f"CHANNEL MISMATCH: OAuth token belongs to {channel_id}, but YOUTUBE_CHANNEL_ID is {expected}.")
           print("YOUTUBE_CHANNEL_ID match: OK")
+          print(f"Long uploads status: {long_uploads or 'not_returned'}")
+          if long_uploads and long_uploads != "allowed":
+              raise SystemExit(f"LONG UPLOADS NOT ALLOWED: status={long_uploads}. A 60-minute upload may fail until the channel enables long uploads.")
           print("YouTube connection test: SUCCESS")
           PY
