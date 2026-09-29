@@ -1,0 +1,437 @@
+name: Office Music — Generate and Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_id:
+        description: "Office Music job UUID"
+        required: true
+        type: string
+      duration_minutes:
+        description: "Target mix duration in minutes"
+        required: true
+        default: "60"
+        type: string
+      track_count:
+        description: "Requested number of generated tracks"
+        required: true
+        default: "10"
+        type: string
+      track_seconds:
+        description: "Target seconds per generated track"
+        required: true
+        default: "360"
+        type: string
+      publish:
+        description: "Upload to YouTube"
+        required: true
+        default: "true"
+        type: string
+      privacy:
+        description: "YouTube privacy"
+        required: true
+        default: "public"
+        type: string
+      title:
+        description: "Optional YouTube title"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: office-music-${{ inputs.job_id }}
+  cancel-in-progress: false
+
+env:
+  KERNEL_SLUG: the-office-music-generator
+  SECRET_DATASET_SLUG: the-office-music-secrets
+  YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+  YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+  KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+jobs:
+  generate-render-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg unzip jq
+          python -m pip install --upgrade pip
+          python -m pip install kaggle google-api-python-client google-auth google-auth-httplib2
+
+      - name: Validate inputs and secrets
+        env:
+          JOB_ID: ${{ inputs.job_id }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+          TRACK_COUNT: ${{ inputs.track_count }}
+          TRACK_SECONDS: ${{ inputs.track_seconds }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, re
+          job = os.environ['JOB_ID']
+          if not re.fullmatch(r'[0-9a-fA-F-]{36}', job):
+              raise SystemExit('Invalid job_id')
+          duration = int(os.environ['DURATION_MINUTES'])
+          tracks = int(os.environ['TRACK_COUNT'])
+          seconds = int(os.environ['TRACK_SECONDS'])
+          if not 6 <= duration <= 360: raise SystemExit('duration_minutes must be 6..360')
+          if not 1 <= tracks <= 60: raise SystemExit('track_count must be 1..60')
+          if not 10 <= seconds <= 380: raise SystemExit('track_seconds must be 10..380')
+          for key in ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN','YOUTUBE_CHANNEL_ID']:
+              if not os.environ.get(key): raise SystemExit(f'Missing {key}')
+          print(f'job={job} duration={duration}m tracks={tracks} track_seconds={seconds}')
+          PY
+
+      - name: Initialize control result
+        env:
+          JOB_ID: ${{ inputs.job_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p control/results build generated
+          python - <<'PY'
+          import json, os, pathlib
+          p = pathlib.Path('control/results') / f"{os.environ['JOB_ID']}.json"
+          p.write_text(json.dumps({
+            'status':'generating','progress':5,
+            'github_run_id':int(os.environ['GITHUB_RUN_ID']),
+            'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+          }, indent=2), encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/results/${JOB_ID}.json
+          git commit -m "office-music: start ${JOB_ID}" || true
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Try Stable Audio 3 Medium generation on Kaggle
+        id: ai_generation
+        continue-on-error: true
+        env:
+          TRACK_COUNT: ${{ inputs.track_count }}
+          TRACK_SECONDS: ${{ inputs.track_seconds }}
+        run: |
+          set -euo pipefail
+          test -n "$KAGGLE_USERNAME"
+          test -n "$KAGGLE_API_TOKEN"
+          test -n "$HF_TOKEN"
+
+          SECRET_DIR="$(mktemp -d)"
+          trap 'rm -rf "$SECRET_DIR"' EXIT
+          printf '%s' "$HF_TOKEN" > "$SECRET_DIR/hf_token.txt"
+          chmod 600 "$SECRET_DIR/hf_token.txt"
+          python - "$SECRET_DIR" <<'PY'
+          import json, os, pathlib, sys
+          folder = pathlib.Path(sys.argv[1])
+          (folder/'dataset-metadata.json').write_text(json.dumps({
+            'title':'The Office Music Secrets',
+            'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets",
+            'licenses':[{'name':'other'}],
+            'description':'Private CI credential input for The Office Music.'
+          }, indent=2))
+          PY
+          DATASET="$KAGGLE_USERNAME/$SECRET_DATASET_SLUG"
+          if kaggle datasets status "$DATASET" >/dev/null 2>&1; then
+            kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token" -q
+          else
+            kaggle datasets create -p "$SECRET_DIR" --private -q
+          fi
+
+          python - <<'PY'
+          import json, os, pathlib, re
+          folder = pathlib.Path('kaggle')
+          runner = folder/'runner.py'
+          text = runner.read_text(encoding='utf-8')
+          text = re.sub(r'TRACK_COUNT = \d+', f"TRACK_COUNT = {int(os.environ['TRACK_COUNT'])}", text)
+          text = re.sub(r'TRACK_DURATION_SECONDS = \d+', f"TRACK_DURATION_SECONDS = {int(os.environ['TRACK_SECONDS'])}", text)
+          runner.write_text(text, encoding='utf-8')
+          metadata = {
+            'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-generator",
+            'title':'The Office Music Generator',
+            'code_file':'runner.py','language':'python','kernel_type':'script','is_private':True,
+            'enable_gpu':True,'machine_shape':'NvidiaL4','enable_internet':True,
+            'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
+            'competition_sources':[],'kernel_sources':[]
+          }
+          (folder/'kernel-metadata.json').write_text(json.dumps(metadata, indent=2), encoding='utf-8')
+          PY
+
+          kaggle kernels push -p kaggle --timeout 7200 --accelerator NvidiaL4
+          KERNEL="$KAGGLE_USERNAME/$KERNEL_SLUG"
+          complete=0
+          for i in $(seq 1 150); do
+            STATUS="$(kaggle kernels status "$KERNEL" 2>&1 || true)"
+            echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi 'complete|completed'; then complete=1; break; fi
+            if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then
+              kaggle kernels logs "$KERNEL" || true
+              exit 1
+            fi
+            sleep 60
+          done
+          test "$complete" = "1" || (echo 'Kaggle generation timed out' && exit 1)
+          rm -rf generated && mkdir -p generated
+          kaggle kernels output "$KERNEL" -p generated
+          WAV_COUNT="$(find generated -type f -name '*.wav' | wc -l | tr -d ' ')"
+          test "$WAV_COUNT" -ge 1
+          find generated -type f -maxdepth 3 -print
+
+      - name: Fallback to approved generated master when GPU generation is unavailable
+        if: steps.ai_generation.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "::warning::Kaggle Medium generation was unavailable. Falling back to the approved original AI-generated calibration master so the job can still render and publish."
+          rm -rf generated && mkdir -p generated/fallback
+          curl --retry 5 --retry-all-errors -fL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/thebusinessflowtv/theofficemusic/actions/artifacts/11009873245/zip" \
+            -o generated/fallback.zip
+          unzip -o generated/fallback.zip -d generated/fallback
+          test -n "$(find generated/fallback -type f -name '*.wav' -print -quit)"
+          echo "fallback" > build/generation-mode.txt
+
+      - name: Mark native generation mode
+        if: steps.ai_generation.outcome == 'success'
+        run: echo "stable-audio-3-medium" > build/generation-mode.txt
+
+      - name: Build exact-duration audio mix
+        env:
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+        run: |
+          set -euo pipefail
+          TARGET_SECONDS=$((DURATION_MINUTES * 60))
+          python - <<'PY'
+          import json, os, pathlib, subprocess
+          target=int(os.environ['DURATION_MINUTES'])*60
+          wavs=sorted(pathlib.Path('generated').rglob('*.wav'))
+          if not wavs: raise SystemExit('No generated WAV files available')
+          items=[]
+          durations=[]
+          for p in wavs:
+              d=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',str(p)], text=True).strip())
+              durations.append(d)
+          total=0.0; i=0
+          while total < target + max(durations):
+              p=wavs[i % len(wavs)]
+              items.append(p.resolve())
+              total += durations[i % len(wavs)]
+              i += 1
+          with open('build/concat.txt','w',encoding='utf-8') as f:
+              for p in items:
+                  f.write("file '" + str(p).replace("'", "'\\''") + "'\n")
+          manifest=[]
+          for i,p in enumerate(wavs,1):
+              manifest.append({'title':p.stem,'filename':p.name,'duration_seconds':round(durations[i-1],2),'position':i})
+          pathlib.Path('build/tracks.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
+          print(f'Using {len(wavs)} unique generated file(s); playlist expanded to {len(items)} segment(s) for {target}s target')
+          PY
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -f concat -safe 0 -i build/concat.txt \
+            -t "$TARGET_SECONDS" \
+            -vn -c:a aac -b:a 320k -ar 48000 \
+            build/mix.m4a
+          test -s build/mix.m4a
+          MIX_DURATION="$(ffprobe -v error -show_entries format=duration -of csv=p=0 build/mix.m4a)"
+          echo "Mix duration: $MIX_DURATION"
+
+      - name: Decode visual and thumbnail
+        run: |
+          set -euo pipefail
+          tr -d '\r\n ' < assets/bootstrap/loop_00.b64 | base64 --decode > build/loop.mp4
+          tr -d '\r\n ' < assets/bootstrap/thumb_compact.b64 | base64 --decode > build/thumbnail.jpg
+          test -s build/loop.mp4
+          test -s build/thumbnail.jpg
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration -of json build/loop.mp4
+
+      - name: Encode the short 4K loop once
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -i build/loop.mp4 \
+            -map 0:v:0 -an \
+            -vf "scale=3840:2160:flags=lanczos,setsar=1,fps=30,format=yuv420p" \
+            -c:v libx264 -preset veryfast -crf 20 -profile:v high -level:v 5.1 \
+            -g 60 -keyint_min 60 -sc_threshold 0 \
+            -movflags +faststart \
+            build/loop-4k.mp4
+          test -s build/loop-4k.mp4
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 build/loop-4k.mp4)" = "3840"
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 build/loop-4k.mp4)" = "2160"
+
+      - name: Assemble final 4K video with stream copy
+        run: |
+          set -euo pipefail
+          # The long video never re-encodes 4K frames. It loops the already-encoded
+          # short 4K master and copies H.264 packets, making 1-hour renders practical.
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -stream_loop -1 -i build/loop-4k.mp4 \
+            -i build/mix.m4a \
+            -map 0:v:0 -map 1:a:0 \
+            -c:v copy -c:a copy -shortest \
+            -movflags +faststart \
+            build/office-music-4k.mp4
+          test -s build/office-music-4k.mp4
+          WIDTH="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 build/office-music-4k.mp4)"
+          HEIGHT="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 build/office-music-4k.mp4)"
+          test "$WIDTH" = "3840" && test "$HEIGHT" = "2160"
+          echo "FINAL_RENDER=${WIDTH}x${HEIGHT}"
+          ffprobe -v error -show_entries format=duration,size -of default=nw=1 build/office-music-4k.mp4
+
+      - name: Save generated music in GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_ID: ${{ inputs.job_id }}
+        run: |
+          set -euo pipefail
+          TAG="office-music-${JOB_ID}"
+          gh release delete "$TAG" --cleanup-tag -y >/dev/null 2>&1 || true
+          gh release create "$TAG" --title "The Office Music ${JOB_ID}" --notes "Original AI-generated audio assets for Office Music job ${JOB_ID}."
+          while IFS= read -r -d '' f; do
+            gh release upload "$TAG" "$f" --clobber
+          done < <(find generated -type f -name '*.wav' -print0)
+          gh release upload "$TAG" build/mix.m4a --clobber
+          echo "$TAG" > build/release-tag.txt
+
+      - name: Upload and publish on YouTube
+        id: youtube
+        if: inputs.publish == 'true'
+        env:
+          INPUT_TITLE: ${{ inputs.title }}
+          INPUT_PRIVACY: ${{ inputs.privacy }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          from googleapiclient.errors import HttpError
+          from googleapiclient.http import MediaFileUpload
+
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          channel=yt.channels().list(part='id,snippet',mine=True).execute()['items'][0]
+          if channel['id'] != os.environ['YOUTUBE_CHANNEL_ID']:
+              raise SystemExit('Authenticated channel does not match YOUTUBE_CHANNEL_ID')
+
+          tracks=json.loads(pathlib.Path('build/tracks.json').read_text())
+          title=(os.environ.get('INPUT_TITLE') or '').strip() or f"stylish office beats to work to ☕ | {os.environ['DURATION_MINUTES']} min lounge house mix"
+          privacy=os.environ.get('INPUT_PRIVACY') or 'public'
+          cursor=0.0; chapters=[]
+          for t in tracks:
+              m=int(cursor//60); s=int(cursor%60)
+              chapters.append(f"{m:02d}:{s:02d} {t['title'].replace('-', ' ').title()}")
+              cursor += float(t.get('duration_seconds') or 0)
+          description='The Office Music — stylish original beats for work, focus and home office.\n\n'+'\n'.join(chapters)+'\n\nOriginal AI-generated music for The Office Music.\n4K visual loop.\n\n#officemusic #focusmusic #workmusic #homeoffice #loungehouse'
+          body={'snippet':{'title':title[:100],'description':description,'tags':['office music','focus music','work music','home office','lounge house','deep house','background music','4k office music','The Office Music'],'categoryId':'10','defaultLanguage':'en'},'status':{'privacyStatus':privacy,'selfDeclaredMadeForKids':False}}
+          media=MediaFileUpload('build/office-music-4k.mp4',mimetype='video/mp4',chunksize=32*1024*1024,resumable=True)
+          req=yt.videos().insert(part='snippet,status',body=body,media_body=media)
+          response=None
+          while response is None:
+              status,response=req.next_chunk(num_retries=8)
+              if status: print(f"Upload progress: {int(status.progress()*100)}%")
+          video_id=response['id']
+          pathlib.Path('build/youtube.json').write_text(json.dumps({'youtube_video_id':video_id,'youtube_url':f'https://www.youtube.com/watch?v={video_id}','privacy':response.get('status',{}).get('privacyStatus')},indent=2))
+          try:
+              yt.thumbnails().set(videoId=video_id,media_body=MediaFileUpload('build/thumbnail.jpg',mimetype='image/jpeg',resumable=False)).execute()
+              print('THUMBNAIL_UPLOAD=OK')
+          except HttpError as exc:
+              if exc.resp.status == 403:
+                  print('::warning::Custom thumbnail feature is not enabled on the channel; upload remains successful.')
+              else:
+                  raise
+          print(f'WATCH_URL=https://www.youtube.com/watch?v={video_id}')
+          PY
+
+      - name: Upload job artifact
+        id: artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: office-music-${{ inputs.job_id }}
+          path: |
+            build/tracks.json
+            build/mix.m4a
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Write completed control result
+        env:
+          JOB_ID: ${{ inputs.job_id }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main
+          python - <<'PY'
+          import json, os, pathlib, datetime
+          job=os.environ['JOB_ID']
+          tracks=json.loads(pathlib.Path('build/tracks.json').read_text())
+          mode=pathlib.Path('build/generation-mode.txt').read_text().strip()
+          tag=pathlib.Path('build/release-tag.txt').read_text().strip()
+          yt={}
+          if pathlib.Path('build/youtube.json').exists(): yt=json.loads(pathlib.Path('build/youtube.json').read_text())
+          for t in tracks:
+              t['style']='fashion-retail lounge house'
+              t['github_release_tag']=tag
+              t['download_url']=f"https://github.com/thebusinessflowtv/theofficemusic/releases/download/{tag}/{t['filename']}"
+          result={
+            'status':'completed','progress':100,
+            'github_run_id':int(os.environ['GITHUB_RUN_ID']),
+            'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+            'youtube_video_id':yt.get('youtube_video_id'),'youtube_url':yt.get('youtube_url'),
+            'completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'generation_mode':mode,'release_tag':tag,
+            'requested_duration_minutes':int(os.environ['DURATION_MINUTES']),
+            'tracks':tracks
+          }
+          p=pathlib.Path('control/results')/f'{job}.json'; p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(result,indent=2),encoding='utf-8')
+          PY
+          git add control/results/${JOB_ID}.json
+          git commit -m "office-music: complete ${JOB_ID}" || true
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Write failed control result
+        if: failure()
+        env:
+          JOB_ID: ${{ inputs.job_id }}
+        run: |
+          set +e
+          git pull --rebase origin main
+          mkdir -p control/results
+          python - <<'PY'
+          import json, os, pathlib, datetime
+          job=os.environ['JOB_ID']
+          p=pathlib.Path('control/results')/f'{job}.json'
+          old={}
+          try: old=json.loads(p.read_text())
+          except Exception: pass
+          old.update({'status':'failed','progress':100,'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'The GitHub Actions generation/render/upload job failed. Open github_run_url for the failing step.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()})
+          p.write_text(json.dumps(old,indent=2),encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/results/${JOB_ID}.json
+          git commit -m "office-music: fail ${JOB_ID}" || true
+          git pull --rebase origin main
+          git push origin HEAD:main
+          exit 0
