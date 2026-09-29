@@ -58,7 +58,9 @@ jobs:
           folder = pathlib.Path(sys.argv[1])
           metadata = {
               "title": "The Office Music Secrets",
-              "id": f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"
+              "id": f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets",
+              "licenses": [{"name": "other"}],
+              "description": "Private CI-only credential bundle for The Office Music. Do not publish."
           }
           (folder / "dataset-metadata.json").write_text(json.dumps(metadata, indent=2))
           PY
