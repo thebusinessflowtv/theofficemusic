@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -9,6 +10,7 @@ REPO_URL = "https://github.com/thebusinessflowtv/theofficemusic.git"
 REPO_DIR = Path("/kaggle/working/theofficemusic")
 SA3_DIR = Path("/kaggle/working/stable-audio-3")
 CONFIG_FILE = REPO_DIR / "config" / "reference_test.yaml"
+OUTPUT_DIR = Path("/kaggle/working/output")
 
 
 def run(cmd, cwd=None, env=None):
@@ -33,6 +35,15 @@ def load_hf_token() -> str:
                 return token
 
     raise RuntimeError("HF_TOKEN is unavailable to the Kaggle calibration job.")
+
+
+def cleanup_working_tree() -> None:
+    # Kaggle publishes files left under /kaggle/working as kernel output.
+    # Remove cloned sources and the virtualenv so GitHub only downloads the
+    # generated WAV/manifest instead of several gigabytes of dependencies.
+    for path in (SA3_DIR, REPO_DIR):
+        if path.exists():
+            shutil.rmtree(path, ignore_errors=True)
 
 
 def main():
@@ -72,12 +83,15 @@ def main():
         env=env,
     )
 
-    output_dir = Path("/kaggle/working/output")
-    wavs = list(output_dir.glob("*.wav"))
+    wavs = list(OUTPUT_DIR.glob("*.wav"))
     if not wavs:
         raise RuntimeError("Generation command finished without producing a WAV file.")
 
-    print(f"Reference test complete. Generated WAV: {wavs[0].name}")
+    generated_name = wavs[0].name
+    cleanup_working_tree()
+
+    print(f"Reference test complete. Generated WAV: {generated_name}")
+    print("Cleaned temporary model/repository files before Kaggle output export.")
 
 
 if __name__ == "__main__":
