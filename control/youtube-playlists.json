@@ -1,0 +1,26 @@
+{
+  "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+  "generated_at": "2026-09-29T23:17:11.866362+00:00",
+  "playlist_count": 1,
+  "playlists": [
+    {
+      "id": "PLZF6rzbRB0EA",
+      "title": "Lounge House Mix",
+      "description": "",
+      "thumbnail_url": "https://i.ytimg.com/vi/ZaN5BK24JVA/mqdefault.jpg",
+      "item_count": 1,
+      "privacy_status": "public",
+      "items": [
+        {
+          "playlist_item_id": "UExaRjZyemJSQjBFQS41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "ZaN5BK24JVA",
+          "title": "Stylish office beats to work to ☕ | 60 min lounge house mix | lofi | music",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/ZaN5BK24JVA/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        }
+      ]
+    }
+  ]
+}
