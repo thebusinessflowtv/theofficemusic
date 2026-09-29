@@ -1,0 +1,18 @@
+{
+  "workflow": "office-music-publish.yml",
+  "inputs": {
+    "job_id": "5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0",
+    "duration_minutes": "60",
+    "track_count": "10",
+    "track_seconds": "360",
+    "publish": "true",
+    "privacy": "public",
+    "title": "",
+    "loop_url": "",
+    "thumbnail_url": "https://fykwalznmcrjgnyveagy.supabase.co/storage/v1/object/public/office-music-assets/thumbnail/1790724068265-b4e0a297-fb73-4250-a2a4-ff5190f43387-THUMB-YOUTUBE-THE-OFFICE-MUSIC.png",
+    "visual_mode": "image",
+    "visual_image_url": "https://fykwalznmcrjgnyveagy.supabase.co/storage/v1/object/public/office-music-assets/thumbnail/1790724056156-afa37a45-3139-4cf3-9cfb-72b9dbd62299-THUMBNAIL-A-NOITE---THE-OFFICE-MUSIC.png"
+  },
+  "requested_at": "2026-09-29T23:25:00Z",
+  "recovered_from_edge_403": true
+}
