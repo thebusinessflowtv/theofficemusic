@@ -191,7 +191,7 @@ jobs:
           kaggle kernels output "$KERNEL" -p generated
           WAV_COUNT="$(find generated -type f -name '*.wav' | wc -l | tr -d ' ')"
           test "$WAV_COUNT" -ge 1
-          find generated -type f -maxdepth 3 -print
+          find generated -maxdepth 3 -type f -print
 
       - name: Fallback to approved generated master when GPU generation is unavailable
         if: steps.ai_generation.outcome != 'success'
@@ -255,14 +255,15 @@ jobs:
           MIX_DURATION="$(ffprobe -v error -show_entries format=duration -of csv=p=0 build/mix.m4a)"
           echo "Mix duration: $MIX_DURATION"
 
-      - name: Decode visual and thumbnail
+      - name: Decode and validate complete visual source
         run: |
           set -euo pipefail
-          tr -d '\r\n ' < assets/bootstrap/loop_00.b64 | base64 --decode > build/loop.mp4
+          cat assets/bootstrap/loop_00.b64 assets/bootstrap/loop_01.b64 | tr -d '\r\n ' | base64 --decode > build/loop.mp4
           tr -d '\r\n ' < assets/bootstrap/thumb_compact.b64 | base64 --decode > build/thumbnail.jpg
           test -s build/loop.mp4
           test -s build/thumbnail.jpg
-          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration -of json build/loop.mp4
+          ffmpeg -hide_banner -v error -i build/loop.mp4 -map 0:v:0 -f null -
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,pix_fmt -show_entries format=duration,size -of json build/loop.mp4
 
       - name: Encode the short 4K loop once
         run: |
@@ -278,12 +279,11 @@ jobs:
           test -s build/loop-4k.mp4
           test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 build/loop-4k.mp4)" = "3840"
           test "$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 build/loop-4k.mp4)" = "2160"
+          ffmpeg -hide_banner -v error -i build/loop-4k.mp4 -map 0:v:0 -f null -
 
       - name: Assemble final 4K video with stream copy
         run: |
           set -euo pipefail
-          # The long video never re-encodes 4K frames. It loops the already-encoded
-          # short 4K master and copies H.264 packets, making 1-hour renders practical.
           ffmpeg -hide_banner -loglevel warning -stats -y \
             -stream_loop -1 -i build/loop-4k.mp4 \
             -i build/mix.m4a \
