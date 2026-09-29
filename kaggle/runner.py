@@ -8,6 +8,8 @@ from kaggle_secrets import UserSecretsClient
 REPO_URL = "https://github.com/thebusinessflowtv/theofficemusic.git"
 REPO_DIR = Path("/kaggle/working/theofficemusic")
 SA3_DIR = Path("/kaggle/working/stable-audio-3")
+TRACK_COUNT = 5
+BATCH_PREFIX = "office"
 
 
 def run(cmd, cwd=None, env=None):
@@ -33,7 +35,7 @@ def main():
     run(["bash", "scripts/bootstrap_kaggle.sh"], cwd=REPO_DIR)
 
     python_bin = SA3_DIR / ".venv" / "bin" / "python"
-    batch_name = "office-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    batch_name = BATCH_PREFIX + "-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
 
     env = os.environ.copy()
     env["PYTHONPATH"] = str(REPO_DIR / "src")
@@ -46,6 +48,8 @@ def main():
             str(REPO_DIR / "config" / "channel_profile.yaml"),
             "--batch-name",
             batch_name,
+            "--tracks",
+            str(TRACK_COUNT),
         ],
         cwd=REPO_DIR,
         env=env,
