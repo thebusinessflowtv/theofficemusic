@@ -1,0 +1,312 @@
+name: Office Music — Live
+
+on:
+  workflow_dispatch:
+    inputs:
+      session_id:
+        required: true
+        type: string
+      track_urls_b64:
+        required: true
+        type: string
+      duration_minutes:
+        description: "0 = continuous chained live"
+        required: true
+        default: "60"
+        type: string
+      title:
+        required: true
+        default: "The Office Music — Live Office Lounge"
+        type: string
+      thumbnail_url:
+        required: false
+        default: ""
+        type: string
+      loop_url:
+        required: false
+        default: ""
+        type: string
+      resume_broadcast_id:
+        required: false
+        default: ""
+        type: string
+      resume_stream_id:
+        required: false
+        default: ""
+        type: string
+      segment_index:
+        required: true
+        default: "1"
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: office-music-live-${{ inputs.session_id }}
+  cancel-in-progress: false
+
+env:
+  YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+  YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip
+          python -m pip install google-api-python-client google-auth google-auth-httplib2
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Validate live inputs
+        env:
+          SESSION_ID: ${{ inputs.session_id }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+          SEGMENT_INDEX: ${{ inputs.segment_index }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,re
+          if not re.fullmatch(r'[0-9a-fA-F-]{36}',os.environ['SESSION_ID']): raise SystemExit('Invalid session_id')
+          d=int(os.environ['DURATION_MINUTES']); s=int(os.environ['SEGMENT_INDEX'])
+          if d < 0 or d > 10080: raise SystemExit('duration_minutes must be 0..10080')
+          if s < 1: raise SystemExit('segment_index must be >=1')
+          for k in ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN','YOUTUBE_CHANNEL_ID']:
+              if not os.environ.get(k): raise SystemExit(f'Missing {k}')
+          PY
+
+      - name: Decode playlist and download tracks
+        env:
+          TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/tracks control/live-results
+          python - <<'PY'
+          import os,base64,json,pathlib
+          raw=base64.b64decode(os.environ['TRACK_URLS_B64']).decode('utf-8')
+          urls=json.loads(raw)
+          if not isinstance(urls,list) or not urls: raise SystemExit('No track URLs')
+          pathlib.Path('build/track_urls.json').write_text(json.dumps(urls),encoding='utf-8')
+          PY
+          python - <<'PY'
+          import json,subprocess,pathlib
+          urls=json.loads(pathlib.Path('build/track_urls.json').read_text())
+          paths=[]
+          for i,u in enumerate(urls,1):
+              p=pathlib.Path('build/tracks')/f'track-{i:03d}.wav'
+              subprocess.run(['curl','--retry','5','--retry-all-errors','-fL',u,'-o',str(p)],check=True)
+              paths.append(p.resolve())
+          with open('build/playlist.txt','w',encoding='utf-8') as f:
+              for p in paths: f.write("file '"+str(p).replace("'","'\\''")+"'\n")
+          print(f'Downloaded {len(paths)} tracks')
+          PY
+
+      - name: Prepare live visual and thumbnail
+        env:
+          LOOP_URL: ${{ inputs.loop_url }}
+          THUMBNAIL_URL: ${{ inputs.thumbnail_url }}
+        run: |
+          set -euo pipefail
+          if [ -n "$THUMBNAIL_URL" ]; then
+            curl --retry 5 --retry-all-errors -fL "$THUMBNAIL_URL" -o build/thumbnail.jpg || true
+          fi
+          if [ ! -s build/thumbnail.jpg ]; then
+            tr -d '\r\n ' < assets/bootstrap/thumb_compact.b64 | base64 --decode > build/thumbnail.jpg
+          fi
+          ffmpeg -hide_banner -v error -i build/thumbnail.jpg -frames:v 1 -f null - >/dev/null
+
+          HAVE_LOOP=0
+          if [ -n "$LOOP_URL" ]; then
+            if curl --retry 5 --retry-all-errors -fL "$LOOP_URL" -o build/loop.mp4 && ffmpeg -hide_banner -v error -i build/loop.mp4 -map 0:v:0 -f null - >/dev/null 2>&1; then HAVE_LOOP=1; fi
+          fi
+          if [ "$HAVE_LOOP" = 0 ] && [ -f assets/bootstrap/loop_00.b64 ]; then
+            tr -d '\r\n ' < assets/bootstrap/loop_00.b64 | base64 --decode > build/loop.mp4 || true
+            if ffmpeg -hide_banner -v error -i build/loop.mp4 -map 0:v:0 -f null - >/dev/null 2>&1; then HAVE_LOOP=1; fi
+          fi
+          if [ "$HAVE_LOOP" = 0 ]; then
+            ffmpeg -hide_banner -loglevel warning -y -loop 1 -i build/thumbnail.jpg -t 12 -vf "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,zoompan=z='min(zoom+0.00025,1.03)':d=360:s=1920x1080:fps=30,format=yuv420p" -an -c:v libx264 -preset veryfast -crf 20 build/loop.mp4
+          fi
+
+      - name: Create or resume YouTube broadcast
+        env:
+          SESSION_ID: ${{ inputs.session_id }}
+          TITLE: ${{ inputs.title }}
+          RESUME_BROADCAST_ID: ${{ inputs.resume_broadcast_id }}
+          RESUME_STREAM_ID: ${{ inputs.resume_stream_id }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+          SEGMENT_INDEX: ${{ inputs.segment_index }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,json,pathlib,datetime
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          from googleapiclient.errors import HttpError
+          from googleapiclient.http import MediaFileUpload
+
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          ch=yt.channels().list(part='id,snippet',mine=True).execute()['items'][0]
+          if ch['id']!=os.environ['YOUTUBE_CHANNEL_ID']: raise SystemExit('YouTube channel mismatch')
+          bid=os.environ.get('RESUME_BROADCAST_ID','').strip(); sid=os.environ.get('RESUME_STREAM_ID','').strip()
+          continuous=int(os.environ['DURATION_MINUTES'])==0
+          if not bid or not sid:
+              now=datetime.datetime.now(datetime.timezone.utc)
+              b=yt.liveBroadcasts().insert(part='snippet,status,contentDetails',body={
+                  'snippet':{'title':os.environ['TITLE'][:100],'scheduledStartTime':(now+datetime.timedelta(seconds=20)).isoformat()},
+                  'status':{'privacyStatus':'public','selfDeclaredMadeForKids':False},
+                  'contentDetails':{'enableAutoStart':True,'enableAutoStop':False,'monitorStream':{'enableMonitorStream':False}}
+              }).execute(); bid=b['id']
+              s=yt.liveStreams().insert(part='snippet,cdn,contentDetails',body={
+                  'snippet':{'title':f"The Office Music {os.environ['SESSION_ID']}"},
+                  'cdn':{'frameRate':'30fps','ingestionType':'rtmp','resolution':'1080p'},
+                  'contentDetails':{'isReusable':True}
+              }).execute(); sid=s['id']
+              yt.liveBroadcasts().bind(part='id,contentDetails',id=bid,streamId=sid).execute()
+          stream=yt.liveStreams().list(part='cdn,status',id=sid).execute()['items'][0]
+          ing=stream['cdn']['ingestionInfo']; target=ing['ingestionAddress'].rstrip('/')+'/'+ing['streamName']
+          pathlib.Path('build/rtmp.txt').write_text(target,encoding='utf-8')
+          pathlib.Path('build/live-ids.json').write_text(json.dumps({'broadcast_id':bid,'stream_id':sid},indent=2),encoding='utf-8')
+          try:
+              yt.thumbnails().set(videoId=bid,media_body=MediaFileUpload('build/thumbnail.jpg',mimetype='image/jpeg',resumable=False)).execute()
+          except HttpError as e:
+              if e.resp.status!=403: raise
+              print('::warning::Custom thumbnail unavailable; live will continue with YouTube default thumbnail.')
+          result={'status':'starting','github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'youtube_broadcast_id':bid,'youtube_stream_id':sid,'youtube_url':f'https://www.youtube.com/watch?v={bid}','segment_index':int(os.environ['SEGMENT_INDEX']),'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          pathlib.Path('control/live-results').mkdir(parents=True,exist_ok=True)
+          pathlib.Path('control/live-results',os.environ['SESSION_ID']+'.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+          PY
+          git add control/live-results/${SESSION_ID}.json
+          git commit -m "office-music: live starting ${SESSION_ID}" || true
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Start RTMP encoder and transition live
+        env:
+          SESSION_ID: ${{ inputs.session_id }}
+        run: |
+          set -euo pipefail
+          RTMP_URL="$(cat build/rtmp.txt)"
+          ffmpeg -hide_banner -loglevel warning -re -stream_loop -1 -i build/loop.mp4 -stream_loop -1 -f concat -safe 0 -i build/playlist.txt -map 0:v:0 -map 1:a:0 -vf "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p" -c:v libx264 -preset ultrafast -tune zerolatency -b:v 6000k -maxrate 6000k -bufsize 12000k -g 60 -keyint_min 60 -sc_threshold 0 -c:a aac -b:a 192k -ar 44100 -f flv "$RTMP_URL" >build/ffmpeg.log 2>&1 &
+          echo $! > build/ffmpeg.pid
+          sleep 12
+          python - <<'PY'
+          import os,json,pathlib,time
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          ids=json.loads(pathlib.Path('build/live-ids.json').read_text()); bid=ids['broadcast_id']; sid=ids['stream_id']
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          active=False
+          for _ in range(36):
+              st=yt.liveStreams().list(part='status',id=sid).execute()['items'][0]['status'].get('streamStatus')
+              print('streamStatus=',st)
+              if st=='active': active=True; break
+              time.sleep(5)
+          if not active: raise SystemExit('YouTube ingest did not become active')
+          try: yt.liveBroadcasts().transition(part='status',id=bid,broadcastStatus='live').execute()
+          except Exception as e: print('transition live:',e)
+          PY
+          python - <<'PY'
+          import json,os,pathlib,datetime
+          p=pathlib.Path('control/live-results')/(os.environ['SESSION_ID']+'.json'); d=json.loads(p.read_text()); d['status']='live'; d['started_at']=datetime.datetime.now(datetime.timezone.utc).isoformat(); p.write_text(json.dumps(d,indent=2))
+          PY
+          git add control/live-results/${SESSION_ID}.json; git commit -m "office-music: live ${SESSION_ID}" || true; git pull --rebase origin main; git push origin HEAD:main
+
+      - name: Keep live running, watch stop flag, and chain when needed
+        id: keepalive
+        env:
+          SESSION_ID: ${{ inputs.session_id }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+        run: |
+          set -euo pipefail
+          PID="$(cat build/ffmpeg.pid)"; DURATION="$DURATION_MINUTES"
+          if [ "$DURATION" -eq 0 ]; then SEGMENT_MIN=300; else SEGMENT_MIN="$DURATION"; [ "$SEGMENT_MIN" -gt 300 ] && SEGMENT_MIN=300; fi
+          DEADLINE=$(( $(date +%s) + SEGMENT_MIN*60 )); REASON=segment_complete
+          while [ "$(date +%s)" -lt "$DEADLINE" ]; do
+            if ! kill -0 "$PID" 2>/dev/null; then tail -100 build/ffmpeg.log || true; echo "reason=encoder_failed" >> "$GITHUB_OUTPUT"; exit 1; fi
+            if curl -fsS "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/control/live-stop/${SESSION_ID}.json" 2>/dev/null | grep -q '"stop"[[:space:]]*:[[:space:]]*true'; then REASON=manual_stop; break; fi
+            sleep 30
+          done
+          kill -INT "$PID" 2>/dev/null || true
+          for i in $(seq 1 20); do kill -0 "$PID" 2>/dev/null || break; sleep 1; done
+          kill -KILL "$PID" 2>/dev/null || true
+          echo "reason=$REASON" >> "$GITHUB_OUTPUT"
+          if [ "$REASON" = segment_complete ] && { [ "$DURATION" -eq 0 ] || [ "$DURATION" -gt 300 ]; }; then echo "chain=true" >> "$GITHUB_OUTPUT"; else echo "chain=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Chain continuous or long live session
+        if: steps.keepalive.outputs.chain == 'true'
+        env:
+          SESSION_ID: ${{ inputs.session_id }}
+          TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+          TITLE: ${{ inputs.title }}
+          THUMBNAIL_URL: ${{ inputs.thumbnail_url }}
+          LOOP_URL: ${{ inputs.loop_url }}
+          SEGMENT_INDEX: ${{ inputs.segment_index }}
+        run: |
+          set -euo pipefail
+          BID="$(jq -r .broadcast_id build/live-ids.json)"; SID="$(jq -r .stream_id build/live-ids.json)"
+          if [ "$DURATION_MINUTES" -eq 0 ]; then NEXT_DURATION=0; else NEXT_DURATION=$((DURATION_MINUTES-300)); fi
+          NEXT_SEG=$((SEGMENT_INDEX+1))
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path('control/live-results')/(os.environ['SESSION_ID']+'.json'); d=json.loads(p.read_text()); d['status']='reconnecting'; d['segment_index']=int(os.environ['SEGMENT_INDEX']); p.write_text(json.dumps(d,indent=2))
+          PY
+          git add control/live-results/${SESSION_ID}.json; git commit -m "office-music: live handoff ${SESSION_ID}" || true; git pull --rebase origin main; git push origin HEAD:main
+          jq -n --arg ref main --arg session "$SESSION_ID" --arg tracks "$TRACK_URLS_B64" --arg dur "$NEXT_DURATION" --arg title "$TITLE" --arg thumb "$THUMBNAIL_URL" --arg loop "$LOOP_URL" --arg bid "$BID" --arg sid "$SID" --arg seg "$NEXT_SEG" '{ref:$ref,inputs:{session_id:$session,track_urls_b64:$tracks,duration_minutes:$dur,title:$title,thumbnail_url:$thumb,loop_url:$loop,resume_broadcast_id:$bid,resume_stream_id:$sid,segment_index:$seg}}' > build/dispatch.json
+          curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -H "Content-Type: application/json" --data-binary @build/dispatch.json "https://api.github.com/repos/thebusinessflowtv/theofficemusic/actions/workflows/office-music-live.yml/dispatches"
+
+      - name: Complete YouTube broadcast
+        if: steps.keepalive.outputs.chain != 'true'
+        env:
+          SESSION_ID: ${{ inputs.session_id }}
+        run: |
+          set +e
+          python - <<'PY'
+          import os,json,pathlib,datetime
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          ids=json.loads(pathlib.Path('build/live-ids.json').read_text()); bid=ids['broadcast_id']
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          try: yt.liveBroadcasts().transition(part='status',id=bid,broadcastStatus='complete').execute()
+          except Exception as e: print('complete transition:',e)
+          p=pathlib.Path('control/live-results')/(os.environ['SESSION_ID']+'.json'); d=json.loads(p.read_text()); d['status']='completed'; d['ended_at']=datetime.datetime.now(datetime.timezone.utc).isoformat(); p.write_text(json.dumps(d,indent=2))
+          PY
+          git add control/live-results/${SESSION_ID}.json; git commit -m "office-music: live complete ${SESSION_ID}" || true; git pull --rebase origin main; git push origin HEAD:main
+
+      - name: Record live failure
+        if: failure()
+        env:
+          SESSION_ID: ${{ inputs.session_id }}
+        run: |
+          set +e
+          [ -f build/ffmpeg.pid ] && kill -INT "$(cat build/ffmpeg.pid)" 2>/dev/null || true
+          git pull --rebase origin main
+          mkdir -p control/live-results
+          python - <<'PY'
+          import json,os,pathlib,datetime
+          p=pathlib.Path('control/live-results')/(os.environ['SESSION_ID']+'.json'); d={}
+          try: d=json.loads(p.read_text())
+          except Exception: pass
+          d.update({'status':'failed','github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'Live workflow failed. Open github_run_url for details.','ended_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}); p.write_text(json.dumps(d,indent=2))
+          PY
+          git add control/live-results/${SESSION_ID}.json; git commit -m "office-music: live failed ${SESSION_ID}" || true; git pull --rebase origin main; git push origin HEAD:main
+          exit 0
