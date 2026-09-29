@@ -59,15 +59,17 @@ jobs:
           test -n "$YOUTUBE_REFRESH_TOKEN"
           test -n "$YOUTUBE_CHANNEL_ID"
 
-      - name: Prepare loop video and thumbnail
+      - name: Prepare full loop video and thumbnail
         run: |
           set -euo pipefail
           mkdir -p build
-          tr -d '\r\n ' < assets/bootstrap/loop_00.b64 | base64 --decode > build/loop.mp4
+          cat assets/bootstrap/loop_00.b64 assets/bootstrap/loop_01.b64 | tr -d '\r\n ' | base64 --decode > build/loop.mp4
           tr -d '\r\n ' < assets/bootstrap/thumb_compact.b64 | base64 --decode > build/thumbnail.jpg
           test -s build/loop.mp4
           test -s build/thumbnail.jpg
-          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration,size -of json build/loop.mp4
+          # Decode every frame now so a truncated/corrupt bootstrap can never reach the expensive render step.
+          ffmpeg -hide_banner -v error -i build/loop.mp4 -map 0:v:0 -f null -
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,pix_fmt -show_entries format=duration,size -of json build/loop.mp4
           file build/thumbnail.jpg
 
       - name: Download approved generated track
@@ -88,9 +90,6 @@ jobs:
       - name: Build reusable 4K visual loop
         run: |
           set -euo pipefail
-          # Encode the short visual source to 4K only ONCE. The final video then
-          # reuses these already-encoded packets with stream copy, avoiding an
-          # expensive 4K re-encode for every frame of a long music video.
           ffmpeg -hide_banner -loglevel warning -stats -y \
             -i build/loop.mp4 \
             -map 0:v:0 -an \
@@ -104,6 +103,7 @@ jobs:
           HEIGHT="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 build/loop-4k.mp4)"
           test "$WIDTH" = "3840"
           test "$HEIGHT" = "2160"
+          ffmpeg -hide_banner -v error -i build/loop-4k.mp4 -map 0:v:0 -f null -
           echo "4K_LOOP_VALIDATED=${WIDTH}x${HEIGHT}"
 
       - name: Assemble final 4K video without re-encoding video
