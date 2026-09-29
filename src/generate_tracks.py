@@ -17,12 +17,7 @@ def load_profile(path: str) -> dict:
 
 
 def resolve_runtime(model_name: str) -> tuple[str, bool]:
-    """Return (device, model_half) for a supported Stable Audio 3 model.
-
-    Small-Music is intentionally forced to CPU for the calibration pipeline.
-    This makes the test independent of Kaggle GPU allocation, which can vary
-    between CPU, T4 and other accelerators even when a GPU shape is requested.
-    """
+    """Return (device, model_half) for a supported Stable Audio 3 model."""
     if model_name in {"small-music", "small-sfx"}:
         return "cpu", False
 
@@ -50,6 +45,8 @@ def resolve_runtime(model_name: str) -> tuple[str, bool]:
 
 
 def validate_duration(model_name: str, duration: int) -> None:
+    if duration < 10:
+        raise ValueError("Track duration must be at least 10 seconds.")
     if model_name.startswith("small-") and duration > 120:
         raise ValueError("Stable Audio 3 Small models support at most 120 seconds per generation.")
     if model_name in {"medium", "medium-base"} and duration > 380:
@@ -60,6 +57,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="config/channel_profile.yaml")
     parser.add_argument("--tracks", type=int, default=None)
+    parser.add_argument("--duration-seconds", type=int, default=None)
     parser.add_argument("--batch-name", default="office-session")
     parser.add_argument("--master-seed", type=int, default=None)
     args = parser.parse_args()
@@ -68,7 +66,10 @@ def main():
     generation = profile["generation"]
     output_cfg = profile["output"]
     model_name = str(generation["model"])
-    duration = int(generation["track_duration_seconds"])
+    duration = int(args.duration_seconds or generation["track_duration_seconds"])
+
+    # Keep prompt metadata synchronized with a runtime duration override.
+    generation["track_duration_seconds"] = duration
 
     if not generation.get("pure_text_to_audio", True):
         raise RuntimeError("This repository is configured for pure text-to-audio generation only.")
@@ -106,14 +107,22 @@ def main():
         "runtime_device": device,
         "sample_rate": sample_rate,
         "pure_text_to_audio": True,
+        "track_duration_seconds": duration,
         "tracks": [],
     }
 
+    used_titles = set()
     for i in range(1, track_count + 1):
         prompt, negative_prompt, metadata = build_prompt(profile, i, rng)
         seed = rng.randint(1, 99998)
 
-        print(f"Generating track {i}/{track_count} | seed={seed} | {duration}s")
+        title = metadata.get("title") or f"Office Session {i:02d}"
+        if title in used_titles:
+            title = f"{title} {i:02d}"
+        used_titles.add(title)
+        metadata["title"] = title
+
+        print(f"Generating track {i}/{track_count} | {title} | seed={seed} | {duration}s")
         print(prompt)
 
         with torch.inference_mode():
@@ -128,7 +137,9 @@ def main():
                 chunked_decode=bool(generation.get("chunked_decode", True)),
             )
 
-        filename = f"{args.batch_name}_track_{i:02d}.wav"
+        safe_title = "".join(c.lower() if c.isalnum() else "-" for c in title).strip("-")
+        safe_title = "-".join(filter(None, safe_title.split("-")))[:64] or f"track-{i:02d}"
+        filename = f"{i:02d}-{safe_title}.wav"
         filepath = output_dir / filename
         waveform = audio[0].detach().to(torch.float32).cpu()
         torchaudio.save(str(filepath), waveform, sample_rate)
