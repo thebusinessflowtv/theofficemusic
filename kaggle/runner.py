@@ -12,6 +12,7 @@ REPO_DIR = Path("/kaggle/working/theofficemusic")
 SA3_DIR = Path("/kaggle/working/stable-audio-3")
 OUTPUT_DIR = Path("/kaggle/working/output")
 TRACK_COUNT = 5
+TRACK_DURATION_SECONDS = 360
 BATCH_PREFIX = "office"
 
 
@@ -68,6 +69,8 @@ def main():
     target_model = read_target_model()
     os.environ["SA3_TARGET_MODEL"] = target_model
     print(f"Configured Stable Audio target model: {target_model}")
+    print(f"Track count: {TRACK_COUNT}")
+    print(f"Track duration: {TRACK_DURATION_SECONDS}s")
 
     run(["bash", "scripts/bootstrap_kaggle.sh"], cwd=REPO_DIR)
 
@@ -89,6 +92,8 @@ def main():
             batch_name,
             "--tracks",
             str(TRACK_COUNT),
+            "--duration-seconds",
+            str(TRACK_DURATION_SECONDS),
         ],
         cwd=REPO_DIR,
         env=env,
