@@ -18,6 +18,10 @@ on:
         required: true
         default: "The Office Music — Live Office Lounge"
         type: string
+      description:
+        required: false
+        default: ""
+        type: string
       thumbnail_url:
         required: false
         default: ""
@@ -147,6 +151,7 @@ jobs:
         env:
           SESSION_ID: ${{ inputs.session_id }}
           TITLE: ${{ inputs.title }}
+          DESCRIPTION: ${{ inputs.description }}
           RESUME_BROADCAST_ID: ${{ inputs.resume_broadcast_id }}
           RESUME_STREAM_ID: ${{ inputs.resume_stream_id }}
           DURATION_MINUTES: ${{ inputs.duration_minutes }}
@@ -165,11 +170,10 @@ jobs:
           ch=yt.channels().list(part='id,snippet',mine=True).execute()['items'][0]
           if ch['id']!=os.environ['YOUTUBE_CHANNEL_ID']: raise SystemExit('YouTube channel mismatch')
           bid=os.environ.get('RESUME_BROADCAST_ID','').strip(); sid=os.environ.get('RESUME_STREAM_ID','').strip()
-          continuous=int(os.environ['DURATION_MINUTES'])==0
           if not bid or not sid:
               now=datetime.datetime.now(datetime.timezone.utc)
               b=yt.liveBroadcasts().insert(part='snippet,status,contentDetails',body={
-                  'snippet':{'title':os.environ['TITLE'][:100],'scheduledStartTime':(now+datetime.timedelta(seconds=20)).isoformat()},
+                  'snippet':{'title':os.environ['TITLE'][:100],'description':os.environ.get('DESCRIPTION','')[:5000],'scheduledStartTime':(now+datetime.timedelta(seconds=20)).isoformat()},
                   'status':{'privacyStatus':'public','selfDeclaredMadeForKids':False},
                   'contentDetails':{'enableAutoStart':True,'enableAutoStop':False,'monitorStream':{'enableMonitorStream':False}}
               }).execute(); bid=b['id']
@@ -257,6 +261,7 @@ jobs:
           TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
           DURATION_MINUTES: ${{ inputs.duration_minutes }}
           TITLE: ${{ inputs.title }}
+          DESCRIPTION: ${{ inputs.description }}
           THUMBNAIL_URL: ${{ inputs.thumbnail_url }}
           LOOP_URL: ${{ inputs.loop_url }}
           SEGMENT_INDEX: ${{ inputs.segment_index }}
@@ -270,7 +275,7 @@ jobs:
           p=pathlib.Path('control/live-results')/(os.environ['SESSION_ID']+'.json'); d=json.loads(p.read_text()); d['status']='reconnecting'; d['segment_index']=int(os.environ['SEGMENT_INDEX']); p.write_text(json.dumps(d,indent=2))
           PY
           git add control/live-results/${SESSION_ID}.json; git commit -m "office-music: live handoff ${SESSION_ID}" || true; git pull --rebase origin main; git push origin HEAD:main
-          jq -n --arg ref main --arg session "$SESSION_ID" --arg tracks "$TRACK_URLS_B64" --arg dur "$NEXT_DURATION" --arg title "$TITLE" --arg thumb "$THUMBNAIL_URL" --arg loop "$LOOP_URL" --arg bid "$BID" --arg sid "$SID" --arg seg "$NEXT_SEG" '{ref:$ref,inputs:{session_id:$session,track_urls_b64:$tracks,duration_minutes:$dur,title:$title,thumbnail_url:$thumb,loop_url:$loop,resume_broadcast_id:$bid,resume_stream_id:$sid,segment_index:$seg}}' > build/dispatch.json
+          jq -n --arg ref main --arg session "$SESSION_ID" --arg tracks "$TRACK_URLS_B64" --arg dur "$NEXT_DURATION" --arg title "$TITLE" --arg description "$DESCRIPTION" --arg thumb "$THUMBNAIL_URL" --arg loop "$LOOP_URL" --arg bid "$BID" --arg sid "$SID" --arg seg "$NEXT_SEG" '{ref:$ref,inputs:{session_id:$session,track_urls_b64:$tracks,duration_minutes:$dur,title:$title,description:$description,thumbnail_url:$thumb,loop_url:$loop,resume_broadcast_id:$bid,resume_stream_id:$sid,segment_index:$seg}}' > build/dispatch.json
           curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -H "Content-Type: application/json" --data-binary @build/dispatch.json "https://api.github.com/repos/thebusinessflowtv/theofficemusic/actions/workflows/office-music-live.yml/dispatches"
 
       - name: Complete YouTube broadcast
