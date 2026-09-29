@@ -1,6 +1,23 @@
 {
-  "status": "generating",
-  "progress": 5,
+  "status": "completed",
+  "progress": 100,
   "github_run_id": 36618938953,
-  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36618938953"
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36618938953",
+  "youtube_video_id": "ZaN5BK24JVA",
+  "youtube_url": "https://www.youtube.com/watch?v=ZaN5BK24JVA",
+  "completed_at": "2026-09-29T22:10:31.093547+00:00",
+  "generation_mode": "approved-calibration-master-fallback",
+  "release_tag": "office-music-847d72af-3a44-4526-92a7-19de170f7b3d",
+  "requested_duration_minutes": 60,
+  "tracks": [
+    {
+      "title": "reference-test-20260929-024504_track_01",
+      "filename": "reference-test-20260929-024504_track_01.wav",
+      "duration_seconds": 120.0,
+      "position": 1,
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-847d72af-3a44-4526-92a7-19de170f7b3d",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-847d72af-3a44-4526-92a7-19de170f7b3d/reference-test-20260929-024504_track_01.wav"
+    }
+  ]
 }
