@@ -271,7 +271,7 @@ jobs:
           folder = pathlib.Path(sys.argv[1])
           (folder / 'kernel-metadata.json').write_text(json.dumps({
               'id': f"{os.environ['KAGGLE_USERNAME']}/the-office-music-generator-small",
-              'title': 'The Office Music Small Fallback',
+              'title': 'The Office Music Generator Small',
               'code_file': 'runner.py',
               'language': 'python',
               'kernel_type': 'script',
