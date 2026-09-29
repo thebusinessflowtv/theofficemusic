@@ -14,13 +14,9 @@ fi
 
 cd "$SA3_DIR"
 
-# The official repository pins Python 3.10, torch 2.7.1 and CUDA 12.6.
+# Stable Audio 3 pins Python 3.10 / torch 2.7.1 in its project environment.
 uv sync
 
-# IMPORTANT: Kaggle's system Python is currently 3.12, while the Stable Audio
-# project creates its own Python 3.10 virtualenv. Force every extra dependency
-# into that venv so the cp310 Flash Attention wheel is installed in the correct
-# interpreter instead of /usr Python 3.12.
 VENV_PY="$SA3_DIR/.venv/bin/python"
 if [ ! -x "$VENV_PY" ]; then
   echo "Stable Audio virtualenv Python not found at $VENV_PY"
@@ -29,19 +25,26 @@ fi
 
 uv pip install --python "$VENV_PY" pyyaml ninja
 
-# Stable Audio 3 Medium requires Flash Attention 2. Use the prebuilt wheel
-# for CUDA 12.6 + torch 2.7 + Python 3.10.
-uv pip install --python "$VENV_PY" \
-  "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.7.16/flash_attn-2.6.3+cu126torch2.7-cp310-cp310-linux_x86_64.whl"
+GPU_MAJOR="$($VENV_PY - <<'PY'
+import torch
+if not torch.cuda.is_available():
+    print(-1)
+else:
+    print(torch.cuda.get_device_capability(0)[0])
+PY
+)"
 
-# Do not invoke `uv run` here because it may re-sync the environment and remove
-# the explicitly installed Flash Attention wheel. Execute the venv interpreter
-# directly instead.
+if [ "$GPU_MAJOR" -ge 8 ]; then
+  echo "Ampere-or-newer GPU detected. Installing Flash Attention 2 for Medium support."
+  uv pip install --python "$VENV_PY" \
+    "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.7.16/flash_attn-2.6.3+cu126torch2.7-cp310-cp310-linux_x86_64.whl"
+else
+  echo "Pre-Ampere GPU detected. Skipping Flash Attention; Small-Music remains supported."
+fi
+
 "$VENV_PY" - <<'PY'
 import sys
 import torch
-import flash_attn
-from flash_attn import flash_attn_func
 
 print("Python:", sys.version)
 if not torch.cuda.is_available():
@@ -52,10 +55,10 @@ print("GPU:", torch.cuda.get_device_name(0))
 print("Compute capability:", f"{major}.{minor}")
 print("CUDA:", torch.version.cuda)
 print("Torch:", torch.__version__)
-print("Flash Attention:", flash_attn.__version__)
 
-if major < 8:
-    raise SystemExit(
-        "GPU compute capability is below 8.0. Stable Audio 3 Medium + Flash Attention 2 requires an Ampere-or-newer GPU in this pipeline."
-    )
+if major >= 8:
+    import flash_attn
+    print("Flash Attention:", flash_attn.__version__)
+else:
+    print("Flash Attention: skipped (not required for Small-Music)")
 PY
