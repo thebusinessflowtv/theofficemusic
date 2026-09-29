@@ -1,0 +1,63 @@
+channel:
+  name: "The Office Music"
+  concept: "fashion-retail office music calibration test on Kaggle T4"
+
+generation:
+  model: "small-music"
+  tracks_per_batch: 1
+  track_duration_seconds: 120
+  steps: 8
+  cfg_scale: 1.0
+  chunked_decode: true
+  pure_text_to_audio: true
+
+music_dna:
+  instrumental_only: true
+  energy: 6
+  bpm_min: 121
+  bpm_max: 121
+  groove: "steady four-on-the-floor fashion retail house groove, confident and smooth, lightly syncopated, hypnotic but not aggressive"
+  mood:
+    - "stylish"
+    - "modern"
+    - "confident"
+    - "premium"
+  style_pool:
+    - "modern fashion retail deep house blended with lounge house and polished commercial chill house"
+  preferred_instruments:
+    - "rounded sidechained synth bass"
+    - "clean punchy house kick and crisp closed hi-hats"
+    - "minimal bright synth plucks"
+    - "warm atmospheric pads and subtle electric keys"
+    - "short tasteful electronic percussion accents"
+  avoid_instruments:
+    - "distorted guitars"
+    - "cinematic orchestral elements"
+    - "festival EDM supersaws"
+    - "hard techno drums"
+  percussion: "clean four-on-the-floor kick, controlled hi-hats, subtle claps and percussion, danceable fashion-store pulse, no aggressive fills"
+  bass: "warm rounded deep-house bassline with gentle sidechain movement, present and rhythmic without overpowering the mix"
+  melody_density: "medium-low, one memorable minimalist motif with tasteful repetition and gradual variation"
+  brightness: "polished and modern, slightly glossy top end, warm low mids"
+  arrangement: "two-minute continuous retail-friendly arrangement with smooth evolution, restrained transitions, no huge drops, no abrupt genre changes, maintain a consistent groove"
+  production: "premium contemporary fashion-store sound, clean stereo image, tight low end, polished commercial mix, sophisticated lounge atmosphere suitable for fashion retail, office and home-office listening"
+
+negative_prompt:
+  - "poor quality"
+  - "distortion"
+  - "clipping"
+  - "harsh treble"
+  - "festival EDM"
+  - "hard techno"
+  - "trap"
+  - "dramatic trailer music"
+  - "intelligible vocals"
+  - "spoken words"
+  - "rap"
+  - "choir"
+
+output:
+  format: "wav"
+  sample_rate: 44100
+  directory: "/kaggle/working/output"
+  write_manifest: true
