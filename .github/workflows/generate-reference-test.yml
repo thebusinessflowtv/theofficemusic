@@ -1,0 +1,102 @@
+name: Generate Reference Calibration Test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "config/reference_test.yaml"
+  workflow_dispatch:
+
+env:
+  KERNEL_SLUG: the-office-music-reference-test
+
+jobs:
+  generate-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Kaggle CLI
+        run: pip install --upgrade kaggle
+
+      - name: Validate GitHub secrets
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: |
+          test -n "$KAGGLE_USERNAME" || (echo "Missing KAGGLE_USERNAME secret" && exit 1)
+          test -n "$KAGGLE_API_TOKEN" || (echo "Missing KAGGLE_API_TOKEN secret" && exit 1)
+
+      - name: Prepare Kaggle kernel
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          folder = pathlib.Path("kaggle")
+          metadata = {
+              "id": f"{os.environ['KAGGLE_USERNAME']}/the-office-music-reference-test",
+              "title": "The Office Music Reference Test",
+              "code_file": "runner_test.py",
+              "language": "python",
+              "kernel_type": "script",
+              "is_private": True,
+              "enable_gpu": True,
+              "enable_internet": True,
+              "dataset_sources": [],
+              "competition_sources": [],
+              "kernel_sources": []
+          }
+          (folder / "kernel-metadata.json").write_text(json.dumps(metadata, indent=2))
+          PY
+
+      - name: Push and run on Kaggle L4
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: |
+          kaggle kernels push -p kaggle --timeout 7200 --accelerator NvidiaL4
+
+      - name: Wait for Kaggle
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        run: |
+          KERNEL="$KAGGLE_USERNAME/$KERNEL_SLUG"
+          for i in $(seq 1 120); do
+            STATUS="$(kaggle kernels status "$KERNEL" 2>&1 || true)"
+            echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi "complete|completed"; then
+              exit 0
+            fi
+            if echo "$STATUS" | grep -Eqi "error|failed|cancel"; then
+              echo "Kaggle generation failed"
+              exit 1
+            fi
+            sleep 60
+          done
+          echo "Timed out waiting for Kaggle"
+          exit 1
+
+      - name: Download generated audio
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        run: |
+          mkdir -p generated
+          kaggle kernels output "$KAGGLE_USERNAME/$KERNEL_SLUG" -p generated
+
+      - name: Upload calibration artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: the-office-music-reference-test-${{ github.run_number }}
+          path: generated/
+          retention-days: 14
