@@ -1,0 +1,110 @@
+name: Office Music Queue Worker
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: office-music-queue-worker
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch pending Office Music queue
+        env:
+          SUPABASE_URL: https://fykwalznmcrjgnyveagy.supabase.co
+          SUPABASE_ANON_KEY: sb_publishable_46tbOLOFhKqirGConFVg2w_xRQmmVli
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            "$SUPABASE_URL/rest/v1/rpc/office_music_dispatch_queue" > queue.json
+          jq . queue.json
+
+      - name: Dispatch queued jobs and lives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p control/queue-dispatched
+          dispatched=0
+
+          while IFS= read -r item; do
+            id="$(jq -r '.id' <<<"$item")"
+            marker="control/queue-dispatched/${id}.json"
+            if [ -f "$marker" ]; then
+              echo "Job $id already dispatched; skipping."
+              continue
+            fi
+
+            payload="$(jq -n --argjson x "$item" '{ref:"main",inputs:{job_id:$x.id,duration_minutes:($x.duration_minutes|tostring),track_count:($x.track_count|tostring),track_seconds:($x.track_seconds|tostring),publish:$x.publish,privacy:$x.privacy,title:$x.title,loop_url:$x.loop_url,thumbnail_url:$x.thumbnail_url,visual_mode:$x.visual_mode,visual_image_url:$x.visual_image_url}}')"
+            code="$(curl -sS -o response.txt -w '%{http_code}' \
+              -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -H "Content-Type: application/json" \
+              --data-binary "$payload" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/office-music-publish.yml/dispatches")"
+            if [ "$code" != "204" ]; then
+              echo "Dispatch failed for job $id: HTTP $code" >&2
+              cat response.txt >&2 || true
+              exit 1
+            fi
+            jq -n --arg id "$id" --arg kind job --arg at "$(date -u +%FT%TZ)" '{id:$id,kind:$kind,dispatched_at:$at}' > "$marker"
+            dispatched=1
+            echo "Dispatched job $id"
+          done < <(jq -c '.jobs[]?' queue.json)
+
+          while IFS= read -r item; do
+            id="$(jq -r '.id' <<<"$item")"
+            marker="control/queue-dispatched/${id}.json"
+            if [ -f "$marker" ]; then
+              echo "Live $id already dispatched; skipping."
+              continue
+            fi
+            urls_b64="$(jq -c '.track_urls' <<<"$item" | base64 -w0)"
+            payload="$(jq -n --argjson x "$item" --arg urls "$urls_b64" '{ref:"main",inputs:{session_id:$x.id,track_urls_b64:$urls,duration_minutes:$x.duration_minutes,title:$x.title,description:$x.description,thumbnail_url:$x.thumbnail_url,loop_url:$x.loop_url,resume_broadcast_id:"",resume_stream_id:"",segment_index:"1"}}')"
+            code="$(curl -sS -o response.txt -w '%{http_code}' \
+              -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -H "Content-Type: application/json" \
+              --data-binary "$payload" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/office-music-live.yml/dispatches")"
+            if [ "$code" != "204" ]; then
+              echo "Dispatch failed for live $id: HTTP $code" >&2
+              cat response.txt >&2 || true
+              exit 1
+            fi
+            jq -n --arg id "$id" --arg kind live --arg at "$(date -u +%FT%TZ)" '{id:$id,kind:$kind,dispatched_at:$at}' > "$marker"
+            dispatched=1
+            echo "Dispatched live $id"
+          done < <(jq -c '.lives[]?' queue.json)
+
+          if [ "$dispatched" = "1" ]; then
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git add control/queue-dispatched
+            git commit -m "office-music: mark queued dispatches" || true
+            git pull --rebase origin main
+            git push origin HEAD:main
+          else
+            echo "No new queued requests."
+          fi
