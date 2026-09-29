@@ -1,0 +1,58 @@
+name: Office Music Request Router
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'control/requests/*.json'
+      - 'control/live-requests/*.json'
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  route:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Dispatch queued Office Music requests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mapfile -t FILES < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -E '^control/(live-)?requests/[^/]+\.json$' || true)
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "No Office Music request files in this commit."
+            exit 0
+          fi
+
+          for file in "${FILES[@]}"; do
+            test -f "$file"
+            workflow="$(jq -r '.workflow // empty' "$file")"
+            case "$workflow" in
+              office-music-publish.yml|office-music-live.yml) ;;
+              *) echo "Unsupported workflow in $file: $workflow" >&2; exit 1 ;;
+            esac
+
+            jq -c '{ref:"main",inputs:.inputs}' "$file" > dispatch-payload.json
+            echo "Dispatching $workflow from $file"
+            code="$(curl -sS -o dispatch-response.txt -w '%{http_code}' \
+              -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -H "Content-Type: application/json" \
+              --data-binary @dispatch-payload.json \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/dispatches")"
+            if [ "$code" != "204" ]; then
+              echo "Workflow dispatch failed: HTTP $code" >&2
+              cat dispatch-response.txt >&2 || true
+              exit 1
+            fi
+            echo "Dispatch accepted: $workflow"
+          done
