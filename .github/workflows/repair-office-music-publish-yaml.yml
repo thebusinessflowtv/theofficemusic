@@ -1,0 +1,39 @@
+name: Repair Office Music Publish YAML
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/repair-office-music-publish-yaml.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Remove duplicate env mapping
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/office-music-publish.yml')
+          s=p.read_text(encoding='utf-8')
+          old='''      - name: Validate inputs and secrets\n        env:\n          JOB_ID: ${{ inputs.job_id }}\n          DURATION_MINUTES: ${{ inputs.duration_minutes }}\n          TRACK_COUNT: ${{ inputs.track_count }}\n          TRACK_SECONDS: ${{ inputs.track_seconds }}\n        run: |\n'''
+          new='''      - name: Validate inputs and secrets\n        run: |\n'''
+          if old not in s:
+              raise SystemExit('Expected duplicate env block not found; nothing changed')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+      - name: Commit repair
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/workflows/office-music-publish.yml
+          git commit -m "fix: remove duplicate env mapping from publish workflow"
+          git pull --rebase origin main
+          git push origin HEAD:main
