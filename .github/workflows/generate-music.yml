@@ -1,0 +1,115 @@
+name: Generate The Office Music
+
+on:
+  workflow_dispatch:
+    inputs:
+      tracks:
+        description: "Number of tracks to generate"
+        required: true
+        default: "5"
+        type: choice
+        options:
+          - "4"
+          - "5"
+      accelerator:
+        description: "Kaggle GPU"
+        required: true
+        default: "NvidiaL4"
+        type: choice
+        options:
+          - "NvidiaL4"
+          - "NvidiaTeslaA100"
+
+env:
+  KERNEL_SLUG: the-office-music-generator
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Kaggle CLI
+        run: pip install --upgrade kaggle
+
+      - name: Prepare Kaggle kernel
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          TRACKS: ${{ inputs.tracks }}
+        run: |
+          test -n "$KAGGLE_USERNAME" || (echo "Missing KAGGLE_USERNAME secret" && exit 1)
+          python - <<'PY'
+          import json, os, pathlib, re
+
+          folder = pathlib.Path("kaggle")
+          runner = folder / "runner.py"
+          text = runner.read_text()
+          text = re.sub(r"TRACK_COUNT = \d+", f"TRACK_COUNT = {int(os.environ['TRACKS'])}", text)
+          runner.write_text(text)
+
+          metadata = {
+              "id": f"{os.environ['KAGGLE_USERNAME']}/the-office-music-generator",
+              "title": "The Office Music Generator",
+              "code_file": "runner.py",
+              "language": "python",
+              "kernel_type": "script",
+              "is_private": True,
+              "enable_gpu": True,
+              "enable_internet": True,
+              "dataset_sources": [],
+              "competition_sources": [],
+              "kernel_sources": []
+          }
+          (folder / "kernel-metadata.json").write_text(json.dumps(metadata, indent=2))
+          PY
+
+      - name: Push and run on Kaggle
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: |
+          test -n "$KAGGLE_API_TOKEN" || (echo "Missing KAGGLE_API_TOKEN secret" && exit 1)
+          kaggle kernels push -p kaggle --timeout 7200 --accelerator "${{ inputs.accelerator }}"
+
+      - name: Wait for Kaggle
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        run: |
+          KERNEL="$KAGGLE_USERNAME/$KERNEL_SLUG"
+          for i in $(seq 1 120); do
+            STATUS="$(kaggle kernels status "$KERNEL" 2>&1 || true)"
+            echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi "complete|completed"; then
+              exit 0
+            fi
+            if echo "$STATUS" | grep -Eqi "error|failed|cancel"; then
+              echo "Kaggle generation failed"
+              exit 1
+            fi
+            sleep 60
+          done
+          echo "Timed out waiting for Kaggle"
+          exit 1
+
+      - name: Download generated audio
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        run: |
+          mkdir -p generated
+          kaggle kernels output "$KAGGLE_USERNAME/$KERNEL_SLUG" -p generated
+
+      - name: Upload audio artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: the-office-music-${{ github.run_number }}
+          path: generated/
+          retention-days: 14
