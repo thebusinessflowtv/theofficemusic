@@ -1,8 +1,6 @@
 {
-  "status": "failed",
-  "progress": 100,
-  "github_run_id": 36645282391,
-  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36645282391",
-  "error_message": "The generation/render/upload job failed. Open github_run_url for the failing step.",
-  "completed_at": "2026-09-29T23:35:40.930192+00:00"
+  "status": "generating",
+  "progress": 5,
+  "github_run_id": 36647863618,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36647863618"
 }
