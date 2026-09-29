@@ -32,14 +32,18 @@ jobs:
 
       - name: Prepare loop video and thumbnail
         run: |
+          set -euo pipefail
           mkdir -p build
-          base64 -d assets/bootstrap/loop_01.b64 > build/loop.mp4
-          base64 -d assets/bootstrap/thumb_compact.b64 > build/thumbnail.jpg
-          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 build/loop.mp4
+          tr -d '\r\n ' < assets/bootstrap/loop_01.b64 | base64 --decode > build/loop.mp4
+          tr -d '\r\n ' < assets/bootstrap/thumb_compact.b64 | base64 --decode > build/thumbnail.jpg
+          test -s build/loop.mp4
+          test -s build/thumbnail.jpg
+          ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 build/loop.mp4
           file build/thumbnail.jpg
 
       - name: Download approved generated track
         run: |
+          set -euo pipefail
           curl -fL \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
@@ -50,10 +54,11 @@ jobs:
           WAV_FILE="$(find build/music -type f -name '*.wav' | head -n 1)"
           test -n "$WAV_FILE"
           cp "$WAV_FILE" build/track.wav
-          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 build/track.wav
+          ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 build/track.wav
 
       - name: Render YouTube video
         run: |
+          set -euo pipefail
           ffmpeg -y \
             -stream_loop -1 -i build/loop.mp4 \
             -i build/track.wav \
@@ -63,6 +68,7 @@ jobs:
             -shortest \
             -movflags +faststart \
             build/the-office-music-first-video.mp4
+          test -s build/the-office-music-first-video.mp4
           ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 build/the-office-music-first-video.mp4
 
       - name: Upload and publish on YouTube
@@ -83,6 +89,11 @@ jobs:
               scopes=scopes,
           )
           youtube = build("youtube", "v3", credentials=creds, cache_discovery=False)
+
+          channel = youtube.channels().list(part="id,snippet", mine=True).execute()["items"][0]
+          if channel["id"] != os.environ["YOUTUBE_CHANNEL_ID"]:
+              raise SystemExit("Authenticated channel does not match YOUTUBE_CHANNEL_ID")
+          print(f"Authenticated channel: {channel['snippet']['title']}")
 
           body = {
               "snippet": {
@@ -128,10 +139,5 @@ jobs:
           thumb = MediaFileUpload("build/thumbnail.jpg", mimetype="image/jpeg", resumable=False)
           youtube.thumbnails().set(videoId=video_id, media_body=thumb).execute()
           print("THUMBNAIL_UPLOAD=OK")
-
-          channel = youtube.channels().list(part="id,snippet", mine=True).execute()["items"][0]
-          if channel["id"] != os.environ["YOUTUBE_CHANNEL_ID"]:
-              raise SystemExit("Authenticated channel changed unexpectedly after upload")
-          print(f"CHANNEL={channel['snippet']['title']}")
           print(f"WATCH_URL=https://www.youtube.com/watch?v={video_id}")
           PY
