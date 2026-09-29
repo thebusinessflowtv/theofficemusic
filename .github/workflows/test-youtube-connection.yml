@@ -1,0 +1,114 @@
+name: Test YouTube Connection
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/test-youtube-connection.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-youtube:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Validate required secrets
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$YOUTUBE_CLIENT_ID" || (echo "Missing YOUTUBE_CLIENT_ID" && exit 1)
+          test -n "$YOUTUBE_CLIENT_SECRET" || (echo "Missing YOUTUBE_CLIENT_SECRET" && exit 1)
+          test -n "$YOUTUBE_REFRESH_TOKEN" || (echo "Missing YOUTUBE_REFRESH_TOKEN" && exit 1)
+          test -n "$YOUTUBE_CHANNEL_ID" || (echo "Missing YOUTUBE_CHANNEL_ID" && exit 1)
+          echo "All required YouTube secrets are present."
+
+      - name: Exchange refresh token and verify channel
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.parse
+          import urllib.request
+          import urllib.error
+
+          def post_form(url, data):
+              body = urllib.parse.urlencode(data).encode("utf-8")
+              req = urllib.request.Request(url, data=body, method="POST")
+              req.add_header("Content-Type", "application/x-www-form-urlencoded")
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      return json.loads(resp.read().decode("utf-8"))
+              except urllib.error.HTTPError as exc:
+                  payload = exc.read().decode("utf-8", errors="replace")
+                  raise SystemExit(f"OAuth token exchange failed: HTTP {exc.code}: {payload}")
+
+          token = post_form(
+              "https://oauth2.googleapis.com/token",
+              {
+                  "client_id": os.environ["YOUTUBE_CLIENT_ID"],
+                  "client_secret": os.environ["YOUTUBE_CLIENT_SECRET"],
+                  "refresh_token": os.environ["YOUTUBE_REFRESH_TOKEN"],
+                  "grant_type": "refresh_token",
+              },
+          )
+          access_token = token.get("access_token")
+          if not access_token:
+              raise SystemExit(f"OAuth response did not include access_token: {token}")
+          print("Refresh token exchange: OK")
+
+          # Verify granted scope without exposing the token.
+          info_url = "https://oauth2.googleapis.com/tokeninfo?" + urllib.parse.urlencode({"access_token": access_token})
+          try:
+              with urllib.request.urlopen(info_url, timeout=30) as resp:
+                  info = json.loads(resp.read().decode("utf-8"))
+          except Exception as exc:
+              raise SystemExit(f"Could not verify OAuth scope: {exc}")
+
+          scopes = set((info.get("scope") or "").split())
+          required_scope = "https://www.googleapis.com/auth/youtube"
+          if required_scope not in scopes:
+              raise SystemExit(f"Required scope missing. Granted scopes: {sorted(scopes)}")
+          print("OAuth scope https://www.googleapis.com/auth/youtube: OK")
+
+          params = urllib.parse.urlencode({"part": "id,snippet", "mine": "true"})
+          req = urllib.request.Request(
+              "https://www.googleapis.com/youtube/v3/channels?" + params,
+              headers={"Authorization": f"Bearer {access_token}"},
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=30) as resp:
+                  channel_data = json.loads(resp.read().decode("utf-8"))
+          except urllib.error.HTTPError as exc:
+              payload = exc.read().decode("utf-8", errors="replace")
+              raise SystemExit(f"YouTube API request failed: HTTP {exc.code}: {payload}")
+
+          items = channel_data.get("items") or []
+          if not items:
+              raise SystemExit("YouTube API returned no channel for mine=true.")
+
+          channel = items[0]
+          channel_id = channel.get("id")
+          channel_title = (channel.get("snippet") or {}).get("title")
+          expected = os.environ["YOUTUBE_CHANNEL_ID"].strip()
+
+          print(f"Authenticated YouTube channel: {channel_title} ({channel_id})")
+          if channel_id != expected:
+              raise SystemExit(
+                  f"CHANNEL MISMATCH: OAuth token belongs to {channel_id}, but YOUTUBE_CHANNEL_ID is {expected}."
+              )
+
+          print("YOUTUBE_CHANNEL_ID match: OK")
+          print("YouTube connection test: SUCCESS")
+          PY
