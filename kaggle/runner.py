@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -9,6 +10,7 @@ from kaggle_secrets import UserSecretsClient
 REPO_URL = "https://github.com/thebusinessflowtv/theofficemusic.git"
 REPO_DIR = Path("/kaggle/working/theofficemusic")
 SA3_DIR = Path("/kaggle/working/stable-audio-3")
+OUTPUT_DIR = Path("/kaggle/working/output")
 TRACK_COUNT = 5
 BATCH_PREFIX = "office"
 
@@ -44,6 +46,12 @@ def read_target_model() -> str:
     if not match:
         raise RuntimeError("Could not determine generation.model from channel_profile.yaml")
     return match.group(1)
+
+
+def cleanup_working_tree() -> None:
+    for path in (SA3_DIR, REPO_DIR):
+        if path.exists():
+            shutil.rmtree(path, ignore_errors=True)
 
 
 def main():
@@ -86,14 +94,15 @@ def main():
         env=env,
     )
 
-    output_dir = Path("/kaggle/working/output")
-    wavs = list(output_dir.glob("*.wav"))
+    wavs = list(OUTPUT_DIR.glob("*.wav"))
     if len(wavs) != TRACK_COUNT:
         raise RuntimeError(
             f"Expected {TRACK_COUNT} WAV files but generated {len(wavs)}."
         )
 
+    cleanup_working_tree()
     print(f"Generation complete. Produced {len(wavs)} WAV files.")
+    print("Cleaned temporary model/repository files before Kaggle output export.")
 
 
 if __name__ == "__main__":
