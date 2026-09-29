@@ -3,16 +3,16 @@ channel:
   concept: "fashion-retail office music calibration test"
 
 generation:
-  model: "medium"
+  model: "small-music"
   tracks_per_batch: 1
-  track_duration_seconds: 360
+  track_duration_seconds: 120
   steps: 8
   cfg_scale: 1.0
   chunked_decode: true
   pure_text_to_audio: true
 
-# Calibration extracted from the uploaded reference set:
-# tempos detected around 117.5–123 BPM, with the strongest common center near 121–123 BPM.
+# Calibration extracted from the uploaded reference set.
+# Temporary Kaggle fallback: Small-Music is used because Kaggle is provisioning Tesla T4 GPUs.
 music_dna:
   instrumental_only: true
   energy: 6
@@ -41,8 +41,8 @@ music_dna:
   bass: "warm rounded deep-house bassline with gentle sidechain movement, present and rhythmic without overpowering the mix"
   melody_density: "medium-low, one memorable minimalist motif with tasteful repetition and gradual variation"
   brightness: "polished and modern, slightly glossy top end, warm low mids"
-  arrangement: "six-minute continuous retail-friendly arrangement with smooth evolution, short restrained breakdowns, no huge drops, no abrupt genre changes, maintain a consistent groove"
-  production: "premium contemporary fashion-store sound, clean stereo image, tight low end, polished commercial mix, sophisticated lounge atmosphere suitable for Zara-style retail, office and home-office listening"
+  arrangement: "two-minute continuous retail-friendly arrangement with smooth evolution, short restrained breakdowns, no huge drops, no abrupt genre changes, maintain a consistent groove"
+  production: "premium contemporary fashion-store sound, clean stereo image, tight low end, polished commercial mix, sophisticated lounge atmosphere suitable for fashion retail, office and home-office listening"
 
 negative_prompt:
   - "poor quality"
