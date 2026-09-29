@@ -36,13 +36,13 @@ jobs:
             "$SUPABASE_URL/rest/v1/rpc/office_music_dispatch_queue" > queue.json
           jq . queue.json
 
-      - name: Dispatch queued jobs and lives
+      - name: Dispatch queued jobs, lives, and stop requests
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mkdir -p control/queue-dispatched
-          dispatched=0
+          mkdir -p control/queue-dispatched control/live-stop
+          changed=0
 
           while IFS= read -r item; do
             id="$(jq -r '.id' <<<"$item")"
@@ -67,7 +67,7 @@ jobs:
               exit 1
             fi
             jq -n --arg id "$id" --arg kind job --arg at "$(date -u +%FT%TZ)" '{id:$id,kind:$kind,dispatched_at:$at}' > "$marker"
-            dispatched=1
+            changed=1
             echo "Dispatched job $id"
           done < <(jq -c '.jobs[]?' queue.json)
 
@@ -94,15 +94,30 @@ jobs:
               exit 1
             fi
             jq -n --arg id "$id" --arg kind live --arg at "$(date -u +%FT%TZ)" '{id:$id,kind:$kind,dispatched_at:$at}' > "$marker"
-            dispatched=1
+            changed=1
             echo "Dispatched live $id"
           done < <(jq -c '.lives[]?' queue.json)
 
-          if [ "$dispatched" = "1" ]; then
+          while IFS= read -r item; do
+            id="$(jq -r '.id' <<<"$item")"
+            stop_file="control/live-stop/${id}.json"
+            if [ -f "$stop_file" ]; then
+              echo "Stop for live $id already queued; skipping."
+              continue
+            fi
+            jq -n \
+              --arg requested_at "$(jq -r '.requested_at // empty' <<<"$item")" \
+              --arg requested_by "$(jq -r '.requested_by // empty' <<<"$item")" \
+              '{stop:true,requested_at:$requested_at,requested_by:$requested_by}' > "$stop_file"
+            changed=1
+            echo "Queued stop for live $id"
+          done < <(jq -c '.stops[]?' queue.json)
+
+          if [ "$changed" = "1" ]; then
             git config user.name github-actions[bot]
             git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-            git add control/queue-dispatched
-            git commit -m "office-music: mark queued dispatches" || true
+            git add control/queue-dispatched control/live-stop
+            git commit -m "office-music: process queued requests" || true
             git pull --rebase origin main
             git push origin HEAD:main
           else
