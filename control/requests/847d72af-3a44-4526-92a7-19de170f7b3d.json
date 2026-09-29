@@ -1,0 +1,16 @@
+{
+  "workflow": "office-music-publish.yml",
+  "inputs": {
+    "job_id": "847d72af-3a44-4526-92a7-19de170f7b3d",
+    "duration_minutes": "60",
+    "track_count": "10",
+    "track_seconds": "360",
+    "publish": "true",
+    "privacy": "public",
+    "title": "",
+    "loop_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-assets-v1/office-music-master-loop.mp4",
+    "thumbnail_url": ""
+  },
+  "requested_at": "2026-09-29T19:18:00Z",
+  "source": "recovery-after-dispatch-permission-fix"
+}
