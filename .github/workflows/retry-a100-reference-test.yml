@@ -1,0 +1,125 @@
+name: Retry Stable Audio Calibration on A100
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/retry-a100-reference-test.yml"
+  workflow_dispatch:
+
+jobs:
+  retry-a100:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Kaggle CLI
+        run: pip install --upgrade kaggle
+
+      - name: Validate Kaggle credentials
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: |
+          test -n "$KAGGLE_USERNAME" || (echo "Missing KAGGLE_USERNAME" && exit 1)
+          test -n "$KAGGLE_API_TOKEN" || (echo "Missing KAGGLE_API_TOKEN" && exit 1)
+
+      - name: Show accelerator quota
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: |
+          kaggle quota --format json || kaggle quota || true
+
+      - name: Prepare A100 kernel
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        run: |
+          set -euo pipefail
+          rm -rf kaggle-a100
+          mkdir -p kaggle-a100
+          cp kaggle/runner_test.py kaggle-a100/runner_test.py
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("kaggle-a100/runner_test.py")
+          src = p.read_text()
+          needle = "def main():\n    hf_token = load_hf_token()\n"
+          replacement = '''def main():\n    # Fail immediately if Kaggle did not actually provision a CUDA GPU.\n    print("GPU preflight: running nvidia-smi")\n    try:\n        run(["nvidia-smi", "--query-gpu=name,compute_cap,memory.total", "--format=csv,noheader"])\n    except Exception as exc:\n        raise RuntimeError("Kaggle did not provision a usable NVIDIA GPU for this run") from exc\n\n    hf_token = load_hf_token()\n'''
+          if needle not in src:
+              raise SystemExit("Could not patch runner preflight")
+          p.write_text(src.replace(needle, replacement, 1))
+          PY
+
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          meta = {
+              "id": f"{os.environ['KAGGLE_USERNAME']}/the-office-music-reference-test-a100",
+              "title": "The Office Music Reference Test A100",
+              "code_file": "runner_test.py",
+              "language": "python",
+              "kernel_type": "script",
+              "is_private": True,
+              "enable_gpu": True,
+              "machine_shape": "NvidiaTeslaA100",
+              "enable_internet": True,
+              "dataset_sources": [f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
+              "competition_sources": [],
+              "kernel_sources": []
+          }
+          Path("kaggle-a100/kernel-metadata.json").write_text(json.dumps(meta, indent=2))
+          PY
+
+      - name: Push A100 kernel
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: |
+          kaggle kernels push -p kaggle-a100 --timeout 7200 --accelerator NvidiaTeslaA100
+
+      - name: Wait for generation
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        run: |
+          set -euo pipefail
+          KERNEL="$KAGGLE_USERNAME/the-office-music-reference-test-a100"
+          for i in $(seq 1 120); do
+            STATUS="$(kaggle kernels status "$KERNEL" 2>&1 || true)"
+            echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi "complete|completed"; then
+              exit 0
+            fi
+            if echo "$STATUS" | grep -Eqi "error|failed|cancel"; then
+              echo "Kaggle generation failed. Kernel logs:"
+              kaggle kernels logs "$KERNEL" || true
+              exit 1
+            fi
+            sleep 60
+          done
+          echo "Timed out waiting for Kaggle"
+          kaggle kernels logs "$KERNEL" || true
+          exit 1
+
+      - name: Download generated audio
+        env:
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        run: |
+          mkdir -p generated-a100
+          kaggle kernels output "$KAGGLE_USERNAME/the-office-music-reference-test-a100" -p generated-a100
+
+      - name: Upload audio artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: the-office-music-a100-test-${{ github.run_number }}
+          path: generated-a100/
+          retention-days: 14
