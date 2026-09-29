@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,12 +18,36 @@ def run(cmd, cwd=None, env=None):
     subprocess.run(cmd, cwd=cwd, env=env, check=True)
 
 
-def main():
-    secrets = UserSecretsClient()
-    hf_token = secrets.get_secret("HF_TOKEN")
-    if not hf_token:
-        raise RuntimeError("Missing Kaggle secret: HF_TOKEN")
+def load_hf_token() -> str:
+    try:
+        token = UserSecretsClient().get_secret("HF_TOKEN")
+        if token:
+            return token.strip()
+    except Exception:
+        pass
 
+    input_root = Path("/kaggle/input")
+    if input_root.exists():
+        for candidate in input_root.rglob("hf_token.txt"):
+            token = candidate.read_text(encoding="utf-8").strip()
+            if token:
+                print("HF token loaded from private Kaggle input.")
+                return token
+
+    raise RuntimeError("HF_TOKEN is unavailable to the Kaggle generation job.")
+
+
+def read_target_model() -> str:
+    profile = REPO_DIR / "config" / "channel_profile.yaml"
+    text = profile.read_text(encoding="utf-8")
+    match = re.search(r"(?m)^\s*model:\s*[\"']?([^\"'\s#]+)", text)
+    if not match:
+        raise RuntimeError("Could not determine generation.model from channel_profile.yaml")
+    return match.group(1)
+
+
+def main():
+    hf_token = load_hf_token()
     os.environ["HF_TOKEN"] = hf_token
     os.environ["HUGGING_FACE_HUB_TOKEN"] = hf_token
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -32,11 +57,17 @@ def main():
     else:
         run(["git", "clone", "--depth", "1", REPO_URL, str(REPO_DIR)])
 
+    target_model = read_target_model()
+    os.environ["SA3_TARGET_MODEL"] = target_model
+    print(f"Configured Stable Audio target model: {target_model}")
+
     run(["bash", "scripts/bootstrap_kaggle.sh"], cwd=REPO_DIR)
 
     python_bin = SA3_DIR / ".venv" / "bin" / "python"
-    batch_name = BATCH_PREFIX + "-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    if not python_bin.exists():
+        raise RuntimeError(f"Stable Audio Python runtime not found at {python_bin}")
 
+    batch_name = BATCH_PREFIX + "-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     env = os.environ.copy()
     env["PYTHONPATH"] = str(REPO_DIR / "src")
 
@@ -55,7 +86,14 @@ def main():
         env=env,
     )
 
-    print("Generation complete. Kaggle output directory: /kaggle/working/output")
+    output_dir = Path("/kaggle/working/output")
+    wavs = list(output_dir.glob("*.wav"))
+    if len(wavs) != TRACK_COUNT:
+        raise RuntimeError(
+            f"Expected {TRACK_COUNT} WAV files but generated {len(wavs)}."
+        )
+
+    print(f"Generation complete. Produced {len(wavs)} WAV files.")
 
 
 if __name__ == "__main__":
