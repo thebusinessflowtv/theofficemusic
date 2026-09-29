@@ -6,6 +6,18 @@ def _join(values):
     return ", ".join(str(v).strip() for v in values if str(v).strip())
 
 
+TITLE_LEFT = [
+    "Midnight", "Velvet", "After Hours", "Glass", "Soft Focus", "City", "Quiet",
+    "Neon", "Morning", "Blue Hour", "Lobby", "Downtown", "Golden", "Late Check-In",
+    "Window Seat", "Executive", "Studio", "Northbound", "Sunday", "Silver"
+]
+TITLE_RIGHT = [
+    "Avenue", "Lobby", "Elevator", "Desk", "Transit", "Suite", "Coffee", "Windows",
+    "Routine", "Boulevard", "Workspace", "Escalator", "District", "Notes", "Hours",
+    "Floor", "Hallway", "Skyline", "Meeting", "Afterglow"
+]
+
+
 def build_prompt(profile: dict, track_index: int, rng: random.Random) -> tuple[str, str, dict]:
     dna = deepcopy(profile["music_dna"])
     generation = profile["generation"]
@@ -22,6 +34,8 @@ def build_prompt(profile: dict, track_index: int, rng: random.Random) -> tuple[s
     selected_mood = mood[:]
     rng.shuffle(selected_mood)
     selected_mood = selected_mood[: min(3, len(selected_mood))]
+
+    title = f"{rng.choice(TITLE_LEFT)} {rng.choice(TITLE_RIGHT)}"
 
     prompt = (
         "TrackType: Music, VocalType: Instrumental. "
@@ -43,6 +57,7 @@ def build_prompt(profile: dict, track_index: int, rng: random.Random) -> tuple[s
 
     metadata = {
         "track_index": track_index,
+        "title": title,
         "style": style,
         "bpm": bpm,
         "instruments": selected,
