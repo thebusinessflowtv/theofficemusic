@@ -21,13 +21,14 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p=Path('.github/workflows/office-music-publish.yml')
           s=p.read_text(encoding='utf-8')
-          old='''      - name: Validate inputs and secrets\n        env:\n          JOB_ID: ${{ inputs.job_id }}\n          DURATION_MINUTES: ${{ inputs.duration_minutes }}\n          TRACK_COUNT: ${{ inputs.track_count }}\n          TRACK_SECONDS: ${{ inputs.track_seconds }}\n        run: |\n'''
-          new='''      - name: Validate inputs and secrets\n        run: |\n'''
-          if old not in s:
-              raise SystemExit('Expected duplicate env block not found; nothing changed')
-          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          pattern=r'(      - name: Validate inputs and secrets\n)(        env:\n(?:          [A-Z_]+: .*\n){4})(        run: \|\n)'
+          fixed,n=re.subn(pattern,r'\1\3',s,count=1)
+          if n!=1:
+              raise SystemExit(f'Expected one duplicate env block; repaired {n}')
+          p.write_text(fixed,encoding='utf-8')
           PY
       - name: Commit repair
         run: |
