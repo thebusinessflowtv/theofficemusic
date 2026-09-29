@@ -1,0 +1,144 @@
+name: Sync YouTube Playlists
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/sync-youtube-playlists.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-youtube-playlists
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch playlists from The Office Music
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime, json, os, pathlib, urllib.parse, urllib.request, urllib.error
+
+          def post_form(url, data):
+              req = urllib.request.Request(
+                  url,
+                  data=urllib.parse.urlencode(data).encode('utf-8'),
+                  method='POST',
+                  headers={'Content-Type':'application/x-www-form-urlencoded'},
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      return json.load(r)
+              except urllib.error.HTTPError as e:
+                  raise SystemExit(f'OAuth failed HTTP {e.code}: {e.read().decode("utf-8", "replace")}')
+
+          token = post_form('https://oauth2.googleapis.com/token', {
+              'client_id': os.environ['YOUTUBE_CLIENT_ID'],
+              'client_secret': os.environ['YOUTUBE_CLIENT_SECRET'],
+              'refresh_token': os.environ['YOUTUBE_REFRESH_TOKEN'],
+              'grant_type': 'refresh_token',
+          })
+          access = token.get('access_token')
+          if not access:
+              raise SystemExit('OAuth response missing access_token')
+
+          def yt(resource, params):
+              q = urllib.parse.urlencode(params)
+              req = urllib.request.Request(
+                  f'https://www.googleapis.com/youtube/v3/{resource}?{q}',
+                  headers={'Authorization': f'Bearer {access}'},
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      return json.load(r)
+              except urllib.error.HTTPError as e:
+                  raise SystemExit(f'YouTube {resource} failed HTTP {e.code}: {e.read().decode("utf-8", "replace")}')
+
+          playlists=[]
+          page=''
+          while True:
+              params={'part':'id,snippet,contentDetails,status','mine':'true','maxResults':'50'}
+              if page: params['pageToken']=page
+              data=yt('playlists', params)
+              for p in data.get('items',[]):
+                  pid=p.get('id')
+                  sn=p.get('snippet') or {}
+                  cd=p.get('contentDetails') or {}
+                  st=p.get('status') or {}
+                  items=[]
+                  ipage=''
+                  while True:
+                      ip={'part':'snippet,contentDetails,status','playlistId':pid,'maxResults':'50'}
+                      if ipage: ip['pageToken']=ipage
+                      idata=yt('playlistItems', ip)
+                      for item in idata.get('items',[]):
+                          isn=item.get('snippet') or {}
+                          icd=item.get('contentDetails') or {}
+                          video_id=icd.get('videoId') or ((isn.get('resourceId') or {}).get('videoId'))
+                          thumbs=isn.get('thumbnails') or {}
+                          thumb=(thumbs.get('medium') or thumbs.get('high') or thumbs.get('default') or {}).get('url')
+                          items.append({
+                              'playlist_item_id': item.get('id'),
+                              'video_id': video_id,
+                              'title': isn.get('title') or '',
+                              'position': int(isn.get('position') or 0),
+                              'thumbnail_url': thumb or '',
+                              'video_owner_channel_id': isn.get('videoOwnerChannelId') or '',
+                              'privacy_status': (item.get('status') or {}).get('privacyStatus') or '',
+                          })
+                      ipage=idata.get('nextPageToken') or ''
+                      if not ipage: break
+                  items.sort(key=lambda x: x['position'])
+                  playlists.append({
+                      'id': pid,
+                      'title': sn.get('title') or '',
+                      'description': sn.get('description') or '',
+                      'thumbnail_url': (((sn.get('thumbnails') or {}).get('medium') or (sn.get('thumbnails') or {}).get('high') or (sn.get('thumbnails') or {}).get('default') or {}).get('url') or ''),
+                      'item_count': int(cd.get('itemCount') or len(items)),
+                      'privacy_status': st.get('privacyStatus') or '',
+                      'items': items,
+                  })
+              page=data.get('nextPageToken') or ''
+              if not page: break
+
+          playlists.sort(key=lambda x: x['title'].lower())
+          payload={
+              'channel_id': os.environ['YOUTUBE_CHANNEL_ID'],
+              'generated_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'playlist_count': len(playlists),
+              'playlists': playlists,
+          }
+          out=pathlib.Path('control/youtube-playlists.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
+          print(f"Synced {len(playlists)} YouTube playlists")
+          PY
+
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/youtube-playlists.json
+          git diff --cached --quiet && { echo "Playlist snapshot unchanged"; exit 0; }
+          git commit -m "office-music: sync YouTube playlists"
+          git pull --rebase origin main
+          git push origin HEAD:main
