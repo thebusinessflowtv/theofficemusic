@@ -6,10 +6,13 @@ on:
       - main
     paths:
       - "config/reference_test.yaml"
+      - "kaggle/runner_test.py"
+      - ".github/workflows/generate-reference-test.yml"
   workflow_dispatch:
 
 env:
   KERNEL_SLUG: the-office-music-reference-test
+  SECRET_DATASET_SLUG: the-office-music-secrets
 
 jobs:
   generate-test:
@@ -32,9 +35,40 @@ jobs:
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           test -n "$KAGGLE_USERNAME" || (echo "Missing KAGGLE_USERNAME secret" && exit 1)
           test -n "$KAGGLE_API_TOKEN" || (echo "Missing KAGGLE_API_TOKEN secret" && exit 1)
+          test -n "$HF_TOKEN" || (echo "Missing HF_TOKEN secret" && exit 1)
+
+      - name: Prepare private HF token dataset
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          set -euo pipefail
+          SECRET_DIR="$(mktemp -d)"
+          trap 'rm -rf "$SECRET_DIR"' EXIT
+          printf '%s' "$HF_TOKEN" > "$SECRET_DIR/hf_token.txt"
+          chmod 600 "$SECRET_DIR/hf_token.txt"
+
+          python - "$SECRET_DIR" <<'PY'
+          import json, os, pathlib, sys
+          folder = pathlib.Path(sys.argv[1])
+          metadata = {
+              "title": "The Office Music Secrets",
+              "id": f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"
+          }
+          (folder / "dataset-metadata.json").write_text(json.dumps(metadata, indent=2))
+          PY
+
+          DATASET="$KAGGLE_USERNAME/$SECRET_DATASET_SLUG"
+          if kaggle datasets status "$DATASET" >/dev/null 2>&1; then
+            kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token for CI" -q
+          else
+            kaggle datasets create -p "$SECRET_DIR" -q
+          fi
 
       - name: Prepare Kaggle kernel
         env:
@@ -52,7 +86,7 @@ jobs:
               "is_private": True,
               "enable_gpu": True,
               "enable_internet": True,
-              "dataset_sources": [],
+              "dataset_sources": [f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
               "competition_sources": [],
               "kernel_sources": []
           }
@@ -70,6 +104,7 @@ jobs:
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
         run: |
+          set -euo pipefail
           KERNEL="$KAGGLE_USERNAME/$KERNEL_SLUG"
           for i in $(seq 1 120); do
             STATUS="$(kaggle kernels status "$KERNEL" 2>&1 || true)"
@@ -78,12 +113,14 @@ jobs:
               exit 0
             fi
             if echo "$STATUS" | grep -Eqi "error|failed|cancel"; then
-              echo "Kaggle generation failed"
+              echo "Kaggle generation failed. Streaming kernel logs:"
+              kaggle kernels logs "$KERNEL" || true
               exit 1
             fi
             sleep 60
           done
-          echo "Timed out waiting for Kaggle"
+          echo "Timed out waiting for Kaggle. Streaming kernel logs:"
+          kaggle kernels logs "$KERNEL" || true
           exit 1
 
       - name: Download generated audio
