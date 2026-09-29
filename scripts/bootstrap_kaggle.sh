@@ -16,18 +16,34 @@ cd "$SA3_DIR"
 
 # The official repository pins Python 3.10, torch 2.7.1 and CUDA 12.6.
 uv sync
-uv pip install pyyaml ninja
+
+# IMPORTANT: Kaggle's system Python is currently 3.12, while the Stable Audio
+# project creates its own Python 3.10 virtualenv. Force every extra dependency
+# into that venv so the cp310 Flash Attention wheel is installed in the correct
+# interpreter instead of /usr Python 3.12.
+VENV_PY="$SA3_DIR/.venv/bin/python"
+if [ ! -x "$VENV_PY" ]; then
+  echo "Stable Audio virtualenv Python not found at $VENV_PY"
+  exit 1
+fi
+
+uv pip install --python "$VENV_PY" pyyaml ninja
 
 # Stable Audio 3 Medium requires Flash Attention 2. Use the prebuilt wheel
-# documented by Stability AI for cu126 + torch 2.7 + Python 3.10.
-uv pip install "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.7.16/flash_attn-2.6.3+cu126torch2.7-cp310-cp310-linux_x86_64.whl"
-uv sync --inexact
+# for CUDA 12.6 + torch 2.7 + Python 3.10.
+uv pip install --python "$VENV_PY" \
+  "https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.7.16/flash_attn-2.6.3+cu126torch2.7-cp310-cp310-linux_x86_64.whl"
 
-uv run python - <<'PY'
+# Do not invoke `uv run` here because it may re-sync the environment and remove
+# the explicitly installed Flash Attention wheel. Execute the venv interpreter
+# directly instead.
+"$VENV_PY" - <<'PY'
+import sys
 import torch
 import flash_attn
 from flash_attn import flash_attn_func
 
+print("Python:", sys.version)
 if not torch.cuda.is_available():
     raise SystemExit("CUDA GPU not available")
 
