@@ -88,12 +88,14 @@ jobs:
               "kernel_type": "script",
               "is_private": True,
               "enable_gpu": True,
+              "machine_shape": "NvidiaL4",
               "enable_internet": True,
               "dataset_sources": [f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
               "competition_sources": [],
               "kernel_sources": []
           }
           (folder / "kernel-metadata.json").write_text(json.dumps(metadata, indent=2))
+          print((folder / "kernel-metadata.json").read_text())
           PY
 
       - name: Push and run on Kaggle L4
