@@ -21,9 +21,11 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           p = Path('.github/workflows/office-music-publish.yml')
           s = p.read_text(encoding='utf-8')
+          E = lambda x: '$' + '{{ ' + x + ' }}'
 
           def once(old, new, label):
               global s
@@ -32,67 +34,176 @@ jobs:
               s = s.replace(old, new, 1)
 
           once(
-          '''      thumbnail_url:\n        description: Public thumbnail URL\n        required: false\n        default: ""\n        type: string\n''',
-          '''      thumbnail_url:\n        description: Public thumbnail URL\n        required: false\n        default: ""\n        type: string\n      visual_mode:\n        description: Visual mode: video or image\n        required: false\n        default: video\n        type: string\n      visual_image_url:\n        description: Public fixed-image URL when visual_mode=image\n        required: false\n        default: ""\n        type: string\n''', 'workflow inputs')
+              '      thumbnail_url:\n        description: Public thumbnail URL\n        required: false\n        default: ""\n        type: string\n',
+              '      thumbnail_url:\n        description: Public thumbnail URL\n        required: false\n        default: ""\n        type: string\n'
+              '      visual_mode:\n        description: Visual mode: video or image\n        required: false\n        default: video\n        type: string\n'
+              '      visual_image_url:\n        description: Public fixed-image URL when visual_mode=image\n        required: false\n        default: ""\n        type: string\n',
+              'workflow inputs')
 
           once(
-          '''          INPUT_PUBLISH: ${{ inputs.publish }}\n''',
-          '''          INPUT_PUBLISH: ${{ inputs.publish }}\n          VISUAL_MODE: ${{ inputs.visual_mode }}\n          VISUAL_IMAGE_URL: ${{ inputs.visual_image_url }}\n''', 'validation env')
+              '          INPUT_PUBLISH: ' + E('inputs.publish') + '\n',
+              '          INPUT_PUBLISH: ' + E('inputs.publish') + '\n'
+              '          VISUAL_MODE: ' + E('inputs.visual_mode') + '\n'
+              '          VISUAL_IMAGE_URL: ' + E('inputs.visual_image_url') + '\n',
+              'validation env')
 
           once(
-          '''          if os.environ.get('INPUT_PUBLISH', 'true') == 'true':\n              for key in ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN','YOUTUBE_CHANNEL_ID']:\n                  if not os.environ.get(key):\n                      raise SystemExit(f'Missing {key}')\n          print(f'job={job} duration={duration}m tracks={tracks} track_seconds={seconds}')\n''',
-          '''          visual_mode = os.environ.get('VISUAL_MODE', 'video').strip().lower() or 'video'\n          if visual_mode not in {'video', 'image'}:\n              raise SystemExit('visual_mode must be video or image')\n          if visual_mode == 'image' and not os.environ.get('VISUAL_IMAGE_URL', '').strip():\n              raise SystemExit('visual_image_url is required when visual_mode=image')\n          if os.environ.get('INPUT_PUBLISH', 'true') == 'true':\n              for key in ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN','YOUTUBE_CHANNEL_ID']:\n                  if not os.environ.get(key):\n                      raise SystemExit(f'Missing {key}')\n          print(f'job={job} duration={duration}m tracks={tracks} track_seconds={seconds} visual={visual_mode}')\n''', 'validation logic')
+              "          if os.environ.get('INPUT_PUBLISH', 'true') == 'true':\n"
+              "              for key in ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN','YOUTUBE_CHANNEL_ID']:\n"
+              "                  if not os.environ.get(key):\n"
+              "                      raise SystemExit(f'Missing {key}')\n"
+              "          print(f'job={job} duration={duration}m tracks={tracks} track_seconds={seconds}')\n",
+              "          visual_mode = os.environ.get('VISUAL_MODE', 'video').strip().lower() or 'video'\n"
+              "          if visual_mode not in {'video', 'image'}:\n"
+              "              raise SystemExit('visual_mode must be video or image')\n"
+              "          if visual_mode == 'image' and not os.environ.get('VISUAL_IMAGE_URL', '').strip():\n"
+              "              raise SystemExit('visual_image_url is required when visual_mode=image')\n"
+              "          if os.environ.get('INPUT_PUBLISH', 'true') == 'true':\n"
+              "              for key in ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN','YOUTUBE_CHANNEL_ID']:\n"
+              "                  if not os.environ.get(key):\n"
+              "                      raise SystemExit(f'Missing {key}')\n"
+              "          print(f'job={job} duration={duration}m tracks={tracks} track_seconds={seconds} visual={visual_mode}')\n",
+              'validation logic')
+
+          medium_env = (
+              '        env:\n'
+              '          TRACK_COUNT: ' + E('inputs.track_count') + '\n'
+              '          TRACK_SECONDS: ' + E('inputs.track_seconds') + '\n'
+              '        run: |\n')
+          once(medium_env, medium_env.replace('        run: |\n', '          JOB_ID: ' + E('inputs.job_id') + '\n        run: |\n'), 'medium env')
 
           once(
-          '''        env:\n          TRACK_COUNT: ${{ inputs.track_count }}\n          TRACK_SECONDS: ${{ inputs.track_seconds }}\n        run: |\n''',
-          '''        env:\n          TRACK_COUNT: ${{ inputs.track_count }}\n          TRACK_SECONDS: ${{ inputs.track_seconds }}\n          JOB_ID: ${{ inputs.job_id }}\n        run: |\n''', 'medium env')
+              "          text = re.sub(r'TRACK_DURATION_SECONDS = \\d+', f\"TRACK_DURATION_SECONDS = {int(os.environ['TRACK_SECONDS'])}\", text)\n"
+              "          p.write_text(text, encoding='utf-8')\n",
+              "          text = re.sub(r'TRACK_DURATION_SECONDS = \\d+', f\"TRACK_DURATION_SECONDS = {int(os.environ['TRACK_SECONDS'])}\", text)\n"
+              "          text = re.sub(r'REQUEST_ID = \\\"[^\\\"]*\\\"', f'REQUEST_ID = \\\"{os.environ[\"JOB_ID\"]}\\\"', text, count=1)\n"
+              "          p.write_text(text, encoding='utf-8')\n",
+              'medium request id injection')
 
           once(
-          '''          text = re.sub(r'TRACK_DURATION_SECONDS = \\d+', f"TRACK_DURATION_SECONDS = {int(os.environ['TRACK_SECONDS'])}", text)\n          p.write_text(text, encoding='utf-8')\n''',
-          '''          text = re.sub(r'TRACK_DURATION_SECONDS = \\d+', f"TRACK_DURATION_SECONDS = {int(os.environ['TRACK_SECONDS'])}", text)\n          text = re.sub(r'REQUEST_ID = "[^"]*"', f'REQUEST_ID = "{os.environ["JOB_ID"]}"', text, count=1)\n          p.write_text(text, encoding='utf-8')\n''', 'medium request id injection')
+              '          kaggle kernels push -p "$TMP" --timeout 7200\n          KERNEL="$KAGGLE_USERNAME/$KERNEL_SLUG"\n',
+              '          kaggle kernels push -p "$TMP" --timeout 7200\n          sleep 45\n          KERNEL="$KAGGLE_USERNAME/$KERNEL_SLUG"\n',
+              'medium delay')
 
           once(
-          '''          kaggle kernels push -p "$TMP" --timeout 7200\n          KERNEL="$KAGGLE_USERNAME/$KERNEL_SLUG"\n''',
-          '''          kaggle kernels push -p "$TMP" --timeout 7200\n          # A fixed Kaggle kernel slug can briefly report the previous version as complete.\n          # Give the newly pushed version time to become the active version before polling.\n          sleep 45\n          KERNEL="$KAGGLE_USERNAME/$KERNEL_SLUG"\n''', 'medium stale-version guard delay')
+              '          kaggle kernels output "$KERNEL" -p generated-medium\n          test -n "$(find generated-medium -type f -name \'*.wav\' -print -quit)"\n',
+              '          kaggle kernels output "$KERNEL" -p generated-medium\n          test -n "$(find generated-medium -type f -name \'*.wav\' -print -quit)"\n'
+              '          MARKER="$(find generated-medium -type f -name \'request_id.txt\' -print -quit)"\n'
+              '          test -n "$MARKER"\n'
+              '          test "$(tr -d \'\\r\\n \' < "$MARKER")" = "$JOB_ID" || { echo "::error::Stale Kaggle Medium output rejected"; exit 1; }\n',
+              'medium marker')
+
+          small_env = (
+              '        env:\n'
+              '          DURATION_MINUTES: ' + E('inputs.duration_minutes') + '\n'
+              '        run: |\n'
+              '          set -euo pipefail\n'
+              '          TMP="$(mktemp -d)"\n'
+              '          cp kaggle/runner_small.py "$TMP/runner.py"\n')
+          once(small_env, small_env.replace('        run: |\n', '          JOB_ID: ' + E('inputs.job_id') + '\n        run: |\n'), 'small env')
 
           once(
-          '''          kaggle kernels output "$KERNEL" -p generated-medium\n          test -n "$(find generated-medium -type f -name '*.wav' -print -quit)"\n''',
-          '''          kaggle kernels output "$KERNEL" -p generated-medium\n          test -n "$(find generated-medium -type f -name '*.wav' -print -quit)"\n          MARKER="$(find generated-medium -type f -name 'request_id.txt' -print -quit)"\n          test -n "$MARKER"\n          test "$(tr -d '\\r\\n ' < "$MARKER")" = "$JOB_ID" || { echo "::error::Stale Kaggle Medium output rejected"; exit 1; }\n''', 'medium request marker verification')
+              "          text = re.sub(r'TRACK_COUNT = \\d+', f\"TRACK_COUNT = {int(os.environ['SMALL_COUNT'])}\", text)\n"
+              "          p.write_text(text, encoding='utf-8')\n",
+              "          text = re.sub(r'TRACK_COUNT = \\d+', f\"TRACK_COUNT = {int(os.environ['SMALL_COUNT'])}\", text)\n"
+              "          text = re.sub(r'REQUEST_ID = \\\"[^\\\"]*\\\"', f'REQUEST_ID = \\\"{os.environ[\"JOB_ID\"]}\\\"', text, count=1)\n"
+              "          p.write_text(text, encoding='utf-8')\n",
+              'small request id injection')
 
           once(
-          '''        env:\n          DURATION_MINUTES: ${{ inputs.duration_minutes }}\n        run: |\n          set -euo pipefail\n          TMP="$(mktemp -d)"\n          cp kaggle/runner_small.py "$TMP/runner.py"\n''',
-          '''        env:\n          DURATION_MINUTES: ${{ inputs.duration_minutes }}\n          JOB_ID: ${{ inputs.job_id }}\n        run: |\n          set -euo pipefail\n          TMP="$(mktemp -d)"\n          cp kaggle/runner_small.py "$TMP/runner.py"\n''', 'small env')
+              '          kaggle kernels push -p "$TMP" --timeout 7200\n          KERNEL="$KAGGLE_USERNAME/$SMALL_KERNEL_SLUG"\n',
+              '          kaggle kernels push -p "$TMP" --timeout 7200\n          sleep 45\n          KERNEL="$KAGGLE_USERNAME/$SMALL_KERNEL_SLUG"\n',
+              'small delay')
 
           once(
-          '''          text = re.sub(r'TRACK_COUNT = \\d+', f"TRACK_COUNT = {int(os.environ['SMALL_COUNT'])}", text)\n          p.write_text(text, encoding='utf-8')\n''',
-          '''          text = re.sub(r'TRACK_COUNT = \\d+', f"TRACK_COUNT = {int(os.environ['SMALL_COUNT'])}", text)\n          text = re.sub(r'REQUEST_ID = "[^"]*"', f'REQUEST_ID = "{os.environ["JOB_ID"]}"', text, count=1)\n          p.write_text(text, encoding='utf-8')\n''', 'small request id injection')
+              '          kaggle kernels output "$KERNEL" -p generated-small\n          test -n "$(find generated-small -type f -name \'*.wav\' -print -quit)"\n',
+              '          kaggle kernels output "$KERNEL" -p generated-small\n          test -n "$(find generated-small -type f -name \'*.wav\' -print -quit)"\n'
+              '          MARKER="$(find generated-small -type f -name \'request_id.txt\' -print -quit)"\n'
+              '          test -n "$MARKER"\n'
+              '          test "$(tr -d \'\\r\\n \' < "$MARKER")" = "$JOB_ID" || { echo "::error::Stale Kaggle Small output rejected"; exit 1; }\n',
+              'small marker')
 
-          once(
-          '''          kaggle kernels push -p "$TMP" --timeout 7200\n          KERNEL="$KAGGLE_USERNAME/$SMALL_KERNEL_SLUG"\n''',
-          '''          kaggle kernels push -p "$TMP" --timeout 7200\n          sleep 45\n          KERNEL="$KAGGLE_USERNAME/$SMALL_KERNEL_SLUG"\n''', 'small stale-version guard delay')
-
-          once(
-          '''          kaggle kernels output "$KERNEL" -p generated-small\n          test -n "$(find generated-small -type f -name '*.wav' -print -quit)"\n''',
-          '''          kaggle kernels output "$KERNEL" -p generated-small\n          test -n "$(find generated-small -type f -name '*.wav' -print -quit)"\n          MARKER="$(find generated-small -type f -name 'request_id.txt' -print -quit)"\n          test -n "$MARKER"\n          test "$(tr -d '\\r\\n ' < "$MARKER")" = "$JOB_ID" || { echo "::error::Stale Kaggle Small output rejected"; exit 1; }\n''', 'small request marker verification')
-
-          old_select = '''          else\n            echo "::warning::Kaggle generation unavailable. Using approved generated calibration master as a last-resort continuity fallback."\n            curl --retry 5 --retry-all-errors -fL \\\n              -H "Authorization: Bearer $GH_TOKEN" \\\n              -H "Accept: application/vnd.github+json" \\\n              -H "X-GitHub-Api-Version: 2022-11-28" \\\n              "https://api.github.com/repos/thebusinessflowtv/theofficemusic/actions/artifacts/11009873245/zip" \\\n              -o build/fallback.zip\n            unzip -o build/fallback.zip -d build/fallback\n            find build/fallback -type f -name '*.wav' -exec cp {} generated/ \\;\n            echo approved-calibration-master-fallback > build/generation-mode.txt\n          fi\n'''
-          new_select = '''          else\n            echo "::error::Fresh generation failed in both Medium and Small-Music. Historical audio reuse is forbidden."\n            exit 1\n          fi\n'''
-          once(old_select, new_select, 'remove historical audio fallback')
+          old_select = '''          else
+            echo "::warning::Kaggle generation unavailable. Using approved generated calibration master as a last-resort continuity fallback."
+            curl --retry 5 --retry-all-errors -fL \\
+              -H "Authorization: Bearer $GH_TOKEN" \\
+              -H "Accept: application/vnd.github+json" \\
+              -H "X-GitHub-Api-Version: 2022-11-28" \\
+              "https://api.github.com/repos/thebusinessflowtv/theofficemusic/actions/artifacts/11009873245/zip" \\
+              -o build/fallback.zip
+            unzip -o build/fallback.zip -d build/fallback
+            find build/fallback -type f -name '*.wav' -exec cp {} generated/ \;
+            echo approved-calibration-master-fallback > build/generation-mode.txt
+          fi
+'''
+          once(old_select, '''          else
+            echo "::error::Fresh generation failed in both Medium and Small-Music. Historical audio reuse is forbidden."
+            exit 1
+          fi
+''', 'historical fallback')
 
           start = s.index('      - name: Build exact-duration mix\n')
           end = s.index('      - name: Prepare resilient visual and thumbnail\n', start)
-          build_step = '''      - name: Build exact-duration mix with freshness guard\n        env:\n          DURATION_MINUTES: ${{ inputs.duration_minutes }}\n          GH_TOKEN: ${{ github.token }}\n        run: |\n          set -euo pipefail\n          TARGET_SECONDS=$((DURATION_MINUTES * 60))\n          python scripts/validate_fresh_audio.py \\\n            --generated-dir generated \\\n            --target-seconds "$TARGET_SECONDS" \\\n            --concat-file build/concat.txt \\\n            --manifest-file build/tracks.json\n          ffmpeg -hide_banner -loglevel warning -stats -y \\\n            -f concat -safe 0 -i build/concat.txt \\\n            -t "$TARGET_SECONDS" -vn \\\n            -c:a aac -b:a 320k -ar 48000 build/mix.m4a\n          test -s build/mix.m4a\n\n'''
+          build_step = (
+              '      - name: Build exact-duration mix with freshness guard\n'
+              '        env:\n'
+              '          DURATION_MINUTES: ' + E('inputs.duration_minutes') + '\n'
+              '          GH_TOKEN: ' + E('github.token') + '\n'
+              '        run: |\n'
+              '          set -euo pipefail\n'
+              '          TARGET_SECONDS=$((DURATION_MINUTES * 60))\n'
+              '          python scripts/validate_fresh_audio.py \\\n'
+              '            --generated-dir generated \\\n'
+              '            --target-seconds "$TARGET_SECONDS" \\\n'
+              '            --concat-file build/concat.txt \\\n'
+              '            --manifest-file build/tracks.json\n'
+              '          ffmpeg -hide_banner -loglevel warning -stats -y \\\n'
+              '            -f concat -safe 0 -i build/concat.txt \\\n'
+              '            -t "$TARGET_SECONDS" -vn \\\n'
+              '            -c:a aac -b:a 320k -ar 48000 build/mix.m4a\n'
+              '          test -s build/mix.m4a\n\n')
           s = s[:start] + build_step + s[end:]
 
           start = s.index('      - name: Prepare resilient visual and thumbnail\n')
           end = s.index('      - name: Encode short 4K visual master once\n', start)
-          visual_step = '''      - name: Prepare selected visual and thumbnail\n        env:\n          LOOP_URL: ${{ inputs.loop_url }}\n          THUMBNAIL_URL: ${{ inputs.thumbnail_url }}\n          VISUAL_MODE: ${{ inputs.visual_mode }}\n          VISUAL_IMAGE_URL: ${{ inputs.visual_image_url }}\n        run: |\n          set -euo pipefail\n          mkdir -p build\n          if [ -n "$THUMBNAIL_URL" ]; then\n            curl --retry 5 --retry-all-errors -fL "$THUMBNAIL_URL" -o build/thumbnail.jpg || true\n          fi\n          if ! ffmpeg -hide_banner -v error -i build/thumbnail.jpg -frames:v 1 -f null - >/dev/null 2>&1; then\n            tr -d '\\r\\n ' < assets/bootstrap/thumb_compact.b64 | base64 --decode > build/thumbnail.jpg\n          fi\n          ffmpeg -hide_banner -v error -i build/thumbnail.jpg -frames:v 1 -f null - >/dev/null\n\n          if [ "$VISUAL_MODE" = "image" ]; then\n            test -n "$VISUAL_IMAGE_URL" || { echo "::error::Fixed-image mode requires visual_image_url"; exit 1; }\n            curl --retry 5 --retry-all-errors -fL "$VISUAL_IMAGE_URL" -o build/fixed-visual.img\n            ffmpeg -hide_banner -v error -i build/fixed-visual.img -frames:v 1 -f null - >/dev/null 2>&1 || { echo "::error::Selected fixed image is invalid"; exit 1; }\n            ffmpeg -hide_banner -loglevel warning -y \\\n              -loop 1 -i build/fixed-visual.img -t 12 \\\n              -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p" \\\n              -an -c:v libx264 -preset veryfast -crf 18 -movflags +faststart build/loop-source.mp4\n            echo image > build/visual-mode.txt\n          else\n            test -n "$LOOP_URL" || { echo "::error::Video mode requires the GitHub master loop URL"; exit 1; }\n            curl --retry 5 --retry-all-errors -fL "$LOOP_URL" -o build/loop-source.mp4\n            ffmpeg -hide_banner -v error -i build/loop-source.mp4 -map 0:v:0 -f null - >/dev/null 2>&1 || { echo "::error::GitHub master loop is invalid"; exit 1; }\n            echo video > build/visual-mode.txt\n          fi\n          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration,size -of json build/loop-source.mp4\n\n'''
+          visual_step = (
+              '      - name: Prepare selected visual and thumbnail\n'
+              '        env:\n'
+              '          LOOP_URL: ' + E('inputs.loop_url') + '\n'
+              '          THUMBNAIL_URL: ' + E('inputs.thumbnail_url') + '\n'
+              '          VISUAL_MODE: ' + E('inputs.visual_mode') + '\n'
+              '          VISUAL_IMAGE_URL: ' + E('inputs.visual_image_url') + '\n'
+              '        run: |\n'
+              '          set -euo pipefail\n'
+              '          mkdir -p build\n'
+              '          if [ -n "$THUMBNAIL_URL" ]; then\n'
+              '            curl --retry 5 --retry-all-errors -fL "$THUMBNAIL_URL" -o build/thumbnail.jpg || true\n'
+              '          fi\n'
+              '          if ! ffmpeg -hide_banner -v error -i build/thumbnail.jpg -frames:v 1 -f null - >/dev/null 2>&1; then\n'
+              "            tr -d '\\r\\n ' < assets/bootstrap/thumb_compact.b64 | base64 --decode > build/thumbnail.jpg\n"
+              '          fi\n'
+              '          ffmpeg -hide_banner -v error -i build/thumbnail.jpg -frames:v 1 -f null - >/dev/null\n\n'
+              '          if [ "$VISUAL_MODE" = "image" ]; then\n'
+              '            test -n "$VISUAL_IMAGE_URL" || { echo "::error::Fixed-image mode requires visual_image_url"; exit 1; }\n'
+              '            curl --retry 5 --retry-all-errors -fL "$VISUAL_IMAGE_URL" -o build/fixed-visual.img\n'
+              '            ffmpeg -hide_banner -v error -i build/fixed-visual.img -frames:v 1 -f null - >/dev/null 2>&1 || { echo "::error::Selected fixed image is invalid"; exit 1; }\n'
+              '            ffmpeg -hide_banner -loglevel warning -y \\\n'
+              '              -loop 1 -i build/fixed-visual.img -t 12 \\\n'
+              '              -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p" \\\n'
+              '              -an -c:v libx264 -preset veryfast -crf 18 -movflags +faststart build/loop-source.mp4\n'
+              '            echo image > build/visual-mode.txt\n'
+              '          else\n'
+              '            test -n "$LOOP_URL" || { echo "::error::Video mode requires the GitHub master loop URL"; exit 1; }\n'
+              '            curl --retry 5 --retry-all-errors -fL "$LOOP_URL" -o build/loop-source.mp4\n'
+              '            ffmpeg -hide_banner -v error -i build/loop-source.mp4 -map 0:v:0 -f null - >/dev/null 2>&1 || { echo "::error::GitHub master loop is invalid"; exit 1; }\n'
+              '            echo video > build/visual-mode.txt\n'
+              '          fi\n'
+              '          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration,size -of json build/loop-source.mp4\n\n')
           s = s[:start] + visual_step + s[end:]
 
           p.write_text(s, encoding='utf-8')
           PY
 
-          grep -q 'FRESHNESS' scripts/validate_fresh_audio.py
           grep -q 'visual_mode:' .github/workflows/office-music-publish.yml
           grep -q 'Historical audio reuse is forbidden' .github/workflows/office-music-publish.yml
           grep -q 'Stale Kaggle Medium output rejected' .github/workflows/office-music-publish.yml
