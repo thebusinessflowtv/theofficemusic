@@ -8,8 +8,14 @@ on:
       - "config/reference_test.yaml"
       - "kaggle/runner_test.py"
       - "scripts/bootstrap_kaggle.sh"
+      - "src/generate_tracks.py"
+      - "src/prompt_engine.py"
       - ".github/workflows/generate-reference-test.yml"
   workflow_dispatch:
+
+concurrency:
+  group: the-office-music-reference-calibration
+  cancel-in-progress: true
 
 env:
   KERNEL_SLUG: the-office-music-reference-test
@@ -32,7 +38,7 @@ jobs:
       - name: Install Kaggle CLI
         run: pip install --upgrade kaggle
 
-      - name: Validate GitHub secrets
+      - name: Validate secrets
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
@@ -42,7 +48,7 @@ jobs:
           test -n "$KAGGLE_API_TOKEN" || (echo "Missing KAGGLE_API_TOKEN secret" && exit 1)
           test -n "$HF_TOKEN" || (echo "Missing HF_TOKEN secret" && exit 1)
 
-      - name: Prepare private HF token dataset
+      - name: Prepare private HF credential input
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
@@ -61,7 +67,7 @@ jobs:
               "title": "The Office Music Secrets",
               "id": f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets",
               "licenses": [{"name": "other"}],
-              "description": "Private CI-only credential bundle for The Office Music. Do not publish."
+              "description": "Private CI credential input for The Office Music."
           }
           (folder / "dataset-metadata.json").write_text(json.dumps(metadata, indent=2))
           PY
@@ -70,10 +76,10 @@ jobs:
           if kaggle datasets status "$DATASET" >/dev/null 2>&1; then
             kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token for CI" -q
           else
-            kaggle datasets create -p "$SECRET_DIR" -q
+            kaggle datasets create -p "$SECRET_DIR" --private -q
           fi
 
-      - name: Prepare Kaggle kernel
+      - name: Prepare CPU calibration kernel
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
         run: |
@@ -87,22 +93,20 @@ jobs:
               "language": "python",
               "kernel_type": "script",
               "is_private": True,
-              "enable_gpu": True,
-              "machine_shape": "NvidiaL4",
+              "enable_gpu": False,
               "enable_internet": True,
               "dataset_sources": [f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
               "competition_sources": [],
               "kernel_sources": []
           }
           (folder / "kernel-metadata.json").write_text(json.dumps(metadata, indent=2))
-          print((folder / "kernel-metadata.json").read_text())
+          print("Prepared CPU-only calibration kernel for Stable Audio 3 Small-Music")
           PY
 
-      - name: Push and run on Kaggle L4
+      - name: Push calibration kernel
         env:
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
-        run: |
-          kaggle kernels push -p kaggle --timeout 7200 --accelerator NvidiaL4
+        run: kaggle kernels push -p kaggle --timeout 7200
 
       - name: Wait for Kaggle
         env:
@@ -118,13 +122,13 @@ jobs:
               exit 0
             fi
             if echo "$STATUS" | grep -Eqi "error|failed|cancel"; then
-              echo "Kaggle generation failed. Streaming kernel logs:"
+              echo "Kaggle generation failed. Kernel logs:"
               kaggle kernels logs "$KERNEL" || true
               exit 1
             fi
             sleep 60
           done
-          echo "Timed out waiting for Kaggle. Streaming kernel logs:"
+          echo "Timed out waiting for Kaggle. Kernel logs:"
           kaggle kernels logs "$KERNEL" || true
           exit 1
 
@@ -133,8 +137,12 @@ jobs:
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
         run: |
+          set -euo pipefail
+          rm -rf generated
           mkdir -p generated
           kaggle kernels output "$KAGGLE_USERNAME/$KERNEL_SLUG" -p generated
+          test -n "$(find generated -type f -name '*.wav' -print -quit)" || (echo "No WAV generated" && exit 1)
+          find generated -maxdepth 2 -type f -print
 
       - name: Upload calibration artifact
         uses: actions/upload-artifact@v4
@@ -142,3 +150,4 @@ jobs:
           name: the-office-music-reference-test-${{ github.run_number }}
           path: generated/
           retention-days: 14
+          if-no-files-found: error
