@@ -16,11 +16,32 @@ def run(cmd, cwd=None, env=None):
     subprocess.run(cmd, cwd=cwd, env=env, check=True)
 
 
+def load_hf_token() -> str:
+    # Preferred path when the secret was attached interactively in Kaggle.
+    try:
+        token = UserSecretsClient().get_secret("HF_TOKEN")
+        if token:
+            return token.strip()
+    except Exception as exc:
+        print(f"Kaggle UserSecretsClient unavailable for this pushed version: {type(exc).__name__}")
+
+    # CI-pushed kernels do not inherit interactive Kaggle secrets. The GitHub
+    # workflow therefore mounts a private Kaggle dataset containing only this
+    # credential. Never print the token value.
+    input_root = Path("/kaggle/input")
+    if input_root.exists():
+        candidates = list(input_root.rglob("hf_token.txt"))
+        for candidate in candidates:
+            token = candidate.read_text(encoding="utf-8").strip()
+            if token:
+                print(f"HF token loaded from private Kaggle input: {candidate.parent.name}")
+                return token
+
+    raise RuntimeError("HF_TOKEN is unavailable in Kaggle secrets and private CI secret dataset.")
+
+
 def main():
-    secrets = UserSecretsClient()
-    hf_token = secrets.get_secret("HF_TOKEN")
-    if not hf_token:
-        raise RuntimeError("Missing Kaggle secret: HF_TOKEN")
+    hf_token = load_hf_token()
 
     os.environ["HF_TOKEN"] = hf_token
     os.environ["HUGGING_FACE_HUB_TOKEN"] = hf_token
