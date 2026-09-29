@@ -1,0 +1,69 @@
+name: Patch Office Music Live Description
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/patch-office-music-live-description.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch live workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/office-music-live.yml')
+          s=p.read_text(encoding='utf-8')
+
+          old='''      title:\n        required: true\n        default: "The Office Music — Live Office Lounge"\n        type: string\n      thumbnail_url:'''
+          new='''      title:\n        required: true\n        default: "The Office Music — Live Office Lounge"\n        type: string\n      description:\n        required: false\n        default: ""\n        type: string\n      thumbnail_url:'''
+          if old in s: s=s.replace(old,new,1)
+          elif '      description:\n        required: false' not in s: raise SystemExit('description input marker not found')
+
+          old='''          TITLE: ${{ inputs.title }}\n          RESUME_BROADCAST_ID:'''
+          new='''          TITLE: ${{ inputs.title }}\n          DESCRIPTION: ${{ inputs.description }}\n          RESUME_BROADCAST_ID:'''
+          if old in s: s=s.replace(old,new,1)
+          elif '          DESCRIPTION: ${{ inputs.description }}' not in s: raise SystemExit('description env marker not found')
+
+          old="'snippet':{'title':os.environ['TITLE'][:100],'scheduledStartTime':(now+datetime.timedelta(seconds=20)).isoformat()},"
+          new="'snippet':{'title':os.environ['TITLE'][:100],'description':os.environ.get('DESCRIPTION','')[:5000],'scheduledStartTime':(now+datetime.timedelta(seconds=20)).isoformat()},"
+          if old in s: s=s.replace(old,new,1)
+          elif "'description':os.environ.get('DESCRIPTION','')[:5000]" not in s: raise SystemExit('YouTube snippet marker not found')
+
+          old='''          TITLE: ${{ inputs.title }}\n          THUMBNAIL_URL: ${{ inputs.thumbnail_url }}\n          LOOP_URL: ${{ inputs.loop_url }}'''
+          new='''          TITLE: ${{ inputs.title }}\n          DESCRIPTION: ${{ inputs.description }}\n          THUMBNAIL_URL: ${{ inputs.thumbnail_url }}\n          LOOP_URL: ${{ inputs.loop_url }}'''
+          if old in s: s=s.replace(old,new,1)
+          elif s.count('          DESCRIPTION: ${{ inputs.description }}') < 2: raise SystemExit('chain description env marker not found')
+
+          old='''          jq -n --arg ref main --arg session "$SESSION_ID" --arg tracks "$TRACK_URLS_B64" --arg dur "$NEXT_DURATION" --arg title "$TITLE" --arg thumb "$THUMBNAIL_URL" --arg loop "$LOOP_URL" --arg bid "$BID" --arg sid "$SID" --arg seg "$NEXT_SEG" '{ref:$ref,inputs:{session_id:$session,track_urls_b64:$tracks,duration_minutes:$dur,title:$title,thumbnail_url:$thumb,loop_url:$loop,resume_broadcast_id:$bid,resume_stream_id:$sid,segment_index:$seg}}' > build/dispatch.json'''
+          new='''          jq -n --arg ref main --arg session "$SESSION_ID" --arg tracks "$TRACK_URLS_B64" --arg dur "$NEXT_DURATION" --arg title "$TITLE" --arg description "$DESCRIPTION" --arg thumb "$THUMBNAIL_URL" --arg loop "$LOOP_URL" --arg bid "$BID" --arg sid "$SID" --arg seg "$NEXT_SEG" '{ref:$ref,inputs:{session_id:$session,track_urls_b64:$tracks,duration_minutes:$dur,title:$title,description:$description,thumbnail_url:$thumb,loop_url:$loop,resume_broadcast_id:$bid,resume_stream_id:$sid,segment_index:$seg}}' > build/dispatch.json'''
+          if old in s: s=s.replace(old,new,1)
+          elif 'description:$description' not in s: raise SystemExit('chain dispatch marker not found')
+
+          p.write_text(s,encoding='utf-8')
+          print('patched',p)
+          PY
+
+      - name: Commit live workflow changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/workflows/office-music-live.yml
+          git diff --cached --quiet && { echo 'No live changes needed.'; exit 0; }
+          git commit -m 'office-music: add YouTube live description'
+          git pull --rebase origin main
+          git push origin HEAD:main
