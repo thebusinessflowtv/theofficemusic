@@ -17,35 +17,30 @@ def run(cmd, cwd=None, env=None):
 
 
 def load_hf_token() -> str:
-    # Preferred path when the secret was attached interactively in Kaggle.
     try:
         token = UserSecretsClient().get_secret("HF_TOKEN")
         if token:
             return token.strip()
-    except Exception as exc:
-        print(f"Kaggle UserSecretsClient unavailable for this pushed version: {type(exc).__name__}")
+    except Exception:
+        pass
 
-    # CI-pushed kernels do not inherit interactive Kaggle secrets. The GitHub
-    # workflow therefore mounts a private Kaggle dataset containing only this
-    # credential. Never print the token value.
     input_root = Path("/kaggle/input")
     if input_root.exists():
-        candidates = list(input_root.rglob("hf_token.txt"))
-        for candidate in candidates:
+        for candidate in input_root.rglob("hf_token.txt"):
             token = candidate.read_text(encoding="utf-8").strip()
             if token:
-                print(f"HF token loaded from private Kaggle input: {candidate.parent.name}")
+                print("HF token loaded from private Kaggle input.")
                 return token
 
-    raise RuntimeError("HF_TOKEN is unavailable in Kaggle secrets and private CI secret dataset.")
+    raise RuntimeError("HF_TOKEN is unavailable to the Kaggle calibration job.")
 
 
 def main():
     hf_token = load_hf_token()
-
     os.environ["HF_TOKEN"] = hf_token
     os.environ["HUGGING_FACE_HUB_TOKEN"] = hf_token
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    os.environ["SA3_TARGET_MODEL"] = "small-music"
 
     if REPO_DIR.exists():
         run(["git", "-C", str(REPO_DIR), "pull", "--ff-only"])
@@ -55,8 +50,10 @@ def main():
     run(["bash", "scripts/bootstrap_kaggle.sh"], cwd=REPO_DIR)
 
     python_bin = SA3_DIR / ".venv" / "bin" / "python"
-    batch_name = "reference-test-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    if not python_bin.exists():
+        raise RuntimeError(f"Stable Audio Python runtime not found at {python_bin}")
 
+    batch_name = "reference-test-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     env = os.environ.copy()
     env["PYTHONPATH"] = str(REPO_DIR / "src")
 
@@ -75,7 +72,12 @@ def main():
         env=env,
     )
 
-    print("Reference test complete. Output: /kaggle/working/output")
+    output_dir = Path("/kaggle/working/output")
+    wavs = list(output_dir.glob("*.wav"))
+    if not wavs:
+        raise RuntimeError("Generation command finished without producing a WAV file.")
+
+    print(f"Reference test complete. Generated WAV: {wavs[0].name}")
 
 
 if __name__ == "__main__":
