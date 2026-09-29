@@ -17,15 +17,25 @@ def load_profile(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-def ensure_environment():
+def ensure_environment(model_name: str):
     if not torch.cuda.is_available():
-        raise RuntimeError("Stable Audio 3 Medium requires a CUDA GPU in this pipeline.")
-    try:
-        import flash_attn  # noqa: F401
-    except Exception as exc:
-        raise RuntimeError(
-            "Flash Attention 2 is required for Stable Audio 3 Medium and is not importable."
-        ) from exc
+        raise RuntimeError("A CUDA GPU is required in this Kaggle pipeline.")
+
+    # Stable Audio 3 Medium uses SAME-L and requires Flash Attention 2.
+    # Small-Music uses SAME-S and can run on older CUDA GPUs such as Kaggle T4.
+    if model_name in {"medium", "medium-base"}:
+        try:
+            import flash_attn  # noqa: F401
+        except Exception as exc:
+            raise RuntimeError(
+                "Flash Attention 2 is required for Stable Audio 3 Medium and is not importable."
+            ) from exc
+        major, minor = torch.cuda.get_device_capability(0)
+        if major < 8:
+            raise RuntimeError(
+                f"Stable Audio 3 Medium requires an Ampere-or-newer GPU in this pipeline; "
+                f"received {torch.cuda.get_device_name(0)} with compute capability {major}.{minor}."
+            )
 
 
 def main():
@@ -36,10 +46,12 @@ def main():
     parser.add_argument("--master-seed", type=int, default=None)
     args = parser.parse_args()
 
-    ensure_environment()
     profile = load_profile(args.config)
     generation = profile["generation"]
     output_cfg = profile["output"]
+    model_name = generation["model"]
+
+    ensure_environment(model_name)
 
     if not generation.get("pure_text_to_audio", True):
         raise RuntimeError("This repository is configured for pure text-to-audio generation only.")
@@ -51,14 +63,15 @@ def main():
     rng = random.Random(master_seed)
     track_count = args.tracks or int(generation["tracks_per_batch"])
 
-    print(f"Loading Stable Audio 3 model: {generation['model']}")
-    model = StableAudioModel.from_pretrained(generation["model"], device="cuda")
+    print(f"Loading Stable Audio 3 model: {model_name}")
+    print(f"GPU: {torch.cuda.get_device_name(0)}")
+    model = StableAudioModel.from_pretrained(model_name, device="cuda")
     sample_rate = int(model.model.sample_rate)
 
     manifest = {
         "batch_name": args.batch_name,
         "master_seed": master_seed,
-        "model": generation["model"],
+        "model": model_name,
         "sample_rate": sample_rate,
         "pure_text_to_audio": True,
         "tracks": [],
@@ -96,6 +109,7 @@ def main():
                 "seed": seed,
                 "prompt": prompt,
                 "negative_prompt": negative_prompt,
+                "duration_seconds": duration,
             }
         )
 
