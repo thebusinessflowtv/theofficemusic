@@ -1,0 +1,137 @@
+name: Upload First The Office Music Video
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/upload-first-youtube-video.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  upload-youtube:
+    runs-on: ubuntu-latest
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg unzip
+          python -m pip install --upgrade pip
+          python -m pip install google-api-python-client google-auth google-auth-httplib2
+
+      - name: Prepare loop video and thumbnail
+        run: |
+          mkdir -p build
+          base64 -d assets/bootstrap/loop_01.b64 > build/loop.mp4
+          base64 -d assets/bootstrap/thumb_compact.b64 > build/thumbnail.jpg
+          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 build/loop.mp4
+          file build/thumbnail.jpg
+
+      - name: Download approved generated track
+        run: |
+          curl -fL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/thebusinessflowtv/theofficemusic/actions/artifacts/11009873245/zip" \
+            -o build/music.zip
+          unzip -o build/music.zip -d build/music
+          WAV_FILE="$(find build/music -type f -name '*.wav' | head -n 1)"
+          test -n "$WAV_FILE"
+          cp "$WAV_FILE" build/track.wav
+          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 build/track.wav
+
+      - name: Render YouTube video
+        run: |
+          ffmpeg -y \
+            -stream_loop -1 -i build/loop.mp4 \
+            -i build/track.wav \
+            -map 0:v:0 -map 1:a:0 \
+            -c:v libx264 -preset fast -crf 20 -pix_fmt yuv420p -r 30 \
+            -c:a aac -b:a 192k \
+            -shortest \
+            -movflags +faststart \
+            build/the-office-music-first-video.mp4
+          ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 build/the-office-music-first-video.mp4
+
+      - name: Upload and publish on YouTube
+        run: |
+          python - <<'PY'
+          import os
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+
+          scopes = ["https://www.googleapis.com/auth/youtube"]
+          creds = Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=scopes,
+          )
+          youtube = build("youtube", "v3", credentials=creds, cache_discovery=False)
+
+          body = {
+              "snippet": {
+                  "title": "stylish office beats to work to ☕ | lounge house mix",
+                  "description": (
+                      "The Office Music — stylish beats for work, focus and home office.\n\n"
+                      "00:00 Midnight Avenue\n\n"
+                      "Original music generated for The Office Music.\n\n"
+                      "#officemusic #focusmusic #workmusic #homeoffice #loungehouse"
+                  ),
+                  "tags": [
+                      "office music", "focus music", "work music", "home office",
+                      "lounge house", "deep house", "lofi office", "study music",
+                      "background music", "The Office Music"
+                  ],
+                  "categoryId": "10",
+                  "defaultLanguage": "en",
+              },
+              "status": {
+                  "privacyStatus": "public",
+                  "selfDeclaredMadeForKids": False,
+              },
+          }
+
+          media = MediaFileUpload(
+              "build/the-office-music-first-video.mp4",
+              mimetype="video/mp4",
+              chunksize=8 * 1024 * 1024,
+              resumable=True,
+          )
+          request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
+          response = None
+          while response is None:
+              status, response = request.next_chunk()
+              if status:
+                  print(f"Upload progress: {int(status.progress() * 100)}%")
+
+          video_id = response["id"]
+          actual_privacy = response.get("status", {}).get("privacyStatus")
+          print(f"YOUTUBE_VIDEO_ID={video_id}")
+          print(f"YOUTUBE_PRIVACY_STATUS={actual_privacy}")
+
+          thumb = MediaFileUpload("build/thumbnail.jpg", mimetype="image/jpeg", resumable=False)
+          youtube.thumbnails().set(videoId=video_id, media_body=thumb).execute()
+          print("THUMBNAIL_UPLOAD=OK")
+
+          channel = youtube.channels().list(part="id,snippet", mine=True).execute()["items"][0]
+          if channel["id"] != os.environ["YOUTUBE_CHANNEL_ID"]:
+              raise SystemExit("Authenticated channel changed unexpectedly after upload")
+          print(f"CHANNEL={channel['snippet']['title']}")
+          print(f"WATCH_URL=https://www.youtube.com/watch?v={video_id}")
+          PY
