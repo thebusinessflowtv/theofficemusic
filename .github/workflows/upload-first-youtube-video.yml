@@ -28,12 +28,12 @@ permissions:
 
 concurrency:
   group: the-office-music-youtube-upload
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   upload-youtube:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 180
     env:
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
@@ -73,7 +73,7 @@ jobs:
       - name: Download approved generated track
         run: |
           set -euo pipefail
-          curl -fL \
+          curl --retry 5 --retry-all-errors -fL \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -85,15 +85,35 @@ jobs:
           cp "$WAV_FILE" build/track.wav
           ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 build/track.wav
 
-      - name: Render 4K YouTube video
+      - name: Build reusable 4K visual loop
         run: |
           set -euo pipefail
-          ffmpeg -y \
-            -stream_loop -1 -i build/loop.mp4 \
+          # Encode the short visual source to 4K only ONCE. The final video then
+          # reuses these already-encoded packets with stream copy, avoiding an
+          # expensive 4K re-encode for every frame of a long music video.
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -i build/loop.mp4 \
+            -map 0:v:0 -an \
+            -vf "scale=3840:2160:flags=lanczos,setsar=1,fps=30,format=yuv420p" \
+            -c:v libx264 -preset veryfast -crf 20 -profile:v high -level:v 5.1 \
+            -g 60 -keyint_min 60 -sc_threshold 0 \
+            -movflags +faststart \
+            build/loop-4k.mp4
+          test -s build/loop-4k.mp4
+          WIDTH="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 build/loop-4k.mp4)"
+          HEIGHT="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 build/loop-4k.mp4)"
+          test "$WIDTH" = "3840"
+          test "$HEIGHT" = "2160"
+          echo "4K_LOOP_VALIDATED=${WIDTH}x${HEIGHT}"
+
+      - name: Assemble final 4K video without re-encoding video
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -stream_loop -1 -i build/loop-4k.mp4 \
             -i build/track.wav \
             -map 0:v:0 -map 1:a:0 \
-            -vf "scale=3840:2160:flags=lanczos,setsar=1,fps=30,format=yuv420p" \
-            -c:v libx264 -preset medium -crf 18 -profile:v high -level:v 5.1 \
+            -c:v copy \
             -c:a aac -b:a 320k -ar 48000 \
             -shortest \
             -movflags +faststart \
@@ -163,13 +183,13 @@ jobs:
           media = MediaFileUpload(
               "build/the-office-music-first-video-4k.mp4",
               mimetype="video/mp4",
-              chunksize=8 * 1024 * 1024,
+              chunksize=32 * 1024 * 1024,
               resumable=True,
           )
           request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
           response = None
           while response is None:
-              status, response = request.next_chunk()
+              status, response = request.next_chunk(num_retries=6)
               if status:
                   print(f"Upload progress: {int(status.progress() * 100)}%")
 
@@ -185,7 +205,7 @@ jobs:
               print("THUMBNAIL_UPLOAD=OK")
           except HttpError as exc:
               if exc.resp.status == 403:
-                  print("::warning::YouTube rejected the custom thumbnail. Video upload remains successful; enable custom-thumbnail feature access on the channel and future runs will apply it automatically.")
+                  print("::warning::Custom thumbnail is not enabled for this channel yet. The video upload remains successful.")
                   print("THUMBNAIL_UPLOAD=SKIPPED_403")
               else:
                   raise
