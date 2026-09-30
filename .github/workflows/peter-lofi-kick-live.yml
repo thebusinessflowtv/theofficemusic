@@ -79,24 +79,21 @@ jobs:
           if not os.environ.get('KICK_STREAM_KEY','').strip(): raise SystemExit('Missing KICK_STREAM_KEY GitHub secret')
           PY
 
-      - name: Decode playlist and download tracks
+      - name: Decode playlist for on-demand streaming
         env:
           TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
         run: |
           set -euo pipefail
-          mkdir -p build/tracks control/kick-live-results
+          mkdir -p build control/kick-live-results
           python - <<'PY'
-          import os,base64,json,pathlib,subprocess
+          import os,base64,json,pathlib
           urls=json.loads(base64.b64decode(os.environ['TRACK_URLS_B64']).decode('utf-8'))
           if not isinstance(urls,list) or not urls: raise SystemExit('No track URLs')
-          paths=[]
-          for i,u in enumerate(urls,1):
-              p=pathlib.Path('build/tracks')/f'track-{i:03d}.wav'
-              subprocess.run(['curl','--retry','5','--retry-all-errors','-fL',u,'-o',str(p)],check=True)
-              paths.append(p.resolve())
           with open('build/playlist.txt','w',encoding='utf-8') as f:
-              for p in paths:f.write("file '"+str(p).replace("'","'\\''")+"'\n")
-          print(f'Downloaded {len(paths)} tracks')
+              for u in urls:
+                  u=str(u).replace("'","'\\''")
+                  f.write("file '"+u+"'\n")
+          print(f'Prepared {len(urls)} remote tracks for on-demand playback; no startup download required')
           PY
 
       - name: Prepare live visual
@@ -163,7 +160,7 @@ jobs:
           TARGET="${BASE%/}/${KICK_STREAM_KEY}"
           ffmpeg -hide_banner -loglevel warning \
             -re -stream_loop -1 -i build/loop.mp4 \
-            -stream_loop -1 -f concat -safe 0 -i build/playlist.txt \
+            -stream_loop -1 -protocol_whitelist file,http,https,tcp,tls,crypto -f concat -safe 0 -i build/playlist.txt \
             -map 0:v:0 -map 1:a:0 \
             -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
             -c:v libx264 -preset veryfast -tune zerolatency -profile:v high \
