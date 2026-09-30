@@ -23,7 +23,6 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          # 1) Queue worker: normalize payload before dispatch.
           p=Path('.github/workflows/office-music-queue-worker.yml')
           s=p.read_text(encoding='utf-8')
           old='thumbnail_url:$x.thumbnail_url,visual_mode:$x.visual_mode,visual_image_url:$x.visual_image_url'
@@ -33,35 +32,34 @@ jobs:
               s=s.replace(old,new,1)
           p.write_text(s,encoding='utf-8')
 
-          # 2) Request router: normalize legacy/direct request files too.
           p=Path('.github/workflows/office-music-request-router.yml')
           s=p.read_text(encoding='utf-8')
           old='            jq -c \'{ref:"main",inputs:.inputs}\' "$file" > dispatch-payload.json\n'
-          new='''            if [ "$workflow" = "office-music-publish.yml" ]; then
-              jq -c '{ref:"main",inputs:(.inputs | if .visual_mode=="image" and ((.visual_image_url // "")|length)>0 then .thumbnail_url=.visual_image_url else . end)}' "$file" > dispatch-payload.json
-            else
-              jq -c '{ref:"main",inputs:.inputs}' "$file" > dispatch-payload.json
-            fi
-'''
+          new='\n'.join([
+              '            if [ "$workflow" = "office-music-publish.yml" ]; then',
+              '              jq -c \'{ref:"main",inputs:(.inputs | if .visual_mode=="image" and ((.visual_image_url // "")|length)>0 then .thumbnail_url=.visual_image_url else . end)}\' "$file" > dispatch-payload.json',
+              '            else',
+              '              jq -c \'{ref:"main",inputs:.inputs}\' "$file" > dispatch-payload.json',
+              '            fi',
+              ''
+          ])
           if new not in s:
               if old not in s: raise SystemExit('request router jq pattern not found')
               s=s.replace(old,new,1)
           p.write_text(s,encoding='utf-8')
 
-          # 3) Final workflow guard: even if upstream sends another thumbnail,
-          # image mode always uses the fixed visual image as thumbnail.
           p=Path('.github/workflows/office-music-publish.yml')
           s=p.read_text(encoding='utf-8')
-          old='''          mkdir -p build
-          if [ -n "$THUMBNAIL_URL" ]; then
-'''
-          new='''          mkdir -p build
-          if [ "$VISUAL_MODE" = "image" ] && [ -n "$VISUAL_IMAGE_URL" ]; then
-            THUMBNAIL_URL="$VISUAL_IMAGE_URL"
-            echo "Fixed-image mode: using visual image as YouTube thumbnail."
-          fi
-          if [ -n "$THUMBNAIL_URL" ]; then
-'''
+          old='          mkdir -p build\n          if [ -n "$THUMBNAIL_URL" ]; then\n'
+          new='\n'.join([
+              '          mkdir -p build',
+              '          if [ "$VISUAL_MODE" = "image" ] && [ -n "$VISUAL_IMAGE_URL" ]; then',
+              '            THUMBNAIL_URL="$VISUAL_IMAGE_URL"',
+              '            echo "Fixed-image mode: using visual image as YouTube thumbnail."',
+              '          fi',
+              '          if [ -n "$THUMBNAIL_URL" ]; then',
+              ''
+          ])
           if new not in s:
               if old not in s: raise SystemExit('publish thumbnail guard pattern not found')
               s=s.replace(old,new,1)
