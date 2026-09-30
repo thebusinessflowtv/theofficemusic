@@ -39,7 +39,11 @@ jobs:
               *) echo "Unsupported workflow in $file: $workflow" >&2; exit 1 ;;
             esac
 
-            jq -c '{ref:"main",inputs:.inputs}' "$file" > dispatch-payload.json
+            if [ "$workflow" = "office-music-publish.yml" ]; then
+              jq -c '{ref:"main",inputs:(.inputs | if .visual_mode=="image" and ((.visual_image_url // "")|length)>0 then .thumbnail_url=.visual_image_url else . end)}' "$file" > dispatch-payload.json
+            else
+              jq -c '{ref:"main",inputs:.inputs}' "$file" > dispatch-payload.json
+            fi
             echo "Dispatching $workflow from $file"
             code="$(curl -sS -o dispatch-response.txt -w '%{http_code}' \
               -X POST \
