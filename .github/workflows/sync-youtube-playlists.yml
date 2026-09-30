@@ -3,7 +3,7 @@ name: Sync Peter Lofi YouTube Channel
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 * * * *"
+    - cron: "5 * * * *"
   push:
     branches: [main]
     paths:
