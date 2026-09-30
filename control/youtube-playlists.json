@@ -1,8 +1,563 @@
 {
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-  "generated_at": "2026-09-30T02:29:21.168943+00:00",
-  "playlist_count": 1,
+  "generated_at": "2026-09-30T02:39:04.305168+00:00",
+  "playlist_count": 8,
   "playlists": [
+    {
+      "id": "PLcRTCZSXY21w",
+      "title": "All Songs 🎧 | The Office Music",
+      "description": "All original songs released by The Office Music — lofi, lounge house, chill office and focus music for work, study and deep concentration.",
+      "thumbnail_url": "https://i.ytimg.com/vi/BhF7a5e8Uzc/mqdefault.jpg",
+      "item_count": 30,
+      "privacy_status": "public",
+      "items": [
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "BhF7a5e8Uzc",
+          "title": "Sunday Afterglow — lofi lounge beats for work & focus 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/BhF7a5e8Uzc/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy4yODlGNEE0NkRGMEEzMEQy",
+          "video_id": "4SkD_ohmzII",
+          "title": "Midnight Boulevard — chill office music for deep focus 🎧",
+          "position": 1,
+          "thumbnail_url": "https://i.ytimg.com/vi/4SkD_ohmzII/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy4wMTcyMDhGQUE4NTIzM0Y5",
+          "video_id": "bSdQG9SO_tM",
+          "title": "Glass Afterglow — lofi-inspired lounge house for work & study 🎧",
+          "position": 2,
+          "thumbnail_url": "https://i.ytimg.com/vi/bSdQG9SO_tM/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy41MjE1MkI0OTQ2QzJGNzNG",
+          "video_id": "b-l8U6u3ZBI",
+          "title": "Studio Boulevard — focus music for office, coding & study 🎧",
+          "position": 3,
+          "thumbnail_url": "https://i.ytimg.com/vi/b-l8U6u3ZBI/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy4wOTA3OTZBNzVEMTUzOTMy",
+          "video_id": "fZqS6-rD8ao",
+          "title": "Northbound Hallway — late-night chill beats for work & home office 🎧",
+          "position": 4,
+          "thumbnail_url": "https://i.ytimg.com/vi/fZqS6-rD8ao/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy4xMkVGQjNCMUM1N0RFNEUx",
+          "video_id": "eSXFkpqYj5I",
+          "title": "Window Seat Avenue — deep focus lounge house / lofi vibes 🎧",
+          "position": 5,
+          "thumbnail_url": "https://i.ytimg.com/vi/eSXFkpqYj5I/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy41MzJCQjBCNDIyRkJDN0VD",
+          "video_id": "d0PnZOlDgx8",
+          "title": "Late Check In Workspace — lofi lounge beats for work & focus 🎧",
+          "position": 6,
+          "thumbnail_url": "https://i.ytimg.com/vi/d0PnZOlDgx8/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5DQUNERDQ2NkIzRUQxNTY1",
+          "video_id": "pRgLlMZo1Z4",
+          "title": "Midnight Hours — chill office music for deep focus 🎧",
+          "position": 7,
+          "thumbnail_url": "https://i.ytimg.com/vi/pRgLlMZo1Z4/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy45NDk1REZENzhEMzU5MDQz",
+          "video_id": "0SnqRYeoUwg",
+          "title": "Studio Lobby — lofi-inspired lounge house for work & study 🎧",
+          "position": 8,
+          "thumbnail_url": "https://i.ytimg.com/vi/0SnqRYeoUwg/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5GNjNDRDREMDQxOThCMDQ2",
+          "video_id": "65UxhO4nGBE",
+          "title": "Midnight Meeting — focus music for office, coding & study 🎧",
+          "position": 9,
+          "thumbnail_url": "https://i.ytimg.com/vi/65UxhO4nGBE/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy40NzZCMERDMjVEN0RFRThB",
+          "video_id": "ohzYp20hysU",
+          "title": "Downtown Coffee — late-night chill beats for work & home office 🎧",
+          "position": 10,
+          "thumbnail_url": "https://i.ytimg.com/vi/ohzYp20hysU/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5EMEEwRUY5M0RDRTU3NDJC",
+          "video_id": "IFNvU_XOjp4",
+          "title": "Late Check In District — deep focus lounge house / lofi vibes 🎧",
+          "position": 11,
+          "thumbnail_url": "https://i.ytimg.com/vi/IFNvU_XOjp4/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy45ODRDNTg0QjA4NkFBNkQy",
+          "video_id": "omob9Us4-A4",
+          "title": "Downtown Transit — lofi lounge beats for work & focus 🎧",
+          "position": 12,
+          "thumbnail_url": "https://i.ytimg.com/vi/omob9Us4-A4/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy4zMDg5MkQ5MEVDMEM1NTg2",
+          "video_id": "-U2zjcwIogY",
+          "title": "Lobby District — chill office music for deep focus 🎧",
+          "position": 13,
+          "thumbnail_url": "https://i.ytimg.com/vi/-U2zjcwIogY/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy41Mzk2QTAxMTkzNDk4MDhF",
+          "video_id": "D-TJntwOqnQ",
+          "title": "Sunday Floor — lofi-inspired lounge house for work & study 🎧",
+          "position": 14,
+          "thumbnail_url": "https://i.ytimg.com/vi/D-TJntwOqnQ/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5EQUE1NTFDRjcwMDg0NEMz",
+          "video_id": "U_5l7T23jcY",
+          "title": "City Escalator — focus music for office, coding & study 🎧",
+          "position": 15,
+          "thumbnail_url": "https://i.ytimg.com/vi/U_5l7T23jcY/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy41QTY1Q0UxMTVCODczNThE",
+          "video_id": "rf60TC5p62Y",
+          "title": "Sunday Hours — late-night chill beats for work & home office 🎧",
+          "position": 16,
+          "thumbnail_url": "https://i.ytimg.com/vi/rf60TC5p62Y/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy4yMUQyQTQzMjRDNzMyQTMy",
+          "video_id": "pGDIlO-AGdk",
+          "title": "Silver Avenue — deep focus lounge house / lofi vibes 🎧",
+          "position": 17,
+          "thumbnail_url": "https://i.ytimg.com/vi/pGDIlO-AGdk/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy45RTgxNDRBMzUwRjQ0MDhC",
+          "video_id": "wFbPDfCTFm4",
+          "title": "Golden Meeting — lofi lounge beats for work & focus 🎧",
+          "position": 18,
+          "thumbnail_url": "https://i.ytimg.com/vi/wFbPDfCTFm4/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5ENDU4Q0M4RDExNzM1Mjcy",
+          "video_id": "kDfqELf2bdw",
+          "title": "Window Seat Transit — chill office music for deep focus 🎧",
+          "position": 19,
+          "thumbnail_url": "https://i.ytimg.com/vi/kDfqELf2bdw/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy4yMDhBMkNBNjRDMjQxQTg1",
+          "video_id": "TNjIJU7DvAU",
+          "title": "Downtown Elevator — lofi-inspired lounge house for work & study 🎧",
+          "position": 20,
+          "thumbnail_url": "https://i.ytimg.com/vi/TNjIJU7DvAU/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5GM0Q3M0MzMzY5NTJFNTdE",
+          "video_id": "UbNwJ3b8b44",
+          "title": "Northbound Coffee — focus music for office, coding & study 🎧",
+          "position": 21,
+          "thumbnail_url": "https://i.ytimg.com/vi/UbNwJ3b8b44/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy4zRjM0MkVCRTg0MkYyQTM0",
+          "video_id": "9fCPMERPWOk",
+          "title": "Velvet Lobby — late-night chill beats for work & home office 🎧",
+          "position": 22,
+          "thumbnail_url": "https://i.ytimg.com/vi/9fCPMERPWOk/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy45NzUwQkI1M0UxNThBMkU0",
+          "video_id": "6trplPhr8oU",
+          "title": "Sunday Suite — deep focus lounge house / lofi vibes 🎧",
+          "position": 23,
+          "thumbnail_url": "https://i.ytimg.com/vi/6trplPhr8oU/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5DNzE1RjZEMUZCMjA0RDBB",
+          "video_id": "ibiKD8nYvY8",
+          "title": "Neon Transit — lofi lounge beats for work & focus 🎧",
+          "position": 24,
+          "thumbnail_url": "https://i.ytimg.com/vi/ibiKD8nYvY8/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy43MTI1NDIwOTMwQjIxMzNG",
+          "video_id": "ebHHLSMrhs8",
+          "title": "Neon Meeting — chill office music for deep focus 🎧",
+          "position": 25,
+          "thumbnail_url": "https://i.ytimg.com/vi/ebHHLSMrhs8/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5DQ0MyQ0Y4Mzg0M0VGOEYw",
+          "video_id": "zQ8PNeZOdJc",
+          "title": "After Hours Skyline — lofi-inspired lounge house for work & study 🎧",
+          "position": 26,
+          "thumbnail_url": "https://i.ytimg.com/vi/zQ8PNeZOdJc/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy4yQUE2Q0JEMTk4NTM3RTZC",
+          "video_id": "2CM8Scb7A44",
+          "title": "Blue Hour Workspace — focus music for office, coding & study 🎧",
+          "position": 27,
+          "thumbnail_url": "https://i.ytimg.com/vi/2CM8Scb7A44/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5DMkU4NTY1QUFGQTYwMDE3",
+          "video_id": "S_lboVsyYzE",
+          "title": "Blue Hour Avenue — late-night chill beats for work & home office 🎧",
+          "position": 28,
+          "thumbnail_url": "https://i.ytimg.com/vi/S_lboVsyYzE/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy44Mjc5REFBRUE2MTdFRDU0",
+          "video_id": "pkedXqfu-0E",
+          "title": "Studio Desk — deep focus lounge house / lofi vibes 🎧",
+          "position": 29,
+          "thumbnail_url": "https://i.ytimg.com/vi/pkedXqfu-0E/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        }
+      ]
+    },
+    {
+      "id": "PLVFeqhedIn0I",
+      "title": "Chill Office 🎧 | The Office Music",
+      "description": "Chill office music and polished background beats for productivity, home office and creative work.",
+      "thumbnail_url": "https://i.ytimg.com/vi/4SkD_ohmzII/mqdefault.jpg",
+      "item_count": 5,
+      "privacy_status": "public",
+      "items": [
+        {
+          "playlist_item_id": "UExWRmVxaGVkSW4wSS41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "4SkD_ohmzII",
+          "title": "Midnight Boulevard — chill office music for deep focus 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/4SkD_ohmzII/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExWRmVxaGVkSW4wSS4yODlGNEE0NkRGMEEzMEQy",
+          "video_id": "pRgLlMZo1Z4",
+          "title": "Midnight Hours — chill office music for deep focus 🎧",
+          "position": 1,
+          "thumbnail_url": "https://i.ytimg.com/vi/pRgLlMZo1Z4/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExWRmVxaGVkSW4wSS4wMTcyMDhGQUE4NTIzM0Y5",
+          "video_id": "-U2zjcwIogY",
+          "title": "Lobby District — chill office music for deep focus 🎧",
+          "position": 2,
+          "thumbnail_url": "https://i.ytimg.com/vi/-U2zjcwIogY/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExWRmVxaGVkSW4wSS41MjE1MkI0OTQ2QzJGNzNG",
+          "video_id": "kDfqELf2bdw",
+          "title": "Window Seat Transit — chill office music for deep focus 🎧",
+          "position": 3,
+          "thumbnail_url": "https://i.ytimg.com/vi/kDfqELf2bdw/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExWRmVxaGVkSW4wSS4wOTA3OTZBNzVEMTUzOTMy",
+          "video_id": "ebHHLSMrhs8",
+          "title": "Neon Meeting — chill office music for deep focus 🎧",
+          "position": 4,
+          "thumbnail_url": "https://i.ytimg.com/vi/ebHHLSMrhs8/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        }
+      ]
+    },
+    {
+      "id": "PLKyHkBI68R5Y",
+      "title": "Deep Focus Lofi 🎧 | The Office Music",
+      "description": "Deep focus lofi and lounge instrumentals for concentration, study, work and distraction-free sessions.",
+      "thumbnail_url": "https://i.ytimg.com/vi/eSXFkpqYj5I/mqdefault.jpg",
+      "item_count": 4,
+      "privacy_status": "public",
+      "items": [
+        {
+          "playlist_item_id": "UExLeUhrQkk2OFI1WS41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "eSXFkpqYj5I",
+          "title": "Window Seat Avenue — deep focus lounge house / lofi vibes 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/eSXFkpqYj5I/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExLeUhrQkk2OFI1WS4yODlGNEE0NkRGMEEzMEQy",
+          "video_id": "IFNvU_XOjp4",
+          "title": "Late Check In District — deep focus lounge house / lofi vibes 🎧",
+          "position": 1,
+          "thumbnail_url": "https://i.ytimg.com/vi/IFNvU_XOjp4/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExLeUhrQkk2OFI1WS4wMTcyMDhGQUE4NTIzM0Y5",
+          "video_id": "pGDIlO-AGdk",
+          "title": "Silver Avenue — deep focus lounge house / lofi vibes 🎧",
+          "position": 2,
+          "thumbnail_url": "https://i.ytimg.com/vi/pGDIlO-AGdk/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExLeUhrQkk2OFI1WS41MjE1MkI0OTQ2QzJGNzNG",
+          "video_id": "6trplPhr8oU",
+          "title": "Sunday Suite — deep focus lounge house / lofi vibes 🎧",
+          "position": 3,
+          "thumbnail_url": "https://i.ytimg.com/vi/6trplPhr8oU/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExLeUhrQkk2OFI1WS4wOTA3OTZBNzVEMTUzOTMy",
+          "video_id": "pkedXqfu-0E",
+          "title": "Studio Desk — deep focus lounge house / lofi vibes 🎧",
+          "position": 4,
+          "thumbnail_url": "https://i.ytimg.com/vi/pkedXqfu-0E/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        }
+      ]
+    },
+    {
+      "id": "PLDEDdgTMm-E4",
+      "title": "Focus & Coding 🎧 | The Office Music",
+      "description": "Instrumental focus music for coding, studying, productivity and long work sessions.",
+      "thumbnail_url": "https://i.ytimg.com/vi/b-l8U6u3ZBI/mqdefault.jpg",
+      "item_count": 5,
+      "privacy_status": "public",
+      "items": [
+        {
+          "playlist_item_id": "UExERURkZ1RNbS1FNC41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "b-l8U6u3ZBI",
+          "title": "Studio Boulevard — focus music for office, coding & study 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/b-l8U6u3ZBI/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExERURkZ1RNbS1FNC4yODlGNEE0NkRGMEEzMEQy",
+          "video_id": "65UxhO4nGBE",
+          "title": "Midnight Meeting — focus music for office, coding & study 🎧",
+          "position": 1,
+          "thumbnail_url": "https://i.ytimg.com/vi/65UxhO4nGBE/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExERURkZ1RNbS1FNC4wMTcyMDhGQUE4NTIzM0Y5",
+          "video_id": "U_5l7T23jcY",
+          "title": "City Escalator — focus music for office, coding & study 🎧",
+          "position": 2,
+          "thumbnail_url": "https://i.ytimg.com/vi/U_5l7T23jcY/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExERURkZ1RNbS1FNC41MjE1MkI0OTQ2QzJGNzNG",
+          "video_id": "UbNwJ3b8b44",
+          "title": "Northbound Coffee — focus music for office, coding & study 🎧",
+          "position": 3,
+          "thumbnail_url": "https://i.ytimg.com/vi/UbNwJ3b8b44/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExERURkZ1RNbS1FNC4wOTA3OTZBNzVEMTUzOTMy",
+          "video_id": "2CM8Scb7A44",
+          "title": "Blue Hour Workspace — focus music for office, coding & study 🎧",
+          "position": 4,
+          "thumbnail_url": "https://i.ytimg.com/vi/2CM8Scb7A44/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        }
+      ]
+    },
+    {
+      "id": "PLJLJ1gbG-I1A",
+      "title": "Late Night Chill 🎧 | The Office Music",
+      "description": "Late-night chill beats for quiet work, home office, reading and after-hours focus.",
+      "thumbnail_url": "https://i.ytimg.com/vi/fZqS6-rD8ao/mqdefault.jpg",
+      "item_count": 5,
+      "privacy_status": "public",
+      "items": [
+        {
+          "playlist_item_id": "UExKTEoxZ2JHLUkxQS41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "fZqS6-rD8ao",
+          "title": "Northbound Hallway — late-night chill beats for work & home office 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/fZqS6-rD8ao/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExKTEoxZ2JHLUkxQS4yODlGNEE0NkRGMEEzMEQy",
+          "video_id": "ohzYp20hysU",
+          "title": "Downtown Coffee — late-night chill beats for work & home office 🎧",
+          "position": 1,
+          "thumbnail_url": "https://i.ytimg.com/vi/ohzYp20hysU/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExKTEoxZ2JHLUkxQS4wMTcyMDhGQUE4NTIzM0Y5",
+          "video_id": "rf60TC5p62Y",
+          "title": "Sunday Hours — late-night chill beats for work & home office 🎧",
+          "position": 2,
+          "thumbnail_url": "https://i.ytimg.com/vi/rf60TC5p62Y/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExKTEoxZ2JHLUkxQS41MjE1MkI0OTQ2QzJGNzNG",
+          "video_id": "9fCPMERPWOk",
+          "title": "Velvet Lobby — late-night chill beats for work & home office 🎧",
+          "position": 3,
+          "thumbnail_url": "https://i.ytimg.com/vi/9fCPMERPWOk/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExKTEoxZ2JHLUkxQS4wOTA3OTZBNzVEMTUzOTMy",
+          "video_id": "S_lboVsyYzE",
+          "title": "Blue Hour Avenue — late-night chill beats for work & home office 🎧",
+          "position": 4,
+          "thumbnail_url": "https://i.ytimg.com/vi/S_lboVsyYzE/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        }
+      ]
+    },
+    {
+      "id": "PLXpzb8V0CyfM",
+      "title": "Lofi Lounge 🎧 | The Office Music",
+      "description": "Original lofi lounge tracks for work, study, reading, coding and calm background listening.",
+      "thumbnail_url": "https://i.ytimg.com/vi/BhF7a5e8Uzc/mqdefault.jpg",
+      "item_count": 5,
+      "privacy_status": "public",
+      "items": [
+        {
+          "playlist_item_id": "UExYcHpiOFYwQ3lmTS41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "BhF7a5e8Uzc",
+          "title": "Sunday Afterglow — lofi lounge beats for work & focus 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/BhF7a5e8Uzc/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExYcHpiOFYwQ3lmTS4yODlGNEE0NkRGMEEzMEQy",
+          "video_id": "d0PnZOlDgx8",
+          "title": "Late Check In Workspace — lofi lounge beats for work & focus 🎧",
+          "position": 1,
+          "thumbnail_url": "https://i.ytimg.com/vi/d0PnZOlDgx8/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExYcHpiOFYwQ3lmTS4wMTcyMDhGQUE4NTIzM0Y5",
+          "video_id": "omob9Us4-A4",
+          "title": "Downtown Transit — lofi lounge beats for work & focus 🎧",
+          "position": 2,
+          "thumbnail_url": "https://i.ytimg.com/vi/omob9Us4-A4/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExYcHpiOFYwQ3lmTS41MjE1MkI0OTQ2QzJGNzNG",
+          "video_id": "wFbPDfCTFm4",
+          "title": "Golden Meeting — lofi lounge beats for work & focus 🎧",
+          "position": 3,
+          "thumbnail_url": "https://i.ytimg.com/vi/wFbPDfCTFm4/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExYcHpiOFYwQ3lmTS4wOTA3OTZBNzVEMTUzOTMy",
+          "video_id": "ibiKD8nYvY8",
+          "title": "Neon Transit — lofi lounge beats for work & focus 🎧",
+          "position": 4,
+          "thumbnail_url": "https://i.ytimg.com/vi/ibiKD8nYvY8/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        }
+      ]
+    },
     {
       "id": "PLZF6rzbRB0EA",
       "title": "Lounge House Mix",
@@ -17,6 +572,61 @@
           "title": "Stylish office beats to work to ☕ | 60 min lounge house mix | lofi | music",
           "position": 0,
           "thumbnail_url": "https://i.ytimg.com/vi/ZaN5BK24JVA/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        }
+      ]
+    },
+    {
+      "id": "PLTvhiO77mXNo",
+      "title": "Lounge House 🎧 | The Office Music",
+      "description": "Original lounge house and stylish deep-house inspired instrumentals for office, work and modern spaces.",
+      "thumbnail_url": "https://i.ytimg.com/vi/bSdQG9SO_tM/mqdefault.jpg",
+      "item_count": 5,
+      "privacy_status": "public",
+      "items": [
+        {
+          "playlist_item_id": "UExUdmhpTzc3bVhOby41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "bSdQG9SO_tM",
+          "title": "Glass Afterglow — lofi-inspired lounge house for work & study 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/bSdQG9SO_tM/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExUdmhpTzc3bVhOby4yODlGNEE0NkRGMEEzMEQy",
+          "video_id": "0SnqRYeoUwg",
+          "title": "Studio Lobby — lofi-inspired lounge house for work & study 🎧",
+          "position": 1,
+          "thumbnail_url": "https://i.ytimg.com/vi/0SnqRYeoUwg/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExUdmhpTzc3bVhOby4wMTcyMDhGQUE4NTIzM0Y5",
+          "video_id": "D-TJntwOqnQ",
+          "title": "Sunday Floor — lofi-inspired lounge house for work & study 🎧",
+          "position": 2,
+          "thumbnail_url": "https://i.ytimg.com/vi/D-TJntwOqnQ/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExUdmhpTzc3bVhOby41MjE1MkI0OTQ2QzJGNzNG",
+          "video_id": "TNjIJU7DvAU",
+          "title": "Downtown Elevator — lofi-inspired lounge house for work & study 🎧",
+          "position": 3,
+          "thumbnail_url": "https://i.ytimg.com/vi/TNjIJU7DvAU/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExUdmhpTzc3bVhOby4wOTA3OTZBNzVEMTUzOTMy",
+          "video_id": "zQ8PNeZOdJc",
+          "title": "After Hours Skyline — lofi-inspired lounge house for work & study 🎧",
+          "position": 4,
+          "thumbnail_url": "https://i.ytimg.com/vi/zQ8PNeZOdJc/mqdefault.jpg",
           "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
           "privacy_status": "public"
         }
