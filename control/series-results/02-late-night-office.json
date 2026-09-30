@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 2,
   "key": "late-night-office",
   "name": "Late Night Office",
@@ -9,7 +9,122 @@
   "playlist": "Late Night Office 🌙 | Peter Lofi",
   "description": "One hour of darker, calmer Peter Lofi for late deadlines, quiet offices and after-hours concentration. Soft keys, deep bass and restrained nocturnal textures create a focused city-at-night atmosphere.",
   "request_id": "8a2398c1-9b3d-4fcc-b7a9-15c68ea61546",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-02-late-night-office-8a2398c1",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-02-late-night-office-8a2398c1",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-neon-lobby",
+      "filename": "01-neon-lobby.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "cffd42a38c86ad8fd213b6fbe0a574b33c83bdea4c19b279a3d1b93ddccdbc08",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/01-neon-lobby.wav"
+    },
+    {
+      "title": "02-after-hours-elevator",
+      "filename": "02-after-hours-elevator.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "b6fa9b9cb3ae9d958889b707f35b8d1edd65ea2471d245c7c173e020e328dd34",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/02-after-hours-elevator.wav"
+    },
+    {
+      "title": "03-blue-hour-desk",
+      "filename": "03-blue-hour-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "adbfce7fc21a3d2a7f3234f18ccd502d3144fcfe6133125da785a55b34f3053a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/03-blue-hour-desk.wav"
+    },
+    {
+      "title": "04-neon-deadline",
+      "filename": "04-neon-deadline.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "16b582d94ea0046c1f2117b17b10e2eeae671a66e1b9322eb6a805c396ba638a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/04-neon-deadline.wav"
+    },
+    {
+      "title": "05-night-elevator",
+      "filename": "05-night-elevator.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "7c03be1a1faa77d544edf1c5e7614bacb4c7d2bf41f18c2c7ac84367e68df129",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/05-night-elevator.wav"
+    },
+    {
+      "title": "06-blue-hour-deadline",
+      "filename": "06-blue-hour-deadline.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "addee249de0719be16303c39b38069a67555b87b2b07dcce49cde267bc634e98",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/06-blue-hour-deadline.wav"
+    },
+    {
+      "title": "07-midnight-desk",
+      "filename": "07-midnight-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "09ace68b72d2eec43c85b9e9d47e39fca92c2afb6350eaee5f5a7cc0f293fe8b",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/07-midnight-desk.wav"
+    },
+    {
+      "title": "08-night-windows",
+      "filename": "08-night-windows.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "75d5542c2f4b3063e8dfd7f7977913bc7b632f78f9add1b7b7dba637b2ad927c",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/08-night-windows.wav"
+    },
+    {
+      "title": "09-neon-desk",
+      "filename": "09-neon-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "400b3b1073d7471b3fe028bf079afec2cf03761fdb123a5381ca8f8dc6487a2c",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/09-neon-desk.wav"
+    },
+    {
+      "title": "10-quiet-desk-23",
+      "filename": "10-quiet-desk-23.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "676ca2a9d8577957784f767a23c4599173c071a17e329cf7f6d9aba67a9fd872",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/10-quiet-desk-23.wav"
+    },
+    {
+      "title": "11-night-elevator-26",
+      "filename": "11-night-elevator-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "9ffd59219da9c4d4c318e1d82dec6eb585edb12ca4bc97ca1539d2a6da6afcc4",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/11-night-elevator-26.wav"
+    },
+    {
+      "title": "12-night-desk",
+      "filename": "12-night-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "0a1d36b90677dea06c47997174ac045f9d3eee0d5c22c5ef9acd7f5f900a309d",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/12-night-desk.wav"
+    }
+  ],
   "github_run_id": 36774727080,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36774727080",
-  "started_at": "2026-09-30T20:48:31.117196+00:00"
+  "completed_at": "2026-09-30T21:32:07.502130+00:00"
 }
