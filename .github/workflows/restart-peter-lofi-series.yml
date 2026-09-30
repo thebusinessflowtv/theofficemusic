@@ -1,0 +1,30 @@
+name: Restart Peter Lofi Series Queue
+
+on:
+  push:
+    paths:
+      - 'control/restart-series.json'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dispatch sequential series generator
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          INDEX="$(jq -r '.index' control/restart-series.json)"
+          REQUEST_ID="$(jq -r '.request_id' control/restart-series.json)"
+          test "$INDEX" -ge 1 && test "$INDEX" -le 10
+          test -n "$REQUEST_ID" && test "$REQUEST_ID" != "null"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-series-audio-v2.yml/dispatches" \
+            -f ref=main \
+            -f "inputs[index]=$INDEX" \
+            -f "inputs[request_id]=$REQUEST_ID"
+          echo "Dispatched series $INDEX with request $REQUEST_ID"
