@@ -52,7 +52,7 @@ jobs:
               continue
             fi
 
-            payload="$(jq -n --argjson x "$item" '{ref:"main",inputs:{job_id:$x.id,duration_minutes:($x.duration_minutes|tostring),track_count:($x.track_count|tostring),track_seconds:($x.track_seconds|tostring),publish:$x.publish,privacy:$x.privacy,title:$x.title,loop_url:$x.loop_url,thumbnail_url:$x.thumbnail_url,visual_mode:$x.visual_mode,visual_image_url:$x.visual_image_url}}')"
+            payload="$(jq -n --argjson x "$item" '{ref:"main",inputs:{job_id:$x.id,duration_minutes:($x.duration_minutes|tostring),track_count:($x.track_count|tostring),track_seconds:($x.track_seconds|tostring),publish:$x.publish,privacy:$x.privacy,title:$x.title,loop_url:$x.loop_url,thumbnail_url:(if $x.visual_mode=="image" and (($x.visual_image_url // "")|length)>0 then $x.visual_image_url else $x.thumbnail_url end),visual_mode:$x.visual_mode,visual_image_url:$x.visual_image_url}}')"
             code="$(curl -sS -o response.txt -w '%{http_code}' \
               -X POST \
               -H "Authorization: Bearer $GH_TOKEN" \
