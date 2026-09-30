@@ -1,0 +1,54 @@
+name: Peter Lofi — Kick Direct Dispatch
+
+on:
+  push:
+    paths:
+      - control/kick-live-direct-trigger.json
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build playlist from generated WAV releases and dispatch Kick live
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test -s control/kick-live-direct-trigger.json
+          SESSION_ID="$(jq -r '.session_id' control/kick-live-direct-trigger.json)"
+          TITLE="$(jq -r '.title' control/kick-live-direct-trigger.json)"
+          LOOP_URL="$(jq -r '.loop_url' control/kick-live-direct-trigger.json)"
+          THUMBNAIL_URL="$(jq -r '.thumbnail_url' control/kick-live-direct-trigger.json)"
+          DURATION="$(jq -r '.duration_minutes // "0"' control/kick-live-direct-trigger.json)"
+
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
+            --jq '.[] | .assets[]? | select(.name | ascii_downcase | endswith(".wav")) | .browser_download_url' \
+            | awk 'NF && !seen[$0]++' > /tmp/tracks.txt
+
+          python - <<'PY'
+          import json,base64,pathlib,os
+          urls=[x.strip() for x in pathlib.Path('/tmp/tracks.txt').read_text().splitlines() if x.strip()]
+          if not urls: raise SystemExit('No WAV release assets found')
+          pathlib.Path('/tmp/tracks.b64').write_text(base64.b64encode(json.dumps(urls,separators=(',',':')).encode()).decode())
+          print(f'Prepared {len(urls)} generated tracks')
+          PY
+          TRACKS_B64="$(cat /tmp/tracks.b64)"
+
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-kick-live.yml/dispatches" \
+            -f ref=main \
+            -f "inputs[session_id]=${SESSION_ID}" \
+            -f "inputs[track_urls_b64]=${TRACKS_B64}" \
+            -f "inputs[duration_minutes]=${DURATION}" \
+            -f "inputs[title]=${TITLE}" \
+            -f "inputs[thumbnail_url]=${THUMBNAIL_URL}" \
+            -f "inputs[loop_url]=${LOOP_URL}" \
+            -f "inputs[segment_index]=1"
+
+          echo "Direct Kick workflow dispatched for ${SESSION_ID}."
