@@ -142,6 +142,9 @@ jobs:
           SEGMENT_INDEX: ${{ inputs.segment_index }}
         run: |
           set -euo pipefail
+          git rebase --abort >/dev/null 2>&1 || true
+          git fetch origin main
+          git reset --hard origin/main
           python - <<'PY'
           import datetime,json,os,pathlib
           d={'platform':'kick','status':'starting','title':os.environ['TITLE'],'session_id':os.environ['SESSION_ID'],'segment_index':int(os.environ['SEGMENT_INDEX']),'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
@@ -149,7 +152,6 @@ jobs:
           PY
           git add control/kick-live-results/${SESSION_ID}.json
           git commit -m "peter-lofi: Kick live starting ${SESSION_ID}" || true
-          git pull --rebase origin main
           git push origin HEAD:main
 
       - name: Start Kick RTMPS encoder
@@ -172,13 +174,14 @@ jobs:
           echo $! > build/ffmpeg.pid
           sleep 15
           kill -0 "$(cat build/ffmpeg.pid)" || { tail -100 build/ffmpeg.log; exit 1; }
+          git fetch origin main
+          git reset --hard origin/main
           python - <<'PY'
           import json,os,pathlib,datetime
           p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');d=json.loads(p.read_text());d['status']='live';d['live_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();p.write_text(json.dumps(d,indent=2))
           PY
           git add control/kick-live-results/${SESSION_ID}.json
           git commit -m "peter-lofi: Kick live ${SESSION_ID}" || true
-          git pull --rebase origin main
           git push origin HEAD:main
 
       - name: Keep Kick live running and watch stop flag
@@ -224,14 +227,15 @@ jobs:
           SESSION_ID: ${{ inputs.session_id }}
         run: |
           set -euo pipefail
-          git pull --rebase origin main
+          git rebase --abort >/dev/null 2>&1 || true
+          git fetch origin main
+          git reset --hard origin/main
           python - <<'PY'
           import json,os,pathlib,datetime
           p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');d=json.loads(p.read_text());d['status']='completed';d['completed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();p.write_text(json.dumps(d,indent=2))
           PY
           git add control/kick-live-results/${SESSION_ID}.json
           git commit -m "peter-lofi: Kick live complete ${SESSION_ID}" || true
-          git pull --rebase origin main
           git push origin HEAD:main
 
       - name: Mark Kick live failed
@@ -241,7 +245,9 @@ jobs:
           TITLE: ${{ inputs.title }}
         run: |
           set +e
-          git pull --rebase origin main
+          git rebase --abort >/dev/null 2>&1 || true
+          git fetch origin main
+          git reset --hard origin/main
           mkdir -p control/kick-live-results
           python - <<'PY'
           import json,os,pathlib,datetime
@@ -250,4 +256,6 @@ jobs:
           except Exception:pass
           d.update({'platform':'kick','status':'failed','title':os.environ.get('TITLE','Peter Lofi — Live'),'session_id':os.environ['SESSION_ID'],'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'Kick live workflow failed. Open github_run_url for details.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()});p.write_text(json.dumps(d,indent=2))
           PY
-          git add control/kick-live-results/${SESSION_ID}.json; git commit -m "peter-lofi: Kick live failed ${SESSION_ID}" || true; git pull --rebase origin main; git push origin HEAD:main
+          git add control/kick-live-results/${SESSION_ID}.json
+          git commit -m "peter-lofi: Kick live failed ${SESSION_ID}" || true
+          git push origin HEAD:main
