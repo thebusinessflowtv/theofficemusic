@@ -87,19 +87,20 @@ jobs:
               yt.videos().update(part='snippet',body=body).execute()
               print('UPDATED', video_id, title)
 
-          subscribe=f"https://www.youtube.com/channel/{os.environ['YOUTUBE_CHANNEL_ID']}?sub_confirmation=1"
+          subscribe='https://www.youtube.com/@TheOfficeMusicTv'
 
           for item in manifest.get('uploads',[]):
               name=item['title']  # Preserve the exact music name.
               suffix=suffixes[(int(item['position'])-1) % len(suffixes)]
-              title=f"{name} — {suffix}"
+              title=f"{name} — {suffix} 🎧"
               description=(
                   f"{name} — original instrumental music by The Office Music.\n\n"
                   "A polished lofi-inspired lounge / focus track made for work, studying, coding, design, deep focus, office and home-office sessions. "
                   "If you enjoy calm background music with a modern late-night workspace feel, save this track and subscribe for more original releases.\n\n"
                   "Search discovery: no copyright music, lofi music, focus music, work music, study music and office music. "
                   "Important: this track is original copyrighted music by The Office Music; reuse requires permission unless a separate license explicitly says otherwise.\n\n"
-                  f"🎧 Subscribe to The Office Music: {subscribe}\n\n"
+                  "🎧 Subscribe to The Office Music:\n"
+                  f"{subscribe}\n\n"
                   "Perfect for:\n"
                   "• work & productivity\n"
                   "• studying & reading\n"
@@ -108,19 +109,19 @@ jobs:
                   "• late-night focus\n\n"
                   "© 2026 The Office Music. Original copyright music. All rights reserved.\n"
                   "Reuse, redistribution or re-uploading is not permitted without authorization.\n\n"
-                  "#lofi #lofibeats #focusmusic #workmusic #studymusic #officemusic #chillbeats #loungehouse #copyrightmusic #theofficemusic"
+                  "#lofi #lofibeats #focusmusic #workmusic #studymusic #officemusic #chillbeats #loungehouse #copyrightmusic #nocopyrightmusic #theofficemusic"
               )
               tags=[name, f'{name} lofi', f'{name} focus music'] + base_tags
               update_video(item['youtube_video_id'], title, description, tags)
 
           mix_id=os.environ['MIX_VIDEO_ID']
-          mix_title='1 Hour Lofi Lounge House Mix ☕ beats to work, focus & study to | The Office Music'
+          mix_title='1 Hour Lofi Lounge House Mix ☕ beats to work, focus & study to | The Office Music 🎧'
           mix_description=(
               "1 hour of original The Office Music tracks for work, focus, study, coding and home-office sessions.\n\n"
               "Search discovery: no copyright music, lofi music, focus music, work music, study music and office music. "
               "Important: all tracks in this mix are original copyrighted music by The Office Music; reuse requires permission unless a separate license explicitly says otherwise.\n\n"
               "Inspired by the functional listening style used across leading lofi and chill channels: clear use-case keywords, a strong first-line promise, a complete tracklist and focused hashtags.\n\n"
-              "🎧 Subscribe for more original office music and focus mixes:\n"
+              "🎧 Subscribe to The Office Music:\n"
               f"{subscribe}\n\n"
               "TRACKLIST\n"
           )
@@ -132,7 +133,7 @@ jobs:
           mix_description += (
               "\n© 2026 The Office Music. Original copyright music. All rights reserved.\n"
               "Reuse, redistribution or re-uploading is not permitted without authorization.\n\n"
-              "#lofi #lofibeats #focusmusic #workmusic #studymusic #officemusic #chillbeats #loungehouse #copyrightmusic #theofficemusic"
+              "#lofi #lofibeats #focusmusic #workmusic #studymusic #officemusic #chillbeats #loungehouse #copyrightmusic #nocopyrightmusic #theofficemusic"
           )
           update_video(mix_id, mix_title, mix_description, ['1 hour lofi','lofi mix','focus mix','study mix','work music','office music','lounge house mix','deep focus music','The Office Music','copyright music','no copyright music','no copyright music for videos'])
           PY
