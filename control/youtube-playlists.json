@@ -1,636 +1,119 @@
 {
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-  "generated_at": "2026-09-30T05:30:49.493072+00:00",
+  "brand": "Peter Lofi",
+  "handle_url": "https://www.youtube.com/@PeterLofiSounds",
+  "generated_at": "2026-09-30T07:21:59.302056+00:00",
   "playlist_count": 8,
   "playlists": [
     {
-      "id": "PLcRTCZSXY21w",
-      "title": "All Songs 🎧 | The Office Music",
-      "description": "All original songs released by The Office Music — lofi, lounge house, chill office and focus music for work, study and deep concentration.",
+      "id": "PLXpzb8V0CyfM",
+      "title": "Chill & Relax ☕ | Peter Lofi",
+      "description": "Warm, mellow Peter Lofi tracks for coffee breaks, reading, relaxing and slow evenings.",
       "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 30,
+      "item_count": 0,
+      "privacy_status": "public",
+      "items": []
+    },
+    {
+      "id": "PLTvhiO77mXNo",
+      "title": "City Nights 🌃 | Peter Lofi",
+      "description": "Urban skyline, rooftop and neon-city lofi from the Peter Lofi universe.",
+      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
+      "item_count": 0,
+      "privacy_status": "public",
+      "items": []
+    },
+    {
+      "id": "PLDEDdgTMm-E4",
+      "title": "Deep Focus 💻 | Peter Lofi",
+      "description": "Minimal, steady Peter Lofi beats designed for deep concentration and long productive sessions.",
+      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
+      "item_count": 0,
+      "privacy_status": "public",
+      "items": []
+    },
+    {
+      "id": "PLVFeqhedIn0I",
+      "title": "Focus & Study 📚 | Peter Lofi",
+      "description": "Peter Lofi music for studying, working, coding, concentrating and staying in the zone.",
+      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
+      "item_count": 0,
+      "privacy_status": "public",
+      "items": []
+    },
+    {
+      "id": "PLJLJ1gbG-I1A",
+      "title": "Late Night Lofi 🌙 | Peter Lofi",
+      "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
+      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
+      "item_count": 0,
+      "privacy_status": "public",
+      "items": []
+    },
+    {
+      "id": "PLZF6rzbRB0EA",
+      "title": "Lofi Mixes 🎧 | Peter Lofi",
+      "description": "Long-form Peter Lofi mixes for uninterrupted focus, study, work, reading and relaxing.",
+      "thumbnail_url": "https://i.ytimg.com/vi/mLolLsDRctA/mqdefault.jpg",
+      "item_count": 2,
       "privacy_status": "public",
       "items": [
         {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "BhF7a5e8Uzc",
-          "title": "Sunday Afterglow — lofi lounge beats for work & focus 🎧",
+          "playlist_item_id": "UExaRjZyemJSQjBFQS4yODlGNEE0NkRGMEEzMEQy",
+          "video_id": "mLolLsDRctA",
+          "title": "Stylish office beats to work to Coffee | 60 min Lounge House Mix | Lofi | Music 🕷️ | Peter Lofi 🎧",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/BhF7a5e8Uzc/mqdefault.jpg?sqp=CNi88tUG&rs=AOn4CLAJRVR1I1Ywp-M74BM4fre9I74fOw",
+          "thumbnail_url": "https://i.ytimg.com/vi/mLolLsDRctA/mqdefault.jpg",
           "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-          "privacy_status": "private"
+          "privacy_status": "public"
         },
         {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4yODlGNEE0NkRGMEEzMEQy",
-          "video_id": "4SkD_ohmzII",
-          "title": "Deleted video",
+          "playlist_item_id": "UExaRjZyemJSQjBFQS4wMTcyMDhGQUE4NTIzM0Y5",
+          "video_id": "nRQG5Z00RxU",
+          "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
           "position": 1,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4wMTcyMDhGQUE4NTIzM0Y5",
-          "video_id": "bSdQG9SO_tM",
-          "title": "Deleted video",
-          "position": 2,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy41MjE1MkI0OTQ2QzJGNzNG",
-          "video_id": "b-l8U6u3ZBI",
-          "title": "Deleted video",
-          "position": 3,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4wOTA3OTZBNzVEMTUzOTMy",
-          "video_id": "fZqS6-rD8ao",
-          "title": "Deleted video",
-          "position": 4,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4xMkVGQjNCMUM1N0RFNEUx",
-          "video_id": "eSXFkpqYj5I",
-          "title": "Deleted video",
-          "position": 5,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy41MzJCQjBCNDIyRkJDN0VD",
-          "video_id": "d0PnZOlDgx8",
-          "title": "Deleted video",
-          "position": 6,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy5DQUNERDQ2NkIzRUQxNTY1",
-          "video_id": "pRgLlMZo1Z4",
-          "title": "Deleted video",
-          "position": 7,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy45NDk1REZENzhEMzU5MDQz",
-          "video_id": "0SnqRYeoUwg",
-          "title": "Deleted video",
-          "position": 8,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy5GNjNDRDREMDQxOThCMDQ2",
-          "video_id": "65UxhO4nGBE",
-          "title": "Deleted video",
-          "position": 9,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy40NzZCMERDMjVEN0RFRThB",
-          "video_id": "ohzYp20hysU",
-          "title": "Deleted video",
-          "position": 10,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy5EMEEwRUY5M0RDRTU3NDJC",
-          "video_id": "IFNvU_XOjp4",
-          "title": "Deleted video",
-          "position": 11,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy45ODRDNTg0QjA4NkFBNkQy",
-          "video_id": "omob9Us4-A4",
-          "title": "Deleted video",
-          "position": 12,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4zMDg5MkQ5MEVDMEM1NTg2",
-          "video_id": "-U2zjcwIogY",
-          "title": "Deleted video",
-          "position": 13,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy41Mzk2QTAxMTkzNDk4MDhF",
-          "video_id": "D-TJntwOqnQ",
-          "title": "Deleted video",
-          "position": 14,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy5EQUE1NTFDRjcwMDg0NEMz",
-          "video_id": "U_5l7T23jcY",
-          "title": "Deleted video",
-          "position": 15,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy41QTY1Q0UxMTVCODczNThE",
-          "video_id": "rf60TC5p62Y",
-          "title": "Deleted video",
-          "position": 16,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4yMUQyQTQzMjRDNzMyQTMy",
-          "video_id": "pGDIlO-AGdk",
-          "title": "Deleted video",
-          "position": 17,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy45RTgxNDRBMzUwRjQ0MDhC",
-          "video_id": "wFbPDfCTFm4",
-          "title": "Deleted video",
-          "position": 18,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy5ENDU4Q0M4RDExNzM1Mjcy",
-          "video_id": "kDfqELf2bdw",
-          "title": "Deleted video",
-          "position": 19,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4yMDhBMkNBNjRDMjQxQTg1",
-          "video_id": "TNjIJU7DvAU",
-          "title": "Deleted video",
-          "position": 20,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy5GM0Q3M0MzMzY5NTJFNTdE",
-          "video_id": "UbNwJ3b8b44",
-          "title": "Deleted video",
-          "position": 21,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4zRjM0MkVCRTg0MkYyQTM0",
-          "video_id": "9fCPMERPWOk",
-          "title": "Deleted video",
-          "position": 22,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy45NzUwQkI1M0UxNThBMkU0",
-          "video_id": "6trplPhr8oU",
-          "title": "Deleted video",
-          "position": 23,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy5DNzE1RjZEMUZCMjA0RDBB",
-          "video_id": "ibiKD8nYvY8",
-          "title": "Deleted video",
-          "position": 24,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy43MTI1NDIwOTMwQjIxMzNG",
-          "video_id": "ebHHLSMrhs8",
-          "title": "Deleted video",
-          "position": 25,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy5DQ0MyQ0Y4Mzg0M0VGOEYw",
-          "video_id": "zQ8PNeZOdJc",
-          "title": "Deleted video",
-          "position": 26,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4yQUE2Q0JEMTk4NTM3RTZC",
-          "video_id": "2CM8Scb7A44",
-          "title": "Deleted video",
-          "position": 27,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy5DMkU4NTY1QUFGQTYwMDE3",
-          "video_id": "S_lboVsyYzE",
-          "title": "Deleted video",
-          "position": 28,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy44Mjc5REFBRUE2MTdFRDU0",
-          "video_id": "pkedXqfu-0E",
-          "title": "Deleted video",
-          "position": 29,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
+          "thumbnail_url": "https://i.ytimg.com/vi/nRQG5Z00RxU/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
         }
       ]
     },
     {
-      "id": "PLVFeqhedIn0I",
-      "title": "Chill Office 🎧 | The Office Music",
-      "description": "Chill office music and polished background beats for productivity, home office and creative work.",
-      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 5,
+      "id": "PLcRTCZSXY21w",
+      "title": "Peter Lofi — All Music 🎧",
+      "description": "Every public Peter Lofi release in one place — original lofi music, chill beats, focus mixes and late-night sounds for study, work and relaxing.",
+      "thumbnail_url": "https://i.ytimg.com/vi/mLolLsDRctA/mqdefault.jpg",
+      "item_count": 2,
       "privacy_status": "public",
       "items": [
         {
-          "playlist_item_id": "UExWRmVxaGVkSW4wSS41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "4SkD_ohmzII",
-          "title": "Deleted video",
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy43NDhFRTgwOTRERTU4Rjg3",
+          "video_id": "mLolLsDRctA",
+          "title": "Stylish office beats to work to Coffee | 60 min Lounge House Mix | Lofi | Music 🕷️ | Peter Lofi 🎧",
           "position": 0,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
+          "thumbnail_url": "https://i.ytimg.com/vi/mLolLsDRctA/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
         },
         {
-          "playlist_item_id": "UExWRmVxaGVkSW4wSS4yODlGNEE0NkRGMEEzMEQy",
-          "video_id": "pRgLlMZo1Z4",
-          "title": "Deleted video",
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy41QUZGQTY5OTE4QTREQUU4",
+          "video_id": "nRQG5Z00RxU",
+          "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
           "position": 1,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExWRmVxaGVkSW4wSS4wMTcyMDhGQUE4NTIzM0Y5",
-          "video_id": "-U2zjcwIogY",
-          "title": "Deleted video",
-          "position": 2,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExWRmVxaGVkSW4wSS41MjE1MkI0OTQ2QzJGNzNG",
-          "video_id": "kDfqELf2bdw",
-          "title": "Deleted video",
-          "position": 3,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExWRmVxaGVkSW4wSS4wOTA3OTZBNzVEMTUzOTMy",
-          "video_id": "ebHHLSMrhs8",
-          "title": "Deleted video",
-          "position": 4,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
+          "thumbnail_url": "https://i.ytimg.com/vi/nRQG5Z00RxU/mqdefault.jpg",
+          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+          "privacy_status": "public"
         }
       ]
     },
     {
       "id": "PLKyHkBI68R5Y",
-      "title": "Deep Focus Lofi 🎧 | The Office Music",
-      "description": "Deep focus lofi and lounge instrumentals for concentration, study, work and distraction-free sessions.",
+      "title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
+      "description": "Rainy-night and cozy-window lofi by Peter Lofi for calm focus, reading and relaxing.",
       "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 5,
+      "item_count": 0,
       "privacy_status": "public",
-      "items": [
-        {
-          "playlist_item_id": "UExLeUhrQkk2OFI1WS41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "eSXFkpqYj5I",
-          "title": "Deleted video",
-          "position": 0,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExLeUhrQkk2OFI1WS4yODlGNEE0NkRGMEEzMEQy",
-          "video_id": "IFNvU_XOjp4",
-          "title": "Deleted video",
-          "position": 1,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExLeUhrQkk2OFI1WS4wMTcyMDhGQUE4NTIzM0Y5",
-          "video_id": "pGDIlO-AGdk",
-          "title": "Deleted video",
-          "position": 2,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExLeUhrQkk2OFI1WS41MjE1MkI0OTQ2QzJGNzNG",
-          "video_id": "6trplPhr8oU",
-          "title": "Deleted video",
-          "position": 3,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExLeUhrQkk2OFI1WS4wOTA3OTZBNzVEMTUzOTMy",
-          "video_id": "pkedXqfu-0E",
-          "title": "Deleted video",
-          "position": 4,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        }
-      ]
-    },
-    {
-      "id": "PLDEDdgTMm-E4",
-      "title": "Focus & Coding 🎧 | The Office Music",
-      "description": "Instrumental focus music for coding, studying, productivity and long work sessions.",
-      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 5,
-      "privacy_status": "public",
-      "items": [
-        {
-          "playlist_item_id": "UExERURkZ1RNbS1FNC41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "b-l8U6u3ZBI",
-          "title": "Deleted video",
-          "position": 0,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExERURkZ1RNbS1FNC4yODlGNEE0NkRGMEEzMEQy",
-          "video_id": "65UxhO4nGBE",
-          "title": "Deleted video",
-          "position": 1,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExERURkZ1RNbS1FNC4wMTcyMDhGQUE4NTIzM0Y5",
-          "video_id": "U_5l7T23jcY",
-          "title": "Deleted video",
-          "position": 2,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExERURkZ1RNbS1FNC41MjE1MkI0OTQ2QzJGNzNG",
-          "video_id": "UbNwJ3b8b44",
-          "title": "Deleted video",
-          "position": 3,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExERURkZ1RNbS1FNC4wOTA3OTZBNzVEMTUzOTMy",
-          "video_id": "2CM8Scb7A44",
-          "title": "Deleted video",
-          "position": 4,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        }
-      ]
-    },
-    {
-      "id": "PLJLJ1gbG-I1A",
-      "title": "Late Night Chill 🎧 | The Office Music",
-      "description": "Late-night chill beats for quiet work, home office, reading and after-hours focus.",
-      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 5,
-      "privacy_status": "public",
-      "items": [
-        {
-          "playlist_item_id": "UExKTEoxZ2JHLUkxQS41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "fZqS6-rD8ao",
-          "title": "Deleted video",
-          "position": 0,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExKTEoxZ2JHLUkxQS4yODlGNEE0NkRGMEEzMEQy",
-          "video_id": "ohzYp20hysU",
-          "title": "Deleted video",
-          "position": 1,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExKTEoxZ2JHLUkxQS4wMTcyMDhGQUE4NTIzM0Y5",
-          "video_id": "rf60TC5p62Y",
-          "title": "Deleted video",
-          "position": 2,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExKTEoxZ2JHLUkxQS41MjE1MkI0OTQ2QzJGNzNG",
-          "video_id": "9fCPMERPWOk",
-          "title": "Deleted video",
-          "position": 3,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExKTEoxZ2JHLUkxQS4wOTA3OTZBNzVEMTUzOTMy",
-          "video_id": "S_lboVsyYzE",
-          "title": "Deleted video",
-          "position": 4,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        }
-      ]
-    },
-    {
-      "id": "PLXpzb8V0CyfM",
-      "title": "Lofi Lounge 🎧 | The Office Music",
-      "description": "Original lofi lounge tracks for work, study, reading, coding and calm background listening.",
-      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 5,
-      "privacy_status": "public",
-      "items": [
-        {
-          "playlist_item_id": "UExYcHpiOFYwQ3lmTS41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "BhF7a5e8Uzc",
-          "title": "Sunday Afterglow — lofi lounge beats for work & focus 🎧",
-          "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/BhF7a5e8Uzc/mqdefault.jpg?sqp=CNi88tUG&rs=AOn4CLAJRVR1I1Ywp-M74BM4fre9I74fOw",
-          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-          "privacy_status": "private"
-        },
-        {
-          "playlist_item_id": "UExYcHpiOFYwQ3lmTS4yODlGNEE0NkRGMEEzMEQy",
-          "video_id": "d0PnZOlDgx8",
-          "title": "Deleted video",
-          "position": 1,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExYcHpiOFYwQ3lmTS4wMTcyMDhGQUE4NTIzM0Y5",
-          "video_id": "omob9Us4-A4",
-          "title": "Deleted video",
-          "position": 2,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExYcHpiOFYwQ3lmTS41MjE1MkI0OTQ2QzJGNzNG",
-          "video_id": "wFbPDfCTFm4",
-          "title": "Deleted video",
-          "position": 3,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExYcHpiOFYwQ3lmTS4wOTA3OTZBNzVEMTUzOTMy",
-          "video_id": "ibiKD8nYvY8",
-          "title": "Deleted video",
-          "position": 4,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        }
-      ]
-    },
-    {
-      "id": "PLZF6rzbRB0EA",
-      "title": "Lounge House Mix",
-      "description": "",
-      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 1,
-      "privacy_status": "public",
-      "items": [
-        {
-          "playlist_item_id": "UExaRjZyemJSQjBFQS41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "ZaN5BK24JVA",
-          "title": "Stylish office beats to work to ☕ | 60 min lounge house mix | lofi | music",
-          "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/ZaN5BK24JVA/mqdefault.jpg?sqp=CNi88tUG&rs=AOn4CLDqtS_MDivQxTd8ZQDoUyjS4JrnRA",
-          "video_owner_channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-          "privacy_status": "private"
-        }
-      ]
-    },
-    {
-      "id": "PLTvhiO77mXNo",
-      "title": "Lounge House 🎧 | The Office Music",
-      "description": "Original lounge house and stylish deep-house inspired instrumentals for office, work and modern spaces.",
-      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 5,
-      "privacy_status": "public",
-      "items": [
-        {
-          "playlist_item_id": "UExUdmhpTzc3bVhOby41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "bSdQG9SO_tM",
-          "title": "Deleted video",
-          "position": 0,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExUdmhpTzc3bVhOby4yODlGNEE0NkRGMEEzMEQy",
-          "video_id": "0SnqRYeoUwg",
-          "title": "Deleted video",
-          "position": 1,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExUdmhpTzc3bVhOby4wMTcyMDhGQUE4NTIzM0Y5",
-          "video_id": "D-TJntwOqnQ",
-          "title": "Deleted video",
-          "position": 2,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExUdmhpTzc3bVhOby41MjE1MkI0OTQ2QzJGNzNG",
-          "video_id": "TNjIJU7DvAU",
-          "title": "Deleted video",
-          "position": 3,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        },
-        {
-          "playlist_item_id": "UExUdmhpTzc3bVhOby4wOTA3OTZBNzVEMTUzOTMy",
-          "video_id": "zQ8PNeZOdJc",
-          "title": "Deleted video",
-          "position": 4,
-          "thumbnail_url": "",
-          "video_owner_channel_id": "",
-          "privacy_status": "privacyStatusUnspecified"
-        }
-      ]
+      "items": []
     }
   ]
 }
