@@ -1,6 +1,6 @@
 {
-  "status": "generating",
-  "progress": 5,
+  "status": "failed",
+  "progress": 100,
   "index": 1,
   "key": "office-productivity",
   "name": "Office / Productivity",
@@ -10,5 +10,7 @@
   "request_id": "10b6f0f0-33ad-480b-9b0d-d9b14877fd9b",
   "github_run_id": 36750249683,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36750249683",
-  "started_at": "2026-09-30T17:17:31.319665+00:00"
+  "started_at": "2026-09-30T17:17:31.319665+00:00",
+  "error_message": "Series generation failed. The sequential chain stopped here.",
+  "completed_at": "2026-09-30T17:27:21.482682+00:00"
 }
