@@ -27,13 +27,20 @@ jobs:
           LOOP_URL="$(jq -r '.loop_url' control/kick-live-direct-trigger.json)"
           THUMBNAIL_URL="$(jq -r '.thumbnail_url' control/kick-live-direct-trigger.json)"
           DURATION="$(jq -r '.duration_minutes // "0"' control/kick-live-direct-trigger.json)"
+          CANCEL_RUN_ID="$(jq -r '.cancel_run_id // empty' control/kick-live-direct-trigger.json)"
+
+          if [ -n "$CANCEL_RUN_ID" ]; then
+            echo "Cancelling stale Kick workflow run ${CANCEL_RUN_ID} before redispatch..."
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${CANCEL_RUN_ID}/cancel" || true
+            sleep 8
+          fi
 
           gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
             --jq '.[] | .assets[]? | select(.name | ascii_downcase | endswith(".wav")) | .browser_download_url' \
             | awk 'NF && !seen[$0]++' > /tmp/tracks.txt
 
           python - <<'PY'
-          import json,base64,pathlib,os
+          import json,base64,pathlib
           urls=[x.strip() for x in pathlib.Path('/tmp/tracks.txt').read_text().splitlines() if x.strip()]
           if not urls: raise SystemExit('No WAV release assets found')
           pathlib.Path('/tmp/tracks.b64').write_text(base64.b64encode(json.dumps(urls,separators=(',',':')).encode()).decode())
