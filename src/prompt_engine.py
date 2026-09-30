@@ -22,8 +22,9 @@ def build_prompt(profile: dict, track_index: int, rng: random.Random) -> tuple[s
     dna = deepcopy(profile["music_dna"])
     generation = profile["generation"]
 
-    style = rng.choice(dna["style_pool"])
-    bpm = rng.randint(int(dna["bpm_min"]), int(dna["bpm_max"]))
+    style_pool = dna.get("style_pool") or ["polished modern instrumental lofi"]
+    style = rng.choice(style_pool)
+    bpm = rng.randint(int(dna.get("bpm_min", 82)), int(dna.get("bpm_max", 102)))
 
     instruments = dna.get("preferred_instruments", [])
     selected = instruments[:]
@@ -40,18 +41,44 @@ def build_prompt(profile: dict, track_index: int, rng: random.Random) -> tuple[s
     title = f"{rng.choice(title_left)} {rng.choice(title_right)}"
     listening_context = dna.get("listening_context") or "focused office and home-office listening"
 
+    # Series profiles intentionally override only the musical attributes that need to change.
+    # Keep sensible defaults here so a missing optional DNA field can never abort a generation.
+    groove = dna.get("groove") or (
+        "steady relaxed groove with subtle swing, a consistent pulse and smooth transitions, "
+        "hypnotic enough for focus without becoming aggressive"
+    )
+    percussion = dna.get("percussion") or (
+        "clean restrained beat, soft kick, crisp but gentle hats and no aggressive fills"
+    )
+    bass = dna.get("bass") or (
+        "warm rounded bassline, controlled and supportive, never overpowering the mix"
+    )
+    melody_density = dna.get("melody_density") or (
+        "low to medium-low, minimalist motifs with gradual variation and little distraction"
+    )
+    brightness = dna.get("brightness") or (
+        "smooth polished top end with warm low mids and no harsh treble"
+    )
+    arrangement = dna.get("arrangement") or (
+        "continuous instrumental arrangement with natural evolution, restrained transitions, "
+        "no abrupt drops and no sudden genre changes"
+    )
+    production = dna.get("production") or (
+        "premium clean stereo mix, warm, spacious and unobtrusive for long listening sessions"
+    )
+
     prompt = (
         "TrackType: Music, VocalType: Instrumental. "
         f"A {style} instrumental for {listening_context}, {bpm} BPM. "
         f"Mood: {_join(selected_mood)}. "
         f"Instruments: {_join(selected)}. "
-        f"Groove: {dna['groove']}. "
-        f"Percussion: {dna['percussion']}. "
-        f"Bass: {dna['bass']}. "
-        f"Melodic density: {dna['melody_density']}. "
-        f"Brightness: {dna['brightness']}. "
-        f"Arrangement: {dna['arrangement']}. "
-        f"Production: {dna['production']}. "
+        f"Groove: {groove}. "
+        f"Percussion: {percussion}. "
+        f"Bass: {bass}. "
+        f"Melodic density: {melody_density}. "
+        f"Brightness: {brightness}. "
+        f"Arrangement: {arrangement}. "
+        f"Production: {production}. "
         "Instrumental only, no intelligible singing, no spoken words. "
         "Elegant background music that remains interesting without demanding attention."
     )
