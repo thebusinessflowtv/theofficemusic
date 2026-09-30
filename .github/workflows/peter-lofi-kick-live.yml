@@ -42,6 +42,7 @@ concurrency:
 env:
   GH_TOKEN: ${{ github.token }}
   KICK_STREAM_KEY: ${{ secrets.KICK_STREAM_KEY }}
+  KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
   KICK_RTMP_URL: ${{ secrets.KICK_RTMP_URL }}
 
 jobs:
@@ -107,13 +108,32 @@ jobs:
           if [ -n "$THUMBNAIL_URL" ]; then curl --retry 5 --retry-all-errors -fL "$THUMBNAIL_URL" -o build/thumbnail.jpg || true; fi
           if [ ! -s build/thumbnail.jpg ]; then tr -d '\r\n ' < assets/bootstrap/thumb_compact.b64 | base64 --decode > build/thumbnail.jpg; fi
           ffmpeg -hide_banner -v error -i build/thumbnail.jpg -frames:v 1 -f null - >/dev/null
+
           HAVE_LOOP=0
           if [ -n "$LOOP_URL" ]; then
-            if curl --retry 5 --retry-all-errors -fL "$LOOP_URL" -o build/loop.mp4 && ffmpeg -hide_banner -v error -i build/loop.mp4 -map 0:v:0 -f null - >/dev/null 2>&1; then HAVE_LOOP=1; fi
+            if curl --retry 5 --retry-all-errors -fL "$LOOP_URL" -o build/visual-source; then
+              if ffmpeg -hide_banner -v error -i build/visual-source -map 0:v:0 -t 1 -f null - >/dev/null 2>&1; then
+                MIME_KIND="$(file -b --mime-type build/visual-source || true)"
+                if echo "$MIME_KIND" | grep -q '^image/'; then
+                  echo "Selected visual is an image; building a reusable 60 FPS video loop."
+                  ffmpeg -hide_banner -loglevel warning -y -loop 1 -i build/visual-source -t 12 \
+                    -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
+                    -an -c:v libx264 -preset veryfast -crf 18 -g 120 -keyint_min 120 -sc_threshold 0 build/loop.mp4
+                else
+                  echo "Selected visual is a video; preserving its complete duration and looping it during the stream."
+                  cp build/visual-source build/loop.mp4
+                fi
+                HAVE_LOOP=1
+              fi
+            fi
           fi
           if [ "$HAVE_LOOP" = 0 ]; then
-            ffmpeg -hide_banner -loglevel warning -y -loop 1 -i build/thumbnail.jpg -t 12 -vf "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p" -an -c:v libx264 -preset veryfast -crf 20 build/loop.mp4
+            echo "No valid custom visual was available; using the thumbnail as a fixed loop."
+            ffmpeg -hide_banner -loglevel warning -y -loop 1 -i build/thumbnail.jpg -t 12 \
+              -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
+              -an -c:v libx264 -preset veryfast -crf 18 -g 120 -keyint_min 120 -sc_threshold 0 build/loop.mp4
           fi
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration,size -of json build/loop.mp4
 
       - name: Mark Kick live starting
         env:
@@ -137,9 +157,18 @@ jobs:
           SESSION_ID: ${{ inputs.session_id }}
         run: |
           set -euo pipefail
-          BASE="${KICK_RTMP_URL:-rtmps://fa723fc1b171.global-contribute.live-video.net:443/app}"
+          BASE="${KICK_STREAM_URL:-${KICK_RTMP_URL:-rtmps://fa723fc1b171.global-contribute.live-video.net:443/app}}"
           TARGET="${BASE%/}/${KICK_STREAM_KEY}"
-          ffmpeg -hide_banner -loglevel warning -re -stream_loop -1 -i build/loop.mp4 -stream_loop -1 -f concat -safe 0 -i build/playlist.txt -map 0:v:0 -map 1:a:0 -vf "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p" -c:v libx264 -preset veryfast -tune zerolatency -b:v 6000k -minrate 6000k -maxrate 6000k -bufsize 12000k -g 60 -keyint_min 60 -sc_threshold 0 -c:a aac -b:a 192k -ar 48000 -f flv "$TARGET" >build/ffmpeg.log 2>&1 &
+          ffmpeg -hide_banner -loglevel warning \
+            -re -stream_loop -1 -i build/loop.mp4 \
+            -stream_loop -1 -f concat -safe 0 -i build/playlist.txt \
+            -map 0:v:0 -map 1:a:0 \
+            -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
+            -c:v libx264 -preset veryfast -tune zerolatency -profile:v high \
+            -b:v 8000k -minrate 8000k -maxrate 8000k -bufsize 16000k \
+            -g 120 -keyint_min 120 -sc_threshold 0 -x264-params "nal-hrd=cbr:force-cfr=1" \
+            -c:a aac -b:a 160k -ar 48000 -ac 2 \
+            -f flv "$TARGET" >build/ffmpeg.log 2>&1 &
           echo $! > build/ffmpeg.pid
           sleep 15
           kill -0 "$(cat build/ffmpeg.pid)" || { tail -100 build/ffmpeg.log; exit 1; }
