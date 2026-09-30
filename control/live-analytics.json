@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-09-30T17:29:39.084097+00:00",
+  "youtube": {
+    "configured": true,
+    "sessions": []
+  },
+  "kick": {
+    "configured": false,
+    "channel": null
+  }
+}
