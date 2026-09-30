@@ -1,0 +1,124 @@
+name: Update Peter Lofi video n4R2DcQE3BM
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/update-video-n4R2DcQE3BM.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  update-video:
+    if: contains(github.event.head_commit.message, 'update-n4R2DcQE3BM-now')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install YouTube API dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install google-api-python-client google-auth google-auth-httplib2
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Update title and description
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+          VIDEO_ID: n4R2DcQE3BM
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, re
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+
+          video_id = os.environ['VIDEO_ID']
+          creds = Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube'],
+          )
+          yt = build('youtube', 'v3', credentials=creds, cache_discovery=False)
+
+          channel = yt.channels().list(part='id,snippet', mine=True).execute()['items'][0]
+          if channel['id'] != os.environ['YOUTUBE_CHANNEL_ID']:
+              raise SystemExit('Authenticated channel mismatch')
+
+          rows = yt.videos().list(part='snippet,status,contentDetails', id=video_id).execute().get('items', [])
+          if not rows:
+              raise SystemExit(f'Video {video_id} was not found on the authenticated channel')
+          video = rows[0]
+          snippet = video['snippet']
+          if snippet.get('channelId') != os.environ['YOUTUBE_CHANNEL_ID']:
+              raise SystemExit('Video does not belong to the authenticated Peter Lofi channel')
+
+          old_title = snippet.get('title') or ''
+          old_description = snippet.get('description') or ''
+          chapters = []
+          for line in old_description.splitlines():
+              if re.match(r'^\s*\d{1,2}:\d{2}(?::\d{2})?\s+\S', line):
+                  chapters.append(line.strip())
+
+          new_title = '1 Hour Lofi for Work & Focus ☕ | Chill Beats to Study, Code & Relax | Peter Lofi 🕷️'
+          parts = [
+              '🎧 Peter Lofi — original lofi music for focus, work, study and late-night sessions.',
+              '',
+              'A 1-hour lofi mix made for deep focus, coding, reading, working from home, studying or simply slowing down.',
+              '',
+              'Put on your headphones, keep this mix in the background and stay in the zone.',
+          ]
+          if chapters:
+              parts += ['', 'Tracklist / Chapters:', *chapters]
+          parts += [
+              '',
+              '🎧 Subscribe to Peter Lofi:',
+              'https://www.youtube.com/@PeterLofiSounds',
+              '',
+              'Original music by Peter Lofi.',
+              '© 2026 Peter Lofi. All rights reserved.',
+              '',
+              '#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #StudyMusic #WorkMusic',
+          ]
+          new_description = '\n'.join(parts)[:5000]
+
+          updated_snippet = dict(snippet)
+          updated_snippet['title'] = new_title[:100]
+          updated_snippet['description'] = new_description
+
+          result = yt.videos().update(
+              part='snippet',
+              body={'id': video_id, 'snippet': updated_snippet},
+          ).execute()
+
+          out = {
+              'video_id': video_id,
+              'youtube_url': f'https://youtu.be/{video_id}',
+              'old_title': old_title,
+              'new_title': result['snippet']['title'],
+              'new_description': result['snippet']['description'],
+              'privacy_status': video.get('status', {}).get('privacyStatus'),
+          }
+          pathlib.Path('control/youtube-updates').mkdir(parents=True, exist_ok=True)
+          pathlib.Path(f'control/youtube-updates/{video_id}.json').write_text(
+              json.dumps(out, ensure_ascii=False, indent=2), encoding='utf-8'
+          )
+          print(json.dumps(out, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Save update receipt
+        run: |
+          set -euo pipefail
+          git add control/youtube-updates/n4R2DcQE3BM.json
+          git commit -m "peter-lofi: record metadata update for n4R2DcQE3BM" || true
+          git pull --rebase origin main
+          git push origin HEAD:main
