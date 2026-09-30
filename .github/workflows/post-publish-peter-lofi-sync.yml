@@ -1,0 +1,25 @@
+name: Peter Lofi — Post Publish Sync
+
+on:
+  workflow_run:
+    workflows: ["Office Music — Generate and Publish"]
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  sync:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync Peter Lofi metadata and playlists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method POST \
+            repos/${GITHUB_REPOSITORY}/actions/workflows/sync-youtube-playlists.yml/dispatches \
+            -f ref=main
+          echo "Peter Lofi post-publish sync dispatched."
