@@ -1,0 +1,268 @@
+name: Peter Lofi — Sequential Series Audio V2
+
+on:
+  workflow_dispatch:
+    inputs:
+      index:
+        required: true
+        type: string
+      request_id:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: peter-lofi-series-audio
+  cancel-in-progress: false
+
+env:
+  KERNEL_SLUG: the-office-music-generator
+  SMALL_KERNEL_SLUG: the-office-music-generator-small
+  SECRET_DATASET_SLUG: the-office-music-secrets
+  KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+jobs:
+  generate-series:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip
+          python -m pip install kaggle
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Resolve series
+        env:
+          SERIES_INDEX_INPUT: ${{ inputs.index }}
+          REQUEST_ID: ${{ inputs.request_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p build control/series-results
+          python - <<'PY'
+          import json, os, pathlib, re
+          idx=int(os.environ['SERIES_INDEX_INPUT'])
+          if not 1 <= idx <= 10: raise SystemExit('Series index must be 1..10')
+          req=os.environ['REQUEST_ID']
+          if not re.fullmatch(r'[0-9a-fA-F-]{36}', req): raise SystemExit('Invalid request UUID')
+          plan=json.loads(pathlib.Path('config/peter_lofi_series.json').read_text(encoding='utf-8'))
+          item=next(x for x in plan['series'] if int(x['index'])==idx)
+          env={'SERIES_INDEX':str(idx),'SERIES_KEY':item['key'],'SERIES_NAME':item['name'],'RESULT_FILE':f"control/series-results/{idx:02d}-{item['key']}.json"}
+          with open(os.environ['GITHUB_ENV'],'a',encoding='utf-8') as f:
+              for k,v in env.items(): f.write(f'{k}={v}\n')
+          pathlib.Path('build/series.json').write_text(json.dumps(item,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(f"Resolved series {idx}: {item['key']}")
+          PY
+
+      - name: Initialize MediaForge result
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime,json,os,pathlib
+          item=json.loads(pathlib.Path('build/series.json').read_text(encoding='utf-8'))
+          out={'status':'generating','progress':5,'index':item['index'],'key':item['key'],'name':item['name'],'title':item['title'],'playlist':item['playlist'],'description':item['description'],'request_id':os.environ['REQUEST_ID'],'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          p=pathlib.Path(os.environ['RESULT_FILE']);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          git add "$RESULT_FILE"
+          git commit -m "peter-lofi: start series ${SERIES_INDEX} ${SERIES_KEY}" || true
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Prepare private HF token dataset
+        id: kaggle_secret
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          test -n "$KAGGLE_USERNAME" && test -n "$KAGGLE_API_TOKEN" && test -n "$HF_TOKEN"
+          SECRET_DIR="$(mktemp -d)"; trap 'rm -rf "$SECRET_DIR"' EXIT
+          printf '%s' "$HF_TOKEN" > "$SECRET_DIR/hf_token.txt"
+          chmod 600 "$SECRET_DIR/hf_token.txt"
+          python - "$SECRET_DIR" <<'PY'
+          import json,os,pathlib,sys
+          d=pathlib.Path(sys.argv[1]);(d/'dataset-metadata.json').write_text(json.dumps({'title':'The Office Music Secrets','id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets",'licenses':[{'name':'other'}],'description':'Private CI credential input.'},indent=2),encoding='utf-8')
+          PY
+          DATASET="$KAGGLE_USERNAME/$SECRET_DATASET_SLUG"
+          if kaggle datasets status "$DATASET" >/dev/null 2>&1; then kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token" -q; else kaggle datasets create -p "$SECRET_DIR" --private -q; fi
+
+      - name: Try Stable Audio 3 Medium
+        id: medium
+        if: steps.kaggle_secret.outcome == 'success'
+        continue-on-error: true
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+        run: |
+          set -euo pipefail
+          TMP="$(mktemp -d)"
+          cp kaggle/runner.py "$TMP/runner.py"
+          python - "$TMP/runner.py" <<'PY'
+          import os,pathlib,re,sys
+          p=pathlib.Path(sys.argv[1]);t=p.read_text(encoding='utf-8')
+          t=re.sub(r'TRACK_COUNT = \d+','TRACK_COUNT = 10',t,count=1)
+          t=re.sub(r'TRACK_DURATION_SECONDS = \d+','TRACK_DURATION_SECONDS = 360',t,count=1)
+          t=re.sub(r'REQUEST_ID = "[^"]*"',f'REQUEST_ID = "{os.environ["REQUEST_ID"]}"',t,count=1)
+          t=re.sub(r'SERIES_KEY = "[^"]*"',f'SERIES_KEY = "{os.environ["SERIES_KEY"]}"',t,count=1)
+          p.write_text(t,encoding='utf-8')
+          PY
+          python - "$TMP" <<'PY'
+          import json,os,pathlib,sys
+          d=pathlib.Path(sys.argv[1]);(d/'kernel-metadata.json').write_text(json.dumps({'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-generator",'title':'The Office Music Generator','code_file':'runner.py','language':'python','kernel_type':'script','is_private':True,'enable_gpu':True,'enable_internet':True,'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],'competition_sources':[],'kernel_sources':[]},indent=2),encoding='utf-8')
+          PY
+          kaggle kernels push -p "$TMP" --timeout 7200
+          sleep 45
+          KERNEL="$KAGGLE_USERNAME/$KERNEL_SLUG"; COMPLETE=0
+          for i in $(seq 1 150); do
+            STATUS="$(kaggle kernels status "$KERNEL" 2>&1 || true)"; echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi 'complete|completed'; then COMPLETE=1; break; fi
+            if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then kaggle kernels logs "$KERNEL" || true; exit 1; fi
+            sleep 60
+          done
+          test "$COMPLETE" = "1"
+          rm -rf generated-medium; mkdir -p generated-medium
+          kaggle kernels output "$KERNEL" -p generated-medium
+          test -n "$(find generated-medium -type f -name '*.wav' -print -quit)"
+          MARKER="$(find generated-medium -type f -name request_id.txt -print -quit)"; test -n "$MARKER"
+          test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID"
+
+      - name: Try Stable Audio Small-Music fallback
+        id: small
+        if: steps.medium.outcome != 'success' && steps.kaggle_secret.outcome == 'success'
+        continue-on-error: true
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+        run: |
+          set -euo pipefail
+          TMP="$(mktemp -d)"
+          cp kaggle/runner_small.py "$TMP/runner.py"
+          python - "$TMP/runner.py" <<'PY'
+          import os,pathlib,re,sys
+          p=pathlib.Path(sys.argv[1]);t=p.read_text(encoding='utf-8')
+          t=re.sub(r'TRACK_COUNT = \d+','TRACK_COUNT = 30',t,count=1)
+          t=re.sub(r'REQUEST_ID = "[^"]*"',f'REQUEST_ID = "{os.environ["REQUEST_ID"]}"',t,count=1)
+          t=re.sub(r'SERIES_KEY = "[^"]*"',f'SERIES_KEY = "{os.environ["SERIES_KEY"]}"',t,count=1)
+          p.write_text(t,encoding='utf-8')
+          PY
+          python - "$TMP" <<'PY'
+          import json,os,pathlib,sys
+          d=pathlib.Path(sys.argv[1]);(d/'kernel-metadata.json').write_text(json.dumps({'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-generator-small",'title':'The Office Music Generator Small','code_file':'runner.py','language':'python','kernel_type':'script','is_private':True,'enable_gpu':True,'enable_internet':True,'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],'competition_sources':[],'kernel_sources':[]},indent=2),encoding='utf-8')
+          PY
+          kaggle kernels push -p "$TMP" --timeout 7200
+          sleep 45
+          KERNEL="$KAGGLE_USERNAME/$SMALL_KERNEL_SLUG"; COMPLETE=0
+          for i in $(seq 1 150); do
+            STATUS="$(kaggle kernels status "$KERNEL" 2>&1 || true)"; echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi 'complete|completed'; then COMPLETE=1; break; fi
+            if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then kaggle kernels logs "$KERNEL" || true; exit 1; fi
+            sleep 60
+          done
+          test "$COMPLETE" = "1"
+          rm -rf generated-small; mkdir -p generated-small
+          kaggle kernels output "$KERNEL" -p generated-small
+          test -n "$(find generated-small -type f -name '*.wav' -print -quit)"
+          MARKER="$(find generated-small -type f -name request_id.txt -print -quit)"; test -n "$MARKER"
+          test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID"
+
+      - name: Select fresh generated audio
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf generated; mkdir -p generated build
+          if [ "${{ steps.medium.outcome }}" = success ]; then
+            find generated-medium -type f -name '*.wav' -exec cp {} generated/ \;
+            echo stable-audio-3-medium > build/generation-mode.txt
+          elif [ "${{ steps.small.outcome }}" = success ]; then
+            find generated-small -type f -name '*.wav' -exec cp {} generated/ \;
+            echo stable-audio-3-small-music-fallback > build/generation-mode.txt
+          else
+            echo '::error::Fresh generation failed in both Medium and Small-Music. Historical audio reuse is forbidden.'
+            exit 1
+          fi
+          python scripts/validate_fresh_audio.py --generated-dir generated --target-seconds 3600 --concat-file build/concat.txt --manifest-file build/tracks.json
+
+      - name: Build 60-minute audio master
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel warning -stats -y -f concat -safe 0 -i build/concat.txt -t 3600 -vn -c:a aac -b:a 320k -ar 48000 build/peter-lofi-master.m4a
+          test -s build/peter-lofi-master.m4a
+
+      - name: Save tracks and master in GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUEST_ID: ${{ inputs.request_id }}
+        run: |
+          set -euo pipefail
+          TAG="peter-lofi-series-$(printf '%02d' "$SERIES_INDEX")-${SERIES_KEY}-${REQUEST_ID:0:8}"
+          gh release create "$TAG" --title "Peter Lofi — ${SERIES_NAME}" --notes "Fresh original Peter Lofi audio. Series ${SERIES_INDEX}/10. No YouTube upload was performed."
+          while IFS= read -r -d '' f; do gh release upload "$TAG" "$f"; done < <(find generated -type f -name '*.wav' -print0)
+          gh release upload "$TAG" build/peter-lofi-master.m4a
+          echo "$TAG" > build/release-tag.txt
+
+      - name: Write completed MediaForge metadata
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main
+          python - <<'PY'
+          import datetime,json,os,pathlib,urllib.parse
+          item=json.loads(pathlib.Path('build/series.json').read_text(encoding='utf-8'))
+          tracks=json.loads(pathlib.Path('build/tracks.json').read_text(encoding='utf-8'))
+          tag=pathlib.Path('build/release-tag.txt').read_text().strip(); mode=pathlib.Path('build/generation-mode.txt').read_text().strip(); base=f'https://github.com/thebusinessflowtv/theofficemusic/releases/download/{tag}/'
+          for t in tracks:t['download_url']=base+urllib.parse.quote(t['filename'])
+          out={'status':'completed','progress':100,'index':item['index'],'key':item['key'],'name':item['name'],'title':item['title'],'playlist':item['playlist'],'description':item['description'],'request_id':os.environ['REQUEST_ID'],'duration_minutes':60,'generation_mode':mode,'release_tag':tag,'release_url':f'https://github.com/thebusinessflowtv/theofficemusic/releases/tag/{tag}','master_audio_url':base+'peter-lofi-master.m4a','tracks':tracks,'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          pathlib.Path(os.environ['RESULT_FILE']).write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          git add "$RESULT_FILE"
+          git commit -m "peter-lofi: complete series ${SERIES_INDEX} ${SERIES_KEY}" || true
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Start next series automatically
+        if: success() && inputs.index != '10'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          NEXT=$((SERIES_INDEX + 1))
+          NEXT_ID="$(python -c 'import uuid; print(uuid.uuid4())')"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-series-audio-v2.yml/dispatches" -f ref=main -f "inputs[index]=${NEXT}" -f "inputs[request_id]=${NEXT_ID}"
+
+      - name: Write failed result
+        if: failure()
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+        run: |
+          set +e
+          git pull --rebase origin main
+          python - <<'PY'
+          import datetime,json,os,pathlib
+          item={}
+          try:item=json.loads(pathlib.Path('build/series.json').read_text(encoding='utf-8'))
+          except Exception:pass
+          p=pathlib.Path(os.environ.get('RESULT_FILE',f"control/series-results/failed-{os.environ['REQUEST_ID']}.json"));p.parent.mkdir(parents=True,exist_ok=True)
+          old={}
+          try:old=json.loads(p.read_text(encoding='utf-8'))
+          except Exception:pass
+          old.update({'status':'failed','progress':100,'index':item.get('index'),'key':item.get('key'),'name':item.get('name'),'title':item.get('title'),'playlist':item.get('playlist'),'description':item.get('description'),'request_id':os.environ['REQUEST_ID'],'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'Series generation failed. The sequential chain stopped here.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()})
+          p.write_text(json.dumps(old,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          git add "$RESULT_FILE" || true
+          git commit -m "peter-lofi: fail series ${SERIES_INDEX:-unknown} ${SERIES_KEY:-unknown}" || true
+          git pull --rebase origin main
+          git push origin HEAD:main
