@@ -129,7 +129,7 @@ jobs:
           PY
           python - "$TMP" <<'PY'
           import json,os,pathlib,sys
-          d=pathlib.Path(sys.argv[1]);(d/'kernel-metadata.json').write_text(json.dumps({'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-generator-small",'title':'Peter Lofi Series Generator','code_file':'runner.py','language':'python','kernel_type':'script','is_private':True,'enable_gpu':True,'enable_internet':True,'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],'competition_sources':[],'kernel_sources':[]},indent=2),encoding='utf-8')
+          d=pathlib.Path(sys.argv[1]);(d/'kernel-metadata.json').write_text(json.dumps({'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-generator-small",'title':'The Office Music Generator Small','code_file':'runner.py','language':'python','kernel_type':'script','is_private':True,'enable_gpu':True,'enable_internet':True,'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],'competition_sources':[],'kernel_sources':[]},indent=2),encoding='utf-8')
           PY
           kaggle kernels push -p "$TMP" --timeout 7200
           sleep 45
