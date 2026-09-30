@@ -1,15 +1,15 @@
 {
-  "status": "failed",
-  "progress": 100,
+  "status": "generating",
+  "progress": 8,
+  "phase": "Preparando geração de áudio original",
   "index": 1,
   "key": "office-productivity",
   "name": "Office / Productivity",
   "title": "Office Flow — 1 Hour Lofi for Work & Productivity | Peter Lofi 🎧",
   "playlist": "Office / Productivity 🎧 | Peter Lofi",
   "description": "A focused 1-hour Peter Lofi session designed for productive work, planning, reading and everyday office routines. Warm keys, restrained drums and a steady unobtrusive groove keep momentum without demanding attention.",
-  "request_id": "6f7d8351-9144-44cc-9b87-2f70d93613a6",
-  "github_run_id": 36765364825,
-  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36765364825",
-  "error_message": "Series generation failed. The sequential chain stopped here.",
-  "completed_at": "2026-09-30T19:26:36.302655+00:00"
+  "request_id": "9d2b5d9b-6a34-4ee2-8c4a-17f8f1a32b7e",
+  "github_run_id": 36769083282,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36769083282",
+  "started_at": "2026-09-30T19:56:30.826363+00:00"
 }
