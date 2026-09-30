@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 3,
   "key": "coffee-shop",
   "name": "Coffee Shop",
@@ -9,7 +9,122 @@
   "playlist": "Coffee Shop ☕ | Peter Lofi",
   "description": "A cozy 1-hour coffee-shop session for studying, journaling, writing and relaxed work. Warm electric piano, mellow drums and soft bass create the feeling of a calm city café without distracting ambience or vocals.",
   "request_id": "93ad899a-8cc6-4056-a837-574edb4ace6f",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-03-coffee-shop-93ad899a",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-03-coffee-shop-93ad899a",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-sunday-morning",
+      "filename": "01-sunday-morning.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "f4aa49446211af7a74ba3fcbcbfa37406579f8d47fa2a6693d4c3292b84df6a4",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/01-sunday-morning.wav"
+    },
+    {
+      "title": "02-window-table",
+      "filename": "02-window-table.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "24dc2c27f80b9e1c4740f34d1a2b899cd50c0dee9e2258be09121496534accd9",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/02-window-table.wav"
+    },
+    {
+      "title": "03-corner-cafe",
+      "filename": "03-corner-cafe.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "9cdd0c07907c4f295d38ae20582526c5ef954d46a099391fa4c9cda626e6a706",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/03-corner-cafe.wav"
+    },
+    {
+      "title": "04-roasted-cafe-08",
+      "filename": "04-roasted-cafe-08.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "766870194da87e83e20de05a8466dc74ebe619e5b013188d0db3189bcb9f0259",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/04-roasted-cafe-08.wav"
+    },
+    {
+      "title": "05-corner-table",
+      "filename": "05-corner-table.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "5ab83431b0a8d36f47f666d510f0deb8194d751a1e115b56c36b6ec7c7078412",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/05-corner-table.wav"
+    },
+    {
+      "title": "06-corner-table-13",
+      "filename": "06-corner-table-13.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "42da72fe17fe3f0d76e915037aa8661010859d62e6ab774e24fcb64952e391ed",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/06-corner-table-13.wav"
+    },
+    {
+      "title": "07-quiet-coffee",
+      "filename": "07-quiet-coffee.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "d80f65743a09d50431b06188344fa47dc36d9175f2ef20ab4911ba3740943595",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/07-quiet-coffee.wav"
+    },
+    {
+      "title": "08-warm-coffee",
+      "filename": "08-warm-coffee.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "b9805348e2eb0a314e9bc2409f07cd95d9919edd15e62390d40b9de0e07b6ff8",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/08-warm-coffee.wav"
+    },
+    {
+      "title": "09-window-coffee-21",
+      "filename": "09-window-coffee-21.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "a54e6032883db920a93ff5f19b10af0d7b9cddbf676e15cfdc12b07337fc7e42",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/09-window-coffee-21.wav"
+    },
+    {
+      "title": "10-sunday-morning-23",
+      "filename": "10-sunday-morning-23.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "5d191d069afb5c328934162e40c3b9fd06039fe9a1510ed98d433cd8123a9853",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/10-sunday-morning-23.wav"
+    },
+    {
+      "title": "11-sunday-cup-26",
+      "filename": "11-sunday-cup-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "3b147e4933490e51b11931c1084d04023b8853eed92b1aceffd085a87988e808",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/11-sunday-cup-26.wav"
+    },
+    {
+      "title": "12-window-notebook",
+      "filename": "12-window-notebook.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "ab176fe7d20eb99efdcae538720a977dbdce7f878abc7c2e7d2a470ffdf95786",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/12-window-notebook.wav"
+    }
+  ],
   "github_run_id": 36780055742,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36780055742",
-  "started_at": "2026-09-30T21:32:42.717422+00:00"
+  "completed_at": "2026-09-30T22:22:24.511925+00:00"
 }
