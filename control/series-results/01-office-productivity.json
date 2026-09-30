@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 1,
   "key": "office-productivity",
   "name": "Office / Productivity",
@@ -9,7 +9,122 @@
   "playlist": "Office / Productivity 🎧 | Peter Lofi",
   "description": "A focused 1-hour Peter Lofi session designed for productive work, planning, reading and everyday office routines. Warm keys, restrained drums and a steady unobtrusive groove keep momentum without demanding attention.",
   "request_id": "c7a83f5c-2d9e-4b51-b7c9-2bbde4fca8e3",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-01-office-productivity-c7a83f5c",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-01-office-productivity-c7a83f5c",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-quiet-workflow",
+      "filename": "01-quiet-workflow.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "ee167cb2de48bf5d95a9cf3ee9c6f0a502a587d5b8c42d23eb53e33bc596ea6a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/01-quiet-workflow.wav"
+    },
+    {
+      "title": "02-soft-desk",
+      "filename": "02-soft-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "32950d2e728e2d2134bbd9e6cb7490243c28ba77a78369dd7253f9f0b137630d",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/02-soft-desk.wav"
+    },
+    {
+      "title": "03-focus-desk-06",
+      "filename": "03-focus-desk-06.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "38ac7156d3861e9236a6168c140f82f63ada9d68d2668485904272498a0f26ab",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/03-focus-desk-06.wav"
+    },
+    {
+      "title": "04-focus-notes",
+      "filename": "04-focus-notes.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "fbe34a8735dc62a4ad31064ad95c4a5f506d7ea7b66fe6d7f34fa8af048c5e5b",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/04-focus-notes.wav"
+    },
+    {
+      "title": "05-daily-workspace",
+      "filename": "05-daily-workspace.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "0b3be98314adc0a6268a66eaef490814442c70ff85fa657750f2b8c114347036",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/05-daily-workspace.wav"
+    },
+    {
+      "title": "06-soft-workspace",
+      "filename": "06-soft-workspace.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "6356dcb0cd55bcd8559cf11000ea9db5b74f14747dfb0acc938616920483a3f6",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/06-soft-workspace.wav"
+    },
+    {
+      "title": "07-daily-notes",
+      "filename": "07-daily-notes.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "5387b927cf12673e06fa8aca66f534cecb70f471d28801a86f34a3fa0bb93baf",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/07-daily-notes.wav"
+    },
+    {
+      "title": "08-focus-workspace",
+      "filename": "08-focus-workspace.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "30791c1ff46dc39b39166ac56a2f4bc8118d31325b68e5b5cdcbfba1e48ee69c",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/08-focus-workspace.wav"
+    },
+    {
+      "title": "09-focus-notes-21",
+      "filename": "09-focus-notes-21.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "d064c0bf039887fc5bcd90497b6568d97b3c0f70928c0eec2afc930bf5c7154a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/09-focus-notes-21.wav"
+    },
+    {
+      "title": "10-clean-workflow",
+      "filename": "10-clean-workflow.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "038586e970d3de616b4a9d06a9d451629b47f64e450c2d42972bf9d38d65a29a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/10-clean-workflow.wav"
+    },
+    {
+      "title": "11-daily-workflow-26",
+      "filename": "11-daily-workflow-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "3f454fd80aa85a49b8457b2c259bee7b4d08a52b0006619ef85ab2c6332f4959",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/11-daily-workflow-26.wav"
+    },
+    {
+      "title": "12-focus-desk-28",
+      "filename": "12-focus-desk-28.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "8fbfa7a66207703ae3630e1f01a8b54957cbe15d6d8c78707c071ae267ac6442",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/12-focus-desk-28.wav"
+    }
+  ],
   "github_run_id": 36769461399,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36769461399",
-  "started_at": "2026-09-30T19:59:51.705207+00:00"
+  "completed_at": "2026-09-30T20:44:22.788710+00:00"
 }
