@@ -1,0 +1,15 @@
+{
+  "status": "generating",
+  "progress": 8,
+  "phase": "Preparando geração de áudio original",
+  "index": 4,
+  "key": "rooftop-office",
+  "name": "Rooftop Office",
+  "title": "Rooftop Office — 1 Hour Skyline Lofi & Chill Beats | Peter Lofi 🎧",
+  "playlist": "Rooftop Office 🌆 | Peter Lofi",
+  "description": "A one-hour skyline session with airy synths, clean drums and an uplifting urban pulse. Built for creative work, design sessions and focused evenings above the city.",
+  "request_id": "c0a54074-d71b-4ced-b593-2fa958c7b493",
+  "github_run_id": 36785189196,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36785189196",
+  "started_at": "2026-09-30T22:22:59.633278+00:00"
+}
