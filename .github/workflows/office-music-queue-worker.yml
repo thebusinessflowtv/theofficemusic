@@ -74,7 +74,8 @@ jobs:
 
             if [ "$platform" = kick ]; then
               clean_title="${raw_title#\[KICK\] }"
-              payload="$(jq -n --argjson x "$item" --arg urls "$urls_b64" --arg title "$clean_title" '{ref:"main",inputs:{session_id:$x.id,track_urls_b64:$urls,duration_minutes:$x.duration_minutes,title:$title,thumbnail_url:$x.thumbnail_url,loop_url:$x.loop_url,segment_index:"1"}}')"
+              clean_description="${raw_description#\[platform:kick\]$'\n'}"
+              payload="$(jq -n --argjson x "$item" --arg urls "$urls_b64" --arg title "$clean_title" --arg description "$clean_description" '{ref:"main",inputs:{session_id:$x.id,track_urls_b64:$urls,duration_minutes:$x.duration_minutes,title:$title,description:$description,thumbnail_url:$x.thumbnail_url,loop_url:$x.loop_url,segment_index:"1"}}')"
               workflow="peter-lofi-kick-live.yml"
               kind="kick-live"
             else
