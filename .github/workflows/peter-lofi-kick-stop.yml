@@ -31,6 +31,7 @@ jobs:
           fi
 
           SESSION_ID="$(basename "$FILE" .json)"
+          export SESSION_ID
           RESULT="control/kick-live-results/${SESSION_ID}.json"
           if [ ! -s "$RESULT" ]; then
             git fetch origin main
@@ -68,6 +69,3 @@ jobs:
           git add "control/kick-live-results/${SESSION_ID}.json"
           git commit -m "peter-lofi: mark Kick live stopped ${SESSION_ID}" || true
           git push origin HEAD:main
-        shell: bash
-        env:
-          SESSION_ID: ${{ env.SESSION_ID }}
