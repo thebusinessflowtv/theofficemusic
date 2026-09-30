@@ -97,8 +97,25 @@ def consolidate_to_long_tracks(raw_wavs):
     src_remaining = src_wave.getnframes()
     final_files = []
 
+    def advance_source():
+        nonlocal src_idx, src_wave, src_remaining
+        try:
+            src_wave.close()
+        except Exception:
+            pass
+        src_idx += 1
+        if src_idx >= len(metadata):
+            raise RuntimeError("Ran out of fresh source audio")
+        src_wave = wave.open(str(metadata[src_idx][0]), "rb")
+        src_remaining = src_wave.getnframes()
+
     try:
         for out_idx, needed in enumerate(target_frames, start=1):
+            # A previous final song can end exactly on a source-file boundary.
+            # Advance before deriving the next title or trying to read zero frames.
+            while src_remaining <= 0:
+                advance_source()
+
             source_title = clean_title(metadata[src_idx][0])
             out_path = OUTPUT_DIR / f"{out_idx:02d}-{source_title}.wav"
             with wave.open(str(out_path), "wb") as out:
@@ -106,22 +123,32 @@ def consolidate_to_long_tracks(raw_wavs):
                 out.setsampwidth(sampwidth)
                 out.setframerate(framerate)
                 frames_left = needed
+
                 while frames_left > 0:
+                    if src_remaining <= 0:
+                        advance_source()
+
                     take = min(frames_left, src_remaining)
+                    if take <= 0:
+                        raise RuntimeError("Invalid zero-frame read while building long songs")
+
                     data = src_wave.readframes(take)
                     if not data:
-                        raise RuntimeError("Unexpected end of raw WAV while building long songs")
+                        # Defensive recovery for a WAV that reports frames but reaches EOF early.
+                        src_remaining = 0
+                        continue
+
+                    frame_width = channels * sampwidth
+                    if len(data) % frame_width != 0:
+                        raise RuntimeError("Corrupt PCM frame alignment while building long songs")
+                    frames_read = len(data) // frame_width
+                    if frames_read <= 0:
+                        raise RuntimeError("Unexpected zero-frame PCM block while building long songs")
+
                     out.writeframes(data)
-                    frames_read = len(data) // (channels * sampwidth)
                     frames_left -= frames_read
                     src_remaining -= frames_read
-                    if src_remaining <= 0 and frames_left > 0:
-                        src_wave.close()
-                        src_idx += 1
-                        if src_idx >= len(metadata):
-                            raise RuntimeError("Ran out of fresh source audio")
-                        src_wave = wave.open(str(metadata[src_idx][0]), "rb")
-                        src_remaining = src_wave.getnframes()
+
             duration = needed / framerate
             if duration < MIN_FINAL_TRACK_SECONDS:
                 raise RuntimeError(f"Generated final song shorter than 5 minutes: {out_path.name}")
@@ -132,6 +159,9 @@ def consolidate_to_long_tracks(raw_wavs):
             src_wave.close()
         except Exception:
             pass
+
+    if len(final_files) != final_count:
+        raise RuntimeError(f"Expected {final_count} consolidated songs, produced {len(final_files)}")
 
     return final_files
 
