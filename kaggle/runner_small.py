@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 import subprocess
+import wave
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -13,8 +14,10 @@ REPO_URL = "https://github.com/thebusinessflowtv/theofficemusic.git"
 REPO_DIR = Path("/kaggle/working/theofficemusic")
 SA3_DIR = Path("/kaggle/working/stable-audio-3")
 OUTPUT_DIR = Path("/kaggle/working/output")
+RAW_DIR = Path("/kaggle/working/output-raw")
 TRACK_COUNT = 30
 TRACK_DURATION_SECONDS = 120
+MIN_FINAL_TRACK_SECONDS = 300
 BATCH_PREFIX = "office-small"
 REQUEST_ID = "UNSET"
 
@@ -45,6 +48,94 @@ def request_seed(request_id: str) -> int:
     return int.from_bytes(digest[:8], "big") % 2_000_000_000 + 1
 
 
+def clean_title(path: Path) -> str:
+    stem = re.sub(r"^\d+[\-_ ]*", "", path.stem).strip("-_ ")
+    return stem or "office-session"
+
+
+def consolidate_to_long_tracks(raw_wavs):
+    """Turn fresh <=120s generations into fresh songs of >=5 minutes without looping/reuse."""
+    if not raw_wavs:
+        raise RuntimeError("No raw WAVs available for consolidation")
+
+    metadata = []
+    first_params = None
+    total_frames = 0
+    for p in raw_wavs:
+        with wave.open(str(p), "rb") as w:
+            params = (w.getnchannels(), w.getsampwidth(), w.getframerate(), w.getcomptype())
+            if first_params is None:
+                first_params = params
+            elif params != first_params:
+                raise RuntimeError(f"WAV format mismatch in {p.name}")
+            frames = w.getnframes()
+            metadata.append((p, frames))
+            total_frames += frames
+
+    channels, sampwidth, framerate, comptype = first_params
+    if comptype != "NONE":
+        raise RuntimeError("Expected uncompressed PCM WAV output")
+
+    min_frames = int(framerate * MIN_FINAL_TRACK_SECONDS)
+    if total_frames < min_frames:
+        raise RuntimeError(
+            f"Fresh fallback audio totals only {total_frames / framerate:.1f}s; "
+            f"at least {MIN_FINAL_TRACK_SECONDS}s is required for one song"
+        )
+
+    # Use as many final songs as possible while guaranteeing every one is >= 5 min.
+    final_count = max(1, total_frames // min_frames)
+    base_frames = total_frames // final_count
+    extra_frames = total_frames % final_count
+    target_frames = [base_frames + (1 if i < extra_frames else 0) for i in range(final_count)]
+
+    shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    src_idx = 0
+    src_wave = wave.open(str(metadata[src_idx][0]), "rb")
+    src_remaining = src_wave.getnframes()
+    final_files = []
+
+    try:
+        for out_idx, needed in enumerate(target_frames, start=1):
+            source_title = clean_title(metadata[src_idx][0])
+            out_path = OUTPUT_DIR / f"{out_idx:02d}-{source_title}.wav"
+            with wave.open(str(out_path), "wb") as out:
+                out.setnchannels(channels)
+                out.setsampwidth(sampwidth)
+                out.setframerate(framerate)
+                frames_left = needed
+                while frames_left > 0:
+                    take = min(frames_left, src_remaining)
+                    data = src_wave.readframes(take)
+                    if not data:
+                        raise RuntimeError("Unexpected end of raw WAV while building long songs")
+                    out.writeframes(data)
+                    frames_read = len(data) // (channels * sampwidth)
+                    frames_left -= frames_read
+                    src_remaining -= frames_read
+                    if src_remaining <= 0 and frames_left > 0:
+                        src_wave.close()
+                        src_idx += 1
+                        if src_idx >= len(metadata):
+                            raise RuntimeError("Ran out of fresh source audio")
+                        src_wave = wave.open(str(metadata[src_idx][0]), "rb")
+                        src_remaining = src_wave.getnframes()
+            duration = needed / framerate
+            if duration < MIN_FINAL_TRACK_SECONDS:
+                raise RuntimeError(f"Generated final song shorter than 5 minutes: {out_path.name}")
+            final_files.append(out_path)
+            print(f"Final song {out_idx:02d}: {out_path.name} ({duration:.1f}s)")
+    finally:
+        try:
+            src_wave.close()
+        except Exception:
+            pass
+
+    return final_files
+
+
 def main():
     token = load_hf_token()
     os.environ["HF_TOKEN"] = token
@@ -52,7 +143,7 @@ def main():
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     os.environ["SA3_TARGET_MODEL"] = "small-music"
 
-    for p in (REPO_DIR, SA3_DIR, OUTPUT_DIR):
+    for p in (REPO_DIR, SA3_DIR, OUTPUT_DIR, RAW_DIR):
         if p.exists():
             shutil.rmtree(p, ignore_errors=True)
     run(["git", "clone", "--depth", "1", REPO_URL, str(REPO_DIR)])
@@ -83,23 +174,38 @@ def main():
         "--master-seed", str(seed),
     ], cwd=REPO_DIR, env=env)
 
-    wavs = list(OUTPUT_DIR.glob("*.wav"))
-    if len(wavs) != TRACK_COUNT:
-        raise RuntimeError(f"Expected {TRACK_COUNT} WAV files, generated {len(wavs)}")
+    raw_wavs = sorted(OUTPUT_DIR.glob("*.wav"))
+    if len(raw_wavs) != TRACK_COUNT:
+        raise RuntimeError(f"Expected {TRACK_COUNT} raw WAV files, generated {len(raw_wavs)}")
+
+    RAW_DIR.mkdir(parents=True, exist_ok=True)
+    moved = []
+    for p in raw_wavs:
+        dest = RAW_DIR / p.name
+        shutil.move(str(p), str(dest))
+        moved.append(dest)
+
+    final_wavs = consolidate_to_long_tracks(moved)
 
     (OUTPUT_DIR / "request_id.txt").write_text(REQUEST_ID + "\n", encoding="utf-8")
     (OUTPUT_DIR / "generation_request.json").write_text(json.dumps({
         "request_id": REQUEST_ID,
         "model": "small-music",
         "master_seed": seed,
-        "track_count": TRACK_COUNT,
-        "track_duration_seconds": TRACK_DURATION_SECONDS,
+        "raw_track_count": TRACK_COUNT,
+        "raw_track_duration_seconds": TRACK_DURATION_SECONDS,
+        "final_track_count": len(final_wavs),
+        "minimum_final_track_seconds": MIN_FINAL_TRACK_SECONDS,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }, indent=2), encoding="utf-8")
 
+    shutil.rmtree(RAW_DIR, ignore_errors=True)
     shutil.rmtree(SA3_DIR, ignore_errors=True)
     shutil.rmtree(REPO_DIR, ignore_errors=True)
-    print(f"Fallback generation complete: {len(wavs)} fresh tracks for request {REQUEST_ID}")
+    print(
+        f"Fallback generation complete: {len(final_wavs)} fresh songs, "
+        f"each >= {MIN_FINAL_TRACK_SECONDS}s, for request {REQUEST_ID}"
+    )
 
 
 if __name__ == "__main__":
