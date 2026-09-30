@@ -1,0 +1,248 @@
+{
+  "brand": "Peter Lofi",
+  "channel_url": "https://www.youtube.com/@PeterLofiSounds",
+  "defaults": {
+    "channel": {
+      "name": "Peter Lofi",
+      "concept": "Peter Lofi original instrumental series"
+    },
+    "generation": {
+      "model": "medium",
+      "tracks_per_batch": 10,
+      "track_duration_seconds": 360,
+      "steps": 8,
+      "cfg_scale": 1.0,
+      "chunked_decode": true,
+      "pure_text_to_audio": true
+    },
+    "music_dna": {
+      "instrumental_only": true,
+      "energy": 5,
+      "bpm_min": 84,
+      "bpm_max": 104,
+      "listening_context": "focused work, study and relaxed background listening",
+      "mood": ["focused", "warm", "calm", "modern"],
+      "style_pool": ["polished modern lofi with subtle lounge and chill-house influence"],
+      "preferred_instruments": [
+        "warm electric keys",
+        "soft rounded bass",
+        "clean restrained drums",
+        "gentle atmospheric pads",
+        "minimal synth plucks",
+        "subtle vinyl-like texture without noise artifacts"
+      ],
+      "avoid_instruments": ["distorted guitars", "festival EDM supersaws", "hard techno drums", "trap percussion", "cinematic orchestra"],
+      "percussion": "clean restrained beat, soft kick, crisp but gentle hats, no aggressive fills",
+      "bass": "warm rounded bassline, controlled and supportive, never overpowering",
+      "melody_density": "low to medium-low, memorable minimalist motifs with gradual variation",
+      "brightness": "smooth polished top end with warm low mids",
+      "arrangement": "six-minute continuous instrumental arrangement with natural evolution, restrained transitions, no abrupt drops or genre changes",
+      "production": "premium clean stereo mix, warm, spacious and unobtrusive enough for long work sessions",
+      "title_left": ["Quiet", "Soft", "City", "Midnight", "Golden", "Sunday", "Blue", "Window"],
+      "title_right": ["Desk", "Hours", "Notes", "Windows", "Routine", "Afterglow", "Workspace", "Coffee"]
+    },
+    "negative_prompt": [
+      "poor quality", "distortion", "clipping", "harsh treble", "festival EDM", "hard techno", "trap", "dramatic cinematic trailer music", "intelligible vocals", "spoken words", "rap", "choir", "crowd noise"
+    ],
+    "output": {
+      "format": "wav",
+      "sample_rate": 44100,
+      "directory": "/kaggle/working/output",
+      "write_manifest": true
+    }
+  },
+  "series": [
+    {
+      "index": 1,
+      "key": "office-productivity",
+      "name": "Office / Productivity",
+      "title": "Office Flow — 1 Hour Lofi for Work & Productivity | Peter Lofi 🎧",
+      "playlist": "Office / Productivity 🎧 | Peter Lofi",
+      "description": "A focused 1-hour Peter Lofi session designed for productive work, planning, reading and everyday office routines. Warm keys, restrained drums and a steady unobtrusive groove keep momentum without demanding attention.",
+      "music_dna": {
+        "energy": 5,
+        "bpm_min": 90,
+        "bpm_max": 102,
+        "listening_context": "productive office work, planning, reading and long desk sessions",
+        "mood": ["focused", "clean", "steady", "optimistic"],
+        "style_pool": ["modern productivity lofi with clean lounge production", "warm office lofi with subtle chill-house pulse"],
+        "title_left": ["Focus", "Morning", "Clean", "Quiet", "Daily", "Soft"],
+        "title_right": ["Desk", "Routine", "Notes", "Workflow", "Calendar", "Workspace"]
+      }
+    },
+    {
+      "index": 2,
+      "key": "late-night-office",
+      "name": "Late Night Office",
+      "title": "Late Night Office — 1 Hour Lofi for After Hours Focus | Peter Lofi 🎧",
+      "playlist": "Late Night Office 🌙 | Peter Lofi",
+      "description": "One hour of darker, calmer Peter Lofi for late deadlines, quiet offices and after-hours concentration. Soft keys, deep bass and restrained nocturnal textures create a focused city-at-night atmosphere.",
+      "music_dna": {
+        "energy": 4,
+        "bpm_min": 80,
+        "bpm_max": 92,
+        "listening_context": "late-night office work, quiet deadlines and after-hours concentration",
+        "mood": ["nocturnal", "calm", "introspective", "focused"],
+        "style_pool": ["late-night lofi with moody electric keys and deep ambient layers", "after-hours chill lofi with subtle downtempo pulse"],
+        "brightness": "dark warm mids, subdued highs, soft neon-like shimmer",
+        "title_left": ["Midnight", "After Hours", "Neon", "Quiet", "Blue Hour", "Night"],
+        "title_right": ["Desk", "Elevator", "Windows", "Deadline", "Floor", "Lobby"]
+      }
+    },
+    {
+      "index": 3,
+      "key": "coffee-shop",
+      "name": "Coffee Shop",
+      "title": "Coffee Shop Lofi — 1 Hour Cozy Beats for Work & Study | Peter Lofi 🎧",
+      "playlist": "Coffee Shop ☕ | Peter Lofi",
+      "description": "A cozy 1-hour coffee-shop session for studying, journaling, writing and relaxed work. Warm electric piano, mellow drums and soft bass create the feeling of a calm city café without distracting ambience or vocals.",
+      "music_dna": {
+        "energy": 4,
+        "bpm_min": 76,
+        "bpm_max": 88,
+        "listening_context": "cozy café work, studying, journaling, writing and relaxed reading",
+        "mood": ["cozy", "warm", "gentle", "creative"],
+        "style_pool": ["cozy coffee-shop lofi with warm jazz-influenced electric keys", "mellow café lofi with soft boom-bap-inspired drums and modern clean mix"],
+        "preferred_instruments": ["warm Rhodes-style electric keys", "soft upright-like bass", "gentle brushed electronic drums", "muted guitar-like plucks", "soft atmospheric pads"],
+        "title_left": ["Corner", "Warm", "Sunday", "Window", "Roasted", "Quiet"],
+        "title_right": ["Coffee", "Table", "Cup", "Notebook", "Cafe", "Morning"]
+      }
+    },
+    {
+      "index": 4,
+      "key": "rooftop-office",
+      "name": "Rooftop Office",
+      "title": "Rooftop Office — 1 Hour Skyline Lofi & Chill Beats | Peter Lofi 🎧",
+      "playlist": "Rooftop Office 🌆 | Peter Lofi",
+      "description": "A one-hour skyline session with airy synths, clean drums and an uplifting urban pulse. Built for creative work, design sessions and focused evenings above the city.",
+      "music_dna": {
+        "energy": 6,
+        "bpm_min": 100,
+        "bpm_max": 114,
+        "listening_context": "creative rooftop work, design sessions and focused urban evenings",
+        "mood": ["airy", "urban", "uplifting", "focused"],
+        "style_pool": ["skyline chill-house lofi with airy synths and polished urban groove", "uplifting rooftop lofi with subtle deep-house movement"],
+        "preferred_instruments": ["airy synth plucks", "rounded bass", "clean four-on-the-floor hybrid lofi drums", "wide atmospheric pads", "soft electric keys"],
+        "title_left": ["Skyline", "Rooftop", "Golden", "City", "Highrise", "Blue"],
+        "title_right": ["Air", "Avenue", "View", "Terrace", "Sunset", "Hours"]
+      }
+    },
+    {
+      "index": 5,
+      "key": "rainy-office",
+      "name": "Rainy Office",
+      "title": "Rainy Office — 1 Hour Cozy Lofi for Deep Work | Peter Lofi 🎧",
+      "playlist": "Rainy Office 🌧️ | Peter Lofi",
+      "description": "A calm rainy-day work session with soft piano-like keys, muted percussion and spacious pads. One hour built for deep reading, writing and concentration while the city slows down outside.",
+      "music_dna": {
+        "energy": 3,
+        "bpm_min": 72,
+        "bpm_max": 84,
+        "listening_context": "rainy-day deep work, reading, writing and quiet concentration",
+        "mood": ["rainy", "cozy", "introspective", "peaceful"],
+        "style_pool": ["rainy-day lofi with muted keys and spacious ambient warmth", "soft introspective lofi with gentle downtempo drums"],
+        "brightness": "soft rolled-off highs, warm mids and gentle atmospheric depth",
+        "title_left": ["Rainy", "Grey", "Window", "Quiet", "Cloudy", "Soft"],
+        "title_right": ["Glass", "Desk", "Afternoon", "Notes", "Street", "Hours"]
+      }
+    },
+    {
+      "index": 6,
+      "key": "sunday-morning-work",
+      "name": "Sunday Morning Work",
+      "title": "Sunday Morning Work — 1 Hour Soft Lofi & Easy Focus | Peter Lofi 🎧",
+      "playlist": "Sunday Morning Work ☀️ | Peter Lofi",
+      "description": "Bright, gentle and unhurried. This one-hour Peter Lofi session is made for quiet Sunday planning, light work, reading and a slow start with warm melodic textures and relaxed rhythm.",
+      "music_dna": {
+        "energy": 4,
+        "bpm_min": 78,
+        "bpm_max": 90,
+        "listening_context": "slow Sunday planning, light work, reading and an easy morning start",
+        "mood": ["bright", "gentle", "hopeful", "relaxed"],
+        "style_pool": ["sunny Sunday lofi with warm keys and light organic-feeling percussion", "gentle morning lofi with clean modern production"],
+        "brightness": "soft sunlit highs, warm mids and clear but relaxed stereo image",
+        "title_left": ["Sunday", "Golden", "Morning", "Sunlit", "Easy", "Warm"],
+        "title_right": ["Coffee", "Window", "Notes", "Routine", "Light", "Desk"]
+      }
+    },
+    {
+      "index": 7,
+      "key": "deep-focus-coding",
+      "name": "Deep Focus / Coding",
+      "title": "Deep Focus Coding — 1 Hour Minimal Lofi for Flow State | Peter Lofi 🎧",
+      "playlist": "Deep Focus / Coding 💻 | Peter Lofi",
+      "description": "A minimal one-hour coding soundtrack engineered for long focus blocks. Repetitive but evolving motifs, controlled low end and precise restrained drums help maintain flow without pulling attention away from the screen.",
+      "music_dna": {
+        "energy": 5,
+        "bpm_min": 88,
+        "bpm_max": 102,
+        "listening_context": "coding, programming, debugging and uninterrupted deep-focus flow states",
+        "mood": ["minimal", "hypnotic", "precise", "focused"],
+        "style_pool": ["minimal coding lofi with hypnotic electronic repetition", "deep-focus lofi with precise restrained electronic groove"],
+        "melody_density": "low, short repeating motifs with subtle gradual mutations and very little melodic distraction",
+        "preferred_instruments": ["minimal synth plucks", "soft digital electric keys", "tight rounded bass", "precise restrained drums", "subtle ambient textures"],
+        "title_left": ["Syntax", "Quiet", "Loop", "Kernel", "Soft", "Night"],
+        "title_right": ["Mode", "Compile", "Terminal", "Flow", "Stack", "Session"]
+      }
+    },
+    {
+      "index": 8,
+      "key": "luxury-office",
+      "name": "Luxury Office / Zara-style ambience",
+      "title": "Luxury Office — 1 Hour Fashion Lounge & Deep Focus | Peter Lofi 🎧",
+      "playlist": "Luxury Office ✨ | Peter Lofi",
+      "description": "A polished luxury-office session inspired by premium fashion-retail ambience: clean deep-house pulse, elegant synth textures and refined lounge energy for work, showrooms, studios and sophisticated background listening.",
+      "music_dna": {
+        "energy": 6,
+        "bpm_min": 118,
+        "bpm_max": 123,
+        "listening_context": "premium offices, fashion-retail ambience, design studios and sophisticated focused work",
+        "mood": ["premium", "stylish", "confident", "modern"],
+        "style_pool": ["premium fashion-retail deep house blended with polished lounge house", "luxury commercial chill house with minimalist fashion-store pulse"],
+        "preferred_instruments": ["rounded sidechained synth bass", "clean punchy house kick", "crisp closed hi-hats", "minimal bright synth plucks", "warm atmospheric pads", "subtle electric keys"],
+        "percussion": "clean four-on-the-floor kick, controlled hats and tasteful claps, elegant danceable pulse, no aggressive fills",
+        "bass": "warm rounded deep-house bassline with gentle sidechain movement and premium commercial balance",
+        "production": "high-end fashion-store sound, glossy but smooth top end, tight low end, wide clean stereo image and polished commercial mastering",
+        "title_left": ["Velvet", "Executive", "Marble", "Silver", "Gallery", "Private"],
+        "title_right": ["Lobby", "Suite", "Floor", "Avenue", "Showroom", "Elevator"]
+      }
+    },
+    {
+      "index": 9,
+      "key": "work-from-home",
+      "name": "Work From Home",
+      "title": "Work From Home — 1 Hour Cozy Lofi for Productivity | Peter Lofi 🎧",
+      "playlist": "Work From Home 🏠 | Peter Lofi",
+      "description": "A comfortable one-hour home-office mix for emails, meetings, planning and everyday productivity. Warm keys, soft beats and relaxed textures keep the room calm while helping the workday move forward.",
+      "music_dna": {
+        "energy": 4,
+        "bpm_min": 80,
+        "bpm_max": 94,
+        "listening_context": "home-office emails, planning, remote work, reading and everyday productivity",
+        "mood": ["comfortable", "warm", "steady", "relaxed"],
+        "style_pool": ["cozy home-office lofi with warm modern production", "relaxed remote-work lofi with soft rhythmic momentum"],
+        "title_left": ["Home", "Soft", "Window", "Quiet", "Remote", "Cozy"],
+        "title_right": ["Desk", "Morning", "Routine", "Room", "Break", "Workspace"]
+      }
+    },
+    {
+      "index": 10,
+      "key": "night-shift",
+      "name": "Night Shift",
+      "title": "Night Shift — 1 Hour Dark Lofi for Late Work & Focus | Peter Lofi 🎧",
+      "playlist": "Night Shift 🌃 | Peter Lofi",
+      "description": "A darker one-hour Peter Lofi set for overnight work, editing, coding and long late sessions. Deep bass, restrained drums and subtle neon synth textures create momentum without breaking concentration.",
+      "music_dna": {
+        "energy": 5,
+        "bpm_min": 86,
+        "bpm_max": 100,
+        "listening_context": "overnight work, editing, coding and long late-night focus sessions",
+        "mood": ["dark", "steady", "urban", "focused"],
+        "style_pool": ["dark urban lofi with subtle neon electronics", "night-shift chill lofi with deep bass and restrained modern drums"],
+        "brightness": "dark smooth highs with controlled neon shimmer and deep warm low mids",
+        "title_left": ["Night", "Neon", "Midnight", "Last", "Dark", "After"],
+        "title_right": ["Shift", "Train", "Hours", "Monitor", "Street", "Floor"]
+      }
+    }
+  ]
+}
