@@ -35,11 +35,14 @@ def build_prompt(profile: dict, track_index: int, rng: random.Random) -> tuple[s
     rng.shuffle(selected_mood)
     selected_mood = selected_mood[: min(3, len(selected_mood))]
 
-    title = f"{rng.choice(TITLE_LEFT)} {rng.choice(TITLE_RIGHT)}"
+    title_left = dna.get("title_left") or TITLE_LEFT
+    title_right = dna.get("title_right") or TITLE_RIGHT
+    title = f"{rng.choice(title_left)} {rng.choice(title_right)}"
+    listening_context = dna.get("listening_context") or "focused office and home-office listening"
 
     prompt = (
         "TrackType: Music, VocalType: Instrumental. "
-        f"A {style} instrumental for focused office and home-office listening, {bpm} BPM. "
+        f"A {style} instrumental for {listening_context}, {bpm} BPM. "
         f"Mood: {_join(selected_mood)}. "
         f"Instruments: {_join(selected)}. "
         f"Groove: {dna['groove']}. "
@@ -62,6 +65,7 @@ def build_prompt(profile: dict, track_index: int, rng: random.Random) -> tuple[s
         "bpm": bpm,
         "instruments": selected,
         "mood": selected_mood,
+        "series": profile.get("channel", {}).get("concept", ""),
         "duration_seconds": int(generation["track_duration_seconds"]),
     }
     return prompt, negative_prompt, metadata
