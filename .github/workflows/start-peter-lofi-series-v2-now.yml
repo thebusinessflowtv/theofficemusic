@@ -1,0 +1,29 @@
+name: Start Peter Lofi Ten-Series Queue V2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/start-peter-lofi-series-v2-now.yml"
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    if: contains(github.event.head_commit.message, 'start-peter-lofi-series-v2-now')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch first corrected series
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          REQUEST_ID="$(python -c 'import uuid; print(uuid.uuid4())')"
+          gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-series-audio-v2.yml/dispatches" \
+            -f ref=main \
+            -f 'inputs[index]=1' \
+            -f "inputs[request_id]=${REQUEST_ID}"
+          echo "Corrected Peter Lofi sequential generation started with request ${REQUEST_ID}."
