@@ -1,6 +1,146 @@
 {
-  "status": "generating",
-  "progress": 5,
+  "status": "completed",
+  "progress": 100,
   "github_run_id": 36726447809,
-  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36726447809"
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36726447809",
+  "youtube_video_id": "UMpFwDuky1g",
+  "youtube_url": "https://www.youtube.com/watch?v=UMpFwDuky1g",
+  "completed_at": "2026-09-30T14:57:29.304471+00:00",
+  "generation_mode": "stable-audio-3-small-music-fallback",
+  "release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+  "requested_duration_minutes": 60,
+  "tracks": [
+    {
+      "title": "01-neon-avenue",
+      "filename": "01-neon-avenue.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "ff38a25cc6c27101de0b701391c7688015c4248f5630a215b11ff408081cb5af",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/01-neon-avenue.wav"
+    },
+    {
+      "title": "02-downtown-suite",
+      "filename": "02-downtown-suite.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "cbf73ff90903b7a58d2a5d53f8d90e4a7065e19e6bcc1cffe233f0fdefeca978",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/02-downtown-suite.wav"
+    },
+    {
+      "title": "03-glass-notes",
+      "filename": "03-glass-notes.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "96331b9f5c433e5cf1a80c96c1ed6c1fba5725487edd4e0a2f8496a6f2181918",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/03-glass-notes.wav"
+    },
+    {
+      "title": "04-window-seat-workspace",
+      "filename": "04-window-seat-workspace.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "450f298ac11986eccec88b3cb6acacbac5d3c1c0f4f134e9c6cb18778c70faac",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/04-window-seat-workspace.wav"
+    },
+    {
+      "title": "05-sunday-windows",
+      "filename": "05-sunday-windows.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "0e1bf1d20f936536a30544a6d7cccc711aed9c73e5ed517626fd73571abfd0a2",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/05-sunday-windows.wav"
+    },
+    {
+      "title": "06-blue-hour-routine",
+      "filename": "06-blue-hour-routine.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "2d5eed0528ed6d1af3b390838218d130b7d2b44dea233c82e352390e6f15864f",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/06-blue-hour-routine.wav"
+    },
+    {
+      "title": "07-neon-escalator",
+      "filename": "07-neon-escalator.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "4f26e06b83b72694ac175a693d2aea31baa25746375c8b0eb4ebd0b848ca407e",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/07-neon-escalator.wav"
+    },
+    {
+      "title": "08-northbound-hours",
+      "filename": "08-northbound-hours.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "745397d39ee5a83048eea577c0ec888bfdf65fb7277e17040c0b1847215aa76c",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/08-northbound-hours.wav"
+    },
+    {
+      "title": "09-executive-boulevard",
+      "filename": "09-executive-boulevard.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "a5ef31479c752978a6de9852c41d13404c2562dbe033644bbe68abe7d5aec446",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/09-executive-boulevard.wav"
+    },
+    {
+      "title": "10-golden-boulevard",
+      "filename": "10-golden-boulevard.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "376378499b697811304e5facb88aee48355ba1fc7523d2e059c1758da7a3abf1",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/10-golden-boulevard.wav"
+    },
+    {
+      "title": "11-golden-afterglow-26",
+      "filename": "11-golden-afterglow-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "9763ad36c4c5d8095b2f7bfad760a5d3f193cc4884a33604c7542872cdc8fd59",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/11-golden-afterglow-26.wav"
+    },
+    {
+      "title": "12-studio-skyline-28",
+      "filename": "12-studio-skyline-28.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "a0718201dc5ffd1580b528405009ded1fe9d53d9d9c1629aa4708465869a1cc6",
+      "style": "fashion-retail lounge house",
+      "github_release_tag": "office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/12-studio-skyline-28.wav"
+    }
+  ]
 }
