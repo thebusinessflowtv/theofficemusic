@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 4,
   "key": "rooftop-office",
   "name": "Rooftop Office",
@@ -9,7 +9,122 @@
   "playlist": "Rooftop Office 🌆 | Peter Lofi",
   "description": "A one-hour skyline session with airy synths, clean drums and an uplifting urban pulse. Built for creative work, design sessions and focused evenings above the city.",
   "request_id": "c0a54074-d71b-4ced-b593-2fa958c7b493",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-04-rooftop-office-c0a54074",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-04-rooftop-office-c0a54074",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-golden-terrace",
+      "filename": "01-golden-terrace.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "75ab7d89ffc8a91f7123787f2d5e2ed0ad69556c0695656cb88dde33ac7f5b82",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/01-golden-terrace.wav"
+    },
+    {
+      "title": "02-golden-avenue",
+      "filename": "02-golden-avenue.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "f422a036ecff180b8e82c31dfec9c5ffe0a0d04f38ffe2393659f6e73a9e39da",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/02-golden-avenue.wav"
+    },
+    {
+      "title": "03-blue-view",
+      "filename": "03-blue-view.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "2fc951bf4ab175c048396e71d1afd460de4fb1635bf8b60f5cd26b6471b54b4a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/03-blue-view.wav"
+    },
+    {
+      "title": "04-city-sunset",
+      "filename": "04-city-sunset.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "97c92c7d007d859fae0e106b1e651b44eb33c9e57c42c941e0a4deda68407645",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/04-city-sunset.wav"
+    },
+    {
+      "title": "05-skyline-terrace",
+      "filename": "05-skyline-terrace.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "5a89cf397e1457c617cdf0215bdd9ebad2c8fc86225ac603c8e25d3e6fed4d98",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/05-skyline-terrace.wav"
+    },
+    {
+      "title": "06-city-air",
+      "filename": "06-city-air.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "d6a29a5dec6bf8fa105e7be40794ea851c773f79e7ef7e7ac45435a483106901",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/06-city-air.wav"
+    },
+    {
+      "title": "07-golden-terrace-16",
+      "filename": "07-golden-terrace-16.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "b86b88d234d69aecb7eb50c1d448059682f4470c52df182e3eabb3f03639d5f6",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/07-golden-terrace-16.wav"
+    },
+    {
+      "title": "08-blue-air",
+      "filename": "08-blue-air.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "4256c084ff78839edc7893058b26ff102056fd9d7621f8ce3365aba5cd336817",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/08-blue-air.wav"
+    },
+    {
+      "title": "09-blue-view-21",
+      "filename": "09-blue-view-21.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "86d8c1d988f866fd2731f74e4cb9756bca77fb67de8824428fa2114559e39205",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/09-blue-view-21.wav"
+    },
+    {
+      "title": "10-city-air-23",
+      "filename": "10-city-air-23.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "63fe391abe0b4c602d19032be9c46898e3f36f93c1d6aa581987be2278567134",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/10-city-air-23.wav"
+    },
+    {
+      "title": "11-golden-sunset-26",
+      "filename": "11-golden-sunset-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "4a41df7ae44a98d22dfab40bd4284d17d633e2632c64c395f7706b808c62c43b",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/11-golden-sunset-26.wav"
+    },
+    {
+      "title": "12-blue-terrace",
+      "filename": "12-blue-terrace.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "a47f584a0b33198c13c240fd74510db5f5201b63273fc8c09679a0b9243b2cf8",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/12-blue-terrace.wav"
+    }
+  ],
   "github_run_id": 36785189196,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36785189196",
-  "started_at": "2026-09-30T22:22:59.633278+00:00"
+  "completed_at": "2026-09-30T23:06:07.624582+00:00"
 }
