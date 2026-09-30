@@ -1,0 +1,30 @@
+name: Peter Lofi — Start Sequential Series
+
+on:
+  push:
+    paths:
+      - 'control/start-series-v2-20260930.trigger'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  start-series:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout trigger
+        uses: actions/checkout@v4
+
+      - name: Start series 1 on current workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          REQUEST_ID="$(python -c 'import json; print(json.load(open("control/start-series-v2-20260930.trigger"))["request_id"])')"
+          echo "Starting Peter Lofi sequential series with request ${REQUEST_ID}"
+          gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-series-audio-v2.yml/dispatches" \
+            -f ref=main \
+            -f "inputs[index]=1" \
+            -f "inputs[request_id]=${REQUEST_ID}"
