@@ -1,0 +1,56 @@
+name: Peter Lofi — Kick Metadata
+
+on:
+  push:
+    paths:
+      - 'control/kick-live-results/*.json'
+
+permissions:
+  contents: read
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Apply configured Kick live title
+        env:
+          KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep -E '^control/kick-live-results/[^/]+\.json$' | tail -1 || true)"
+          if [ -z "$FILE" ] || [ ! -s "$FILE" ]; then
+            echo "No Kick live result changed."
+            exit 0
+          fi
+
+          STATUS="$(jq -r '.status // empty' "$FILE")"
+          TITLE="$(jq -r '.title // empty' "$FILE")"
+          if [ "$STATUS" != "starting" ] && [ "$STATUS" != "live" ]; then
+            echo "Kick session status is $STATUS; metadata update not required."
+            exit 0
+          fi
+          if [ -z "$TITLE" ]; then
+            echo "No configured title found."
+            exit 0
+          fi
+          if [ -z "${KICK_ACCESS_TOKEN:-}" ]; then
+            echo "::warning::KICK_ACCESS_TOKEN is not configured. RTMPS works, but Kick stream title cannot be changed through the API yet."
+            exit 0
+          fi
+
+          jq -n --arg stream_title "$TITLE" '{stream_title:$stream_title}' > payload.json
+          CODE="$(curl -sS -o response.json -w '%{http_code}' \
+            -X PATCH 'https://api.kick.com/public/v1/channels' \
+            -H "Authorization: Bearer ${KICK_ACCESS_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            --data-binary @payload.json)"
+          if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 300 ]; then
+            echo "::warning::Kick metadata update returned HTTP $CODE. The stream will continue; refresh/reconnect KICK_ACCESS_TOKEN with channel:write scope."
+            cat response.json || true
+            exit 0
+          fi
+          echo "Kick live title updated from MediaForge configuration."
