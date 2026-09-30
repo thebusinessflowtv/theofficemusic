@@ -1,0 +1,133 @@
+name: Optimize Office Music YouTube SEO
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/seo-office-music-youtube.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  JOB_ID: 5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0
+  MIX_VIDEO_ID: SEUgsnhXt0Q
+  YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+  YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install google-api-python-client google-auth google-auth-httplib2
+
+      - name: Apply SEO metadata to 30 singles and 1-hour mix
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+
+          manifest_path=pathlib.Path(f"control/youtube-single-uploads/{os.environ['JOB_ID']}.json")
+          manifest=json.loads(manifest_path.read_text(encoding='utf-8'))
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube']
+          )
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          channel=yt.channels().list(part='id',mine=True).execute()['items'][0]
+          if channel['id'] != os.environ['YOUTUBE_CHANNEL_ID']:
+              raise SystemExit('Authenticated channel mismatch')
+
+          suffixes=[
+              'lofi lounge beats for work & focus',
+              'chill office music for deep focus',
+              'lofi-inspired lounge house for work & study',
+              'focus music for office, coding & study',
+              'late-night chill beats for work & home office',
+              'deep focus lounge house / lofi vibes'
+          ]
+
+          base_tags=[
+              'The Office Music','lofi','lofi beats','focus music','work music','study music',
+              'office music','home office music','chill beats','lounge house','deep house',
+              'background music','coding music','deep focus','instrumental music','copyright music'
+          ]
+
+          def update_video(video_id, title, description, tags):
+              existing=yt.videos().list(part='snippet',id=video_id).execute().get('items',[])
+              if not existing:
+                  print('Missing video', video_id)
+                  return
+              snippet=existing[0]['snippet']
+              body={
+                  'id':video_id,
+                  'snippet':{
+                      'title':title[:100],
+                      'description':description[:5000],
+                      'tags':tags[:45],
+                      'categoryId':snippet.get('categoryId','10'),
+                      'defaultLanguage':'en'
+                  }
+              }
+              yt.videos().update(part='snippet',body=body).execute()
+              print('UPDATED', video_id, title)
+
+          subscribe=f"https://www.youtube.com/channel/{os.environ['YOUTUBE_CHANNEL_ID']}?sub_confirmation=1"
+
+          for item in manifest.get('uploads',[]):
+              name=item['title']  # Preserve the exact music name.
+              suffix=suffixes[(int(item['position'])-1) % len(suffixes)]
+              title=f"{name} — {suffix}"
+              description=(
+                  f"{name} — original instrumental music by The Office Music.\n\n"
+                  "A polished lofi-inspired lounge / focus track made for work, studying, coding, design, deep focus, office and home-office sessions. "
+                  "If you enjoy calm background music with a modern late-night workspace feel, save this track and subscribe for more original releases.\n\n"
+                  f"🎧 Subscribe to The Office Music: {subscribe}\n\n"
+                  "Perfect for:\n"
+                  "• work & productivity\n"
+                  "• studying & reading\n"
+                  "• coding & creative sessions\n"
+                  "• office / home office\n"
+                  "• late-night focus\n\n"
+                  "© 2026 The Office Music. Original copyright music. All rights reserved.\n"
+                  "Reuse, redistribution or re-uploading is not permitted without authorization.\n\n"
+                  "#lofi #lofibeats #focusmusic #workmusic #studymusic #officemusic #chillbeats #loungehouse #copyrightmusic #theofficemusic"
+              )
+              tags=[name, f'{name} lofi', f'{name} focus music'] + base_tags
+              update_video(item['youtube_video_id'], title, description, tags)
+
+          mix_id=os.environ['MIX_VIDEO_ID']
+          mix_title='1 Hour Lofi Lounge House Mix ☕ beats to work, focus & study to | The Office Music'
+          mix_description=(
+              "1 hour of original The Office Music tracks for work, focus, study, coding and home-office sessions.\n\n"
+              "Inspired by the functional listening style used across leading lofi and chill channels: clear use-case keywords, a strong first-line promise, a complete tracklist and focused hashtags.\n\n"
+              "🎧 Subscribe for more original office music and focus mixes:\n"
+              f"{subscribe}\n\n"
+              "TRACKLIST\n"
+          )
+          for item in manifest.get('uploads',[]):
+              seconds=(int(item['position'])-1)*120
+              mm=seconds//60
+              ss=seconds%60
+              mix_description += f"{mm:02d}:{ss:02d} {item['title']}\n"
+          mix_description += (
+              "\n© 2026 The Office Music. Original copyright music. All rights reserved.\n"
+              "Reuse, redistribution or re-uploading is not permitted without authorization.\n\n"
+              "#lofi #lofibeats #focusmusic #workmusic #studymusic #officemusic #chillbeats #loungehouse #copyrightmusic #theofficemusic"
+          )
+          update_video(mix_id, mix_title, mix_description, ['1 hour lofi','lofi mix','focus mix','study mix','work music','office music','lounge house mix','deep focus music','The Office Music','copyright music'])
+          PY
