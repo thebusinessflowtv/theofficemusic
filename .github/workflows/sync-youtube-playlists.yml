@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/sync-youtube-playlists.yml"
+      - "control/youtube-single-uploads/**"
 
 permissions:
   contents: write
@@ -19,14 +20,14 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Fetch playlists from The Office Music
+      - name: Create, organize and sync playlists
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
@@ -35,101 +36,207 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
-          import datetime, json, os, pathlib, urllib.parse, urllib.request, urllib.error
+          import datetime, glob, json, os, pathlib, urllib.parse, urllib.request, urllib.error
 
-          def post_form(url, data):
-              req = urllib.request.Request(
-                  url,
-                  data=urllib.parse.urlencode(data).encode('utf-8'),
-                  method='POST',
-                  headers={'Content-Type':'application/x-www-form-urlencoded'},
-              )
+          def request_json(url, method='GET', data=None, headers=None):
+              payload = None if data is None else json.dumps(data).encode('utf-8')
+              req = urllib.request.Request(url, data=payload, method=method, headers=headers or {})
               try:
-                  with urllib.request.urlopen(req, timeout=30) as r:
-                      return json.load(r)
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      raw = r.read()
+                      return json.loads(raw.decode('utf-8')) if raw else {}
               except urllib.error.HTTPError as e:
-                  raise SystemExit(f'OAuth failed HTTP {e.code}: {e.read().decode("utf-8", "replace")}')
+                  raise SystemExit(f'HTTP {e.code} {method} {url}: {e.read().decode("utf-8", "replace")}')
 
-          token = post_form('https://oauth2.googleapis.com/token', {
-              'client_id': os.environ['YOUTUBE_CLIENT_ID'],
-              'client_secret': os.environ['YOUTUBE_CLIENT_SECRET'],
-              'refresh_token': os.environ['YOUTUBE_REFRESH_TOKEN'],
-              'grant_type': 'refresh_token',
-          })
+          token_req = urllib.request.Request(
+              'https://oauth2.googleapis.com/token',
+              data=urllib.parse.urlencode({
+                  'client_id': os.environ['YOUTUBE_CLIENT_ID'],
+                  'client_secret': os.environ['YOUTUBE_CLIENT_SECRET'],
+                  'refresh_token': os.environ['YOUTUBE_REFRESH_TOKEN'],
+                  'grant_type': 'refresh_token',
+              }).encode('utf-8'),
+              method='POST',
+              headers={'Content-Type':'application/x-www-form-urlencoded'},
+          )
+          try:
+              with urllib.request.urlopen(token_req, timeout=30) as r:
+                  token = json.load(r)
+          except urllib.error.HTTPError as e:
+              raise SystemExit(f'OAuth failed HTTP {e.code}: {e.read().decode("utf-8", "replace")}')
           access = token.get('access_token')
           if not access:
               raise SystemExit('OAuth response missing access_token')
 
-          def yt(resource, params):
-              q = urllib.parse.urlencode(params)
-              req = urllib.request.Request(
-                  f'https://www.googleapis.com/youtube/v3/{resource}?{q}',
-                  headers={'Authorization': f'Bearer {access}'},
+          base_headers = {'Authorization': f'Bearer {access}'}
+          json_headers = {'Authorization': f'Bearer {access}', 'Content-Type':'application/json'}
+
+          def yt_get(resource, params):
+              return request_json(
+                  f'https://www.googleapis.com/youtube/v3/{resource}?{urllib.parse.urlencode(params)}',
+                  headers=base_headers,
               )
-              try:
-                  with urllib.request.urlopen(req, timeout=30) as r:
-                      return json.load(r)
-              except urllib.error.HTTPError as e:
-                  raise SystemExit(f'YouTube {resource} failed HTTP {e.code}: {e.read().decode("utf-8", "replace")}')
 
-          playlists=[]
-          page=''
-          while True:
-              params={'part':'id,snippet,contentDetails,status','mine':'true','maxResults':'50'}
-              if page: params['pageToken']=page
-              data=yt('playlists', params)
-              for p in data.get('items',[]):
-                  pid=p.get('id')
-                  sn=p.get('snippet') or {}
-                  cd=p.get('contentDetails') or {}
-                  st=p.get('status') or {}
-                  items=[]
-                  ipage=''
-                  while True:
-                      ip={'part':'snippet,contentDetails,status','playlistId':pid,'maxResults':'50'}
-                      if ipage: ip['pageToken']=ipage
-                      idata=yt('playlistItems', ip)
-                      for item in idata.get('items',[]):
-                          isn=item.get('snippet') or {}
-                          icd=item.get('contentDetails') or {}
-                          video_id=icd.get('videoId') or ((isn.get('resourceId') or {}).get('videoId'))
-                          thumbs=isn.get('thumbnails') or {}
-                          thumb=(thumbs.get('medium') or thumbs.get('high') or thumbs.get('default') or {}).get('url')
-                          items.append({
-                              'playlist_item_id': item.get('id'),
-                              'video_id': video_id,
-                              'title': isn.get('title') or '',
-                              'position': int(isn.get('position') or 0),
-                              'thumbnail_url': thumb or '',
-                              'video_owner_channel_id': isn.get('videoOwnerChannelId') or '',
-                              'privacy_status': (item.get('status') or {}).get('privacyStatus') or '',
-                          })
-                      ipage=idata.get('nextPageToken') or ''
-                      if not ipage: break
-                  items.sort(key=lambda x: x['position'])
-                  playlists.append({
-                      'id': pid,
-                      'title': sn.get('title') or '',
-                      'description': sn.get('description') or '',
-                      'thumbnail_url': (((sn.get('thumbnails') or {}).get('medium') or (sn.get('thumbnails') or {}).get('high') or (sn.get('thumbnails') or {}).get('default') or {}).get('url') or ''),
-                      'item_count': int(cd.get('itemCount') or len(items)),
-                      'privacy_status': st.get('privacyStatus') or '',
-                      'items': items,
+          def yt_post(resource, params, body):
+              return request_json(
+                  f'https://www.googleapis.com/youtube/v3/{resource}?{urllib.parse.urlencode(params)}',
+                  method='POST', data=body, headers=json_headers,
+              )
+
+          channel = yt_get('channels', {'part':'id', 'mine':'true', 'maxResults':'1'}).get('items', [])
+          if not channel or channel[0].get('id') != os.environ['YOUTUBE_CHANNEL_ID']:
+              raise SystemExit('Authenticated channel mismatch')
+
+          specs = {
+              'all_songs': {
+                  'title': 'All Songs 🎧 | The Office Music',
+                  'description': 'All original songs released by The Office Music — lofi, lounge house, chill office and focus music for work, study and deep concentration.'
+              },
+              'lofi_lounge': {
+                  'title': 'Lofi Lounge 🎧 | The Office Music',
+                  'description': 'Original lofi lounge tracks for work, study, reading, coding and calm background listening.'
+              },
+              'chill_office': {
+                  'title': 'Chill Office 🎧 | The Office Music',
+                  'description': 'Chill office music and polished background beats for productivity, home office and creative work.'
+              },
+              'lounge_house': {
+                  'title': 'Lounge House 🎧 | The Office Music',
+                  'description': 'Original lounge house and stylish deep-house inspired instrumentals for office, work and modern spaces.'
+              },
+              'focus_coding': {
+                  'title': 'Focus & Coding 🎧 | The Office Music',
+                  'description': 'Instrumental focus music for coding, studying, productivity and long work sessions.'
+              },
+              'late_night': {
+                  'title': 'Late Night Chill 🎧 | The Office Music',
+                  'description': 'Late-night chill beats for quiet work, home office, reading and after-hours focus.'
+              },
+              'deep_focus': {
+                  'title': 'Deep Focus Lofi 🎧 | The Office Music',
+                  'description': 'Deep focus lofi and lounge instrumentals for concentration, study, work and distraction-free sessions.'
+              },
+          }
+
+          def list_channel_playlists():
+              rows=[]
+              page=''
+              while True:
+                  params={'part':'id,snippet,contentDetails,status','mine':'true','maxResults':'50'}
+                  if page: params['pageToken']=page
+                  data=yt_get('playlists', params)
+                  rows.extend(data.get('items', []))
+                  page=data.get('nextPageToken') or ''
+                  if not page: break
+              return rows
+
+          current = list_channel_playlists()
+          by_title = {((p.get('snippet') or {}).get('title') or ''): p.get('id') for p in current}
+          playlist_ids={}
+          for key,spec in specs.items():
+              pid=by_title.get(spec['title'])
+              if not pid:
+                  created=yt_post('playlists', {'part':'snippet,status'}, {
+                      'snippet': {'title':spec['title'], 'description':spec['description'], 'defaultLanguage':'en'},
+                      'status': {'privacyStatus':'public'}
                   })
-              page=data.get('nextPageToken') or ''
-              if not page: break
+                  pid=created['id']
+                  print('CREATED', spec['title'], pid)
+              else:
+                  print('FOUND', spec['title'], pid)
+              playlist_ids[key]=pid
 
-          playlists.sort(key=lambda x: x['title'].lower())
+          def playlist_video_ids(pid):
+              ids=set(); page=''
+              while True:
+                  params={'part':'contentDetails','playlistId':pid,'maxResults':'50'}
+                  if page: params['pageToken']=page
+                  data=yt_get('playlistItems', params)
+                  for item in data.get('items',[]):
+                      vid=(item.get('contentDetails') or {}).get('videoId')
+                      if vid: ids.add(vid)
+                  page=data.get('nextPageToken') or ''
+                  if not page: break
+              return ids
+
+          members={k:playlist_video_ids(pid) for k,pid in playlist_ids.items()}
+
+          def add_video(key, video_id):
+              if video_id in members[key]:
+                  return False
+              yt_post('playlistItems', {'part':'snippet'}, {
+                  'snippet': {
+                      'playlistId': playlist_ids[key],
+                      'resourceId': {'kind':'youtube#video','videoId':video_id}
+                  }
+              })
+              members[key].add(video_id)
+              print('ADDED', video_id, '->', specs[key]['title'])
+              return True
+
+          style_cycle=['lofi_lounge','chill_office','lounge_house','focus_coding','late_night','deep_focus']
+          processed=0; inserted=0
+          for path in sorted(glob.glob('control/youtube-single-uploads/*.json')):
+              data=json.loads(pathlib.Path(path).read_text(encoding='utf-8'))
+              for item in data.get('uploads',[]):
+                  vid=item.get('youtube_video_id')
+                  if not vid: continue
+                  processed += 1
+                  inserted += int(add_video('all_songs', vid))
+                  pos=int(item.get('position') or 1)
+                  inserted += int(add_video(style_cycle[(pos-1) % len(style_cycle)], vid))
+          print(f'Playlist organizer processed {processed} uploaded songs and added {inserted} memberships.')
+
+          # Refresh the complete playlist snapshot consumed by MediaForge Live.
+          playlists=[]
+          for p in list_channel_playlists():
+              pid=p.get('id')
+              sn=p.get('snippet') or {}
+              cd=p.get('contentDetails') or {}
+              st=p.get('status') or {}
+              items=[]; ipage=''
+              while True:
+                  params={'part':'snippet,contentDetails,status','playlistId':pid,'maxResults':'50'}
+                  if ipage: params['pageToken']=ipage
+                  idata=yt_get('playlistItems', params)
+                  for item in idata.get('items',[]):
+                      isn=item.get('snippet') or {}
+                      icd=item.get('contentDetails') or {}
+                      thumbs=isn.get('thumbnails') or {}
+                      items.append({
+                          'playlist_item_id': item.get('id'),
+                          'video_id': icd.get('videoId') or ((isn.get('resourceId') or {}).get('videoId')),
+                          'title': isn.get('title') or '',
+                          'position': int(isn.get('position') or 0),
+                          'thumbnail_url': ((thumbs.get('medium') or thumbs.get('high') or thumbs.get('default') or {}).get('url') or ''),
+                          'video_owner_channel_id': isn.get('videoOwnerChannelId') or '',
+                          'privacy_status': (item.get('status') or {}).get('privacyStatus') or '',
+                      })
+                  ipage=idata.get('nextPageToken') or ''
+                  if not ipage: break
+              items.sort(key=lambda x:x['position'])
+              thumbs=sn.get('thumbnails') or {}
+              playlists.append({
+                  'id':pid,
+                  'title':sn.get('title') or '',
+                  'description':sn.get('description') or '',
+                  'thumbnail_url':((thumbs.get('medium') or thumbs.get('high') or thumbs.get('default') or {}).get('url') or ''),
+                  'item_count':int(cd.get('itemCount') or len(items)),
+                  'privacy_status':st.get('privacyStatus') or '',
+                  'items':items,
+              })
+
+          playlists.sort(key=lambda x:x['title'].lower())
           payload={
-              'channel_id': os.environ['YOUTUBE_CHANNEL_ID'],
-              'generated_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-              'playlist_count': len(playlists),
-              'playlists': playlists,
+              'channel_id':os.environ['YOUTUBE_CHANNEL_ID'],
+              'generated_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'playlist_count':len(playlists),
+              'playlists':playlists,
           }
           out=pathlib.Path('control/youtube-playlists.json')
           out.parent.mkdir(parents=True, exist_ok=True)
           out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
-          print(f"Synced {len(playlists)} YouTube playlists")
+          print(f'Synced {len(playlists)} YouTube playlists')
           PY
 
       - name: Commit snapshot
