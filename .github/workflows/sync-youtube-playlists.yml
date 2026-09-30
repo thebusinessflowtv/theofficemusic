@@ -1,4 +1,4 @@
-name: Sync YouTube Playlists
+name: Sync Peter Lofi YouTube Channel
 
 on:
   workflow_dispatch:
@@ -8,26 +8,25 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/sync-youtube-playlists.yml"
-      - "control/youtube-single-uploads/**"
 
 permissions:
   contents: write
 
 concurrency:
-  group: sync-youtube-playlists
+  group: sync-peter-lofi-youtube
   cancel-in-progress: true
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Create, organize and sync playlists
+      - name: Rebrand public videos and organize playlists
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
@@ -36,17 +35,21 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
-          import datetime, glob, json, os, pathlib, urllib.parse, urllib.request, urllib.error
+          import datetime, json, os, pathlib, re, urllib.parse, urllib.request, urllib.error
+
+          BRAND = 'Peter Lofi'
+          HANDLE_URL = 'https://www.youtube.com/@PeterLofiSounds'
 
           def request_json(url, method='GET', data=None, headers=None):
-              payload = None if data is None else json.dumps(data).encode('utf-8')
+              payload = None if data is None else json.dumps(data, ensure_ascii=False).encode('utf-8')
               req = urllib.request.Request(url, data=payload, method=method, headers=headers or {})
               try:
                   with urllib.request.urlopen(req, timeout=60) as r:
                       raw = r.read()
                       return json.loads(raw.decode('utf-8')) if raw else {}
               except urllib.error.HTTPError as e:
-                  raise SystemExit(f'HTTP {e.code} {method} {url}: {e.read().decode("utf-8", "replace")}')
+                  body = e.read().decode('utf-8', 'replace')
+                  raise SystemExit(f'HTTP {e.code} {method} {url}: {body}')
 
           token_req = urllib.request.Request(
               'https://oauth2.googleapis.com/token',
@@ -69,7 +72,7 @@ jobs:
               raise SystemExit('OAuth response missing access_token')
 
           base_headers = {'Authorization': f'Bearer {access}'}
-          json_headers = {'Authorization': f'Bearer {access}', 'Content-Type':'application/json'}
+          json_headers = {'Authorization': f'Bearer {access}', 'Content-Type':'application/json; charset=utf-8'}
 
           def yt_get(resource, params):
               return request_json(
@@ -83,44 +86,104 @@ jobs:
                   method='POST', data=body, headers=json_headers,
               )
 
-          channel = yt_get('channels', {'part':'id', 'mine':'true', 'maxResults':'1'}).get('items', [])
-          if not channel or channel[0].get('id') != os.environ['YOUTUBE_CHANNEL_ID']:
+          def yt_put(resource, params, body):
+              return request_json(
+                  f'https://www.googleapis.com/youtube/v3/{resource}?{urllib.parse.urlencode(params)}',
+                  method='PUT', data=body, headers=json_headers,
+              )
+
+          def yt_delete(resource, params):
+              return request_json(
+                  f'https://www.googleapis.com/youtube/v3/{resource}?{urllib.parse.urlencode(params)}',
+                  method='DELETE', headers=base_headers,
+              )
+
+          channel_items = yt_get('channels', {'part':'id,contentDetails,snippet', 'mine':'true', 'maxResults':'1'}).get('items', [])
+          if not channel_items or channel_items[0].get('id') != os.environ['YOUTUBE_CHANNEL_ID']:
               raise SystemExit('Authenticated channel mismatch')
+          channel = channel_items[0]
+          uploads_pid = (((channel.get('contentDetails') or {}).get('relatedPlaylists') or {}).get('uploads'))
+          if not uploads_pid:
+              raise SystemExit('Channel uploads playlist not found')
+
+          def list_playlist_items(pid, parts='id,snippet,contentDetails,status'):
+              rows=[]; page=''
+              while True:
+                  params={'part':parts,'playlistId':pid,'maxResults':'50'}
+                  if page: params['pageToken']=page
+                  data=yt_get('playlistItems', params)
+                  rows.extend(data.get('items', []))
+                  page=data.get('nextPageToken') or ''
+                  if not page: break
+              return rows
+
+          upload_items=list_playlist_items(uploads_pid, 'contentDetails')
+          upload_ids=[(x.get('contentDetails') or {}).get('videoId') for x in upload_items]
+          upload_ids=[x for x in upload_ids if x]
+
+          videos=[]
+          for i in range(0, len(upload_ids), 50):
+              chunk=upload_ids[i:i+50]
+              if not chunk: continue
+              data=yt_get('videos', {
+                  'part':'id,snippet,status,contentDetails',
+                  'id':','.join(chunk),
+                  'maxResults':'50',
+              })
+              videos.extend(data.get('items', []))
+
+          public_videos=[v for v in videos if (v.get('status') or {}).get('privacyStatus') == 'public']
+          public_ids={v['id'] for v in public_videos}
+          print(f'PUBLIC_VIDEO_COUNT={len(public_videos)}')
 
           specs = {
-              'all_songs': {
-                  'title': 'All Songs 🎧 | The Office Music',
-                  'description': 'All original songs released by The Office Music — lofi, lounge house, chill office and focus music for work, study and deep concentration.'
+              'all_music': {
+                  'title':'Peter Lofi — All Music 🎧',
+                  'description':'Every public Peter Lofi release in one place — original lofi music, chill beats, focus mixes and late-night sounds for study, work and relaxing.'
               },
-              'lofi_lounge': {
-                  'title': 'Lofi Lounge 🎧 | The Office Music',
-                  'description': 'Original lofi lounge tracks for work, study, reading, coding and calm background listening.'
-              },
-              'chill_office': {
-                  'title': 'Chill Office 🎧 | The Office Music',
-                  'description': 'Chill office music and polished background beats for productivity, home office and creative work.'
-              },
-              'lounge_house': {
-                  'title': 'Lounge House 🎧 | The Office Music',
-                  'description': 'Original lounge house and stylish deep-house inspired instrumentals for office, work and modern spaces.'
-              },
-              'focus_coding': {
-                  'title': 'Focus & Coding 🎧 | The Office Music',
-                  'description': 'Instrumental focus music for coding, studying, productivity and long work sessions.'
+              'lofi_mixes': {
+                  'title':'Lofi Mixes 🎧 | Peter Lofi',
+                  'description':'Long-form Peter Lofi mixes for uninterrupted focus, study, work, reading and relaxing.'
               },
               'late_night': {
-                  'title': 'Late Night Chill 🎧 | The Office Music',
-                  'description': 'Late-night chill beats for quiet work, home office, reading and after-hours focus.'
+                  'title':'Late Night Lofi 🌙 | Peter Lofi',
+                  'description':'Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.'
+              },
+              'rainy_cozy': {
+                  'title':'Rainy & Cozy Lofi 🌧️ | Peter Lofi',
+                  'description':'Rainy-night and cozy-window lofi by Peter Lofi for calm focus, reading and relaxing.'
+              },
+              'focus_study': {
+                  'title':'Focus & Study 📚 | Peter Lofi',
+                  'description':'Peter Lofi music for studying, working, coding, concentrating and staying in the zone.'
               },
               'deep_focus': {
-                  'title': 'Deep Focus Lofi 🎧 | The Office Music',
-                  'description': 'Deep focus lofi and lounge instrumentals for concentration, study, work and distraction-free sessions.'
+                  'title':'Deep Focus 💻 | Peter Lofi',
+                  'description':'Minimal, steady Peter Lofi beats designed for deep concentration and long productive sessions.'
+              },
+              'city_nights': {
+                  'title':'City Nights 🌃 | Peter Lofi',
+                  'description':'Urban skyline, rooftop and neon-city lofi from the Peter Lofi universe.'
+              },
+              'chill_relax': {
+                  'title':'Chill & Relax ☕ | Peter Lofi',
+                  'description':'Warm, mellow Peter Lofi tracks for coffee breaks, reading, relaxing and slow evenings.'
               },
           }
 
+          legacy_aliases = {
+              'all_music':['All Songs 🎧 | The Office Music'],
+              'lofi_mixes':['Lounge House Mix'],
+              'late_night':['Late Night Chill 🎧 | The Office Music'],
+              'rainy_cozy':['Deep Focus Lofi 🎧 | The Office Music'],
+              'focus_study':['Chill Office 🎧 | The Office Music'],
+              'deep_focus':['Focus & Coding 🎧 | The Office Music'],
+              'city_nights':['Lounge House 🎧 | The Office Music'],
+              'chill_relax':['Lofi Lounge 🎧 | The Office Music'],
+          }
+
           def list_channel_playlists():
-              rows=[]
-              page=''
+              rows=[]; page=''
               while True:
                   params={'part':'id,snippet,contentDetails,status','mine':'true','maxResults':'50'}
                   if page: params['pageToken']=page
@@ -130,90 +193,221 @@ jobs:
                   if not page: break
               return rows
 
-          current = list_channel_playlists()
-          by_title = {((p.get('snippet') or {}).get('title') or ''): p.get('id') for p in current}
+          current=list_channel_playlists()
+          by_title={((p.get('snippet') or {}).get('title') or ''):p for p in current}
           playlist_ids={}
+          used_ids=set()
           for key,spec in specs.items():
-              pid=by_title.get(spec['title'])
-              if not pid:
-                  created=yt_post('playlists', {'part':'snippet,status'}, {
-                      'snippet': {'title':spec['title'], 'description':spec['description'], 'defaultLanguage':'en'},
-                      'status': {'privacyStatus':'public'}
+              found=by_title.get(spec['title'])
+              if not found:
+                  for alias in legacy_aliases.get(key,[]):
+                      cand=by_title.get(alias)
+                      if cand and cand.get('id') not in used_ids:
+                          found=cand; break
+              if found:
+                  pid=found['id']; used_ids.add(pid)
+                  yt_put('playlists', {'part':'snippet'}, {
+                      'id':pid,
+                      'snippet':{
+                          'title':spec['title'],
+                          'description':spec['description'],
+                          'defaultLanguage':'en',
+                      }
                   })
-                  pid=created['id']
-                  print('CREATED', spec['title'], pid)
+                  print('UPDATED_PLAYLIST', pid, spec['title'])
               else:
-                  print('FOUND', spec['title'], pid)
+                  created=yt_post('playlists', {'part':'snippet,status'}, {
+                      'snippet':{
+                          'title':spec['title'],
+                          'description':spec['description'],
+                          'defaultLanguage':'en',
+                      },
+                      'status':{'privacyStatus':'public'},
+                  })
+                  pid=created['id']; used_ids.add(pid)
+                  print('CREATED_PLAYLIST', pid, spec['title'])
               playlist_ids[key]=pid
 
-          def playlist_video_ids(pid):
-              ids=set(); page=''
-              while True:
-                  params={'part':'contentDetails','playlistId':pid,'maxResults':'50'}
-                  if page: params['pageToken']=page
-                  data=yt_get('playlistItems', params)
-                  for item in data.get('items',[]):
-                      vid=(item.get('contentDetails') or {}).get('videoId')
-                      if vid: ids.add(vid)
-                  page=data.get('nextPageToken') or ''
-                  if not page: break
-              return ids
+          def iso_duration_seconds(value):
+              if not value: return 0
+              m=re.fullmatch(r'P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', value)
+              if not m: return 0
+              d,h,mi,s=[int(x or 0) for x in m.groups()]
+              return d*86400+h*3600+mi*60+s
 
-          members={k:playlist_video_ids(pid) for k,pid in playlist_ids.items()}
+          def classify(video):
+              sn=video.get('snippet') or {}
+              text=((sn.get('title') or '')+' '+(sn.get('description') or '')).lower()
+              duration=iso_duration_seconds(((video.get('contentDetails') or {}).get('duration')))
+              if duration >= 15*60:
+                  return 'lofi_mixes'
+              if any(k in text for k in ['rain','rainy','storm','thunder']):
+                  return 'rainy_cozy'
+              if any(k in text for k in ['midnight','late night','night','moon','neon','after dark']):
+                  return 'late_night'
+              if any(k in text for k in ['city','urban','skyline','rooftop','downtown','manhattan']):
+                  return 'city_nights'
+              if any(k in text for k in ['deep focus','concentration','concentrate']):
+                  return 'deep_focus'
+              if any(k in text for k in ['focus','study','studying','work','coding','code','office','productivity']):
+                  return 'focus_study'
+              return 'chill_relax'
 
-          def add_video(key, video_id):
-              if video_id in members[key]:
-                  return False
+          category_context={
+              'lofi_mixes':'Long-form lofi for uninterrupted focus, study, work and relaxation.',
+              'late_night':'Late-night lofi for quiet city hours, headphones and after-dark focus.',
+              'rainy_cozy':'Cozy lofi for rainy windows, reading, calm work and slow evenings.',
+              'focus_study':'Lofi music for studying, working, coding and staying focused.',
+              'deep_focus':'Steady lofi for deep concentration and distraction-free sessions.',
+              'city_nights':'Urban lofi inspired by rooftops, city lights and late-night skylines.',
+              'chill_relax':'Warm lofi for relaxing, reading, coffee breaks and easy listening.',
+          }
+          category_hashtag={
+              'lofi_mixes':'#LofiMix',
+              'late_night':'#LateNightLofi',
+              'rainy_cozy':'#RainyLofi',
+              'focus_study':'#StudyMusic',
+              'deep_focus':'#DeepFocus',
+              'city_nights':'#CityLofi',
+              'chill_relax':'#ChillMusic',
+          }
+
+          def optimized_title(old):
+              base=(old or 'Lofi Music').replace('The Office Music', BRAND).strip()
+              base=re.sub(r'\s*🎧\s*$', '', base).strip()
+              if BRAND.lower() not in base.lower():
+                  suffix=f' | {BRAND}'
+                  max_base=100-len(suffix)-2
+                  base=base[:max_base].rstrip(' |-–—')+suffix
+              title=(base+' 🎧')[:100]
+              return title
+
+          def extract_chapters(desc):
+              out=[]
+              for line in (desc or '').splitlines():
+                  if re.match(r'^\s*\d{1,2}:\d{2}(?::\d{2})?\s+\S', line):
+                      out.append(line.strip())
+              return out[:80]
+
+          def optimized_description(video, category):
+              sn=video.get('snippet') or {}
+              chapters=extract_chapters(sn.get('description') or '')
+              parts=[
+                  '🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.',
+                  '',
+                  category_context[category],
+                  '',
+                  'Put on your headphones, slow things down and stay awhile.',
+                  '',
+                  '🎧 Subscribe to Peter Lofi:',
+                  HANDLE_URL,
+              ]
+              if chapters:
+                  parts += ['', 'Tracklist / Chapters:', *chapters]
+              parts += [
+                  '',
+                  'Original music by Peter Lofi.',
+                  '© 2026 Peter Lofi. All rights reserved.',
+                  '',
+                  f'#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic {category_hashtag[category]}',
+              ]
+              return '\n'.join(parts)[:5000]
+
+          base_tags=['Peter Lofi','PeterLofiSounds','lofi','lofi music','lofi beats','focus music','study music','work music','chill music','background music','relaxing music']
+          category_tags={
+              'lofi_mixes':['lofi mix','1 hour lofi','long lofi mix'],
+              'late_night':['late night lofi','night lofi','neon lofi'],
+              'rainy_cozy':['rainy lofi','cozy lofi','rain music'],
+              'focus_study':['study lofi','focus lofi','coding music','productivity music'],
+              'deep_focus':['deep focus music','concentration music'],
+              'city_nights':['city lofi','urban lofi','rooftop lofi'],
+              'chill_relax':['chill lofi','relaxing lofi','coffee shop music'],
+          }
+
+          report=[]
+          desired_category={}
+          for v in public_videos:
+              vid=v['id']; sn=v.get('snippet') or {}
+              cat=classify(v); desired_category[vid]=cat
+              old_title=sn.get('title') or ''
+              new_title=optimized_title(old_title)
+              new_desc=optimized_description(v, cat)
+              tags=[]
+              for tag in base_tags+category_tags[cat]:
+                  if tag.lower() not in {x.lower() for x in tags}:
+                      tags.append(tag)
+              # Keep the complete tag string comfortably under YouTube's limit.
+              while len(','.join(tags)) > 430:
+                  tags.pop()
+              snippet={
+                  'title':new_title,
+                  'description':new_desc,
+                  'categoryId':sn.get('categoryId') or '10',
+                  'tags':tags,
+              }
+              if sn.get('defaultLanguage'):
+                  snippet['defaultLanguage']=sn['defaultLanguage']
+              yt_put('videos', {'part':'snippet'}, {'id':vid,'snippet':snippet})
+              report.append({
+                  'video_id':vid,
+                  'old_title':old_title,
+                  'new_title':new_title,
+                  'related_playlist_key':cat,
+                  'related_playlist_title':specs[cat]['title'],
+                  'duration_seconds':iso_duration_seconds(((v.get('contentDetails') or {}).get('duration'))),
+                  'published_at':sn.get('publishedAt'),
+              })
+              print('UPDATED_VIDEO', vid, '->', new_title, '|', specs[cat]['title'])
+
+          # Clean obsolete/deleted/wrong memberships from the managed playlists.
+          membership={}
+          for key,pid in playlist_ids.items():
+              items=list_playlist_items(pid)
+              kept=set()
+              for item in items:
+                  item_id=item.get('id')
+                  vid=(item.get('contentDetails') or {}).get('videoId') or (((item.get('snippet') or {}).get('resourceId') or {}).get('videoId'))
+                  should_keep = bool(vid in public_ids and (key=='all_music' or desired_category.get(vid)==key))
+                  if should_keep:
+                      kept.add(vid)
+                  elif item_id:
+                      yt_delete('playlistItems', {'id':item_id})
+                      print('REMOVED_PLAYLIST_ITEM', item_id, vid or '')
+              membership[key]=kept
+
+          # Put every public video in the global playlist and in exactly one related playlist.
+          def add_video(key, vid):
+              if vid in membership[key]: return
               yt_post('playlistItems', {'part':'snippet'}, {
-                  'snippet': {
-                      'playlistId': playlist_ids[key],
-                      'resourceId': {'kind':'youtube#video','videoId':video_id}
+                  'snippet':{
+                      'playlistId':playlist_ids[key],
+                      'resourceId':{'kind':'youtube#video','videoId':vid},
                   }
               })
-              members[key].add(video_id)
-              print('ADDED', video_id, '->', specs[key]['title'])
-              return True
+              membership[key].add(vid)
+              print('ADDED', vid, '->', specs[key]['title'])
 
-          style_cycle=['lofi_lounge','chill_office','lounge_house','focus_coding','late_night','deep_focus']
-          processed=0; inserted=0
-          for path in sorted(glob.glob('control/youtube-single-uploads/*.json')):
-              data=json.loads(pathlib.Path(path).read_text(encoding='utf-8'))
-              for item in data.get('uploads',[]):
-                  vid=item.get('youtube_video_id')
-                  if not vid: continue
-                  processed += 1
-                  inserted += int(add_video('all_songs', vid))
-                  pos=int(item.get('position') or 1)
-                  inserted += int(add_video(style_cycle[(pos-1) % len(style_cycle)], vid))
-          print(f'Playlist organizer processed {processed} uploaded songs and added {inserted} memberships.')
+          for v in public_videos:
+              vid=v['id']
+              add_video('all_music', vid)
+              add_video(desired_category[vid], vid)
 
-          # Refresh the complete playlist snapshot consumed by MediaForge Live.
+          # Refresh complete playlist snapshot used by the MediaForge live panel.
           playlists=[]
           for p in list_channel_playlists():
-              pid=p.get('id')
-              sn=p.get('snippet') or {}
-              cd=p.get('contentDetails') or {}
-              st=p.get('status') or {}
-              items=[]; ipage=''
-              while True:
-                  params={'part':'snippet,contentDetails,status','playlistId':pid,'maxResults':'50'}
-                  if ipage: params['pageToken']=ipage
-                  idata=yt_get('playlistItems', params)
-                  for item in idata.get('items',[]):
-                      isn=item.get('snippet') or {}
-                      icd=item.get('contentDetails') or {}
-                      thumbs=isn.get('thumbnails') or {}
-                      items.append({
-                          'playlist_item_id': item.get('id'),
-                          'video_id': icd.get('videoId') or ((isn.get('resourceId') or {}).get('videoId')),
-                          'title': isn.get('title') or '',
-                          'position': int(isn.get('position') or 0),
-                          'thumbnail_url': ((thumbs.get('medium') or thumbs.get('high') or thumbs.get('default') or {}).get('url') or ''),
-                          'video_owner_channel_id': isn.get('videoOwnerChannelId') or '',
-                          'privacy_status': (item.get('status') or {}).get('privacyStatus') or '',
-                      })
-                  ipage=idata.get('nextPageToken') or ''
-                  if not ipage: break
+              pid=p.get('id'); sn=p.get('snippet') or {}; cd=p.get('contentDetails') or {}; st=p.get('status') or {}
+              items=[]
+              for item in list_playlist_items(pid):
+                  isn=item.get('snippet') or {}; icd=item.get('contentDetails') or {}; thumbs=isn.get('thumbnails') or {}
+                  items.append({
+                      'playlist_item_id':item.get('id'),
+                      'video_id':icd.get('videoId') or ((isn.get('resourceId') or {}).get('videoId')),
+                      'title':isn.get('title') or '',
+                      'position':int(isn.get('position') or 0),
+                      'thumbnail_url':((thumbs.get('medium') or thumbs.get('high') or thumbs.get('default') or {}).get('url') or ''),
+                      'video_owner_channel_id':isn.get('videoOwnerChannelId') or '',
+                      'privacy_status':(item.get('status') or {}).get('privacyStatus') or '',
+                  })
               items.sort(key=lambda x:x['position'])
               thumbs=sn.get('thumbnails') or {}
               playlists.append({
@@ -221,31 +415,44 @@ jobs:
                   'title':sn.get('title') or '',
                   'description':sn.get('description') or '',
                   'thumbnail_url':((thumbs.get('medium') or thumbs.get('high') or thumbs.get('default') or {}).get('url') or ''),
-                  'item_count':int(cd.get('itemCount') or len(items)),
+                  'item_count':len(items),
                   'privacy_status':st.get('privacyStatus') or '',
                   'items':items,
               })
 
           playlists.sort(key=lambda x:x['title'].lower())
-          payload={
+          now=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          snap={
               'channel_id':os.environ['YOUTUBE_CHANNEL_ID'],
-              'generated_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'brand':BRAND,
+              'handle_url':HANDLE_URL,
+              'generated_at':now,
               'playlist_count':len(playlists),
               'playlists':playlists,
           }
           out=pathlib.Path('control/youtube-playlists.json')
           out.parent.mkdir(parents=True, exist_ok=True)
-          out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
-          print(f'Synced {len(playlists)} YouTube playlists')
+          out.write_text(json.dumps(snap, ensure_ascii=False, indent=2), encoding='utf-8')
+
+          audit={
+              'brand':BRAND,
+              'handle_url':HANDLE_URL,
+              'generated_at':now,
+              'public_video_count':len(public_videos),
+              'managed_playlists':{k:{'id':playlist_ids[k], **specs[k]} for k in specs},
+              'videos':report,
+          }
+          pathlib.Path('control/peter-lofi-channel-audit.json').write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding='utf-8')
+          print('DONE: organized', len(public_videos), 'public videos')
           PY
 
-      - name: Commit snapshot
+      - name: Commit refreshed channel snapshot
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add control/youtube-playlists.json
-          git diff --cached --quiet && { echo "Playlist snapshot unchanged"; exit 0; }
-          git commit -m "office-music: sync YouTube playlists"
+          git add control/youtube-playlists.json control/peter-lofi-channel-audit.json
+          git diff --cached --quiet && { echo "Channel snapshot unchanged"; exit 0; }
+          git commit -m "peter-lofi: sync public videos and playlists"
           git pull --rebase origin main
           git push origin HEAD:main
