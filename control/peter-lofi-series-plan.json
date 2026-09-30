@@ -1,0 +1,100 @@
+{
+  "brand": "Peter Lofi",
+  "handle": "@PeterLofiSounds",
+  "plan_name": "10-Day Series Generation Plan",
+  "master_duration_minutes": 60,
+  "publish_to_youtube": false,
+  "created_at": "2026-09-30T12:56:00-03:00",
+  "series": [
+    {
+      "order": 1,
+      "series": "Office / Productivity",
+      "playlist": "Office / Productivity 🎧 | Peter Lofi",
+      "title": "1 Hour Office Lofi for Productivity ☕ | Focus Beats for Work & Study | Peter Lofi 🎧",
+      "description": "A focused 1-hour Peter Lofi session built for productive workdays, planning, studying and steady concentration. Clean grooves, warm textures and unobtrusive momentum designed to stay in the background while you get things done.",
+      "music_direction": "clean productive lofi-house, warm keys, soft punchy drums, steady groove, polished office ambience, medium energy, instrumental only",
+      "status": "pending"
+    },
+    {
+      "order": 2,
+      "series": "Late Night Office",
+      "playlist": "Late Night Office 🌙 | Peter Lofi",
+      "title": "1 Hour Late Night Office Lofi 🌙 | Chill Beats for Focus & Work | Peter Lofi 🎧",
+      "description": "A late-night Peter Lofi mix for quiet office hours, deep concentration and after-dark creative sessions. Moody city ambience, warm low-end and restrained melodic movement keep the energy calm but focused.",
+      "music_direction": "dark warm lofi-house, nocturnal pads, subtle electric keys, soft deep bass, restrained percussion, cinematic city-night mood, instrumental only",
+      "status": "pending"
+    },
+    {
+      "order": 3,
+      "series": "Coffee Shop",
+      "playlist": "Coffee Shop ☕ | Peter Lofi",
+      "title": "1 Hour Coffee Shop Lofi ☕ | Cozy Beats to Work, Read & Relax | Peter Lofi 🎧",
+      "description": "A cozy 1-hour Peter Lofi coffee-shop session for reading, working, journaling and slow mornings. Warm chords, gentle grooves and relaxed textures create an easy background atmosphere without demanding attention.",
+      "music_direction": "cozy lofi, warm electric piano, soft brushed-style electronic percussion, mellow bass, gentle vinyl-like warmth without sampled noise, instrumental only",
+      "status": "pending"
+    },
+    {
+      "order": 4,
+      "series": "Rooftop Office",
+      "playlist": "Rooftop Office 🌆 | Peter Lofi",
+      "title": "1 Hour Rooftop Office Lofi 🌆 | Skyline Beats for Focus & Work | Peter Lofi 🎧",
+      "description": "A rooftop-inspired Peter Lofi mix with a spacious urban feel for focused work, creative planning and evening productivity. Airy synths, clean rhythm and a polished metropolitan atmosphere give the session movement without distraction.",
+      "music_direction": "airy urban lofi-house, skyline ambience, glossy synth plucks, wide pads, smooth bass, clean steady beat, instrumental only",
+      "status": "pending"
+    },
+    {
+      "order": 5,
+      "series": "Rainy Office",
+      "playlist": "Rainy Office 🌧️ | Peter Lofi",
+      "title": "1 Hour Rainy Office Lofi 🌧️ | Focus Beats for Work & Study | Peter Lofi 🎧",
+      "description": "A calm 1-hour Peter Lofi session shaped for rainy workdays, deep focus and quiet study. Soft harmonic movement, muted percussion and darker textures create a reflective atmosphere while keeping the rhythm steady.",
+      "music_direction": "rainy-day lofi, soft muted drums, warm pads, minor-key electric keys, gentle deep bass, reflective calm mood, no literal rain samples required, instrumental only",
+      "status": "pending"
+    },
+    {
+      "order": 6,
+      "series": "Sunday Morning Work",
+      "playlist": "Sunday Morning Work ☀️ | Peter Lofi",
+      "title": "1 Hour Sunday Morning Lofi ☀️ | Easy Beats for Planning & Focus | Peter Lofi 🎧",
+      "description": "A bright and easygoing Peter Lofi mix for Sunday planning, light work, reading and resetting for the week. Soft chords, gentle rhythm and an optimistic morning tone keep the session relaxed and productive.",
+      "music_direction": "bright relaxed morning lofi, gentle keys, soft drums, light bass, airy pads, optimistic warm mood, lower-medium energy, instrumental only",
+      "status": "pending"
+    },
+    {
+      "order": 7,
+      "series": "Deep Focus / Coding",
+      "playlist": "Deep Focus / Coding 💻 | Peter Lofi",
+      "title": "1 Hour Deep Focus Coding Lofi 💻 | Beats to Code & Concentrate | Peter Lofi 🎧",
+      "description": "A minimal Peter Lofi session designed for coding, deep work and long concentration blocks. Repetitive but evolving grooves, restrained hooks and a clean low-end help reduce distraction and maintain momentum.",
+      "music_direction": "minimal deep-focus lofi-house, hypnotic repetitive groove, subtle synth motif, tight clean bass, sparse percussion, low melody density, instrumental only",
+      "status": "pending"
+    },
+    {
+      "order": 8,
+      "series": "Luxury Office / Zara-style ambience",
+      "playlist": "Luxury Office ✨ | Peter Lofi",
+      "title": "1 Hour Luxury Office Lounge ✨ | Fashion Store & Focus Ambience | Peter Lofi 🎧",
+      "description": "A polished 1-hour Peter Lofi lounge session for modern offices, fashion-inspired spaces and premium background listening. Smooth deep-house movement, elegant synth textures and a clean commercial mix create a stylish but unobtrusive atmosphere.",
+      "music_direction": "premium fashion-retail deep house, polished lounge house, elegant synth plucks, rounded sidechained bass, crisp clean drums, commercial glossy mix, instrumental only",
+      "status": "pending"
+    },
+    {
+      "order": 9,
+      "series": "Work From Home",
+      "playlist": "Work From Home 🏠 | Peter Lofi",
+      "title": "1 Hour Work From Home Lofi 🏠 | Calm Beats for Focus & Productivity | Peter Lofi 🎧",
+      "description": "A comfortable Peter Lofi mix for home-office routines, emails, planning and focused solo work. Warm textures, smooth rhythm and a relaxed pace create a steady background without feeling sleepy.",
+      "music_direction": "comfortable home-office lofi, warm keys, soft house-influenced drums, rounded bass, relaxed modern ambience, medium-low energy, instrumental only",
+      "status": "pending"
+    },
+    {
+      "order": 10,
+      "series": "Night Shift",
+      "playlist": "Night Shift 🌃 | Peter Lofi",
+      "title": "1 Hour Night Shift Lofi 🌃 | Late Night Beats for Work & Focus | Peter Lofi 🎧",
+      "description": "A darker Peter Lofi mix for late shifts, overnight projects and quiet after-hours concentration. Deep bass, restrained percussion and atmospheric synth layers keep the mood immersive while preserving focus.",
+      "music_direction": "dark late-night lofi-house, deep bass, sparse electronic percussion, moody atmospheric synths, subtle pulse, focused nocturnal energy, instrumental only",
+      "status": "pending"
+    }
+  ]
+}
