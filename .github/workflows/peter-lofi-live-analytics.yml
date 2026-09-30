@@ -1,0 +1,92 @@
+name: Peter Lofi — Live Analytics
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: peter-lofi-live-analytics
+  cancel-in-progress: true
+
+env:
+  YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+  KICK_CLIENT_ID: ${{ secrets.KICK_CLIENT_ID }}
+  KICK_CLIENT_SECRET: ${{ secrets.KICK_CLIENT_SECRET }}
+  KICK_CHANNEL_SLUG: ${{ secrets.KICK_CHANNEL_SLUG }}
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Collect live metrics
+        run: |
+          set -euo pipefail
+          mkdir -p control
+          python - <<'PY'
+          import datetime,json,os,pathlib,urllib.parse,urllib.request
+
+          def post_form(url,data):
+              req=urllib.request.Request(url,data=urllib.parse.urlencode(data).encode(),headers={'Content-Type':'application/x-www-form-urlencoded','User-Agent':'peter-lofi-mediaforge'})
+              with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+          def get_json(url,token=None):
+              h={'Accept':'application/json','User-Agent':'peter-lofi-mediaforge'}
+              if token:h['Authorization']='Bearer '+token
+              req=urllib.request.Request(url,headers=h)
+              with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+
+          out={'generated_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'youtube':{'configured':False,'sessions':[]},'kick':{'configured':False,'channel':None}}
+
+          yc=os.environ.get('YOUTUBE_CLIENT_ID',''); ys=os.environ.get('YOUTUBE_CLIENT_SECRET',''); yr=os.environ.get('YOUTUBE_REFRESH_TOKEN','')
+          if yc and ys and yr:
+              try:
+                  tok=post_form('https://oauth2.googleapis.com/token',{'client_id':yc,'client_secret':ys,'refresh_token':yr,'grant_type':'refresh_token'})['access_token']
+                  sessions=[]
+                  for p in pathlib.Path('control/live-results').glob('*.json') if pathlib.Path('control/live-results').exists() else []:
+                      try:d=json.loads(p.read_text())
+                      except Exception:continue
+                      if d.get('status') not in {'starting','live','reconnecting'}:continue
+                      vid=d.get('youtube_broadcast_id') or d.get('youtube_video_id')
+                      if not vid:continue
+                      q=urllib.parse.urlencode({'part':'snippet,statistics,liveStreamingDetails,status','id':vid})
+                      payload=get_json('https://www.googleapis.com/youtube/v3/videos?'+q,tok)
+                      item=(payload.get('items') or [None])[0]
+                      if item:
+                          sessions.append({'session_id':p.stem,'video_id':vid,'youtube_url':d.get('youtube_url') or f'https://www.youtube.com/watch?v={vid}','workflow_status':d.get('status'),'data':item})
+                  out['youtube']={'configured':True,'sessions':sessions}
+              except Exception as e:
+                  out['youtube']={'configured':True,'error':str(e),'sessions':[]}
+
+          kc=os.environ.get('KICK_CLIENT_ID',''); ks=os.environ.get('KICK_CLIENT_SECRET',''); slug=os.environ.get('KICK_CHANNEL_SLUG','')
+          if kc and ks and slug:
+              try:
+                  tok=post_form('https://id.kick.com/oauth/token',{'grant_type':'client_credentials','client_id':kc,'client_secret':ks})['access_token']
+                  q=urllib.parse.urlencode({'slug':slug})
+                  payload=get_json('https://api.kick.com/public/v1/channels?'+q,tok)
+                  channel=(payload.get('data') or [None])[0] if isinstance(payload.get('data'),list) else payload.get('data')
+                  out['kick']={'configured':True,'channel_slug':slug,'channel':channel,'raw':payload}
+              except Exception as e:
+                  out['kick']={'configured':True,'channel_slug':slug,'error':str(e),'channel':None}
+
+          pathlib.Path('control/live-analytics.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+
+      - name: Save analytics snapshot
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/live-analytics.json
+          git diff --cached --quiet && exit 0
+          git commit -m "peter-lofi: refresh live analytics"
+          git pull --rebase origin main
+          git push origin HEAD:main
