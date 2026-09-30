@@ -18,8 +18,9 @@ RAW_DIR = Path("/kaggle/working/output-raw")
 TRACK_COUNT = 30
 TRACK_DURATION_SECONDS = 120
 MIN_FINAL_TRACK_SECONDS = 300
-BATCH_PREFIX = "office-small"
+BATCH_PREFIX = "peter-lofi-small"
 REQUEST_ID = "UNSET"
+SERIES_KEY = ""
 
 
 def run(cmd, cwd=None, env=None):
@@ -41,16 +42,47 @@ def load_hf_token() -> str:
     raise RuntimeError("HF_TOKEN is unavailable")
 
 
+def deep_merge(base, override):
+    if isinstance(base, dict) and isinstance(override, dict):
+        out = dict(base)
+        for key, value in override.items():
+            out[key] = deep_merge(out.get(key), value) if key in out else value
+        return out
+    return override
+
+
+def prepare_profile() -> Path:
+    if SERIES_KEY:
+        plan = json.loads((REPO_DIR / "config" / "peter_lofi_series.json").read_text(encoding="utf-8"))
+        item = next((x for x in plan.get("series", []) if x.get("key") == SERIES_KEY), None)
+        if not item:
+            raise RuntimeError(f"Unknown Peter Lofi series key: {SERIES_KEY}")
+        profile = deep_merge(plan["defaults"], {"music_dna": item.get("music_dna", {})})
+        profile["channel"] = dict(profile.get("channel", {}))
+        profile["channel"]["name"] = "Peter Lofi"
+        profile["channel"]["concept"] = item["name"]
+    else:
+        # JSON is valid YAML, so preserve a deterministic fallback even for legacy calls.
+        profile = json.loads((REPO_DIR / "config" / "peter_lofi_series.json").read_text(encoding="utf-8"))["defaults"]
+
+    profile["generation"] = dict(profile.get("generation", {}))
+    profile["generation"]["model"] = "small-music"
+    profile["generation"]["track_duration_seconds"] = TRACK_DURATION_SECONDS
+    runtime = REPO_DIR / "config" / "runtime_series_profile.json"
+    runtime.write_text(json.dumps(profile, ensure_ascii=False, indent=2), encoding="utf-8")
+    return runtime
+
+
 def request_seed(request_id: str) -> int:
     if not request_id or request_id == "UNSET":
         raise RuntimeError("REQUEST_ID was not injected by the production workflow")
-    digest = hashlib.sha256(f"{request_id}:small-music:fallback".encode("utf-8")).digest()
+    digest = hashlib.sha256(f"{request_id}:{SERIES_KEY}:small-music:fallback".encode("utf-8")).digest()
     return int.from_bytes(digest[:8], "big") % 2_000_000_000 + 1
 
 
 def clean_title(path: Path) -> str:
     stem = re.sub(r"^\d+[\-_ ]*", "", path.stem).strip("-_ ")
-    return stem or "office-session"
+    return stem or "peter-lofi-session"
 
 
 def consolidate_to_long_tracks(raw_wavs):
@@ -79,11 +111,9 @@ def consolidate_to_long_tracks(raw_wavs):
     min_frames = int(framerate * MIN_FINAL_TRACK_SECONDS)
     if total_frames < min_frames:
         raise RuntimeError(
-            f"Fresh fallback audio totals only {total_frames / framerate:.1f}s; "
-            f"at least {MIN_FINAL_TRACK_SECONDS}s is required for one song"
+            f"Fresh fallback audio totals only {total_frames / framerate:.1f}s; at least {MIN_FINAL_TRACK_SECONDS}s is required for one song"
         )
 
-    # Use as many final songs as possible while guaranteeing every one is >= 5 min.
     final_count = max(1, total_frames // min_frames)
     base_frames = total_frames // final_count
     extra_frames = total_frames % final_count
@@ -111,11 +141,8 @@ def consolidate_to_long_tracks(raw_wavs):
 
     try:
         for out_idx, needed in enumerate(target_frames, start=1):
-            # A previous final song can end exactly on a source-file boundary.
-            # Advance before deriving the next title or trying to read zero frames.
             while src_remaining <= 0:
                 advance_source()
-
             source_title = clean_title(metadata[src_idx][0])
             out_path = OUTPUT_DIR / f"{out_idx:02d}-{source_title}.wav"
             with wave.open(str(out_path), "wb") as out:
@@ -123,32 +150,25 @@ def consolidate_to_long_tracks(raw_wavs):
                 out.setsampwidth(sampwidth)
                 out.setframerate(framerate)
                 frames_left = needed
-
                 while frames_left > 0:
                     if src_remaining <= 0:
                         advance_source()
-
                     take = min(frames_left, src_remaining)
                     if take <= 0:
                         raise RuntimeError("Invalid zero-frame read while building long songs")
-
                     data = src_wave.readframes(take)
                     if not data:
-                        # Defensive recovery for a WAV that reports frames but reaches EOF early.
                         src_remaining = 0
                         continue
-
                     frame_width = channels * sampwidth
                     if len(data) % frame_width != 0:
                         raise RuntimeError("Corrupt PCM frame alignment while building long songs")
                     frames_read = len(data) // frame_width
                     if frames_read <= 0:
                         raise RuntimeError("Unexpected zero-frame PCM block while building long songs")
-
                     out.writeframes(data)
                     frames_left -= frames_read
                     src_remaining -= frames_read
-
             duration = needed / framerate
             if duration < MIN_FINAL_TRACK_SECONDS:
                 raise RuntimeError(f"Generated final song shorter than 5 minutes: {out_path.name}")
@@ -162,7 +182,6 @@ def consolidate_to_long_tracks(raw_wavs):
 
     if len(final_files) != final_count:
         raise RuntimeError(f"Expected {final_count} consolidated songs, produced {len(final_files)}")
-
     return final_files
 
 
@@ -177,12 +196,7 @@ def main():
         if p.exists():
             shutil.rmtree(p, ignore_errors=True)
     run(["git", "clone", "--depth", "1", REPO_URL, str(REPO_DIR)])
-
-    profile = REPO_DIR / "config" / "channel_profile.yaml"
-    text = profile.read_text(encoding="utf-8")
-    text = re.sub(r'(?m)^(\s*model:\s*)["\']?[^"\'\s#]+["\']?', r'\1"small-music"', text, count=1)
-    text = re.sub(r'(?m)^(\s*track_duration_seconds:\s*)\d+', rf'\g<1>{TRACK_DURATION_SECONDS}', text, count=1)
-    profile.write_text(text, encoding="utf-8")
+    profile = prepare_profile()
 
     run(["bash", "scripts/bootstrap_kaggle.sh"], cwd=REPO_DIR)
     python_bin = SA3_DIR / ".venv" / "bin" / "python"
@@ -190,10 +204,11 @@ def main():
         raise RuntimeError("Stable Audio runtime not found")
 
     seed = request_seed(REQUEST_ID)
-    batch_name = BATCH_PREFIX + "-" + REQUEST_ID[:8] + "-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    batch_name = BATCH_PREFIX + "-" + (SERIES_KEY or "default") + "-" + REQUEST_ID[:8] + "-" + datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     env = os.environ.copy()
     env["PYTHONPATH"] = str(REPO_DIR / "src")
     print(f"Request ID: {REQUEST_ID}")
+    print(f"Series key: {SERIES_KEY or 'default'}")
     print(f"Request-bound master seed: {seed}")
     run([
         str(python_bin), str(REPO_DIR / "src" / "generate_tracks.py"),
@@ -220,6 +235,7 @@ def main():
     (OUTPUT_DIR / "request_id.txt").write_text(REQUEST_ID + "\n", encoding="utf-8")
     (OUTPUT_DIR / "generation_request.json").write_text(json.dumps({
         "request_id": REQUEST_ID,
+        "series_key": SERIES_KEY,
         "model": "small-music",
         "master_seed": seed,
         "raw_track_count": TRACK_COUNT,
@@ -232,10 +248,7 @@ def main():
     shutil.rmtree(RAW_DIR, ignore_errors=True)
     shutil.rmtree(SA3_DIR, ignore_errors=True)
     shutil.rmtree(REPO_DIR, ignore_errors=True)
-    print(
-        f"Fallback generation complete: {len(final_wavs)} fresh songs, "
-        f"each >= {MIN_FINAL_TRACK_SECONDS}s, for request {REQUEST_ID}"
-    )
+    print(f"Fallback generation complete: {len(final_wavs)} fresh songs, each >= {MIN_FINAL_TRACK_SECONDS}s, for request {REQUEST_ID}")
 
 
 if __name__ == "__main__":
