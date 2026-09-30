@@ -1,0 +1,86 @@
+name: Rebrand future YouTube publishing to Peter Lofi
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/rebrand-peter-lofi.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rebrand:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update future publishing templates
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          files = [
+              Path('.github/workflows/office-music-publish.yml'),
+              Path('.github/workflows/upload-office-music-singles.yml'),
+              Path('.github/workflows/seo-office-music-youtube.yml'),
+              Path('.github/workflows/office-music-live.yml'),
+          ]
+
+          for p in files:
+              if not p.exists():
+                  continue
+              s = p.read_text(encoding='utf-8')
+
+              # Brand name in user-facing titles/descriptions/tags.
+              s = s.replace('The Office Music', 'Peter Lofi')
+              s = s.replace('the office music', 'peter lofi')
+
+              # Old channel link/handle variants.
+              s = s.replace('https://www.youtube.com/@TheOfficeMusicTv', 'https://www.youtube.com/@PeterLofiSounds')
+              s = s.replace('@TheOfficeMusicTv', '@PeterLofiSounds')
+
+              # Ensure the standard subscription CTA uses the new identity.
+              old_cta = '🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds'
+              if 'Subscribe to Peter Lofi' not in s and 'Original music by Peter Lofi' in s:
+                  s = s.replace(
+                      '#officemusic #focusmusic #workmusic #homeoffice #loungehouse',
+                      '🎧 Subscribe to Peter Lofi:\\nhttps://www.youtube.com/@PeterLofiSounds\\n\\n#peterlofi #lofi #lofibeats #focusmusic #workmusic #studymusic #chillmusic'
+                  )
+
+              # Update default discovery hashtags without touching technical identifiers.
+              s = s.replace('#officemusic', '#peterlofi')
+              s = s.replace("'The Office Music'", "'Peter Lofi'")
+              p.write_text(s, encoding='utf-8')
+
+          # More precise modern defaults for the main mix publisher.
+          p = Path('.github/workflows/office-music-publish.yml')
+          if p.exists():
+              s = p.read_text(encoding='utf-8')
+              s = s.replace(
+                  "description='Peter Lofi — stylish original beats for work, focus and home office.\\n\\n'+'\\n'.join(chapters)+'\\n\\nOriginal AI-generated music for Peter Lofi.\\n4K visual.\\n\\n#peterlofi #focusmusic #workmusic #homeoffice #loungehouse'",
+                  "description='Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\\n\\n'+'\\n'.join(chapters)+'\\n\\n🎧 Subscribe to Peter Lofi:\\nhttps://www.youtube.com/@PeterLofiSounds\\n\\nOriginal music by Peter Lofi.\\n4K visual.\\n\\n#peterlofi #lofi #lofibeats #focusmusic #studymusic #workmusic #chillmusic'"
+              )
+              s = s.replace(
+                  "['office music','focus music','work music','home office','lounge house','deep house','fashion retail music','background music','4k office music','Peter Lofi']",
+                  "['Peter Lofi','peter lofi sounds','lofi','lofi music','lofi beats','focus music','study music','work music','chill music','background music','deep focus','home office','lounge house','no copyright music']"
+              )
+              p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit rebrand
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/workflows/office-music-publish.yml \
+                  .github/workflows/upload-office-music-singles.yml \
+                  .github/workflows/seo-office-music-youtube.yml \
+                  .github/workflows/office-music-live.yml
+          git commit -m "brand: use Peter Lofi in future YouTube metadata" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
