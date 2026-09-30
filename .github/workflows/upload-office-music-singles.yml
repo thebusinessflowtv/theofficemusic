@@ -1,0 +1,177 @@
+name: Upload Office Music Singles
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/upload-office-music-singles.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: office-music-singles-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0
+  cancel-in-progress: false
+
+env:
+  JOB_ID: 5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0
+  EXISTING_MIX_VIDEO_ID: SEUgsnhXt0Q
+  THUMBNAIL_URL: https://fykwalznmcrjgnyveagy.supabase.co/storage/v1/object/public/office-music-assets/thumbnail/1790724056156-afa37a45-3139-4cf3-9cfb-72b9dbd62299-THUMBNAIL-A-NOITE---THE-OFFICE-MUSIC.png
+  YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+  YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+
+jobs:
+  upload-singles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip
+          python -m pip install google-api-python-client google-auth google-auth-httplib2
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Validate source job and prepare thumbnail
+        run: |
+          set -euo pipefail
+          RESULT="control/results/${JOB_ID}.json"
+          test -f "$RESULT"
+          test "$(jq -r '.status' "$RESULT")" = "completed"
+          test "$(jq '.tracks | length' "$RESULT")" = "30"
+          mkdir -p build "control/youtube-single-uploads"
+          curl --retry 5 --retry-all-errors -fL "$THUMBNAIL_URL" -o build/visual.png
+          ffmpeg -hide_banner -v error -i build/visual.png -frames:v 1 -f null - >/dev/null
+          ffmpeg -hide_banner -loglevel warning -y -i build/visual.png \
+            -vf "scale=1280:720:force_original_aspect_ratio=decrease:flags=lanczos,pad=1280:720:(ow-iw)/2:(oh-ih)/2" \
+            -frames:v 1 -q:v 3 build/thumbnail.jpg
+          test -s build/thumbnail.jpg
+          BYTES="$(stat -c%s build/thumbnail.jpg)"
+          echo "thumbnail_bytes=$BYTES"
+          test "$BYTES" -lt 2000000
+          STATE="control/youtube-single-uploads/${JOB_ID}.json"
+          if [ ! -f "$STATE" ]; then
+            jq -n --arg job "$JOB_ID" '{job_id:$job,uploads:[],mix_thumbnail_updated:false}' > "$STATE"
+          fi
+
+      - name: Authenticate and apply thumbnail to existing 1-hour mix
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, json, pathlib
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          channel=yt.channels().list(part='id',mine=True).execute()['items'][0]
+          if channel['id'] != os.environ['YOUTUBE_CHANNEL_ID']:
+              raise SystemExit('Authenticated channel mismatch')
+          yt.thumbnails().set(videoId=os.environ['EXISTING_MIX_VIDEO_ID'],media_body=MediaFileUpload('build/thumbnail.jpg',mimetype='image/jpeg',resumable=False)).execute()
+          state_path=pathlib.Path('control/youtube-single-uploads')/(os.environ['JOB_ID']+'.json')
+          state=json.loads(state_path.read_text(encoding='utf-8'))
+          state['mix_thumbnail_updated']=True
+          state['mix_video_id']=os.environ['EXISTING_MIX_VIDEO_ID']
+          state_path.write_text(json.dumps(state,indent=2),encoding='utf-8')
+          print('Existing 1-hour mix thumbnail updated.')
+          PY
+
+      - name: Upload 30 individual tracks to YouTube
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, re, subprocess, urllib.request, time
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+
+          job=os.environ['JOB_ID']
+          result=json.loads(pathlib.Path(f'control/results/{job}.json').read_text(encoding='utf-8'))
+          state_path=pathlib.Path(f'control/youtube-single-uploads/{job}.json')
+          state=json.loads(state_path.read_text(encoding='utf-8'))
+          uploaded={x['filename']:x for x in state.get('uploads',[])}
+
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          channel=yt.channels().list(part='id',mine=True).execute()['items'][0]
+          if channel['id'] != os.environ['YOUTUBE_CHANNEL_ID']:
+              raise SystemExit('Authenticated channel mismatch')
+
+          def pretty(title):
+              title=re.sub(r'^\d{2}-','',title)
+              return title.replace('-',' ').replace('_',' ').title()
+
+          for idx,t in enumerate(result['tracks'], start=1):
+              fn=t['filename']
+              if fn in uploaded:
+                  print(f'SKIP {fn}: already uploaded as {uploaded[fn]["youtube_video_id"]}')
+                  continue
+              audio=pathlib.Path('build/current.wav')
+              video=pathlib.Path('build/current.mp4')
+              urllib.request.urlretrieve(t['download_url'], audio)
+              clean=pretty(t.get('title') or fn.rsplit('.',1)[0])
+              subprocess.run([
+                  'ffmpeg','-hide_banner','-loglevel','warning','-y',
+                  '-loop','1','-i','build/visual.png','-i',str(audio),
+                  '-vf','scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,format=yuv420p',
+                  '-c:v','libx264','-tune','stillimage','-preset','veryfast','-crf','20','-r','30',
+                  '-c:a','aac','-b:a','256k','-ar','48000','-shortest','-movflags','+faststart',str(video)
+              ],check=True)
+              title=f'{clean} | The Office Music'
+              description=(
+                  f'{clean}\n\n'
+                  'Original music by The Office Music — stylish lounge house for work, focus, office and home office.\n\n'
+                  '🎧 Perfect for work, studying, deep focus and creative sessions.\n\n'
+                  '#officemusic #focusmusic #workmusic #homeoffice #loungehouse'
+              )
+              body={
+                  'snippet':{
+                      'title':title[:100],
+                      'description':description,
+                      'tags':['office music','focus music','work music','home office','lounge house','deep house','background music','The Office Music'],
+                      'categoryId':'10',
+                      'defaultLanguage':'en'
+                  },
+                  'status':{'privacyStatus':'public','selfDeclaredMadeForKids':False}
+              }
+              media=MediaFileUpload(str(video),mimetype='video/mp4',chunksize=16*1024*1024,resumable=True)
+              req=yt.videos().insert(part='snippet,status',body=body,media_body=media)
+              response=None
+              while response is None:
+                  status,response=req.next_chunk(num_retries=8)
+                  if status:
+                      print(f'{idx:02d}/30 {clean}: {int(status.progress()*100)}%')
+              vid=response['id']
+              yt.thumbnails().set(videoId=vid,media_body=MediaFileUpload('build/thumbnail.jpg',mimetype='image/jpeg',resumable=False)).execute()
+              entry={'position':idx,'filename':fn,'title':clean,'youtube_video_id':vid,'youtube_url':f'https://www.youtube.com/watch?v={vid}'}
+              state['uploads'].append(entry)
+              state_path.write_text(json.dumps(state,indent=2),encoding='utf-8')
+              print(f'UPLOADED {idx:02d}/30: {entry["youtube_url"]}')
+              audio.unlink(missing_ok=True)
+              video.unlink(missing_ok=True)
+              time.sleep(2)
+          PY
+
+      - name: Persist upload manifest
+        if: always()
+        run: |
+          set +e
+          git add control/youtube-single-uploads/${JOB_ID}.json
+          git commit -m "office-music: record 30 YouTube single uploads for ${JOB_ID}" || exit 0
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
