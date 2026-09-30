@@ -1,0 +1,15 @@
+{
+  "status": "generating",
+  "progress": 8,
+  "phase": "Preparando geração de áudio original",
+  "index": 3,
+  "key": "coffee-shop",
+  "name": "Coffee Shop",
+  "title": "Coffee Shop Lofi — 1 Hour Cozy Beats for Work & Study | Peter Lofi 🎧",
+  "playlist": "Coffee Shop ☕ | Peter Lofi",
+  "description": "A cozy 1-hour coffee-shop session for studying, journaling, writing and relaxed work. Warm electric piano, mellow drums and soft bass create the feeling of a calm city café without distracting ambience or vocals.",
+  "request_id": "93ad899a-8cc6-4056-a837-574edb4ace6f",
+  "github_run_id": 36780055742,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36780055742",
+  "started_at": "2026-09-30T21:32:42.717422+00:00"
+}
