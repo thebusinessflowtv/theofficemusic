@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 5,
   "key": "rainy-office",
   "name": "Rainy Office",
@@ -9,7 +9,122 @@
   "playlist": "Rainy Office 🌧️ | Peter Lofi",
   "description": "A calm rainy-day work session with soft piano-like keys, muted percussion and spacious pads. One hour built for deep reading, writing and concentration while the city slows down outside.",
   "request_id": "8723845d-36cf-4be3-9db5-1d05d4204b55",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-05-rainy-office-8723845d",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-05-rainy-office-8723845d",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-soft-desk",
+      "filename": "01-soft-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "523e32a985ded6ba430b498b2561d0e17d71c1a9eb30742ac682465387b764c3",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/01-soft-desk.wav"
+    },
+    {
+      "title": "02-soft-hours",
+      "filename": "02-soft-hours.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "fdedcd83fd72e3ea37d1a8df9c15a9416951d491f97e94c2219cbac751eaf8db",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/02-soft-hours.wav"
+    },
+    {
+      "title": "03-grey-desk",
+      "filename": "03-grey-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "1509b4a63bdbae99887d38a25cb24761b1f3c2b03ca2d6d392c78fc2903a3e90",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/03-grey-desk.wav"
+    },
+    {
+      "title": "04-quiet-glass",
+      "filename": "04-quiet-glass.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "582d7b798acd014f1b4961faad7a3fc9bd4a8911a80b01ff398e0a7782257a15",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/04-quiet-glass.wav"
+    },
+    {
+      "title": "05-quiet-street",
+      "filename": "05-quiet-street.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "2376a90e32ec87671b1129984e948812b78f23418f3f9c08ecc7b6d224657ed4",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/05-quiet-street.wav"
+    },
+    {
+      "title": "06-quiet-desk",
+      "filename": "06-quiet-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "02ebacf26aac94b41eddd4373789a91a11c24588063d081adbc22466c44dc2fe",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/06-quiet-desk.wav"
+    },
+    {
+      "title": "07-grey-desk-16",
+      "filename": "07-grey-desk-16.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "1fa9cf02e2036d9c4bb8017c8523ef6bf10dbafbed0e56530b03baf752de8ca5",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/07-grey-desk-16.wav"
+    },
+    {
+      "title": "08-rainy-glass",
+      "filename": "08-rainy-glass.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "c939f4b77c8366fc09bcc7dbdfe9fae176a78d594f71304cac9ac748ac573a24",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/08-rainy-glass.wav"
+    },
+    {
+      "title": "09-rainy-notes",
+      "filename": "09-rainy-notes.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "75814ca7d0c19f6dcb1b01bbe072c69fe40d32d8f5fd7b91d6692ea25a2175cc",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/09-rainy-notes.wav"
+    },
+    {
+      "title": "10-quiet-desk-23",
+      "filename": "10-quiet-desk-23.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "419f15d79a0aceee12c0b909bb9bcddbcc033b192ba9ad3a65a4e1ceae8a2320",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/10-quiet-desk-23.wav"
+    },
+    {
+      "title": "11-rainy-glass-26",
+      "filename": "11-rainy-glass-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "412fe9a5b0deedf1c6ec6b3b40e8519736a6496e15a5cc0fa683a946d22ff465",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/11-rainy-glass-26.wav"
+    },
+    {
+      "title": "12-cloudy-street-28",
+      "filename": "12-cloudy-street-28.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "31523e688d89fdf86c2264d3de4c362559a6a92fb5524911900d5a12474562a1",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/12-cloudy-street-28.wav"
+    }
+  ],
   "github_run_id": 36789290552,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36789290552",
-  "started_at": "2026-09-30T23:06:51.295889+00:00"
+  "completed_at": "2026-09-30T23:55:05.526857+00:00"
 }
