@@ -1,0 +1,15 @@
+{
+  "status": "generating",
+  "progress": 8,
+  "phase": "Preparando geração de áudio original",
+  "index": 5,
+  "key": "rainy-office",
+  "name": "Rainy Office",
+  "title": "Rainy Office — 1 Hour Cozy Lofi for Deep Work | Peter Lofi 🎧",
+  "playlist": "Rainy Office 🌧️ | Peter Lofi",
+  "description": "A calm rainy-day work session with soft piano-like keys, muted percussion and spacious pads. One hour built for deep reading, writing and concentration while the city slows down outside.",
+  "request_id": "8723845d-36cf-4be3-9db5-1d05d4204b55",
+  "github_run_id": 36789290552,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36789290552",
+  "started_at": "2026-09-30T23:06:51.295889+00:00"
+}
