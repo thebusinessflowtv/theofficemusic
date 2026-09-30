@@ -1,0 +1,73 @@
+name: Peter Lofi — Kick Stop
+
+on:
+  push:
+    paths:
+      - 'control/live-stop/*.json'
+      - 'control/kick-live-stop/*.json'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  stop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve stop request and cancel live run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep -E '^control/(kick-)?live-stop/[^/]+\.json$' | tail -1 || true)"
+          if [ -z "$FILE" ]; then
+            echo "No stop request file found in this push."
+            exit 0
+          fi
+
+          SESSION_ID="$(basename "$FILE" .json)"
+          RESULT="control/kick-live-results/${SESSION_ID}.json"
+          if [ ! -s "$RESULT" ]; then
+            git fetch origin main
+            git checkout origin/main -- "$RESULT" 2>/dev/null || true
+          fi
+          if [ ! -s "$RESULT" ]; then
+            echo "No Kick result file found for ${SESSION_ID}; nothing to cancel."
+            exit 0
+          fi
+
+          RUN_ID="$(jq -r '.github_run_id // empty' "$RESULT")"
+          if [ -n "$RUN_ID" ]; then
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/cancel" || true
+          fi
+
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p control/kick-live-results
+          python - <<'PY'
+          import json, os, pathlib, datetime
+          sid=os.environ['SESSION_ID']
+          p=pathlib.Path('control/kick-live-results')/(sid+'.json')
+          d={}
+          try:d=json.loads(p.read_text())
+          except Exception:pass
+          d['platform']='kick'
+          d['session_id']=sid
+          d['status']='completed'
+          d['stop_reason']='manual_stop'
+          d['completed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          p.write_text(json.dumps(d,indent=2),encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "control/kick-live-results/${SESSION_ID}.json"
+          git commit -m "peter-lofi: mark Kick live stopped ${SESSION_ID}" || true
+          git push origin HEAD:main
+        shell: bash
+        env:
+          SESSION_ID: ${{ env.SESSION_ID }}
