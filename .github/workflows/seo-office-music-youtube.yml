@@ -64,7 +64,8 @@ jobs:
           base_tags=[
               'The Office Music','lofi','lofi beats','focus music','work music','study music',
               'office music','home office music','chill beats','lounge house','deep house',
-              'background music','coding music','deep focus','instrumental music','copyright music'
+              'background music','coding music','deep focus','instrumental music','copyright music',
+              'no copyright music','no copyright music for videos','copyright free music search'
           ]
 
           def update_video(video_id, title, description, tags):
@@ -96,6 +97,8 @@ jobs:
                   f"{name} — original instrumental music by The Office Music.\n\n"
                   "A polished lofi-inspired lounge / focus track made for work, studying, coding, design, deep focus, office and home-office sessions. "
                   "If you enjoy calm background music with a modern late-night workspace feel, save this track and subscribe for more original releases.\n\n"
+                  "Search discovery: no copyright music, lofi music, focus music, work music, study music and office music. "
+                  "Important: this track is original copyrighted music by The Office Music; reuse requires permission unless a separate license explicitly says otherwise.\n\n"
                   f"🎧 Subscribe to The Office Music: {subscribe}\n\n"
                   "Perfect for:\n"
                   "• work & productivity\n"
@@ -114,6 +117,8 @@ jobs:
           mix_title='1 Hour Lofi Lounge House Mix ☕ beats to work, focus & study to | The Office Music'
           mix_description=(
               "1 hour of original The Office Music tracks for work, focus, study, coding and home-office sessions.\n\n"
+              "Search discovery: no copyright music, lofi music, focus music, work music, study music and office music. "
+              "Important: all tracks in this mix are original copyrighted music by The Office Music; reuse requires permission unless a separate license explicitly says otherwise.\n\n"
               "Inspired by the functional listening style used across leading lofi and chill channels: clear use-case keywords, a strong first-line promise, a complete tracklist and focused hashtags.\n\n"
               "🎧 Subscribe for more original office music and focus mixes:\n"
               f"{subscribe}\n\n"
@@ -129,5 +134,5 @@ jobs:
               "Reuse, redistribution or re-uploading is not permitted without authorization.\n\n"
               "#lofi #lofibeats #focusmusic #workmusic #studymusic #officemusic #chillbeats #loungehouse #copyrightmusic #theofficemusic"
           )
-          update_video(mix_id, mix_title, mix_description, ['1 hour lofi','lofi mix','focus mix','study mix','work music','office music','lounge house mix','deep focus music','The Office Music','copyright music'])
+          update_video(mix_id, mix_title, mix_description, ['1 hour lofi','lofi mix','focus mix','study mix','work music','office music','lounge house mix','deep focus music','The Office Music','copyright music','no copyright music','no copyright music for videos'])
           PY
