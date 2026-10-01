@@ -15,5 +15,7 @@
   "custom_thumbnail_applied": true,
   "privacy_status": "public",
   "started_at": "2026-10-01T20:13:30.174623+00:00",
-  "session_started_at": "2026-10-01T20:13:30.174623+00:00"
+  "session_started_at": "2026-10-01T20:13:30.174623+00:00",
+  "rtmp_handoff_token": "gAAAAABqvr7xxFhDF9ETT9E3aICKBYCYrExLuv6fxqmrVGJ8GGLbukAJeGpqxM10oVYqSA0eS8cO3khDLfN-8InjFGJOpH3xwNeaWIkTTIqrQdxGffUlu8vtqf4rBrO1KT_xYsyKSyFJ3p-bE9nBow9P5nWJ9lEWfA==",
+  "rtmp_resume_mode": "encrypted_handoff_token_ready"
 }
