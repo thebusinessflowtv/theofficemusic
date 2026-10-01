@@ -8,7 +8,7 @@
   "youtube_url": "https://www.youtube.com/watch?v=GIOCNRogj0g",
   "session_started_at": "2026-10-01T13:21:54.081359+00:00",
   "rtmp_handoff_token": "gAAAAABqvl50sQsNT_S_9Z4KXiSg-E8WnqfixetRRZkRY6vxl1L-1DzjOfBNw5umEyclovXDafZLkAOsn0hdTDzMC3QkyJGHrmCEM6mh3Pj8RUcH_VwL2LeAbm4SsVtNkgYBKGE6z_ELYHLGbWsPnSQ79IKT_OxyPQ==",
-  "rtmp_resume_mode": "encrypted_handoff_token_ready",
+  "rtmp_resume_mode": "encrypted_handoff_token",
   "segment_index": 2,
   "encoder_resolution": "1920x1080",
   "encoder_fps": 60,
@@ -16,5 +16,8 @@
   "current_segment_started_at": "2026-10-01T13:22:18.740432+00:00",
   "last_verified_lifecycle": "live",
   "youtube_api_quota_limited": false,
-  "live_at": "2026-10-01T13:22:18.740432+00:00"
+  "live_at": "2026-10-01T13:22:18.740432+00:00",
+  "prewarmed_segment_index": 3,
+  "prewarmed_run_id": 36871243374,
+  "prewarmed_at": "2026-10-01T13:47:39.228485+00:00"
 }
