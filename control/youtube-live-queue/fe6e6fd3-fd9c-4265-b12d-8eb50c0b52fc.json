@@ -7,5 +7,6 @@
   "thumbnail_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/98c0bcf3-b1b4-4b19-9200-a210bc5291a2/9c976ea59f23437e8ec8e0cb31f07e344d7126bff4814ff4ab70a2921a73f1eb",
   "loop_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/998ca654-bb42-4c35-99c6-04ac2ebad84c/b6bf0c5819a04630b36f61314ed6de7566e4b48b72df41c59093a5bd7c0f9ab0",
   "segment_index": "1",
-  "requested_at": "2026-10-01T04:21:19.130Z"
+  "requested_at": "2026-10-01T04:21:19.130Z",
+  "queue_bridge_test": true
 }
