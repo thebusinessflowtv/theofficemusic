@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T16:27:35.831338+00:00",
+  "generated_at": "2026-10-01T16:47:15.304803+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -101,7 +101,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "NH7ToRInOoy9_cXJFLeF3ZSuHnc",
+          "etag": "m56tuitblIKe_lv3GnybRMxVcLM",
           "id": "PNdwQEFaIrA",
           "snippet": {
             "publishedAt": "2026-10-01T04:22:36Z",
@@ -141,6 +141,22 @@
               }
             },
             "channelTitle": "Peter Lofi",
+            "tags": [
+              "Peter Lofi",
+              "PeterLofiSounds",
+              "background music",
+              "chill music",
+              "cozy lofi",
+              "focus music",
+              "lofi",
+              "lofi beats",
+              "lofi music",
+              "rain music",
+              "rainy lofi",
+              "relaxing music",
+              "study music",
+              "work music"
+            ],
             "categoryId": "24",
             "liveBroadcastContent": "live",
             "defaultLanguage": "en",
