@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-10-01T20:06:52.183839+00:00",
+  "youtube": {
+    "deep_house": {
+      "broadcast_id": "GIOCNRogj0g",
+      "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790820645461112",
+      "exists": true,
+      "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
+      "lifecycle": "live",
+      "privacy": "public",
+      "stream_status": "inactive",
+      "health_status": "noData",
+      "bound_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790820645461112"
+    },
+    "rainy": {
+      "broadcast_id": "PNdwQEFaIrA",
+      "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790828557622468",
+      "exists": true,
+      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+      "lifecycle": "live",
+      "privacy": "public",
+      "stream_status": "active",
+      "health_status": "bad",
+      "bound_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790828557622468"
+    }
+  },
+  "kick": {
+    "reachable": true,
+    "is_live": true,
+    "title": "Lofi Music for Work, Study & Focus 🎧 | Relaxing Lofi Beats Radio 🔴 LIVE",
+    "viewer_count": 1,
+    "started_at": "2026-10-01 20:01:18"
+  }
+}
