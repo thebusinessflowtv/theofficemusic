@@ -1,17 +1,20 @@
 {
   "platform": "youtube",
-  "status": "failed",
+  "status": "live",
   "github_run_id": 36841262541,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36841262541",
-  "error_message": "EOF occurred in violation of protocol (_ssl.c:2417)",
-  "completed_at": "2026-10-01T09:23:53.022586+00:00",
   "youtube_broadcast_id": "PNdwQEFaIrA",
   "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790828557622468",
   "youtube_url": "https://www.youtube.com/watch?v=PNdwQEFaIrA",
   "session_started_at": "2026-10-01T13:21:24.028829+00:00",
-  "prewarmed_segment_index": 2,
-  "prewarmed_run_id": 36841262541,
-  "prewarmed_at": "2026-10-01T13:21:24.028829+00:00",
   "rtmp_handoff_token": "gAAAAABqvl5WStCbRqoGWI943Qep2dfWjJKzSwrUAHfgZii4-DrFF3eQugU2bjLbtxbit1gw45gAhFznkgq11w9xrjuRGcN3qLp5jA3fuf5fJk_KBsSyFYZhjmEfP-7BaIKAoBY6BnEGYNsK9XHDVmz7cpQfmVn15Q==",
-  "rtmp_resume_mode": "encrypted_handoff_token_ready"
+  "rtmp_resume_mode": "encrypted_handoff_token_ready",
+  "segment_index": 2,
+  "encoder_resolution": "1920x1080",
+  "encoder_fps": 60,
+  "encoder_bitrate_kbps": 8000,
+  "current_segment_started_at": "2026-10-01T13:21:48.457279+00:00",
+  "last_verified_lifecycle": "live",
+  "youtube_api_quota_limited": false,
+  "live_at": "2026-10-01T13:21:48.457279+00:00"
 }
