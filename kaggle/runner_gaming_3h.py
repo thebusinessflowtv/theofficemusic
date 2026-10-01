@@ -15,7 +15,9 @@ REPO_DIR = Path("/kaggle/working/theofficemusic")
 SA3_DIR = Path("/kaggle/working/stable-audio-3")
 OUTPUT_DIR = Path("/kaggle/working/output")
 RAW_DIR = Path("/kaggle/working/output-raw")
-TRACK_COUNT = 90
+TRACK_COUNT = 45
+FINAL_TRACK_COUNT = 18
+SHARD_INDEX = 1
 TRACK_DURATION_SECONDS = 120
 MIN_FINAL_TRACK_SECONDS = 300
 BATCH_PREFIX = "peter-lofi-gaming"
@@ -151,8 +153,8 @@ def consolidate_to_five_minute_tracks(raw_wavs):
 
     target_frames = int(framerate * MIN_FINAL_TRACK_SECONDS)
     expected_final = total_frames // target_frames
-    if expected_final != 36:
-        raise RuntimeError(f"Expected exactly 36 final 5-minute tracks, calculated {expected_final}")
+    if expected_final != FINAL_TRACK_COUNT:
+        raise RuntimeError(f"Expected exactly {FINAL_TRACK_COUNT} final 5-minute tracks, calculated {expected_final}")
 
     shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -172,11 +174,11 @@ def consolidate_to_five_minute_tracks(raw_wavs):
 
     final_files = []
     try:
-        for out_idx in range(1, 37):
+        for out_idx in range(1, FINAL_TRACK_COUNT + 1):
             while src_remaining <= 0:
                 advance_source()
             source_title = clean_title(metadata[src_idx][0])
-            out_path = OUTPUT_DIR / f"{out_idx:02d}-{source_title}.wav"
+            out_path = OUTPUT_DIR / f"s{SHARD_INDEX}-{out_idx:02d}-{source_title}.wav"
             with wave.open(str(out_path), "wb") as out:
                 out.setnchannels(channels)
                 out.setsampwidth(sampwidth)
@@ -253,8 +255,8 @@ def main():
         moved.append(dest)
 
     final_wavs = consolidate_to_five_minute_tracks(moved)
-    if len(final_wavs) != 36:
-        raise RuntimeError(f"Expected 36 final tracks, got {len(final_wavs)}")
+    if len(final_wavs) != FINAL_TRACK_COUNT:
+        raise RuntimeError(f"Expected {FINAL_TRACK_COUNT} final tracks, got {len(final_wavs)}")
 
     (OUTPUT_DIR / "request_id.txt").write_text(REQUEST_ID + "\n", encoding="utf-8")
     (OUTPUT_DIR / "generation_request.json").write_text(json.dumps({
@@ -266,14 +268,15 @@ def main():
         "raw_track_duration_seconds": TRACK_DURATION_SECONDS,
         "final_track_count": len(final_wavs),
         "final_track_duration_seconds": 300,
-        "total_duration_seconds": 10800,
+        "shard_index": SHARD_INDEX,
+        "total_duration_seconds": FINAL_TRACK_COUNT * 300,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }, indent=2), encoding="utf-8")
 
     shutil.rmtree(RAW_DIR, ignore_errors=True)
     shutil.rmtree(SA3_DIR, ignore_errors=True)
     shutil.rmtree(REPO_DIR, ignore_errors=True)
-    print(f"Gaming generation complete: {len(final_wavs)} fresh 5-minute tracks / 3 hours total")
+    print(f"Gaming shard {SHARD_INDEX} complete: {len(final_wavs)} fresh 5-minute tracks / 90 minutes")
 
 
 if __name__ == "__main__":
