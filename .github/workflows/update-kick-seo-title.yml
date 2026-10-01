@@ -1,0 +1,21 @@
+name: Peter Lofi — Kick SEO Title
+
+on:
+  push:
+    paths:
+      - '.github/workflows/update-kick-seo-title.yml'
+      - 'scripts/update_kick_seo_title.py'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update current Kick live title
+        run: python scripts/update_kick_seo_title.py
