@@ -1,7 +1,7 @@
 {
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-01T03:20:33.038349+00:00",
+  "generated_at": "2026-10-01T04:20:44.329428+00:00",
   "public_video_count": 5,
   "active_managed_playlists": {
     "all_music": {
@@ -39,6 +39,14 @@
       "published_at": "2026-10-01T02:10:44Z"
     },
     {
+      "video_id": "teQ-pW_20uk",
+      "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
+      "related_playlist_key": "lofi_mixes",
+      "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
+      "duration_seconds": 3601,
+      "published_at": "2026-10-01T03:55:20Z"
+    },
+    {
       "video_id": "UMpFwDuky1g",
       "title": "1 Hour Lofi Lounge Mix | Beats to Work, Focus & Study To | Peter Lofi 🎧",
       "related_playlist_key": "lofi_mixes",
@@ -61,14 +69,6 @@
       "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
       "duration_seconds": 3601,
       "published_at": "2026-09-30T06:19:56Z"
-    },
-    {
-      "video_id": "nRQG5Z00RxU",
-      "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
-      "related_playlist_key": "lofi_mixes",
-      "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
-      "duration_seconds": 3601,
-      "published_at": "2026-09-30T05:34:00Z"
     }
   ]
 }

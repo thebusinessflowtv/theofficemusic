@@ -2,7 +2,7 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-01T03:20:33.038349+00:00",
+  "generated_at": "2026-10-01T04:20:44.329428+00:00",
   "playlist_count": 4,
   "playlists": [
     {
@@ -32,10 +32,18 @@
       "privacy_status": "public",
       "items": [
         {
+          "playlist_item_id": "UExaRjZyemJSQjBFQS4xMkVGQjNCMUM1N0RFNEUx",
+          "video_id": "teQ-pW_20uk",
+          "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/teQ-pW_20uk/mqdefault.jpg",
+          "privacy_status": "public"
+        },
+        {
           "playlist_item_id": "UExaRjZyemJSQjBFQS41MjE1MkI0OTQ2QzJGNzNG",
           "video_id": "UMpFwDuky1g",
           "title": "1 Hour Lofi Lounge Mix | Beats to Work, Focus & Study To | Peter Lofi 🎧",
-          "position": 0,
+          "position": 1,
           "thumbnail_url": "https://i.ytimg.com/vi/UMpFwDuky1g/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -43,7 +51,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS4wOTA3OTZBNzVEMTUzOTMy",
           "video_id": "n4R2DcQE3BM",
           "title": "1 Hour Lofi for Work & Focus ☕ | Chill Beats to Study, Code & Relax | Peter Lofi 🕷️ 🎧",
-          "position": 1,
+          "position": 2,
           "thumbnail_url": "https://i.ytimg.com/vi/n4R2DcQE3BM/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -51,16 +59,8 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS4yODlGNEE0NkRGMEEzMEQy",
           "video_id": "mLolLsDRctA",
           "title": "Stylish office beats to work to Coffee | 60 min Lounge House Mix | Lofi | Music 🕷️ | Peter Lofi 🎧",
-          "position": 2,
-          "thumbnail_url": "https://i.ytimg.com/vi/mLolLsDRctA/mqdefault.jpg",
-          "privacy_status": "public"
-        },
-        {
-          "playlist_item_id": "UExaRjZyemJSQjBFQS4wMTcyMDhGQUE4NTIzM0Y5",
-          "video_id": "nRQG5Z00RxU",
-          "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
           "position": 3,
-          "thumbnail_url": "https://i.ytimg.com/vi/nRQG5Z00RxU/mqdefault.jpg",
+          "thumbnail_url": "https://i.ytimg.com/vi/mLolLsDRctA/mqdefault.jpg",
           "privacy_status": "public"
         }
       ]
@@ -78,7 +78,7 @@
           "video_id": "u-Ocp29k1_0",
           "title": "Office Flow — 1 Hour Lofi for Work & Productivity | Peter Lofi",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=COCi99UG&rs=AOn4CLASaL3n8yrpsOqEtY7CY-RTV_cjPg",
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CPC-99UG&rs=AOn4CLD6FLfrSguG2OWmy1gaHm024QDyTw",
           "privacy_status": "private"
         }
       ]
@@ -100,18 +100,10 @@
           "privacy_status": "public"
         },
         {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy41QUZGQTY5OTE4QTREQUU4",
-          "video_id": "nRQG5Z00RxU",
-          "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
-          "position": 1,
-          "thumbnail_url": "https://i.ytimg.com/vi/nRQG5Z00RxU/mqdefault.jpg",
-          "privacy_status": "public"
-        },
-        {
           "playlist_item_id": "UExjUlRDWlNYWTIxdy4zRDBDOEZDOUM0MDY5NEEz",
           "video_id": "UMpFwDuky1g",
           "title": "1 Hour Lofi Lounge Mix | Beats to Work, Focus & Study To | Peter Lofi 🎧",
-          "position": 2,
+          "position": 1,
           "thumbnail_url": "https://i.ytimg.com/vi/UMpFwDuky1g/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -119,7 +111,7 @@
           "playlist_item_id": "UExjUlRDWlNYWTIxdy5CMEQ2Mjk5NTc3NDZFRUNB",
           "video_id": "n4R2DcQE3BM",
           "title": "1 Hour Lofi for Work & Focus ☕ | Chill Beats to Study, Code & Relax | Peter Lofi 🕷️ 🎧",
-          "position": 3,
+          "position": 2,
           "thumbnail_url": "https://i.ytimg.com/vi/n4R2DcQE3BM/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -127,8 +119,16 @@
           "playlist_item_id": "UExjUlRDWlNYWTIxdy45RjNFMDhGQ0Q2RkFCQTc1",
           "video_id": "GIOCNRogj0g",
           "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live 🎧",
-          "position": 4,
+          "position": 3,
           "thumbnail_url": "https://i.ytimg.com/vi/GIOCNRogj0g/mqdefault_live.jpg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy40QTA3NTU2RkM1QzlCMzYx",
+          "video_id": "teQ-pW_20uk",
+          "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
+          "position": 4,
+          "thumbnail_url": "https://i.ytimg.com/vi/teQ-pW_20uk/mqdefault.jpg",
           "privacy_status": "public"
         }
       ]
