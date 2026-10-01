@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T19:47:43.251927+00:00",
+  "generated_at": "2026-10-01T20:00:28.319417+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -10,7 +10,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "PjrBPgjAF9zeo3G_Ayilo6hBVO4",
+          "etag": "yp24Ntf-jKNRTVusLajXrDo70So",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
@@ -80,7 +80,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "10",
+            "viewCount": "13",
             "likeCount": "2",
             "dislikeCount": "0",
             "favoriteCount": "0",
@@ -90,6 +90,101 @@
             "actualStartTime": "2026-10-01T02:11:02Z",
             "scheduledStartTime": "2026-10-01T02:11:03Z",
             "activeLiveChatId": "Cg0KC0dJT0NOUm9najBnKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILR0lPQ05Sb2dqMGc"
+          }
+        }
+      },
+      {
+        "session_id": "c3f8a4d2-7e91-4b65-9d0a-1f2c3e4b5a67",
+        "video_id": "PNdwQEFaIrA",
+        "youtube_url": "https://www.youtube.com/watch?v=PNdwQEFaIrA",
+        "workflow_status": "live",
+        "data": {
+          "kind": "youtube#video",
+          "etag": "h53EjDgL3_0P51thIdhHeLz369k",
+          "id": "PNdwQEFaIrA",
+          "snippet": {
+            "publishedAt": "2026-10-01T04:22:36Z",
+            "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+            "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nCozy lofi for rainy windows, reading, calm work and slow evenings.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #RainyLofi",
+            "thumbnails": {
+              "default": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/default_live.jpg",
+                "width": 120,
+                "height": 90
+              },
+              "medium": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/mqdefault_live.jpg",
+                "width": 320,
+                "height": 180
+              },
+              "high": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/hqdefault_live.jpg",
+                "width": 480,
+                "height": 360
+              },
+              "standard": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/sddefault_live.jpg",
+                "width": 640,
+                "height": 480
+              },
+              "maxres": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/maxresdefault_live.jpg",
+                "width": 1280,
+                "height": 720
+              },
+              "fhd": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/fhddefault_live.jpg",
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            "channelTitle": "Peter Lofi",
+            "tags": [
+              "Peter Lofi",
+              "PeterLofiSounds",
+              "background music",
+              "chill music",
+              "cozy lofi",
+              "focus music",
+              "lofi",
+              "lofi beats",
+              "lofi music",
+              "rain music",
+              "rainy lofi",
+              "relaxing music",
+              "study music",
+              "work music"
+            ],
+            "categoryId": "24",
+            "liveBroadcastContent": "live",
+            "defaultLanguage": "en",
+            "localized": {
+              "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nCozy lofi for rainy windows, reading, calm work and slow evenings.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #RainyLofi"
+            },
+            "defaultAudioLanguage": "en-US"
+          },
+          "status": {
+            "uploadStatus": "uploaded",
+            "privacyStatus": "public",
+            "license": "youtube",
+            "embeddable": true,
+            "publicStatsViewable": true,
+            "madeForKids": false,
+            "selfDeclaredMadeForKids": false
+          },
+          "statistics": {
+            "viewCount": "7",
+            "likeCount": "0",
+            "dislikeCount": "0",
+            "favoriteCount": "0",
+            "commentCount": "0"
+          },
+          "liveStreamingDetails": {
+            "actualStartTime": "2026-10-01T04:22:54Z",
+            "scheduledStartTime": "2026-10-01T04:22:55Z",
+            "activeLiveChatId": "Cg0KC1BOZHdRRUZhSXJBKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILUE5kd1FFRmFJckE"
           }
         }
       },
