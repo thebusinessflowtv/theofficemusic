@@ -1,12 +1,12 @@
 {
   "session_id": "5f54bf8e-d700-4a67-bafd-79b1dd047be5",
   "segment_index": 2,
-  "track_id": "41621ee777471c23b41f42ee28a43f6f",
-  "title": "27-downtown-notes",
-  "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/27-downtown-notes.wav",
-  "started_at": "2026-10-01T07:10:10.053396Z",
-  "resumed_at": "2026-10-01T13:22:05.822611Z",
-  "resume_offset_seconds": 22315.769,
-  "resume_source": "resume:now-playing",
+  "track_id": "56ce53a6a60b3e875b5818bccf31a7db",
+  "title": "28-lobby-hours",
+  "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/28-lobby-hours.wav",
+  "started_at": "2026-10-01T13:22:08.135270Z",
+  "resumed_at": null,
+  "resume_offset_seconds": 0.0,
+  "resume_source": "playlist",
   "playlist_size": 73
 }
