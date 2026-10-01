@@ -1,0 +1,5 @@
+{
+  "stop": true,
+  "reason": "engineering test stopped after YouTube API quota blocked successor prewarm",
+  "requested_at": "2026-10-01T05:36:00Z"
+}
