@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T20:24:04.988163+00:00",
+  "generated_at": "2026-10-01T20:44:33.108711+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -195,41 +195,41 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "UL3mE7uxZZt83FAKXZJ3FVxyCBY",
+          "etag": "klclvRaxMA6pxqFBd0bRFCDM-wE",
           "id": "PNdwQEFaIrA",
           "snippet": {
-            "publishedAt": "2026-10-01T04:22:36Z",
+            "publishedAt": "2026-10-01T20:39:32Z",
             "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
             "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
             "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
             "thumbnails": {
               "default": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/default_live.jpg",
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/default.jpg",
                 "width": 120,
                 "height": 90
               },
               "medium": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/mqdefault_live.jpg",
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/mqdefault.jpg",
                 "width": 320,
                 "height": 180
               },
               "high": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/hqdefault_live.jpg",
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/hqdefault.jpg",
                 "width": 480,
                 "height": 360
               },
               "standard": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/sddefault_live.jpg",
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/sddefault.jpg",
                 "width": 640,
                 "height": 480
               },
               "maxres": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/maxresdefault_live.jpg",
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/maxresdefault.jpg",
                 "width": 1280,
                 "height": 720
               },
               "fhd": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/fhddefault_live.jpg",
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/fhddefault.jpg",
                 "width": 1920,
                 "height": 1080
               }
@@ -261,7 +261,7 @@
             "defaultAudioLanguage": "en-US"
           },
           "status": {
-            "uploadStatus": "uploaded",
+            "uploadStatus": "processed",
             "privacyStatus": "public",
             "license": "youtube",
             "embeddable": true,
