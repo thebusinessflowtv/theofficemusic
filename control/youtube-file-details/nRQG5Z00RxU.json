@@ -1,0 +1,127 @@
+{
+  "kind": "youtube#video",
+  "etag": "Ir-nCJOxVtKT3wIlb7QICdROBUs",
+  "id": "nRQG5Z00RxU",
+  "snippet": {
+    "publishedAt": "2026-09-30T05:34:00Z",
+    "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+    "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
+    "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nTracklist / Chapters:\n00:00 Sunday Afterglow\n02:00 Midnight Boulevard\n04:00 Glass Afterglow\n06:00 Studio Boulevard\n08:00 Northbound Hallway\n10:00 Window Seat Avenue\n12:00 Late Check In Workspace\n14:00 Midnight Hours\n16:00 Studio Lobby\n18:00 Midnight Meeting\n20:00 Downtown Coffee\n22:00 Late Check In District\n24:00 Downtown Transit\n26:00 Lobby District\n28:00 Sunday Floor\n30:00 City Escalator\n32:00 Sunday Hours\n34:00 Silver Avenue\n36:00 Golden Meeting\n38:00 Window Seat Transit\n40:00 Downtown Elevator\n42:00 Northbound Coffee\n44:00 Velvet Lobby\n46:00 Sunday Suite\n48:00 Neon Transit\n50:00 Neon Meeting\n52:00 After Hours Skyline\n54:00 Blue Hour Workspace\n56:00 Blue Hour Avenue\n58:00 Studio Desk\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
+    "thumbnails": {
+      "default": {
+        "url": "https://i.ytimg.com/vi/nRQG5Z00RxU/default.jpg",
+        "width": 120,
+        "height": 90
+      },
+      "medium": {
+        "url": "https://i.ytimg.com/vi/nRQG5Z00RxU/mqdefault.jpg",
+        "width": 320,
+        "height": 180
+      },
+      "high": {
+        "url": "https://i.ytimg.com/vi/nRQG5Z00RxU/hqdefault.jpg",
+        "width": 480,
+        "height": 360
+      },
+      "standard": {
+        "url": "https://i.ytimg.com/vi/nRQG5Z00RxU/sddefault.jpg",
+        "width": 640,
+        "height": 480
+      },
+      "maxres": {
+        "url": "https://i.ytimg.com/vi/nRQG5Z00RxU/maxresdefault.jpg",
+        "width": 1280,
+        "height": 720
+      },
+      "fhd": {
+        "url": "https://i.ytimg.com/vi/nRQG5Z00RxU/fhddefault.jpg",
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    "channelTitle": "Peter Lofi",
+    "tags": [
+      "1 hour lofi",
+      "Peter Lofi",
+      "PeterLofiSounds",
+      "background music",
+      "chill music",
+      "focus music",
+      "lofi",
+      "lofi beats",
+      "lofi mix",
+      "lofi music",
+      "long lofi mix",
+      "relaxing music",
+      "study music",
+      "work music"
+    ],
+    "categoryId": "22",
+    "liveBroadcastContent": "none",
+    "defaultLanguage": "en",
+    "localized": {
+      "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
+      "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nTracklist / Chapters:\n00:00 Sunday Afterglow\n02:00 Midnight Boulevard\n04:00 Glass Afterglow\n06:00 Studio Boulevard\n08:00 Northbound Hallway\n10:00 Window Seat Avenue\n12:00 Late Check In Workspace\n14:00 Midnight Hours\n16:00 Studio Lobby\n18:00 Midnight Meeting\n20:00 Downtown Coffee\n22:00 Late Check In District\n24:00 Downtown Transit\n26:00 Lobby District\n28:00 Sunday Floor\n30:00 City Escalator\n32:00 Sunday Hours\n34:00 Silver Avenue\n36:00 Golden Meeting\n38:00 Window Seat Transit\n40:00 Downtown Elevator\n42:00 Northbound Coffee\n44:00 Velvet Lobby\n46:00 Sunday Suite\n48:00 Neon Transit\n50:00 Neon Meeting\n52:00 After Hours Skyline\n54:00 Blue Hour Workspace\n56:00 Blue Hour Avenue\n58:00 Studio Desk\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix"
+    },
+    "defaultAudioLanguage": "en-US"
+  },
+  "contentDetails": {
+    "duration": "PT1H1S",
+    "dimension": "2d",
+    "definition": "hd",
+    "caption": "false",
+    "licensedContent": false,
+    "contentRating": {},
+    "projection": "rectangular",
+    "hasCustomThumbnail": true
+  },
+  "status": {
+    "uploadStatus": "processed",
+    "privacyStatus": "public",
+    "license": "youtube",
+    "embeddable": true,
+    "publicStatsViewable": true,
+    "madeForKids": false,
+    "selfDeclaredMadeForKids": false
+  },
+  "fileDetails": {
+    "fileName": "PETER LOFI 1.mp4",
+    "fileSize": "6054777318",
+    "fileType": "video",
+    "container": "mov",
+    "videoStreams": [
+      {
+        "widthPixels": 3840,
+        "heightPixels": 2160,
+        "frameRateFps": 30,
+        "aspectRatio": 1.7777777777777777,
+        "codec": "h265",
+        "bitrateBps": "9247651",
+        "vendor": "[0][0][0][0]"
+      }
+    ],
+    "audioStreams": [
+      {
+        "channelCount": 2,
+        "codec": "aac",
+        "bitrateBps": "160457",
+        "vendor": "[0][0][0][0]"
+      }
+    ],
+    "durationMs": "3600133",
+    "bitrateBps": "9408108"
+  },
+  "processingDetails": {
+    "processingStatus": "succeeded",
+    "fileDetailsAvailability": "available",
+    "processingIssuesAvailability": "available",
+    "tagSuggestionsAvailability": "inProgress",
+    "editorSuggestionsAvailability": "inProgress",
+    "thumbnailsAvailability": "available"
+  },
+  "suggestions": {
+    "processingHints": [
+      "nonStreamableMov"
+    ]
+  }
+}
