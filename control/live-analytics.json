@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T04:19:53.773983+00:00",
+  "generated_at": "2026-10-01T04:41:09.410858+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -10,13 +10,13 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "6cz7z80-tk2Q9EXyLXfyOuiIgrc",
+          "etag": "zEh2g6xwjFIs-J6yOelWI9b0X60",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
             "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-            "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live 🎧",
-            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #StudyMusic #WorkMusic #ChillMusic #musicforwork #lofimusic #officemusic #workmusic #studymusic #focusmusic #relaxingmusic #chillmusic #backgroundmusic #productivitymusic #deepfocus #concentrationmusic #musicforwork #musicforstudying #musicforoffice #coffeeshopmusic #cafemusic #jazzlofi #chillhop #instrumentalmusic #calmmusic #codingmusic #readingmusic #creativeworkmusic #homeofficemusic #workspacemusic #ambientmusic #peacefulmusic #stressreliefmusic #beatstoworkto #beatstostudyto #TheOfficeMusic #nocopyrightmusic",
+            "title": "Lofi Music for Work, Study & Focus 🎧 LIVE | Relaxing Lofi Beats Radio 🔴 — Peter Lofi",
+            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi",
             "thumbnails": {
               "default": {
                 "url": "https://i.ytimg.com/vi/GIOCNRogj0g/default_live.jpg",
@@ -65,8 +65,8 @@
             "liveBroadcastContent": "live",
             "defaultLanguage": "en",
             "localized": {
-              "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live 🎧",
-              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #StudyMusic #WorkMusic #ChillMusic #musicforwork #lofimusic #officemusic #workmusic #studymusic #focusmusic #relaxingmusic #chillmusic #backgroundmusic #productivitymusic #deepfocus #concentrationmusic #musicforwork #musicforstudying #musicforoffice #coffeeshopmusic #cafemusic #jazzlofi #chillhop #instrumentalmusic #calmmusic #codingmusic #readingmusic #creativeworkmusic #homeofficemusic #workspacemusic #ambientmusic #peacefulmusic #stressreliefmusic #beatstoworkto #beatstostudyto #TheOfficeMusic #nocopyrightmusic"
+              "title": "Lofi Music for Work, Study & Focus 🎧 LIVE | Relaxing Lofi Beats Radio 🔴 — Peter Lofi",
+              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi"
             },
             "defaultAudioLanguage": "en-US"
           },
@@ -80,7 +80,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "3",
+            "viewCount": "4",
             "likeCount": "1",
             "dislikeCount": "0",
             "favoriteCount": "0",
@@ -90,6 +90,80 @@
             "actualStartTime": "2026-10-01T02:11:02Z",
             "scheduledStartTime": "2026-10-01T02:11:03Z",
             "activeLiveChatId": "Cg0KC0dJT0NOUm9najBnKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILR0lPQ05Sb2dqMGc"
+          }
+        }
+      },
+      {
+        "session_id": "fe6e6fd3-fd9c-4265-b12d-8eb50c0b52fc",
+        "video_id": "PNdwQEFaIrA",
+        "youtube_url": "https://www.youtube.com/watch?v=PNdwQEFaIrA",
+        "workflow_status": "live",
+        "data": {
+          "kind": "youtube#video",
+          "etag": "T_LSpGGRaWq8ztb1C7OKZuB9NOk",
+          "id": "PNdwQEFaIrA",
+          "snippet": {
+            "publishedAt": "2026-10-01T04:22:36Z",
+            "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+            "title": "Rainy Late Night Office 🌧️ LIVE | Lofi for Deep Focus, Work & Study 🔴 — Peter Lofi",
+            "description": "The city is quiet, the rain is falling, and there’s still work to do. 🌧️🌙\n\nWelcome to the Late Night Office + Rainy Office LIVE — a continuous lofi session made for deep focus, studying, coding, reading, working, and those long nights when you just need to get things done.\n\nPut on your headphones, leave the rain outside, and stay here for a while.\n\n🎧 Perfect for:\nDeep Focus • Work • Study • Coding • Reading • Productivity • Late Night Sessions\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved..\n\n#Lofi #LofiMusic #LofiBeats #LofiLive #RainyLofi #RainSounds #LateNightLofi #LateNightOffice #RainyOffice #DeepFocus #FocusMusic #WorkMusic #StudyMusic #ProductivityMusic #CodingMusic #ReadingMusic #BackgroundMusic #ChillBeats #RelaxingMusic #NightVibes #CozyVibes #OfficeMusic #MusicForWork #MusicForStudy #StudyWithMe #WorkWithMe #DeepWork #ConcentrationMusic #AmbientMusic #PeterLofi",
+            "thumbnails": {
+              "default": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/default_live.jpg",
+                "width": 120,
+                "height": 90
+              },
+              "medium": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/mqdefault_live.jpg",
+                "width": 320,
+                "height": 180
+              },
+              "high": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/hqdefault_live.jpg",
+                "width": 480,
+                "height": 360
+              },
+              "standard": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/sddefault_live.jpg",
+                "width": 640,
+                "height": 480
+              },
+              "maxres": {
+                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/maxresdefault_live.jpg",
+                "width": 1280,
+                "height": 720
+              }
+            },
+            "channelTitle": "Peter Lofi",
+            "categoryId": "24",
+            "liveBroadcastContent": "live",
+            "defaultLanguage": "en",
+            "localized": {
+              "title": "Rainy Late Night Office 🌧️ LIVE | Lofi for Deep Focus, Work & Study 🔴 — Peter Lofi",
+              "description": "The city is quiet, the rain is falling, and there’s still work to do. 🌧️🌙\n\nWelcome to the Late Night Office + Rainy Office LIVE — a continuous lofi session made for deep focus, studying, coding, reading, working, and those long nights when you just need to get things done.\n\nPut on your headphones, leave the rain outside, and stay here for a while.\n\n🎧 Perfect for:\nDeep Focus • Work • Study • Coding • Reading • Productivity • Late Night Sessions\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved..\n\n#Lofi #LofiMusic #LofiBeats #LofiLive #RainyLofi #RainSounds #LateNightLofi #LateNightOffice #RainyOffice #DeepFocus #FocusMusic #WorkMusic #StudyMusic #ProductivityMusic #CodingMusic #ReadingMusic #BackgroundMusic #ChillBeats #RelaxingMusic #NightVibes #CozyVibes #OfficeMusic #MusicForWork #MusicForStudy #StudyWithMe #WorkWithMe #DeepWork #ConcentrationMusic #AmbientMusic #PeterLofi"
+            },
+            "defaultAudioLanguage": "en"
+          },
+          "status": {
+            "uploadStatus": "uploaded",
+            "privacyStatus": "public",
+            "license": "youtube",
+            "embeddable": true,
+            "publicStatsViewable": true,
+            "madeForKids": false,
+            "selfDeclaredMadeForKids": false
+          },
+          "statistics": {
+            "viewCount": "1",
+            "likeCount": "0",
+            "dislikeCount": "0",
+            "favoriteCount": "0",
+            "commentCount": "0"
+          },
+          "liveStreamingDetails": {
+            "actualStartTime": "2026-10-01T04:22:54Z",
+            "scheduledStartTime": "2026-10-01T04:22:55Z",
+            "activeLiveChatId": "Cg0KC1BOZHdRRUZhSXJBKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILUE5kd1FFRmFJckE"
           }
         }
       }
