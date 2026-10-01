@@ -55,7 +55,7 @@ on:
       prewarm_lead_seconds:
         description: "How early the successor runner is prepared."
         required: false
-        default: "600"
+        default: "900"
         type: string
       max_segments:
         description: "0 = unlimited"
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 345
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.GH_STREAM_CONTROL_TOKEN || github.token }}
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
@@ -111,7 +111,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install google-api-python-client google-auth google-auth-httplib2 cryptography
 
-      - name: Run resilient YouTube live segment
+      - name: Run continuity-first YouTube live segment
         run: |
           set -euo pipefail
-          python scripts/mediaforge_live_segment_v6.py
+          python scripts/mediaforge_live_segment_v7.py
