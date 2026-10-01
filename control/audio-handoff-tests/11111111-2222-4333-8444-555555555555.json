@@ -1,5 +1,7 @@
 {
   "session_id": "11111111-2222-4333-8444-555555555555",
   "track_urls_b64": "WyJodHRwczovL2dpdGh1Yi5jb20vdGhlYnVzaW5lc3NmbG93dHYvdGhlb2ZmaWNlbXVzaWMvcmVsZWFzZXMvZG93bmxvYWQvcGV0ZXItbG9maS1zZXJpZXMtMDItbGF0ZS1uaWdodC1vZmZpY2UtOGEyMzk4YzEvcGV0ZXItbG9maS1tYXN0ZXIubTRhIl0=",
-  "expected_offset": "137.500"
+  "expected_offset": "137.500",
+  "expected_source": "handoff",
+  "retry": 2
 }
