@@ -6,19 +6,34 @@ API outage/rate-limit must never stop a healthy encoder. Successors are prepared
 early and the predecessor only releases the stream key after the takeover state
 has been successfully persisted for a future local cutover instant.
 """
+import json
 import time
+import urllib.error
+import urllib.request
 
 import mediaforge_kick_segment_v2 as core
 
 _stop_cache = {"checked": 0.0, "value": False}
 _ready_cache = {"checked": 0.0, "value": False}
+RAW_BASE = f"https://raw.githubusercontent.com/{core.REPO}/main"
 
 
 def _safe_get(path):
+    """Read public control state without spending the GitHub installation API quota."""
     try:
-        return core.github_get_json(path)
+        req = urllib.request.Request(
+            f"{RAW_BASE}/{path}?ts={int(time.time() * 1000)}",
+            headers={"User-Agent": "MediaForge-Kick-V3-Control"},
+        )
+        with urllib.request.urlopen(req, timeout=12) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return None
+        print(f"::warning::Kick raw control read HTTP {exc.code} for {path}; treating as unavailable.", flush=True)
+        return None
     except Exception as exc:
-        print(f"::warning::Kick control-plane read ignored for {path}: {exc}", flush=True)
+        print(f"::warning::Kick raw control read ignored for {path}: {exc}", flush=True)
         return None
 
 
@@ -54,17 +69,8 @@ def successor_ready_v3():
     if int(state.get("segment_index") or 0) != core.SEGMENT_INDEX + 1:
         _ready_cache["value"] = False
         return False
-    run_id = state.get("run_id")
-    if run_id:
-        try:
-            run = core.api_request("GET", f"actions/runs/{int(run_id)}")
-            _ready_cache["value"] = run.get("status") in {"queued", "in_progress"}
-            return _ready_cache["value"]
-        except Exception as exc:
-            # Unknown is not permission to disconnect the current encoder.
-            print(f"::warning::Kick successor run-state unavailable: {exc}", flush=True)
-            _ready_cache["value"] = False
-            return False
+    # The ready marker is written only after the successor finished media preparation
+    # and entered the takeover wait loop. Do not require a second rate-limited Actions API read.
     _ready_cache["value"] = True
     return True
 
@@ -100,7 +106,6 @@ def mark_ready_v3():
         if _safe_put(path, payload, f"peter-lofi: Kick segment ready {core.SESSION_ID} {core.SEGMENT_INDEX}"):
             print(f"Kick segment {core.SEGMENT_INDEX} prewarmed.", flush=True)
             return
-        # Predecessor remains online; waiting here is safer than an unannounced takeover.
         print("Kick readiness publication unavailable; retrying without touching predecessor.", flush=True)
         time.sleep(30)
 
@@ -119,7 +124,7 @@ def wait_takeover_v3():
             if cutover > time.time():
                 print(f"Kick scheduled cutover armed for {cutover:.3f}; waiting locally.", flush=True)
                 while time.time() < cutover:
-                    time.sleep(min(0.10, max(0.01, cutover - time.time())))
+                    time.sleep(min(0.05, max(0.005, cutover - time.time())))
             print("Kick takeover released.", flush=True)
             return
 
@@ -217,7 +222,6 @@ def run_segment_v3(loop):
                 last_dispatch = now
 
             if successor_ready_v3():
-                # Commit takeover before releasing the single Kick stream key.
                 cutover = time.time() + 30.0
                 payload = _capture_takeover(cutover)
                 path = f"control/live-takeover/{core.SESSION_ID}-{core.SEGMENT_INDEX + 1}.json"
@@ -225,7 +229,7 @@ def run_segment_v3(loop):
                     print(f"Kick takeover committed; predecessor remains online until {cutover:.3f}.", flush=True)
                     while time.time() < cutover:
                         core.assert_processes()
-                        time.sleep(min(0.10, max(0.01, cutover - time.time())))
+                        time.sleep(min(0.05, max(0.005, cutover - time.time())))
                     core.stop_processes()
                     return True
                 print("Kick takeover commit failed; predecessor remains online. No cutover performed.", flush=True)
@@ -257,6 +261,26 @@ def record_failure_v3(exc):
     _safe_put(path, result, f"peter-lofi: Kick failed {core.SESSION_ID}")
 
 
+def main_v3():
+    """Critical ordering: after takeover, start RTMP first; publish state second."""
+    core.validate()
+    loop = core.prepare_media()
+    core.apply_title()
+    if core.SEGMENT_INDEX == 1:
+        replace_previous_session_v3()
+    else:
+        mark_ready_v3()
+        wait_takeover_v3()
+
+    # No GitHub API request is allowed between cutover and encoder start.
+    core.start_encoder(loop)
+    mark_result_v3("starting", False)
+    core.verify_encoder()
+    chained = run_segment_v3(loop)
+    if not chained:
+        mark_complete_v3()
+
+
 core.stop_requested = stop_requested_v3
 core.successor_ready = successor_ready_v3
 core.mark_result = mark_result_v3
@@ -270,7 +294,7 @@ core.record_failure = record_failure_v3
 
 if __name__ == "__main__":
     try:
-        core.main()
+        main_v3()
     except Exception as exc:
         print(f"FATAL: {exc}", file=core.sys.stderr, flush=True)
         try:
