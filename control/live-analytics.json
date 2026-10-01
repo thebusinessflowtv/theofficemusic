@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T02:16:05.525219+00:00",
+  "generated_at": "2026-10-01T02:35:44.574652+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -10,13 +10,13 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "jhFNiyipVVZzNFHXuERE-TFDukM",
+          "etag": "QMXzrGj6s-0x8tojD9P4IjEEzsY",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
             "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-            "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live",
-            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
+            "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live 🎧",
+            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi",
             "thumbnails": {
               "default": {
                 "url": "https://i.ytimg.com/vi/GIOCNRogj0g/default_live.jpg",
@@ -45,13 +45,30 @@
               }
             },
             "channelTitle": "Peter Lofi",
+            "tags": [
+              "Peter Lofi",
+              "PeterLofiSounds",
+              "background music",
+              "chill music",
+              "focus music",
+              "late night lofi",
+              "lofi",
+              "lofi beats",
+              "lofi music",
+              "neon lofi",
+              "night lofi",
+              "relaxing music",
+              "study music",
+              "work music"
+            ],
             "categoryId": "24",
             "liveBroadcastContent": "live",
             "defaultLanguage": "en",
             "localized": {
-              "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live",
-              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix"
-            }
+              "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live 🎧",
+              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi"
+            },
+            "defaultAudioLanguage": "en-US"
           },
           "status": {
             "uploadStatus": "uploaded",
@@ -72,7 +89,6 @@
           "liveStreamingDetails": {
             "actualStartTime": "2026-10-01T02:11:02Z",
             "scheduledStartTime": "2026-10-01T02:11:03Z",
-            "concurrentViewers": "2",
             "activeLiveChatId": "Cg0KC0dJT0NOUm9najBnKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILR0lPQ05Sb2dqMGc"
           }
         }
