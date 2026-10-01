@@ -10,6 +10,10 @@ permissions:
   contents: read
   actions: write
 
+concurrency:
+  group: peter-lofi-kick-dispatch
+  cancel-in-progress: true
+
 jobs:
   dispatch:
     runs-on: ubuntu-latest
@@ -18,9 +22,9 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Resolve queued live and dispatch encoder
+      - name: Resolve queued live
+        id: resolve
         env:
-          GH_TOKEN: ${{ github.token }}
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.sha }}
         run: |
@@ -37,9 +41,41 @@ jobs:
           fi
           if [ -z "$FILE" ] || [ ! -s "$FILE" ]; then
             echo "No Kick queue payload found in this push."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           jq -e . "$FILE" >/dev/null
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Cancel every stale Kick encoder
+        if: steps.resolve.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cancel_runs() {
+            local STATUS="$1"
+            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-kick-live.yml/runs?status=${STATUS}&per_page=100" \
+              --jq '.workflow_runs[].id' 2>/dev/null | while read -r RUN_ID; do
+                [ -n "$RUN_ID" ] || continue
+                echo "Cancelling stale Kick run ${RUN_ID} (${STATUS})"
+                gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/cancel" >/dev/null 2>&1 || true
+              done
+          }
+          cancel_runs in_progress
+          cancel_runs queued
+          # Give GitHub enough time to terminate the old ffmpeg process before the
+          # new runner connects with the same Kick stream key.
+          sleep 8
+
+      - name: Dispatch fresh Kick encoder
+        if: steps.resolve.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FILE: ${{ steps.resolve.outputs.file }}
+        run: |
+          set -euo pipefail
           jq '{ref:"main",inputs:{session_id:(.session_id|tostring),track_urls_b64:(.track_urls_b64|tostring),duration_minutes:(.duration_minutes|tostring),title:(.title|tostring),description:(.description//""|tostring),thumbnail_url:(.thumbnail_url//""|tostring),loop_url:(.loop_url//""|tostring),segment_index:(.segment_index//"1"|tostring)}}' "$FILE" > /tmp/dispatch.json
           gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-kick-live.yml/dispatches" --input /tmp/dispatch.json
-          echo "Kick encoder workflow dispatched from payload: $FILE"
+          echo "Fresh Kick encoder dispatched from payload: $FILE"
