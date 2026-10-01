@@ -2,17 +2,26 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-01T02:19:10.659477+00:00",
+  "generated_at": "2026-10-01T03:20:33.038349+00:00",
   "playlist_count": 4,
   "playlists": [
     {
       "id": "PLDiWq4rvM64E",
       "title": "Late Night Lofi 🌙 | Peter Lofi",
       "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
-      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 0,
+      "thumbnail_url": "https://i.ytimg.com/vi/GIOCNRogj0g/mqdefault_live.jpg",
+      "item_count": 1,
       "privacy_status": "public",
-      "items": []
+      "items": [
+        {
+          "playlist_item_id": "UExEaVdxNHJ2TTY0RS41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "GIOCNRogj0g",
+          "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/GIOCNRogj0g/mqdefault_live.jpg",
+          "privacy_status": "public"
+        }
+      ]
     },
     {
       "id": "PLZF6rzbRB0EA",
@@ -69,7 +78,7 @@
           "video_id": "u-Ocp29k1_0",
           "title": "Office Flow — 1 Hour Lofi for Work & Productivity | Peter Lofi",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CKSE99UG&rs=AOn4CLDDvqqLQs3UW7qs09gruwEV7d94ng",
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=COCi99UG&rs=AOn4CLASaL3n8yrpsOqEtY7CY-RTV_cjPg",
           "privacy_status": "private"
         }
       ]
