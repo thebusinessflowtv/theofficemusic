@@ -1,0 +1,184 @@
+name: YouTube — Smooth Audio Hotfix
+
+on:
+  push:
+    paths:
+      - '.github/workflows/youtube-smooth-audio-hotfix.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  hotfix:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Prewarm V6 successors and hot-swap both active lives
+        run: |
+          python - <<'PY'
+          import base64, datetime as dt, json, os, time, urllib.error, urllib.request
+
+          REPO = os.environ['GITHUB_REPOSITORY']
+          TOKEN = os.environ['GH_TOKEN']
+          API = f'https://api.github.com/repos/{REPO}'
+          SESSIONS = [
+              'fe6e6fd3-fd9c-4265-b12d-8eb50c0b52fc',
+              '5f54bf8e-d700-4a67-bafd-79b1dd047be5',
+          ]
+
+          def req(method, path, body=None, allow_404=False):
+              headers = {
+                  'Authorization': f'Bearer {TOKEN}',
+                  'Accept': 'application/vnd.github+json',
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'User-Agent': 'Peter-Lofi-Smooth-Audio-Hotfix',
+              }
+              data = None
+              if body is not None:
+                  headers['Content-Type'] = 'application/json'
+                  data = json.dumps(body).encode()
+              r = urllib.request.Request(f'{API}/{path.lstrip("/")}', data=data, headers=headers, method=method)
+              try:
+                  with urllib.request.urlopen(r, timeout=30) as resp:
+                      raw = resp.read()
+                      return json.loads(raw.decode()) if raw else {}
+              except urllib.error.HTTPError as e:
+                  if allow_404 and e.code == 404:
+                      return None
+                  raise RuntimeError(f'{method} {path}: HTTP {e.code} {e.read().decode("utf-8","replace")[-800:]}')
+
+          def get_json(path):
+              obj = req('GET', f'contents/{path}', allow_404=True)
+              if not obj:
+                  return None
+              raw = base64.b64decode((obj.get('content') or '').replace('\n',''))
+              return json.loads(raw.decode())
+
+          def put_json(path, payload, message):
+              for attempt in range(1, 9):
+                  obj = req('GET', f'contents/{path}', allow_404=True)
+                  body = {
+                      'message': message,
+                      'branch': 'main',
+                      'content': base64.b64encode(json.dumps(payload, ensure_ascii=False, indent=2).encode()).decode(),
+                  }
+                  if obj and obj.get('sha'):
+                      body['sha'] = obj['sha']
+                  try:
+                      return req('PUT', f'contents/{path}', body)
+                  except Exception as exc:
+                      print(f'write retry {attempt}/8 {path}: {exc}', flush=True)
+                      time.sleep(attempt)
+              raise RuntimeError(f'failed to write {path}')
+
+          def parse_ts(v):
+              if not v:
+                  return None
+              try:
+                  return dt.datetime.fromisoformat(str(v).replace('Z','+00:00')).timestamp()
+              except Exception:
+                  return None
+
+          plans = []
+          for sid in SESSIONS:
+              q = json.load(open(f'control/youtube-live-queue/{sid}.json'))
+              result = get_json(f'control/live-results/{sid}.json') or {}
+              current_seg = int(result.get('segment_index') or 0)
+              if current_seg < 1:
+                  raise RuntimeError(f'{sid}: invalid current segment {current_seg}')
+              next_seg = current_seg + 1
+              old_run = int(result.get('github_run_id') or 0)
+              bid = result.get('youtube_broadcast_id')
+              stream_id = result.get('youtube_stream_id')
+              if not (old_run and bid and stream_id):
+                  raise RuntimeError(f'{sid}: missing active run/broadcast/stream state')
+
+              inputs = {
+                  'session_id': sid,
+                  'track_urls_b64': q['track_urls_b64'],
+                  'duration_minutes': q.get('duration_minutes', '0'),
+                  'title': q.get('title', 'Peter Lofi Radio — Live'),
+                  'description': q.get('description', ''),
+                  'thumbnail_url': q.get('thumbnail_url', ''),
+                  'loop_url': q.get('loop_url', ''),
+                  'resume_broadcast_id': bid,
+                  'resume_stream_id': stream_id,
+                  'segment_index': str(next_seg),
+                  'privacy_status': 'public',
+                  'segment_seconds_override': '0',
+                  'prewarm_lead_seconds': '600',
+                  'max_segments': '0',
+              }
+              req('POST', 'actions/workflows/office-music-live.yml/dispatches', {'ref':'main','inputs':inputs})
+              print(f'{sid}: dispatched smooth-audio segment {next_seg}', flush=True)
+              plans.append((sid, current_seg, next_seg, old_run, result))
+
+          # Wait until both successors have fully prepared media and are blocked on takeover.
+          for sid, current_seg, next_seg, old_run, result in plans:
+              ready_path = f'control/live-ready/{sid}-{next_seg}.json'
+              for attempt in range(1, 121):
+                  state = get_json(ready_path)
+                  if state and state.get('ready') is True and int(state.get('segment_index') or 0) == next_seg:
+                      print(f'{sid}: successor {next_seg} ready on run {state.get("run_id")}', flush=True)
+                      break
+                  time.sleep(5)
+              else:
+                  raise RuntimeError(f'{sid}: successor {next_seg} did not become ready')
+
+          # Cut over one live at a time. AutoStop is disabled, so cancelling the old
+          # runner does not complete the YouTube broadcast while the successor connects.
+          for sid, current_seg, next_seg, old_run, result in plans:
+              nowp = get_json(f'control/live-now-playing/{sid}.json') or {}
+              now = time.time()
+              track_started = parse_ts(nowp.get('started_at'))
+              position = max(0.0, now - track_started) if track_started else float(nowp.get('resume_offset_seconds') or 0.0)
+              sess_started = parse_ts(result.get('session_started_at') or result.get('started_at'))
+              visual = max(0.0, now - sess_started) if sess_started else 0.0
+
+              try:
+                  req('POST', f'actions/runs/{old_run}/cancel', {})
+                  print(f'{sid}: cancel requested for old run {old_run}', flush=True)
+              except Exception as exc:
+                  print(f'{sid}: cancel request warning: {exc}', flush=True)
+
+              # Give GitHub cleanup a moment to actually terminate old FFmpeg before
+              # releasing the same RTMP stream key to the successor.
+              for _ in range(30):
+                  state = req('GET', f'actions/runs/{old_run}')
+                  if state.get('status') == 'completed':
+                      break
+                  time.sleep(1)
+              time.sleep(1)
+
+              takeover = {
+                  'session_id': sid,
+                  'segment_index': next_seg,
+                  'from_segment_index': current_seg,
+                  'to_segment_index': next_seg,
+                  'takeover': True,
+                  'track_id': nowp.get('track_id'),
+                  'title': nowp.get('title'),
+                  'url': nowp.get('url'),
+                  'track_started_at': nowp.get('started_at'),
+                  'position_seconds': round(position, 3),
+                  'visual_position_seconds': round(visual, 3),
+                  'signaled_at': dt.datetime.now(dt.timezone.utc).isoformat(),
+                  'handoff_protocol': 'v6-smooth-audio-emergency-hotfix',
+                  'source_run_id': old_run,
+              }
+              put_json(
+                  f'control/live-takeover/{sid}-{next_seg}.json',
+                  takeover,
+                  f'live: emergency smooth-audio takeover {sid} {next_seg}',
+              )
+              print(f'{sid}: takeover released to smooth-audio segment {next_seg}', flush=True)
+              time.sleep(8)
+
+          print('Both YouTube lives released to V6 smooth-audio runners.', flush=True)
+          PY
