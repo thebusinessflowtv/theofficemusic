@@ -1,0 +1,16 @@
+{
+  "session_id": "ebabd99c-c4cf-4059-be04-c981d46db316",
+  "track_urls_b64": "WyJodHRwczovL2dpdGh1Yi5jb20vdGhlYnVzaW5lc3NmbG93dHYvdGhlb2ZmaWNlbXVzaWMvcmVsZWFzZXMvZG93bmxvYWQvcGV0ZXItbG9maS1zZXJpZXMtMDItbGF0ZS1uaWdodC1vZmZpY2UtOGEyMzk4YzEvcGV0ZXItbG9maS1tYXN0ZXIubTRhIiwiaHR0cHM6Ly9naXRodWIuY29tL3RoZWJ1c2luZXNzZmxvd3R2L3RoZW9mZmljZW11c2ljL3JlbGVhc2VzL2Rvd25sb2FkL3BldGVyLWxvZmktc2VyaWVzLTA1LXJhaW55LW9mZmljZS04NzIzODQ1ZC9wZXRlci1sb2ZpLW1hc3Rlci5tNGEiXQ==",
+  "duration_minutes": "0",
+  "title": "MediaForge Handoff Test — UNLISTED",
+  "description": "Isolated engineering test for prewarmed runner handoff, audio position continuity and visual loop continuity. Unlisted; not part of the public Peter Lofi programming.",
+  "thumbnail_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/98c0bcf3-b1b4-4b19-9200-a210bc5291a2/9c976ea59f23437e8ec8e0cb31f07e344d7126bff4814ff4ab70a2921a73f1eb",
+  "loop_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/998ca654-bb42-4c35-99c6-04ac2ebad84c/b6bf0c5819a04630b36f61314ed6de7566e4b48b72df41c59093a5bd7c0f9ab0",
+  "segment_index": "1",
+  "privacy_status": "unlisted",
+  "segment_seconds_override": "180",
+  "prewarm_lead_seconds": "90",
+  "max_segments": "2",
+  "requested_at": "2026-10-01T05:20:00Z",
+  "test_mode": true
+}
