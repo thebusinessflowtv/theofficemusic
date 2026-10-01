@@ -1,0 +1,66 @@
+name: One-off — Probe Peter Lofi Live Status V2
+
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-probe-live-status-v2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+      - name: Probe exact platform state
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, urllib.request
+          from datetime import datetime, timezone
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          creds.refresh(Request()); yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          out={'checked_at':datetime.now(timezone.utc).isoformat(),'youtube':{},'kick':{}}
+          pairs={'deep_house':('GIOCNRogj0g','xO4Cl7xCdcTsWkmxD_6Wfg1790820645461112'),'rainy':('PNdwQEFaIrA','xO4Cl7xCdcTsWkmxD_6Wfg1790828557622468')}
+          for name,(bid,sid) in pairs.items():
+              b=(yt.liveBroadcasts().list(part='snippet,status,contentDetails',id=bid).execute().get('items') or [{}])[0]
+              s=(yt.liveStreams().list(part='snippet,status,cdn',id=sid).execute().get('items') or [{}])[0]
+              bs=b.get('status') or {}; ss=s.get('status') or {}; hs=ss.get('healthStatus') or {}
+              out['youtube'][name]={
+                  'broadcast_id':bid,'stream_id':sid,'title':(b.get('snippet') or {}).get('title'),
+                  'lifecycle':bs.get('lifeCycleStatus'),'privacy':bs.get('privacyStatus'),
+                  'stream_status':ss.get('streamStatus'),'health_status':hs.get('status') if isinstance(hs,dict) else hs,
+                  'configuration_issues':hs.get('configurationIssues',[]) if isinstance(hs,dict) else [],
+                  'bound_stream_id':(b.get('contentDetails') or {}).get('boundStreamId'),
+                  'actual_start_time':(b.get('snippet') or {}).get('actualStartTime'),
+              }
+          try:
+              req=urllib.request.Request('https://kick.com/api/v2/channels/peterlofi',headers={'User-Agent':'Mozilla/5.0 MediaForge-Probe/2.0'})
+              with urllib.request.urlopen(req,timeout=15) as r:data=json.load(r)
+              live=data.get('livestream')
+              out['kick']={'reachable':True,'is_live':live is not None,'title':(live or {}).get('session_title') if live else None,'viewer_count':(live or {}).get('viewer_count') if live else None,'started_at':(live or {}).get('created_at') if live else None}
+          except Exception as e: out['kick']={'reachable':False,'error':str(e)}
+          print(json.dumps(out,ensure_ascii=False,indent=2))
+          os.makedirs('control/diagnostics',exist_ok=True)
+          json.dump(out,open('control/diagnostics/live-platform-probe-v2.json','w',encoding='utf-8'),ensure_ascii=False,indent=2)
+          PY
+      - name: Publish exact probe
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/live-platform-probe-v2.json
+          git commit -m 'ops: exact live platform probe v2' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
