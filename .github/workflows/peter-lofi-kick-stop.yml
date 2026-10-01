@@ -1,6 +1,11 @@
 name: Peter Lofi — Kick Stop
 
 on:
+  workflow_dispatch:
+    inputs:
+      session_id:
+        required: true
+        type: string
   push:
     paths:
       - 'control/live-stop/*.json'
@@ -22,16 +27,24 @@ jobs:
       - name: Resolve stop request and cancel live run
         env:
           GH_TOKEN: ${{ github.token }}
+          MANUAL_SESSION_ID: ${{ github.event.inputs.session_id || '' }}
         run: |
           set -euo pipefail
-          FILE="$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep -E '^control/(kick-)?live-stop/[^/]+\.json$' | tail -1 || true)"
-          if [ -z "$FILE" ]; then
-            echo "No stop request file found in this push."
-            exit 0
+          SESSION_ID="${MANUAL_SESSION_ID:-}"
+          if [ -z "$SESSION_ID" ]; then
+            FILE="$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep -E '^control/(kick-)?live-stop/[^/]+\.json$' | tail -1 || true)"
+            if [ -z "$FILE" ]; then
+              echo "No stop request file found in this push."
+              exit 0
+            fi
+            SESSION_ID="$(basename "$FILE" .json)"
           fi
-
-          SESSION_ID="$(basename "$FILE" .json)"
+          if ! echo "$SESSION_ID" | grep -Eq '^[0-9a-fA-F-]{36}$'; then
+            echo "::error::Invalid session_id"
+            exit 1
+          fi
           export SESSION_ID
+
           RESULT="control/kick-live-results/${SESSION_ID}.json"
           if [ ! -s "$RESULT" ]; then
             git fetch origin main
@@ -49,7 +62,8 @@ jobs:
 
           git fetch origin main
           git reset --hard origin/main
-          mkdir -p control/kick-live-results
+          mkdir -p control/kick-live-results control/kick-live-stop
+          printf '{"stop":true,"requested_at":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "control/kick-live-stop/${SESSION_ID}.json"
           python - <<'PY'
           import json, os, pathlib, datetime
           sid=os.environ['SESSION_ID']
@@ -66,6 +80,7 @@ jobs:
           PY
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add "control/kick-live-results/${SESSION_ID}.json"
-          git commit -m "peter-lofi: mark Kick live stopped ${SESSION_ID}" || true
+          git add "control/kick-live-results/${SESSION_ID}.json" "control/kick-live-stop/${SESSION_ID}.json"
+          git commit -m "peter-lofi: stop Kick live ${SESSION_ID}" || true
+          git pull --rebase origin main || true
           git push origin HEAD:main
