@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 2
 
       - name: Install FFmpeg
         run: |
@@ -29,11 +29,12 @@ jobs:
           AFTER_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          FILE="$(git diff-tree --no-commit-id --name-only -r "$AFTER_SHA" | grep -E '^control/audio-handoff-tests/[^/]+\.json$' | tail -1)"
-          [ -n "$FILE" ]
+          FILE="$(git show --pretty='' --name-only "$AFTER_SHA" | grep -E '^control/audio-handoff-tests/[^/]+\.json$' | tail -1)"
+          [ -n "$FILE" ] || { echo "No handoff test request found in $AFTER_SHA"; exit 1; }
           SESSION_ID="$(jq -r '.session_id' "$FILE")"
           FALLBACK="$(jq -r '.track_urls_b64' "$FILE")"
           EXPECTED="$(jq -r '.expected_offset' "$FILE")"
+          EXPECTED_SOURCE="$(jq -r '.expected_source // "handoff"' "$FILE")"
 
           set +e
           timeout 8s python scripts/mediaforge_live_audio_feeder.py \
@@ -46,6 +47,6 @@ jobs:
 
           cat feeder.log
           [ "$RC" -eq 0 ] || [ "$RC" -eq 124 ]
-          grep -q "Resuming segment 2 from handoff" feeder.log
+          grep -q "Resuming segment 2 from ${EXPECTED_SOURCE}" feeder.log
           grep -q "@ ${EXPECTED}s" feeder.log
-          echo "Audio handoff resume validated at ${EXPECTED}s"
+          echo "Audio handoff resume validated from ${EXPECTED_SOURCE} at ${EXPECTED}s"
