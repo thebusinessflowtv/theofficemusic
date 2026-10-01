@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T19:08:58.638390+00:00",
+  "generated_at": "2026-10-01T19:29:59.297128+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -10,7 +10,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "H6HL79Xa5Y_4FyjRUcG9eQcX71Y",
+          "etag": "fJRB4SukN75ceWDLQvrNyNL1olY",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
@@ -80,7 +80,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "7",
+            "viewCount": "8",
             "likeCount": "1",
             "dislikeCount": "0",
             "favoriteCount": "0",
@@ -89,6 +89,7 @@
           "liveStreamingDetails": {
             "actualStartTime": "2026-10-01T02:11:02Z",
             "scheduledStartTime": "2026-10-01T02:11:03Z",
+            "concurrentViewers": "1",
             "activeLiveChatId": "Cg0KC0dJT0NOUm9najBnKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILR0lPQ05Sb2dqMGc"
           }
         }
