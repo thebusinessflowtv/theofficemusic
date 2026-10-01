@@ -20,5 +20,8 @@
   "encoder_connected": true,
   "youtube_api_verification_uncertain": false,
   "error_message": "Remote end closed connection without response",
-  "completed_at": "2026-10-01T18:19:12.598847+00:00"
+  "completed_at": "2026-10-01T18:19:12.598847+00:00",
+  "prewarmed_segment_index": 3,
+  "prewarmed_run_id": 36871372360,
+  "prewarmed_at": "2026-10-01T18:37:43.341127+00:00"
 }
