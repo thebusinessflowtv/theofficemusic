@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 6,
   "key": "sunday-morning-work",
   "name": "Sunday Morning Work",
@@ -9,7 +9,122 @@
   "playlist": "Sunday Morning Work ☀️ | Peter Lofi",
   "description": "Bright, gentle and unhurried. This one-hour Peter Lofi session is made for quiet Sunday planning, light work, reading and a slow start with warm melodic textures and relaxed rhythm.",
   "request_id": "afe75cfb-42a9-4fe9-a198-4011ac12b46d",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-06-sunday-morning-work-afe75cfb",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-06-sunday-morning-work-afe75cfb",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-easy-light",
+      "filename": "01-easy-light.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "c44efdbaead5270f75edbea5ae04a88e00b109a52ad3830a311bf7de0f382074",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/01-easy-light.wav"
+    },
+    {
+      "title": "02-morning-coffee",
+      "filename": "02-morning-coffee.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "741a35ef631cdf82ba0a1590f49fe802771b35c3f482b3715d2350778b91c2ef",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/02-morning-coffee.wav"
+    },
+    {
+      "title": "03-sunlit-desk",
+      "filename": "03-sunlit-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "0c9d83fc5d7c54f13414497e4aa8dcb2667a7a8f7b0d106af0cc893a6cc1ff04",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/03-sunlit-desk.wav"
+    },
+    {
+      "title": "04-morning-routine-08",
+      "filename": "04-morning-routine-08.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "4d61e5774a1df91f5cc9ec1df0d79405da8d2dbcff41032773a79a9e8610df5b",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/04-morning-routine-08.wav"
+    },
+    {
+      "title": "05-morning-window",
+      "filename": "05-morning-window.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "7fa0e75bd29747c68b04907130cbeeff8958092c91383018b77364e22b5d875f",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/05-morning-window.wav"
+    },
+    {
+      "title": "06-easy-desk",
+      "filename": "06-easy-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "d13bcf2cb31c54fc8fdc79d16309b877093748df26bf29b85adb079d6a7488c0",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/06-easy-desk.wav"
+    },
+    {
+      "title": "07-morning-window-16",
+      "filename": "07-morning-window-16.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "4e7e54575b6b5628d0a7e2a33c752ca21378a735f7770adc3d16e4d4b80a5bc1",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/07-morning-window-16.wav"
+    },
+    {
+      "title": "08-warm-coffee-18",
+      "filename": "08-warm-coffee-18.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "cd60cff2126b9cdccbee050f15c8eb4930905375b1b39368a820062e7e40d6f8",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/08-warm-coffee-18.wav"
+    },
+    {
+      "title": "09-easy-routine-21",
+      "filename": "09-easy-routine-21.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "4e67ad792e7ed6e4d91c36d53b6e907cc661adfe1372fbf98f919f6e11535506",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/09-easy-routine-21.wav"
+    },
+    {
+      "title": "10-warm-routine",
+      "filename": "10-warm-routine.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "0e8907956e8918fbc9356cbb810ce8dd67e5afbe33d9e3d2e1e71afd502f4d04",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/10-warm-routine.wav"
+    },
+    {
+      "title": "11-easy-desk-26",
+      "filename": "11-easy-desk-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "3797cbd0239c4067691d22c5e994adba7f66b43d4eb38ca60fc94a3bbac5eacc",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/11-easy-desk-26.wav"
+    },
+    {
+      "title": "12-sunday-window",
+      "filename": "12-sunday-window.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "f578b2bf07d1eed603efd3c74e388dc7a1f14b289ce55552c75fa766431476f1",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/12-sunday-window.wav"
+    }
+  ],
   "github_run_id": 36793532262,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36793532262",
-  "started_at": "2026-09-30T23:55:49.881443+00:00"
+  "completed_at": "2026-10-01T00:40:48.740082+00:00"
 }
