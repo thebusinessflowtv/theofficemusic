@@ -40,18 +40,23 @@ jobs:
           jq -e . "$FILE" >/dev/null
           OLD_VIDEO_ID="$(jq -r '.old_video_id // empty' "$FILE")"
           LOOP_URL="$(jq -r '.loop_url // empty' "$FILE")"
-          test -n "$OLD_VIDEO_ID" && test -n "$LOOP_URL"
+          AUDIO_URL="$(jq -r '.audio_url // empty' "$FILE")"
+          SOURCE_JOB_ID="$(jq -r '.source_job_id // empty' "$FILE")"
+          test -n "$OLD_VIDEO_ID" && test -n "$LOOP_URL" && test -n "$AUDIO_URL"
           [[ "$OLD_VIDEO_ID" =~ ^[A-Za-z0-9_-]{11}$ ]] || exit 1
           [[ "$LOOP_URL" =~ ^https:// ]] || exit 1
+          [[ "$AUDIO_URL" =~ ^https:// ]] || exit 1
           echo "old_video_id=$OLD_VIDEO_ID" >> "$GITHUB_OUTPUT"
           echo "loop_url=$LOOP_URL" >> "$GITHUB_OUTPUT"
+          echo "audio_url=$AUDIO_URL" >> "$GITHUB_OUTPUT"
+          echo "source_job_id=$SOURCE_JOB_ID" >> "$GITHUB_OUTPUT"
 
       - name: Prepare runtime
         run: |
           set -euo pipefail
           sudo apt-get update -y
           sudo apt-get install -y ffmpeg jq
-          python -m pip install -q google-api-python-client google-auth google-auth-httplib2 yt-dlp
+          python -m pip install -q google-api-python-client google-auth google-auth-httplib2
           mkdir -p build control/youtube-remakes
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
@@ -85,32 +90,23 @@ jobs:
           print('ORIGINAL_DURATION='+original.get('contentDetails',{}).get('duration',''))
           PY
 
-      - name: Extract exact audio from current YouTube video
+      - name: Download verified original master audio
         env:
-          OLD_VIDEO_ID: ${{ steps.request.outputs.old_video_id }}
+          AUDIO_URL: ${{ steps.request.outputs.audio_url }}
+          SOURCE_JOB_ID: ${{ steps.request.outputs.source_job_id }}
         run: |
           set -euo pipefail
-          URL="https://www.youtube.com/watch?v=${OLD_VIDEO_ID}"
-          python -m yt_dlp \
-            --no-playlist \
-            --no-progress \
-            --retries 10 \
-            --fragment-retries 10 \
-            --extractor-args "youtube:player_client=android,web" \
-            -f "bestaudio[ext=m4a]/bestaudio" \
-            -o "build/original-audio.%(ext)s" \
-            "$URL"
-          AUDIO_FILE="$(find build -maxdepth 1 -type f -name 'original-audio.*' | head -1)"
-          test -n "$AUDIO_FILE" && test -s "$AUDIO_FILE"
-          ffmpeg -hide_banner -v error -i "$AUDIO_FILE" -map 0:a:0 -t 1 -f null -
-          CODEC="$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "$AUDIO_FILE")"
-          echo "SOURCE_AUDIO_CODEC=$CODEC"
-          if [ "$CODEC" = "aac" ]; then
-            ffmpeg -hide_banner -loglevel warning -y -i "$AUDIO_FILE" -map 0:a:0 -c:a copy build/original-audio.m4a
-          else
-            ffmpeg -hide_banner -loglevel warning -y -i "$AUDIO_FILE" -map 0:a:0 -c:a aac -b:a 320k build/original-audio.m4a
-          fi
-          ffprobe -v error -show_entries format=duration -of csv=p=0 build/original-audio.m4a
+          curl --retry 10 --retry-delay 3 --retry-all-errors -fL "$AUDIO_URL" -o build/original-audio.m4a
+          test -s build/original-audio.m4a
+          ffmpeg -hide_banner -v error -i build/original-audio.m4a -map 0:a:0 -t 1 -f null -
+          DURATION="$(ffprobe -v error -show_entries format=duration -of csv=p=0 build/original-audio.m4a)"
+          echo "MASTER_SOURCE_JOB=${SOURCE_JOB_ID}"
+          echo "MASTER_DURATION=${DURATION}"
+          python - <<'PY'
+          import subprocess
+          d=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0','build/original-audio.m4a'],text=True).strip())
+          if not (3599.0 <= d <= 3601.5): raise SystemExit(f'Unexpected verified master duration: {d}')
+          PY
 
       - name: Download and validate replacement visual
         env:
@@ -127,7 +123,7 @@ jobs:
           echo "VISUAL=${WIDTH}x${HEIGHT} @ ${FPS}; duration=${DURATION}s"
           test "$WIDTH" -gt 0 && test "$HEIGHT" -gt 0
 
-      - name: Assemble replacement using exact original audio and attached visual in loop
+      - name: Assemble replacement using verified original master and attached visual in loop
         run: |
           set -euo pipefail
           AUDIO_SECONDS="$(ffprobe -v error -show_entries format=duration -of csv=p=0 build/original-audio.m4a)"
@@ -202,6 +198,8 @@ jobs:
       - name: Privatize old video after replacement verification
         env:
           OLD_VIDEO_ID: ${{ steps.request.outputs.old_video_id }}
+          SOURCE_JOB_ID: ${{ steps.request.outputs.source_job_id }}
+          AUDIO_URL: ${{ steps.request.outputs.audio_url }}
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -255,7 +253,9 @@ jobs:
             'duration':new_final.get('contentDetails',{}).get('duration'),
             'title_identical':new_final.get('snippet',{}).get('title')==original['snippet'].get('title'),
             'description_identical':new_final.get('snippet',{}).get('description')==original['snippet'].get('description'),
-            'audio_source':'extracted_from_original_youtube_video',
+            'audio_source':'verified_original_generation_master',
+            'source_job_id':os.environ.get('SOURCE_JOB_ID',''),
+            'audio_url':os.environ.get('AUDIO_URL',''),
             'visual_loop':'user_supplied_attachment'
           }
           pathlib.Path('build/result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
@@ -271,5 +271,5 @@ jobs:
           git pull --rebase origin main
           cp build/result.json "control/youtube-remakes/${OLD_VIDEO_ID}.json"
           git add "control/youtube-remakes/${OLD_VIDEO_ID}.json"
-          git commit -m "mediaforge: record exact-audio YouTube visual remake ${OLD_VIDEO_ID}" || exit 0
+          git commit -m "mediaforge: record verified-master YouTube visual remake ${OLD_VIDEO_ID}" || exit 0
           git push origin HEAD:main
