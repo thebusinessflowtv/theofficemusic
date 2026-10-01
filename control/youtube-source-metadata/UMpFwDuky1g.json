@@ -1,0 +1,87 @@
+{
+  "kind": "youtube#video",
+  "etag": "vG5jNTbKUzO-lIFl73TcIPe3T0k",
+  "id": "UMpFwDuky1g",
+  "snippet": {
+    "publishedAt": "2026-09-30T15:00:44Z",
+    "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+    "title": "1 Hour Lofi Lounge Mix | Beats to Work, Focus & Study To | Peter Lofi 🎧",
+    "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nTracklist / Chapters:\n00:00 01 Neon Avenue\n05:00 02 Downtown Suite\n10:00 03 Glass Notes\n15:00 04 Window Seat Workspace\n20:00 05 Sunday Windows\n25:00 06 Blue Hour Routine\n30:00 07 Neon Escalator\n35:00 08 Northbound Hours\n40:00 09 Executive Boulevard\n45:00 10 Golden Boulevard\n50:00 11 Golden Afterglow 26\n55:00 12 Studio Skyline 28\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
+    "thumbnails": {
+      "default": {
+        "url": "https://i.ytimg.com/vi/UMpFwDuky1g/default.jpg",
+        "width": 120,
+        "height": 90
+      },
+      "medium": {
+        "url": "https://i.ytimg.com/vi/UMpFwDuky1g/mqdefault.jpg",
+        "width": 320,
+        "height": 180
+      },
+      "high": {
+        "url": "https://i.ytimg.com/vi/UMpFwDuky1g/hqdefault.jpg",
+        "width": 480,
+        "height": 360
+      },
+      "standard": {
+        "url": "https://i.ytimg.com/vi/UMpFwDuky1g/sddefault.jpg",
+        "width": 640,
+        "height": 480
+      },
+      "maxres": {
+        "url": "https://i.ytimg.com/vi/UMpFwDuky1g/maxresdefault.jpg",
+        "width": 1280,
+        "height": 720
+      },
+      "fhd": {
+        "url": "https://i.ytimg.com/vi/UMpFwDuky1g/fhddefault.jpg",
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    "channelTitle": "Peter Lofi",
+    "tags": [
+      "1 hour lofi",
+      "Peter Lofi",
+      "PeterLofiSounds",
+      "background music",
+      "chill music",
+      "focus music",
+      "lofi",
+      "lofi beats",
+      "lofi mix",
+      "lofi music",
+      "long lofi mix",
+      "relaxing music",
+      "study music",
+      "work music"
+    ],
+    "categoryId": "10",
+    "liveBroadcastContent": "none",
+    "defaultLanguage": "en",
+    "localized": {
+      "title": "1 Hour Lofi Lounge Mix | Beats to Work, Focus & Study To | Peter Lofi 🎧",
+      "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nTracklist / Chapters:\n00:00 01 Neon Avenue\n05:00 02 Downtown Suite\n10:00 03 Glass Notes\n15:00 04 Window Seat Workspace\n20:00 05 Sunday Windows\n25:00 06 Blue Hour Routine\n30:00 07 Neon Escalator\n35:00 08 Northbound Hours\n40:00 09 Executive Boulevard\n45:00 10 Golden Boulevard\n50:00 11 Golden Afterglow 26\n55:00 12 Studio Skyline 28\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix"
+    },
+    "defaultAudioLanguage": "en-US"
+  },
+  "contentDetails": {
+    "duration": "PT1H1S",
+    "dimension": "2d",
+    "definition": "hd",
+    "caption": "false",
+    "licensedContent": false,
+    "contentRating": {},
+    "projection": "rectangular",
+    "hasCustomThumbnail": true
+  },
+  "status": {
+    "uploadStatus": "processed",
+    "privacyStatus": "public",
+    "license": "youtube",
+    "embeddable": true,
+    "publicStatsViewable": true,
+    "madeForKids": false,
+    "selfDeclaredMadeForKids": false
+  }
+}
