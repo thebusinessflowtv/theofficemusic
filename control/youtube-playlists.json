@@ -2,8 +2,8 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-09-30T23:17:10.810436+00:00",
-  "playlist_count": 2,
+  "generated_at": "2026-10-01T00:28:49.660679+00:00",
+  "playlist_count": 3,
   "playlists": [
     {
       "id": "PLZF6rzbRB0EA",
@@ -44,6 +44,24 @@
           "position": 3,
           "thumbnail_url": "https://i.ytimg.com/vi/nRQG5Z00RxU/mqdefault.jpg",
           "privacy_status": "public"
+        }
+      ]
+    },
+    {
+      "id": "PLbD2dyYwpCEg",
+      "title": "Office Flow | Peter Lofi",
+      "description": "",
+      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
+      "item_count": 1,
+      "privacy_status": "public",
+      "items": [
+        {
+          "playlist_item_id": "UExiRDJkeVl3cENFZy41NkI0NEY2RDEwNTU3Q0M2",
+          "video_id": "u-Ocp29k1_0",
+          "title": "Office Flow — 1 Hour Lofi for Work & Productivity | Peter Lofi",
+          "position": 0,
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CNzQ9tUG&rs=AOn4CLC94ZBqMZ_p5MvX-DWI2Y5-DSDfUA",
+          "privacy_status": "private"
         }
       ]
     },
