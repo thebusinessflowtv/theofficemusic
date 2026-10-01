@@ -1,8 +1,8 @@
 {
   "platform": "youtube",
   "status": "failed",
-  "github_run_id": 36814744281,
-  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36814744281",
-  "error_message": "YouTube live workflow failed. Open github_run_url for details.",
-  "completed_at": "2026-10-01T09:23:28.933871+00:00"
+  "github_run_id": 36841262541,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36841262541",
+  "error_message": "EOF occurred in violation of protocol (_ssl.c:2417)",
+  "completed_at": "2026-10-01T09:23:53.022586+00:00"
 }
