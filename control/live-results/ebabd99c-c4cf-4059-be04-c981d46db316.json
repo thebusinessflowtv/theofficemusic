@@ -1,6 +1,6 @@
 {
   "platform": "youtube",
-  "status": "live",
+  "status": "completed",
   "title": "MediaForge Handoff Test — UNLISTED",
   "description": "Isolated engineering test for prewarmed runner handoff, audio position continuity and visual loop continuity. Unlisted; not part of the public Peter Lofi programming.",
   "github_run_id": 36820525537,
@@ -17,7 +17,7 @@
   "started_at": "2026-10-01T05:27:56.625060+00:00",
   "session_started_at": "2026-10-01T05:27:56.625060+00:00",
   "error_message": "<HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/liveBroadcasts?part=status&id=sQSwPLlCKt4&alt=json returned \"The request cannot be completed because you have exceeded your <a href=\"/youtube/v3/getting-started#quota\">quota</a>.\". Details: \"[{'message': 'The request cannot be completed because you have exceeded your <a href=\"/youtube/v3/getting-started#quota\">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]\">",
-  "completed_at": "2026-10-01T05:28:15.121782+00:00",
+  "completed_at": "2026-10-01T05:37:28.537832+00:00",
   "current_segment_started_at": "2026-10-01T05:36:49.621154+00:00",
   "last_verified_lifecycle": "api_quota_unavailable_encoder_preserved",
   "youtube_api_quota_limited": true,
