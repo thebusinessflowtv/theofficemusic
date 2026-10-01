@@ -77,6 +77,7 @@ for path in sorted(RESULTS.glob("*.json")):
         hour_mixes.append({
             "id": f"job:{job_id}",
             "job_id": job_id,
+            "kind": "assembled_mix",
             "name": f"Mix de 1 hora · {data.get('completed_at','')[:10]}",
             "duration_seconds": total_seconds,
             "track_ids": item_tracks,
@@ -90,6 +91,7 @@ for path in sorted(SERIES_RESULTS.glob("*.json")):
         continue
     key = str(data.get("key") or path.stem)
     request_id = str(data.get("request_id") or key)
+    series_name = data.get("name") or key
     item_tracks = []
     for t in data.get("tracks") or []:
         url = t.get("download_url")
@@ -102,12 +104,12 @@ for path in sorted(SERIES_RESULTS.glob("*.json")):
             "job_id": None,
             "series_key": key,
             "collection_key": f"series:{key}",
-            "collection_name": data.get("name") or key,
+            "collection_name": series_name,
             "title": t.get("title") or t.get("filename") or tid,
             "filename": t.get("filename"),
             "duration_seconds": int(float(t.get("duration_seconds") or 0)),
             "position": int(t.get("position") or 0),
-            "style": f"Peter Lofi · {data.get('name') or key}",
+            "style": f"Peter Lofi · {series_name}",
             "url": url,
             "created_at": data.get("completed_at"),
             "metadata": {
@@ -124,11 +126,53 @@ for path in sorted(SERIES_RESULTS.glob("*.json")):
         }
         tracks.append(item)
         item_tracks.append(tid)
+
+    master_url = str(data.get("master_audio_url") or "").strip()
+    master_track_id = None
+    if master_url:
+        master_track_id = stable_id("series-master", request_id, master_url)
+        master_seconds = int(data.get("duration_minutes") or 60) * 60
+        tracks.append({
+            "id": master_track_id,
+            "source": "peter_lofi_master",
+            "job_id": None,
+            "series_key": key,
+            "collection_key": f"master:{key}",
+            "collection_name": f"{series_name} · Master 1 hora",
+            "title": f"{series_name} — Master 1 Hour",
+            "filename": "peter-lofi-master.m4a",
+            "duration_seconds": master_seconds,
+            "position": 1,
+            "style": f"Peter Lofi · {series_name} · 1 Hour Master",
+            "url": master_url,
+            "created_at": data.get("completed_at"),
+            "metadata": {
+                "release_tag": data.get("release_tag"),
+                "series_index": data.get("index"),
+                "series_name": data.get("name"),
+                "series_title": data.get("title"),
+                "series_playlist": data.get("playlist"),
+                "generation_mode": data.get("generation_mode"),
+                "request_id": request_id,
+                "is_master_audio": True,
+            },
+        })
+        hour_mixes.append({
+            "id": f"master:{key}",
+            "job_id": None,
+            "series_key": key,
+            "kind": "master_audio",
+            "name": f"{series_name} · Master pronto de 1 hora",
+            "duration_seconds": master_seconds,
+            "track_ids": [master_track_id],
+            "master_audio_url": master_url,
+        })
+
     series.append({
         "id": f"series:{key}",
         "key": key,
         "index": data.get("index"),
-        "name": data.get("name") or key,
+        "name": series_name,
         "title": data.get("title"),
         "playlist": data.get("playlist"),
         "description": data.get("description"),
@@ -138,20 +182,22 @@ for path in sorted(SERIES_RESULTS.glob("*.json")):
         "master_audio_url": data.get("master_audio_url"),
         "completed_at": data.get("completed_at"),
         "track_ids": item_tracks,
+        "master_track_id": master_track_id,
     })
 
 tracks.sort(key=lambda t: (t.get("created_at") or "", t.get("collection_key") or "", t.get("position") or 0))
 series.sort(key=lambda s: (s.get("index") or 999, s.get("name") or ""))
-hour_mixes.sort(key=lambda m: m.get("name") or "")
+hour_mixes.sort(key=lambda m: (0 if m.get("kind") == "master_audio" else 1, m.get("name") or ""))
 
 catalog = {
-    "version": 1,
+    "version": 2,
     "generated_at": datetime.now(timezone.utc).isoformat(),
     "counts": {
         "tracks": len(tracks),
         "jobs": len(jobs),
         "series": len(series),
         "hour_mixes": len(hour_mixes),
+        "one_hour_masters": len([m for m in hour_mixes if m.get("kind") == "master_audio"]),
     },
     "tracks": tracks,
     "jobs": jobs,
