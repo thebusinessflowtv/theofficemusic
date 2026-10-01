@@ -1,0 +1,75 @@
+name: One-off — Final Peter Lofi Live Verification
+
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-final-live-verification.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+      - name: Verify all public outputs
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, time, urllib.request
+          from datetime import datetime, timezone
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          creds.refresh(Request()); yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          pairs={
+            'deep_house':('GIOCNRogj0g','xO4Cl7xCdcTsWkmxD_6Wfg1790820645461112'),
+            'rainy':('AEvkXXl1rtg','xO4Cl7xCdcTsWkmxD_6Wfg1790885612606120'),
+          }
+          out={}
+          for attempt in range(1,13):
+              out={'checked_at':datetime.now(timezone.utc).isoformat(),'attempt':attempt,'youtube':{},'kick':{}}
+              all_ok=True
+              for name,(bid,sid) in pairs.items():
+                  b=(yt.liveBroadcasts().list(part='snippet,status,contentDetails',id=bid).execute().get('items') or [{}])[0]
+                  s=(yt.liveStreams().list(part='status',id=sid).execute().get('items') or [{}])[0]
+                  bs=b.get('status') or {}; ss=s.get('status') or {}; hs=ss.get('healthStatus') or {}
+                  row={'broadcast_id':bid,'url':f'https://www.youtube.com/watch?v={bid}','title':(b.get('snippet') or {}).get('title'),'lifecycle':bs.get('lifeCycleStatus'),'privacy':bs.get('privacyStatus'),'stream_status':ss.get('streamStatus'),'health_status':hs.get('status') if isinstance(hs,dict) else hs}
+                  out['youtube'][name]=row
+                  if row['lifecycle']!='live' or row['stream_status']!='active' or row['privacy']!='public': all_ok=False
+              try:
+                  req=urllib.request.Request('https://kick.com/api/v2/channels/peterlofi',headers={'User-Agent':'Mozilla/5.0 MediaForge-FinalVerify/1.0'})
+                  with urllib.request.urlopen(req,timeout=15) as r:data=json.load(r)
+                  live=data.get('livestream')
+                  out['kick']={'reachable':True,'is_live':live is not None,'title':(live or {}).get('session_title') if live else None,'started_at':(live or {}).get('created_at') if live else None}
+                  if not out['kick']['is_live']: all_ok=False
+              except Exception as e:
+                  out['kick']={'reachable':False,'is_live':False,'error':str(e)}; all_ok=False
+              print(json.dumps(out,ensure_ascii=False,indent=2),flush=True)
+              if all_ok: break
+              time.sleep(10)
+          os.makedirs('control/diagnostics',exist_ok=True)
+          json.dump(out,open('control/diagnostics/final-live-verification.json','w',encoding='utf-8'),ensure_ascii=False,indent=2)
+          if not (all(v.get('lifecycle')=='live' and v.get('stream_status')=='active' and v.get('privacy')=='public' for v in out['youtube'].values()) and out['kick'].get('is_live')):
+              raise SystemExit('Not all public outputs are live yet')
+          PY
+      - name: Publish final verification
+        if: always()
+        run: |
+          set -euo pipefail
+          test -f control/diagnostics/final-live-verification.json || exit 0
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/final-live-verification.json
+          git commit -m 'ops: final live verification' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
