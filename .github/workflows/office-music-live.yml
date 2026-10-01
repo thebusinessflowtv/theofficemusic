@@ -114,4 +114,4 @@ jobs:
       - name: Run resilient YouTube live segment
         run: |
           set -euo pipefail
-          python scripts/mediaforge_live_segment_v5.py
+          python scripts/mediaforge_live_segment_v6.py
