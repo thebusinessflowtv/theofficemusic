@@ -1,11 +1,66 @@
 {
-  "generated_at": "2026-10-01T01:38:11.013364+00:00",
+  "generated_at": "2026-10-01T01:50:04.852408+00:00",
   "youtube": {
     "configured": true,
     "sessions": []
   },
   "kick": {
-    "configured": false,
-    "channel": null
+    "configured": true,
+    "channel_slug": "peterlofi",
+    "channel": {
+      "broadcaster_user_id": 132170936,
+      "slug": "peterlofi",
+      "channel_description": "",
+      "banner_picture": "",
+      "stream": {
+        "url": "",
+        "key": "",
+        "is_live": true,
+        "is_mature": false,
+        "language": "en",
+        "start_time": "2026-10-01T01:41:04Z",
+        "viewer_count": 3,
+        "thumbnail": "https://images.kick.com/video_thumbnails/IPcix9mZPMf5/RC3rfKdtxKZP/480.webp"
+      },
+      "stream_title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live on Peter Lofi",
+      "category": {
+        "id": 15,
+        "name": "Just Chatting",
+        "thumbnail": "https://files.kick.com/images/subcategories/15/banner/b697a8a3-62db-4779-aa76-e4e47662af97"
+      },
+      "active_subscribers_count": 0,
+      "active_gifted_subscribers_count": 0,
+      "canceled_subscribers_count": 0
+    },
+    "raw": {
+      "data": [
+        {
+          "broadcaster_user_id": 132170936,
+          "slug": "peterlofi",
+          "channel_description": "",
+          "banner_picture": "",
+          "stream": {
+            "url": "",
+            "key": "",
+            "is_live": true,
+            "is_mature": false,
+            "language": "en",
+            "start_time": "2026-10-01T01:41:04Z",
+            "viewer_count": 3,
+            "thumbnail": "https://images.kick.com/video_thumbnails/IPcix9mZPMf5/RC3rfKdtxKZP/480.webp"
+          },
+          "stream_title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live on Peter Lofi",
+          "category": {
+            "id": 15,
+            "name": "Just Chatting",
+            "thumbnail": "https://files.kick.com/images/subcategories/15/banner/b697a8a3-62db-4779-aa76-e4e47662af97"
+          },
+          "active_subscribers_count": 0,
+          "active_gifted_subscribers_count": 0,
+          "canceled_subscribers_count": 0
+        }
+      ],
+      "message": "OK"
+    }
   }
 }
