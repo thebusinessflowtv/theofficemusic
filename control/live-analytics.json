@@ -1,66 +1,87 @@
 {
-  "generated_at": "2026-10-01T01:55:04.936974+00:00",
+  "generated_at": "2026-10-01T02:16:05.525219+00:00",
   "youtube": {
     "configured": true,
-    "sessions": []
+    "sessions": [
+      {
+        "session_id": "5f54bf8e-d700-4a67-bafd-79b1dd047be5",
+        "video_id": "GIOCNRogj0g",
+        "youtube_url": "https://www.youtube.com/watch?v=GIOCNRogj0g",
+        "workflow_status": "live",
+        "data": {
+          "kind": "youtube#video",
+          "etag": "jhFNiyipVVZzNFHXuERE-TFDukM",
+          "id": "GIOCNRogj0g",
+          "snippet": {
+            "publishedAt": "2026-10-01T02:10:44Z",
+            "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+            "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live",
+            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
+            "thumbnails": {
+              "default": {
+                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/default_live.jpg",
+                "width": 120,
+                "height": 90
+              },
+              "medium": {
+                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/mqdefault_live.jpg",
+                "width": 320,
+                "height": 180
+              },
+              "high": {
+                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/hqdefault_live.jpg",
+                "width": 480,
+                "height": 360
+              },
+              "standard": {
+                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/sddefault_live.jpg",
+                "width": 640,
+                "height": 480
+              },
+              "maxres": {
+                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/maxresdefault_live.jpg",
+                "width": 1280,
+                "height": 720
+              }
+            },
+            "channelTitle": "Peter Lofi",
+            "categoryId": "24",
+            "liveBroadcastContent": "live",
+            "defaultLanguage": "en",
+            "localized": {
+              "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live",
+              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix"
+            }
+          },
+          "status": {
+            "uploadStatus": "uploaded",
+            "privacyStatus": "public",
+            "license": "youtube",
+            "embeddable": true,
+            "publicStatsViewable": true,
+            "madeForKids": false,
+            "selfDeclaredMadeForKids": false
+          },
+          "statistics": {
+            "viewCount": "1",
+            "likeCount": "1",
+            "dislikeCount": "0",
+            "favoriteCount": "0",
+            "commentCount": "0"
+          },
+          "liveStreamingDetails": {
+            "actualStartTime": "2026-10-01T02:11:02Z",
+            "scheduledStartTime": "2026-10-01T02:11:03Z",
+            "concurrentViewers": "2",
+            "activeLiveChatId": "Cg0KC0dJT0NOUm9najBnKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILR0lPQ05Sb2dqMGc"
+          }
+        }
+      }
+    ]
   },
   "kick": {
     "configured": true,
-    "channel_slug": "peterlofi",
-    "channel": {
-      "broadcaster_user_id": 132170936,
-      "slug": "peterlofi",
-      "channel_description": "",
-      "banner_picture": "",
-      "stream": {
-        "url": "",
-        "key": "",
-        "is_live": true,
-        "is_mature": false,
-        "language": "en",
-        "start_time": "2026-10-01T01:41:04Z",
-        "viewer_count": 4,
-        "thumbnail": "https://images.kick.com/video_thumbnails/IPcix9mZPMf5/RC3rfKdtxKZP/480.webp"
-      },
-      "stream_title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live on Peter Lofi",
-      "category": {
-        "id": 15,
-        "name": "Just Chatting",
-        "thumbnail": "https://files.kick.com/images/subcategories/15/banner/b697a8a3-62db-4779-aa76-e4e47662af97"
-      },
-      "active_subscribers_count": 0,
-      "active_gifted_subscribers_count": 0,
-      "canceled_subscribers_count": 0
-    },
-    "raw": {
-      "data": [
-        {
-          "broadcaster_user_id": 132170936,
-          "slug": "peterlofi",
-          "channel_description": "",
-          "banner_picture": "",
-          "stream": {
-            "url": "",
-            "key": "",
-            "is_live": true,
-            "is_mature": false,
-            "language": "en",
-            "start_time": "2026-10-01T01:41:04Z",
-            "viewer_count": 4,
-            "thumbnail": "https://images.kick.com/video_thumbnails/IPcix9mZPMf5/RC3rfKdtxKZP/480.webp"
-          },
-          "stream_title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live on Peter Lofi",
-          "category": {
-            "id": 15,
-            "name": "Just Chatting",
-            "thumbnail": "https://files.kick.com/images/subcategories/15/banner/b697a8a3-62db-4779-aa76-e4e47662af97"
-          },
-          "active_subscribers_count": 0,
-          "active_gifted_subscribers_count": 0,
-          "canceled_subscribers_count": 0
-        }
-      ],
-      "message": "OK"
-    }
+    "error": "HTTP Error 401: Unauthorized",
+    "channel": null
   }
 }
