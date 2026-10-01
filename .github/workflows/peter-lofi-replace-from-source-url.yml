@@ -1,0 +1,215 @@
+name: Peter Lofi — Safe YouTube Replacement From Source
+
+on:
+  push:
+    paths:
+      - 'control/youtube-source-replace-queue/*.json'
+
+permissions:
+  contents: write
+
+env:
+  YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+  YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+
+jobs:
+  replace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve queued request
+        id: req
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" | grep -E '^control/youtube-source-replace-queue/[^/]+\.json$' | tail -1 || true)"
+          test -n "$FILE" || { echo 'No replacement queue file found'; exit 1; }
+          jq -e . "$FILE" >/dev/null
+          OLD_VIDEO_ID="$(jq -r '.old_video_id // empty' "$FILE")"
+          SOURCE_URL="$(jq -r '.source_url // empty' "$FILE")"
+          VISUAL_URL="$(jq -r '.visual_url // empty' "$FILE")"
+          TITLE="$(jq -r '.title // empty' "$FILE")"
+          DESCRIPTION_B64="$(jq -r '.description_b64 // empty' "$FILE")"
+          test -n "$OLD_VIDEO_ID" && test -n "$SOURCE_URL" && test -n "$VISUAL_URL" && test -n "$TITLE" && test -n "$DESCRIPTION_B64"
+          [[ "$OLD_VIDEO_ID" =~ ^[A-Za-z0-9_-]{11}$ ]] || exit 1
+          echo "old_video_id=$OLD_VIDEO_ID" >> "$GITHUB_OUTPUT"
+          echo "source_url=$SOURCE_URL" >> "$GITHUB_OUTPUT"
+          echo "visual_url=$VISUAL_URL" >> "$GITHUB_OUTPUT"
+          echo "title_b64=$(printf '%s' "$TITLE" | base64 -w0)" >> "$GITHUB_OUTPUT"
+          echo "description_b64=$DESCRIPTION_B64" >> "$GITHUB_OUTPUT"
+
+      - name: Install runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install -q google-api-python-client google-auth google-auth-httplib2
+          mkdir -p build control/youtube-source-replacements
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Download exact downloaded YouTube source and replacement visual
+        env:
+          SOURCE_URL: ${{ steps.req.outputs.source_url }}
+          VISUAL_URL: ${{ steps.req.outputs.visual_url }}
+        run: |
+          set -euo pipefail
+          curl --retry 10 --retry-delay 3 --retry-all-errors -fL "$SOURCE_URL" -o build/source.mp4
+          curl --retry 10 --retry-delay 3 --retry-all-errors -fL "$VISUAL_URL" -o build/visual.mp4
+          test -s build/source.mp4 && test -s build/visual.mp4
+          ffmpeg -hide_banner -v error -i build/source.mp4 -map 0:a:0 -t 2 -f null -
+          ffmpeg -hide_banner -v error -i build/visual.mp4 -map 0:v:0 -frames:v 1 -f null -
+          ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_type,codec_name,width,height,r_frame_rate -of json build/source.mp4
+          ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_type,codec_name,width,height,r_frame_rate -of json build/visual.mp4
+
+      - name: Verify original ownership and preserve original metadata/thumbnail
+        env:
+          OLD_VIDEO_ID: ${{ steps.req.outputs.old_video_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          ch=yt.channels().list(part='id',mine=True).execute().get('items',[])
+          if not ch: raise SystemExit('No authenticated channel')
+          channel_id=ch[0]['id']
+          if os.environ.get('YOUTUBE_CHANNEL_ID') and channel_id != os.environ['YOUTUBE_CHANNEL_ID']: raise SystemExit('YouTube channel mismatch')
+          items=yt.videos().list(part='snippet,status,contentDetails',id=os.environ['OLD_VIDEO_ID']).execute().get('items',[])
+          if not items: raise SystemExit('Original video not found')
+          v=items[0]
+          if v['snippet'].get('channelId') != channel_id: raise SystemExit('Original is not owned by authenticated channel')
+          if v.get('status',{}).get('privacyStatus') != 'public': raise SystemExit('Original must remain public until replacement succeeds')
+          pathlib.Path('build/original.json').write_text(json.dumps(v,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          for NAME in maxresdefault.jpg hqdefault.jpg; do
+            if curl --retry 5 -fL "https://i.ytimg.com/vi/${OLD_VIDEO_ID}/${NAME}" -o build/original-thumbnail.jpg && [ -s build/original-thumbnail.jpg ]; then break; fi
+          done
+          test -s build/original-thumbnail.jpg
+
+      - name: Extract exact audio stream from downloaded source
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel warning -y -i build/source.mp4 -map 0:a:0 -vn -c:a copy build/exact-audio.m4a
+          test -s build/exact-audio.m4a
+          ffmpeg -hide_banner -v error -i build/exact-audio.m4a -map 0:a:0 -t 2 -f null -
+          python - <<'PY'
+          import subprocess
+          d=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0','build/exact-audio.m4a'],text=True).strip())
+          print('AUDIO_DURATION=',d)
+          if not 3550 <= d <= 3650: raise SystemExit(f'Unexpected audio duration {d}')
+          PY
+
+      - name: Build new 1080p video with replacement visual loop and exact audio
+        run: |
+          set -euo pipefail
+          AUDIO_DURATION="$(ffprobe -v error -show_entries format=duration -of csv=p=0 build/exact-audio.m4a)"
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -stream_loop -1 -i build/visual.mp4 \
+            -i build/exact-audio.m4a \
+            -map 0:v:0 -map 1:a:0 \
+            -t "$AUDIO_DURATION" -shortest \
+            -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p" \
+            -c:v libx264 -preset medium -crf 18 -profile:v high -level:v 4.2 -g 60 -keyint_min 60 -sc_threshold 0 \
+            -c:a copy -movflags +faststart \
+            build/replacement.mp4
+          test -s build/replacement.mp4
+          ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_type,codec_name,width,height,r_frame_rate -of json build/replacement.mp4
+
+      - name: Upload replacement PUBLIC with improved metadata
+        env:
+          TITLE_B64: ${{ steps.req.outputs.title_b64 }}
+          DESCRIPTION_B64: ${{ steps.req.outputs.description_b64 }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,pathlib,time
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          original=json.loads(pathlib.Path('build/original.json').read_text(encoding='utf-8'))
+          oldsn=original['snippet']
+          title=base64.b64decode(os.environ['TITLE_B64']).decode('utf-8')
+          desc=base64.b64decode(os.environ['DESCRIPTION_B64']).decode('utf-8')
+          snippet={'title':title[:100],'description':desc[:5000],'categoryId':oldsn.get('categoryId','22'),'tags':oldsn.get('tags',[])}
+          for k in ('defaultLanguage','defaultAudioLanguage'):
+              if oldsn.get(k): snippet[k]=oldsn[k]
+          status={'privacyStatus':'public','selfDeclaredMadeForKids':bool(original.get('status',{}).get('selfDeclaredMadeForKids',False))}
+          media=MediaFileUpload('build/replacement.mp4',mimetype='video/mp4',chunksize=32*1024*1024,resumable=True)
+          req=yt.videos().insert(part='snippet,status',body={'snippet':snippet,'status':status},media_body=media)
+          response=None
+          while response is None:
+              progress,response=req.next_chunk(num_retries=10)
+              if progress: print(f'UPLOAD_PROGRESS={int(progress.progress()*100)}%')
+          new_id=response['id']
+          pathlib.Path('build/new-id.txt').write_text(new_id)
+          yt.thumbnails().set(videoId=new_id,media_body=MediaFileUpload('build/original-thumbnail.jpg',mimetype='image/jpeg',resumable=False)).execute()
+          print('NEW_VIDEO_URL=https://www.youtube.com/watch?v='+new_id)
+          verified=False
+          for attempt in range(240):
+              items=yt.videos().list(part='snippet,status,processingDetails,contentDetails',id=new_id).execute().get('items',[])
+              if items:
+                  v=items[0]; st=v.get('status',{}); pd=v.get('processingDetails',{})
+                  privacy=st.get('privacyStatus'); upload=st.get('uploadStatus'); proc=pd.get('processingStatus')
+                  title_ok=v.get('snippet',{}).get('title')==title[:100]; desc_ok=v.get('snippet',{}).get('description')==desc[:5000]
+                  duration=v.get('contentDetails',{}).get('duration')
+                  print(f'VERIFY {attempt+1}: privacy={privacy} upload={upload} processing={proc} duration={duration} title={title_ok} description={desc_ok}')
+                  if privacy=='public' and upload=='processed' and proc in (None,'succeeded') and title_ok and desc_ok and duration not in (None,'P0D'):
+                      verified=True; break
+                  if proc in ('failed','terminated'): raise SystemExit('YouTube processing failed; original remains public')
+              time.sleep(15)
+          if not verified: raise SystemExit('Replacement was not fully verified public/processed; original remains public')
+          PY
+
+      - name: Privatize old video only after successful public replacement
+        env:
+          OLD_VIDEO_ID: ${{ steps.req.outputs.old_video_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,pathlib,datetime
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          old_id=os.environ['OLD_VIDEO_ID']; new_id=pathlib.Path('build/new-id.txt').read_text().strip()
+          new=yt.videos().list(part='snippet,status,contentDetails',id=new_id).execute().get('items',[])
+          if not new or new[0].get('status',{}).get('privacyStatus')!='public': raise SystemExit('Replacement is not public; refusing to privatize original')
+          old=yt.videos().list(part='status',id=old_id).execute().get('items',[])
+          if not old: raise SystemExit('Original not found')
+          os0=old[0]['status']; private={'privacyStatus':'private','selfDeclaredMadeForKids':bool(os0.get('selfDeclaredMadeForKids',False))}
+          for k in ('embeddable','license','publicStatsViewable'):
+              if k in os0: private[k]=os0[k]
+          yt.videos().update(part='status',body={'id':old_id,'status':private}).execute()
+          old_final=yt.videos().list(part='status',id=old_id).execute().get('items',[{}])[0]
+          new_final=yt.videos().list(part='snippet,status,contentDetails',id=new_id).execute().get('items',[{}])[0]
+          if old_final.get('status',{}).get('privacyStatus')!='private': raise SystemExit('Original did not become private')
+          result={'status':'completed','old_video_id':old_id,'old_privacy':'private','new_video_id':new_id,'new_video_url':'https://www.youtube.com/watch?v='+new_id,'new_privacy':new_final.get('status',{}).get('privacyStatus'),'new_title':new_final.get('snippet',{}).get('title'),'new_description':new_final.get('snippet',{}).get('description'),'new_duration':new_final.get('contentDetails',{}).get('duration'),'audio_source':'exact_audio_stream_from_user_downloaded_original','visual_source':'user_supplied_replacement_loop','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          pathlib.Path('build/result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Record completed replacement
+        if: success()
+        env:
+          OLD_VIDEO_ID: ${{ steps.req.outputs.old_video_id }}
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          cp build/result.json "control/youtube-source-replacements/${OLD_VIDEO_ID}.json"
+          git add "control/youtube-source-replacements/${OLD_VIDEO_ID}.json"
+          git commit -m "mediaforge: record safe source replacement ${OLD_VIDEO_ID}" || exit 0
+          git push origin HEAD:main
