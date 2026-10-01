@@ -1,0 +1,76 @@
+name: One-off — Recover Peter Lofi YouTube Live
+
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-recover-youtube-live.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    env:
+      GH_TOKEN: ${{ secrets.GH_STREAM_CONTROL_TOKEN || github.token }}
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+      SESSION_ID: c3f8a4d2-7e91-4b65-9d0a-1f2c3e4b5a67
+      TRACK_URLS_B64: WyJodHRwczovL2dpdGh1Yi5jb20vdGhlYnVzaW5lc3NmbG93dHYvdGhlb2ZmaWNlbXVzaWMvcmVsZWFzZXMvZG93bmxvYWQvcGV0ZXItbG9maS1zZXJpZXMtMDItbGF0ZS1uaWdodC1vZmZpY2UtOGEyMzk4YzEvcGV0ZXItbG9maS1tYXN0ZXIubTRhIiwiaHR0cHM6Ly9naXRodWIuY29tL3RoZWJ1c2luZXNzZmxvd3R2L3RoZW9mZmljZW11c2ljL3JlbGVhc2VzL2Rvd25sb2FkL3BldGVyLWxvZmktc2VyaWVzLTA1LXJhaW55LW9mZmljZS04NzIzODQ1ZC9wZXRlci1sb2ZpLW1hc3Rlci5tNGEiXQ==
+      DURATION_MINUTES: '0'
+      TITLE: 'Rainy Late Night Office 🌧️ LIVE | Lofi for Deep Focus, Work & Study — Peter Lofi'
+      DESCRIPTION: 'Rainy Late Night Office with continuous lofi for deep focus, work, study, coding and reading. Peter Lofi.'
+      THUMBNAIL_URL: 'https://mediaforge-api.guilhermeodsgn.workers.dev/media/98c0bcf3-b1b4-4b19-9200-a210bc5291a2/9c976ea59f23437e8ec8e0cb31f07e344d7126bff4814ff4ab70a2921a73f1eb'
+      LOOP_URL: 'https://mediaforge-api.guilhermeodsgn.workers.dev/media/998ca654-bb42-4c35-99c6-04ac2ebad84c/b6bf0c5819a04630b36f61314ed6de7566e4b48b72df41c59093a5bd7c0f9ab0'
+      SEGMENT_INDEX: '1'
+      PRIVACY_STATUS: public
+      SEGMENT_SECONDS_OVERRIDE: '0'
+      PREWARM_LEAD_SECONDS: '900'
+      MAX_SEGMENTS: '0'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install live runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg file
+          python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2 cryptography
+
+      - name: Inspect old broadcast and choose recovery mode
+        run: |
+          python - <<'PY'
+          import os
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          creds.refresh(Request())
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          bid='PNdwQEFaIrA'; sid='xO4Cl7xCdcTsWkmxD_6Wfg1790828557622468'
+          b=yt.liveBroadcasts().list(part='status',id=bid).execute().get('items') or []
+          s=yt.liveStreams().list(part='status,cdn',id=sid).execute().get('items') or []
+          lifecycle=((b[0].get('status') or {}).get('lifeCycleStatus') if b else None)
+          stream_status=((s[0].get('status') or {}).get('streamStatus') if s else None)
+          info=((s[0].get('cdn') or {}).get('ingestionInfo') or {}) if s else {}
+          print(f'OLD_BROADCAST lifecycle={lifecycle} streamStatus={stream_status} backupIngestAvailable={bool(info.get("backupIngestionAddress"))}')
+          resumable = lifecycle not in {'complete','revoked'} and bool(b and s)
+          env=os.environ['GITHUB_ENV']
+          with open(env,'a') as f:
+              f.write(f'RESUME_BROADCAST_ID={bid if resumable else ""}\n')
+              f.write(f'RESUME_STREAM_ID={sid if resumable else ""}\n')
+          print('RECOVERY_MODE=' + ('resume-same-broadcast' if resumable else 'create-new-broadcast'))
+          PY
+
+      - name: Recover and keep streaming with V7
+        run: |
+          set -euo pipefail
+          python scripts/mediaforge_live_segment_v7.py
