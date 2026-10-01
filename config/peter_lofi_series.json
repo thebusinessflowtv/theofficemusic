@@ -99,7 +99,7 @@
       "index": 1,
       "key": "office-productivity",
       "name": "Office / Productivity",
-      "title": "lofi for work & productivity 💻 beats to focus to | Peter Lofi",
+      "title": "1 hour lofi for work 💻 beats for focus & productivity | Peter Lofi",
       "playlist": "Office / Productivity 🎧 | Peter Lofi",
       "description": "A focused 1-hour Peter Lofi session designed for productive work, planning, reading and everyday office routines. Warm keys, restrained drums and a steady unobtrusive groove keep momentum without demanding attention.",
       "music_dna": {
@@ -134,13 +134,13 @@
           "Workspace"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     },
     {
       "index": 2,
       "key": "late-night-office",
       "name": "Late Night Office",
-      "title": "late night lofi 🌙 beats to work/study/focus to | Peter Lofi",
+      "title": "1 hour late night lofi 🌙 beats to work/study/focus to | Peter Lofi",
       "playlist": "Late Night Office 🌙 | Peter Lofi",
       "description": "One hour of darker, calmer Peter Lofi for late deadlines, quiet offices and after-hours concentration. Soft keys, deep bass and restrained nocturnal textures create a focused city-at-night atmosphere.",
       "music_dna": {
@@ -176,13 +176,13 @@
           "Lobby"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     },
     {
       "index": 3,
       "key": "coffee-shop",
       "name": "Coffee Shop",
-      "title": "coffee shop lofi ☕ beats to study/work/relax to | Peter Lofi",
+      "title": "1 hour coffee shop lofi ☕ beats to study/work/relax to | Peter Lofi",
       "playlist": "Coffee Shop ☕ | Peter Lofi",
       "description": "A cozy 1-hour coffee-shop session for studying, journaling, writing and relaxed work. Warm electric piano, mellow drums and soft bass create the feeling of a calm city café without distracting ambience or vocals.",
       "music_dna": {
@@ -224,13 +224,13 @@
           "Morning"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     },
     {
       "index": 4,
       "key": "rooftop-office",
       "name": "Rooftop Office",
-      "title": "city lofi 🌆 chill beats to work/study/focus to | Peter Lofi",
+      "title": "1 hour city lofi 🌆 chill beats to work/study/focus to | Peter Lofi",
       "playlist": "Rooftop Office 🌆 | Peter Lofi",
       "description": "A one-hour skyline session with airy synths, clean drums and an uplifting urban pulse. Built for creative work, design sessions and focused evenings above the city.",
       "music_dna": {
@@ -272,13 +272,13 @@
           "Hours"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     },
     {
       "index": 5,
       "key": "rainy-office",
       "name": "Rainy Office",
-      "title": "rainy lofi 🌧️ beats to study/work/relax to | Peter Lofi",
+      "title": "1 hour rainy lofi 🌧️ beats to study/work/relax to | Peter Lofi",
       "playlist": "Rainy Office 🌧️ | Peter Lofi",
       "description": "A calm rainy-day work session with soft piano-like keys, muted percussion and spacious pads. One hour built for deep reading, writing and concentration while the city slows down outside.",
       "music_dna": {
@@ -314,13 +314,13 @@
           "Hours"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     },
     {
       "index": 6,
       "key": "sunday-morning-work",
       "name": "Sunday Morning Work",
-      "title": "morning lofi ☀️ beats to relax/work/study to | Peter Lofi",
+      "title": "1 hour morning lofi ☀️ beats to relax/work/study to | Peter Lofi",
       "playlist": "Sunday Morning Work ☀️ | Peter Lofi",
       "description": "Bright, gentle and unhurried. This one-hour Peter Lofi session is made for quiet Sunday planning, light work, reading and a slow start with warm melodic textures and relaxed rhythm.",
       "music_dna": {
@@ -356,13 +356,13 @@
           "Desk"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     },
     {
       "index": 7,
       "key": "deep-focus-coding",
       "name": "Deep Focus / Coding",
-      "title": "lofi for coding 💻 beats to focus/program to | Peter Lofi",
+      "title": "1 hour lofi for coding 💻 beats for deep focus & flow | Peter Lofi",
       "playlist": "Deep Focus / Coding 💻 | Peter Lofi",
       "description": "A minimal one-hour coding soundtrack engineered for long focus blocks. Repetitive but evolving motifs, controlled low end and precise restrained drums help maintain flow without pulling attention away from the screen.",
       "music_dna": {
@@ -405,13 +405,13 @@
           "Session"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     },
     {
       "index": 8,
       "key": "luxury-office",
       "name": "Luxury Office / Zara-style ambience",
-      "title": "chill house for work ✨ lounge beats to focus to | Peter Lofi",
+      "title": "1 hour deep house for work ✨ lounge music for focus | Peter Lofi",
       "playlist": "Luxury Office ✨ | Peter Lofi",
       "description": "A polished luxury-office session inspired by premium fashion-retail ambience: clean deep-house pulse, elegant synth textures and refined lounge energy for work, showrooms, studios and sophisticated background listening.",
       "music_dna": {
@@ -457,13 +457,13 @@
           "Elevator"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     },
     {
       "index": 9,
       "key": "work-from-home",
       "name": "Work From Home",
-      "title": "lofi for work from home 🏠 beats to focus/productivity to | Peter Lofi",
+      "title": "1 hour lofi for work from home 🏠 focus & productivity beats | Peter Lofi",
       "playlist": "Work From Home 🏠 | Peter Lofi",
       "description": "A comfortable one-hour home-office mix for emails, meetings, planning and everyday productivity. Warm keys, soft beats and relaxed textures keep the room calm while helping the workday move forward.",
       "music_dna": {
@@ -498,13 +498,13 @@
           "Workspace"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     },
     {
       "index": 10,
       "key": "night-shift",
       "name": "Night Shift",
-      "title": "night lofi 🌃 beats to work/focus/study to | Peter Lofi",
+      "title": "1 hour night lofi 🌃 beats to work/focus/study to | Peter Lofi",
       "playlist": "Night Shift 🌃 | Peter Lofi",
       "description": "A darker one-hour Peter Lofi set for overnight work, editing, coding and long late sessions. Deep bass, restrained drums and subtle neon synth textures create momentum without breaking concentration.",
       "music_dna": {
@@ -540,12 +540,12 @@
           "Floor"
         ]
       },
-      "seo_title_pattern": "search-term first; use-case intent second; Peter Lofi last"
+      "seo_title_pattern": "duration + search term first; listener intent second; Peter Lofi last"
     }
   ],
   "seo_strategy": {
     "updated": "2026-10-01",
-    "principle": "search-first lofi titles: genre/context + radio or beats + listener intent; brand at end",
+    "principle": "search-first titles: actual genre/context + radio/beats/music + listener intent; brand at end",
     "core_intents": [
       "study",
       "work",
