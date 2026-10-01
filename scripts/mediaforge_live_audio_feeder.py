@@ -3,14 +3,18 @@ import argparse, base64, json, os, subprocess, sys, time, urllib.request
 from datetime import datetime, timezone
 
 RAW_BASE = "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main"
+PCM_CHUNK = 32768  # ~171 ms of stereo 48 kHz s16le; small enough for smooth continuous delivery.
+
 
 def fetch_json(url, timeout=30):
     req = urllib.request.Request(url, headers={"User-Agent": "MediaForge-Live-Audio"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.load(r)
 
+
 def raw_json(path):
     return fetch_json(f"{RAW_BASE}/{path}?ts={int(time.time()*1000)}")
+
 
 def get_playlist(session_id, fallback):
     try:
@@ -27,6 +31,7 @@ def get_playlist(session_id, fallback):
     except Exception as e:
         print(f"playlist refresh warning: {e}", file=sys.stderr, flush=True)
     return fallback
+
 
 def github_upsert(path, payload):
     token = os.environ.get("GH_TOKEN", "").strip()
@@ -56,6 +61,7 @@ def github_upsert(path, payload):
             time.sleep(min(5, attempt))
     print(f"now-playing publish warning after retries: {last_error}", file=sys.stderr, flush=True)
 
+
 def parse_ts(value):
     if not value:
         return None
@@ -64,8 +70,10 @@ def parse_ts(value):
     except Exception:
         return None
 
+
 def iso_from_epoch(ts):
     return datetime.fromtimestamp(ts, timezone.utc).isoformat().replace("+00:00", "Z")
+
 
 def find_track_index(playlist, state):
     su, si = str(state.get("url") or ""), str(state.get("track_id") or "")
@@ -77,12 +85,12 @@ def find_track_index(playlist, state):
             return i
     return None
 
+
 def load_resume_state(session_id, segment_index):
     if segment_index <= 1:
         return None
     expected_prev = segment_index - 1
 
-    # V4 path: one takeover state carries the exact audio + visual position.
     for _ in range(6):
         try:
             state = raw_json(f"control/live-takeover/{session_id}-{segment_index}.json")
@@ -93,7 +101,6 @@ def load_resume_state(session_id, segment_index):
             pass
         time.sleep(0.35)
 
-    # Backward compatibility with V1-V3 and the first migration from legacy runners.
     for _ in range(6):
         try:
             state = raw_json(f"control/live-handoffs/{session_id}.json")
@@ -116,22 +123,45 @@ def load_resume_state(session_id, segment_index):
         print(f"resume-state warning: {e}", file=sys.stderr, flush=True)
     return None
 
+
+def _write_all(fd, chunk):
+    view = memoryview(chunk)
+    while view:
+        written = os.write(fd, view)
+        view = view[written:]
+
+
 def play_track(track, start_offset=0.0):
+    """Decode ahead of realtime and let the RTMP encoder provide pacing.
+
+    The old feeder used ffmpeg -re here *and* the outer encoder used realtime pacing.
+    Combined with 256 KiB Python reads, PCM arrived in large bursts and remote/network
+    jitter could starve the encoder, which was audible as repeated micro-cuts.
+    """
     start_offset = max(0.0, float(start_offset or 0.0))
-    cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", "-re"]
+    cmd = [
+        "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin",
+        "-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "5",
+    ]
     if start_offset > 0.05:
         cmd += ["-ss", f"{start_offset:.3f}"]
-    cmd += ["-i", track["url"], "-vn", "-ac", "2", "-ar", "48000", "-f", "s16le", "pipe:1"]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd += [
+        "-i", track["url"],
+        "-vn", "-sn", "-dn",
+        "-af", "aresample=48000:async=1:first_pts=0",
+        "-ac", "2", "-ar", "48000", "-c:a", "pcm_s16le", "-f", "s16le", "pipe:1",
+    ]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
     sent = 0
     try:
+        out_fd = sys.stdout.fileno()
+        src_fd = p.stdout.fileno()
         while True:
-            chunk = p.stdout.read(262144)
+            chunk = os.read(src_fd, PCM_CHUNK)
             if not chunk:
                 break
             sent += len(chunk)
-            sys.stdout.buffer.write(chunk)
-            sys.stdout.buffer.flush()
+            _write_all(out_fd, chunk)
     except BrokenPipeError:
         p.terminate()
         raise SystemExit(0)
@@ -140,10 +170,12 @@ def play_track(track, start_offset=0.0):
             p.wait(timeout=10)
         except subprocess.TimeoutExpired:
             p.kill()
+            p.wait()
     if p.returncode not in (0, None):
         err = p.stderr.read().decode("utf-8", "replace")[-2000:]
         print(f"track ffmpeg failed: {track['url']}\n{err}", file=sys.stderr, flush=True)
     return sent > 0
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -192,6 +224,7 @@ def main():
         played = play_track(track, offset)
         if not played and offset > 0:
             print("Resume offset produced no audio; advancing to next track.", file=sys.stderr, flush=True)
+
 
 if __name__ == "__main__":
     main()
