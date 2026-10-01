@@ -25,24 +25,15 @@ jobs:
         include:
           - mix_key: rainy-youtube
             series_key: rainy-office
-            session_id: fe6e6fd3-fd9c-4265-b12d-8eb50c0b52fc
-            platform: youtube
+            targets_json: '[{"session_id":"fe6e6fd3-fd9c-4265-b12d-8eb50c0b52fc","platform":"youtube"}]'
             title: Rainy Late Night — 3 Hour MP3 Expansion
             filename: peter-lofi-rainy-late-night-live-3h.mp3
             style: rainy late-night lofi for study, work, relax and deep focus
-          - mix_key: deep-house-youtube
+          - mix_key: deep-house-shared
             series_key: luxury-office
-            session_id: 5f54bf8e-d700-4a67-bafd-79b1dd047be5
-            platform: youtube
-            title: Deep House Focus — YouTube 3 Hour MP3 Expansion
-            filename: peter-lofi-deep-house-focus-youtube-3h.mp3
-            style: premium deep house and lounge for work, study and focus
-          - mix_key: deep-house-kick
-            series_key: luxury-office
-            session_id: 4c336705-e45f-4b1c-868f-72eff5849850
-            platform: kick
-            title: Deep House Focus — Kick 3 Hour MP3 Expansion
-            filename: peter-lofi-deep-house-focus-kick-3h.mp3
+            targets_json: '[{"session_id":"5f54bf8e-d700-4a67-bafd-79b1dd047be5","platform":"youtube"},{"session_id":"4c336705-e45f-4b1c-868f-72eff5849850","platform":"kick"}]'
+            title: Deep House Focus — Shared 3 Hour MP3 Expansion
+            filename: peter-lofi-deep-house-focus-shared-3h.mp3
             style: premium deep house and lounge for work, study and focus
     runs-on: ubuntu-latest
     timeout-minutes: 350
@@ -53,8 +44,7 @@ jobs:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
       MIX_KEY: ${{ matrix.mix_key }}
       SERIES_KEY: ${{ matrix.series_key }}
-      SESSION_ID: ${{ matrix.session_id }}
-      PLATFORM: ${{ matrix.platform }}
+      TARGETS_JSON: ${{ matrix.targets_json }}
       MIX_TITLE: ${{ matrix.title }}
       MP3_FILENAME: ${{ matrix.filename }}
       MIX_STYLE: ${{ matrix.style }}
@@ -123,7 +113,7 @@ jobs:
             'id':f"{os.environ['KAGGLE_USERNAME']}/{os.environ['KERNEL_NAME']}",
             'title':f"Peter Lofi Live {os.environ['MIX_KEY']} {os.environ['GITHUB_RUN_ID']}",
             'code_file':'runner.py','language':'python','kernel_type':'script','is_private':True,
-            'enable_gpu':True,'machine_shape':'NvidiaL4','enable_internet':True,
+            'enable_gpu':True,'machine_shape':'NvidiaTeslaA100','enable_internet':True,
             'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
             'competition_sources':[],'kernel_sources':[]
           },indent=2))
@@ -138,19 +128,37 @@ jobs:
           WORK="$(cat /tmp/kernel_workdir)"
           KERNEL_NAME="$(cat /tmp/kernel_name)"
           REQUEST_ID="$(cat /tmp/request_id)"
-          kaggle kernels push -p "$WORK" --timeout 7200 --accelerator NvidiaL4
-          COMPLETE=0
-          for i in $(seq 1 150); do
-            STATUS="$(kaggle kernels status "$KAGGLE_USERNAME/$KERNEL_NAME" 2>&1 || true)"
-            echo "$STATUS"
-            if echo "$STATUS" | grep -Eqi 'complete|completed'; then COMPLETE=1; break; fi
-            if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then
-              kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true
-              exit 1
-            fi
-            sleep 60
-          done
-          test "$COMPLETE" = "1" || { kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true; exit 1; }
+
+          run_kernel() {
+            local ACCELERATOR="$1"
+            echo "Requesting Kaggle accelerator: $ACCELERATOR"
+            python - "$WORK/kernel-metadata.json" "$ACCELERATOR" <<'PY'
+          import json, pathlib, sys
+          p=pathlib.Path(sys.argv[1]); accelerator=sys.argv[2]
+          data=json.loads(p.read_text())
+          data['machine_shape']=accelerator
+          p.write_text(json.dumps(data,indent=2))
+          PY
+            kaggle kernels push -p "$WORK" --timeout 7200 --accelerator "$ACCELERATOR"
+            for i in $(seq 1 150); do
+              STATUS="$(kaggle kernels status "$KAGGLE_USERNAME/$KERNEL_NAME" 2>&1 || true)"
+              echo "$STATUS"
+              if echo "$STATUS" | grep -Eqi 'complete|completed'; then return 0; fi
+              if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then
+                kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true
+                return 1
+              fi
+              sleep 60
+            done
+            kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true
+            return 1
+          }
+
+          if ! run_kernel NvidiaTeslaA100; then
+            echo 'A100 generation failed or was unavailable; retrying once on NvidiaL4.'
+            run_kernel NvidiaL4
+          fi
+
           rm -rf generated && mkdir generated
           kaggle kernels output "$KAGGLE_USERNAME/$KERNEL_NAME" -p generated
           WAV_COUNT="$(find generated -type f -name '*.wav' | wc -l | tr -d ' ')"
@@ -193,13 +201,13 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --target main \
             --title "$MIX_TITLE" \
-            --notes "Fresh 3-hour MP3 generated for the active Peter Lofi ${PLATFORM} live. Genre: ${MIX_STYLE}. MP3 only; no video asset."
+            --notes "Fresh 3-hour MP3 generated for active Peter Lofi live(s). Genre: ${MIX_STYLE}. MP3 only; no video asset."
           URL="https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/$MP3_FILENAME"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Published: $URL"
 
-      - name: Add new 3-hour MP3 to active live playlist
+      - name: Add new 3-hour MP3 to active live playlist(s)
         env:
           ASSET_URL: ${{ steps.release.outputs.url }}
           TAG: ${{ steps.release.outputs.tag }}
@@ -207,39 +215,43 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           import base64,datetime as dt,hashlib,json,os,time,urllib.error,urllib.request
-          repo=os.environ['GITHUB_REPOSITORY']; token=os.environ['GH_TOKEN']; sid=os.environ['SESSION_ID']
-          url=os.environ['ASSET_URL']; platform=os.environ['PLATFORM']; title=os.environ['MIX_TITLE']; style=os.environ['MIX_STYLE']
-          path=f'control/live-playlists/{sid}.json'; api=f'https://api.github.com/repos/{repo}/contents/{path}'
+          repo=os.environ['GITHUB_REPOSITORY']; token=os.environ['GH_TOKEN']
+          url=os.environ['ASSET_URL']; title=os.environ['MIX_TITLE']; style=os.environ['MIX_STYLE']
+          targets=json.loads(os.environ['TARGETS_JSON'])
           headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'Peter-Lofi-3h-MP3','Content-Type':'application/json'}
-          for attempt in range(1,9):
-            req=urllib.request.Request(api,headers=headers)
-            with urllib.request.urlopen(req,timeout=30) as r: obj=json.load(r)
-            data=json.loads(base64.b64decode((obj.get('content') or '').replace('\n','')).decode())
-            tracks=data.setdefault('tracks',[])
-            if not any(t.get('url')==url for t in tracks if isinstance(t,dict)):
-              tracks.append({
-                'id':hashlib.md5(url.encode()).hexdigest(),
-                'title':title,
-                'url':url,
-                'duration_seconds':10800,
-                'collection_name':'Peter Lofi · Fresh 3 Hour MP3',
-                'style':style,
-                'format':'mp3',
-                'generated_fresh':True
-              })
-            data['updated_at']=dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00','Z')
-            body={'message':f'peter-lofi: add fresh 3h MP3 to {platform} live {sid}','branch':'main','sha':obj['sha'],
-                  'content':base64.b64encode((json.dumps(data,ensure_ascii=False,indent=2)+'\n').encode()).decode()}
-            req=urllib.request.Request(api,data=json.dumps(body).encode(),headers=headers,method='PUT')
-            try:
-              with urllib.request.urlopen(req,timeout=30): pass
-              print(f'Added 3h MP3 to live playlist {sid}')
-              break
-            except urllib.error.HTTPError as exc:
-              if exc.code==409 and attempt<8:
-                time.sleep(attempt); continue
-              raise
-          else: raise SystemExit('Could not update live playlist after retries')
+          for target in targets:
+            sid=target['session_id']; platform=target['platform']
+            path=f'control/live-playlists/{sid}.json'; api=f'https://api.github.com/repos/{repo}/contents/{path}'
+            for attempt in range(1,9):
+              req=urllib.request.Request(api,headers=headers)
+              with urllib.request.urlopen(req,timeout=30) as r: obj=json.load(r)
+              data=json.loads(base64.b64decode((obj.get('content') or '').replace('\n','')).decode())
+              tracks=data.setdefault('tracks',[])
+              if not any(t.get('url')==url for t in tracks if isinstance(t,dict)):
+                tracks.append({
+                  'id':hashlib.md5(url.encode()).hexdigest(),
+                  'title':title,
+                  'url':url,
+                  'duration_seconds':10800,
+                  'collection_name':'Peter Lofi · Fresh 3 Hour MP3',
+                  'style':style,
+                  'format':'mp3',
+                  'generated_fresh':True,
+                  'shared_between_platforms':len(targets)>1
+                })
+              data['updated_at']=dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00','Z')
+              body={'message':f'peter-lofi: add fresh 3h MP3 to {platform} live {sid}','branch':'main','sha':obj['sha'],
+                    'content':base64.b64encode((json.dumps(data,ensure_ascii=False,indent=2)+'\n').encode()).decode()}
+              req=urllib.request.Request(api,data=json.dumps(body).encode(),headers=headers,method='PUT')
+              try:
+                with urllib.request.urlopen(req,timeout=30): pass
+                print(f'Added shared 3h MP3 to {platform} live playlist {sid}')
+                break
+              except urllib.error.HTTPError as exc:
+                if exc.code==409 and attempt<8:
+                  time.sleep(attempt); continue
+                raise
+            else: raise SystemExit(f'Could not update live playlist {sid} after retries')
           PY
 
       - name: Record generation result
@@ -254,7 +266,7 @@ jobs:
           p=pathlib.Path('control/live-music-generation')/f"{os.environ['MIX_KEY']}.json"
           p.write_text(json.dumps({
             'status':'completed','mix_key':os.environ['MIX_KEY'],'series_key':os.environ['SERIES_KEY'],
-            'session_id':os.environ['SESSION_ID'],'platform':os.environ['PLATFORM'],
+            'targets':json.loads(os.environ['TARGETS_JSON']),
             'duration_seconds':10800,'format':'mp3','bitrate_kbps':320,
             'asset_url':os.environ['ASSET_URL'],'release_tag':os.environ['TAG'],
             'github_run_id':int(os.environ['GITHUB_RUN_ID']),
