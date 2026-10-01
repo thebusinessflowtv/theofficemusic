@@ -113,3 +113,5 @@ jobs:
               raise SystemExit(f"LONG UPLOADS NOT ALLOWED: status={long_uploads}. A 60-minute upload may fail until the channel enables long uploads.")
           print("YouTube connection test: SUCCESS")
           PY
+
+# MediaForge live connection verification trigger
