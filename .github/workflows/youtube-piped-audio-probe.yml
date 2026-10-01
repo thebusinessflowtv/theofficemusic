@@ -1,0 +1,58 @@
+name: YouTube Source Audio Probe
+
+on:
+  push:
+    paths:
+      - 'control/youtube-piped-probe-queue/*.json'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Resolve source video
+        id: req
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" | grep -E '^control/youtube-piped-probe-queue/[^/]+\.json$' | tail -1)"
+          VIDEO_ID="$(jq -r '.video_id' "$FILE")"
+          echo "video_id=$VIDEO_ID" >> "$GITHUB_OUTPUT"
+      - name: Resolve and validate public audio stream
+        env:
+          VIDEO_ID: ${{ steps.req.outputs.video_id }}
+        run: |
+          set -euo pipefail
+          INSTANCES=(
+            'https://api.piped.private.coffee'
+            'https://pipedapi.ducks.party'
+            'https://pipedapi.adminforge.de'
+            'https://piped-api.privacy.com.de'
+          )
+          FOUND=''
+          for BASE in "${INSTANCES[@]}"; do
+            echo "Trying $BASE"
+            if curl --connect-timeout 10 --max-time 30 --retry 2 -fsSL "$BASE/streams/$VIDEO_ID" -o /tmp/streams.json; then
+              URL="$(jq -r '[.audioStreams[]? | select(.url != null)] | sort_by(.bitrate // 0) | last | .url // empty' /tmp/streams.json)"
+              BITRATE="$(jq -r '[.audioStreams[]? | select(.url != null)] | sort_by(.bitrate // 0) | last | .bitrate // 0' /tmp/streams.json)"
+              MIME="$(jq -r '[.audioStreams[]? | select(.url != null)] | sort_by(.bitrate // 0) | last | .mimeType // empty' /tmp/streams.json)"
+              if [ -n "$URL" ]; then
+                echo "Resolved audio stream: bitrate=$BITRATE mime=$MIME"
+                FOUND="$URL"
+                break
+              fi
+            fi
+          done
+          test -n "$FOUND" || { echo '::error::No Piped audio stream resolved'; exit 1; }
+          curl --connect-timeout 15 --max-time 90 --retry 5 --retry-all-errors -fL -r 0-1048575 "$FOUND" -o /tmp/audio-sample.bin
+          test -s /tmp/audio-sample.bin
+          echo "AUDIO_PROBE_BYTES=$(wc -c < /tmp/audio-sample.bin)"
+          echo 'Audio source probe succeeded.'
