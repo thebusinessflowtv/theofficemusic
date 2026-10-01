@@ -1,0 +1,15 @@
+{
+  "status": "generating",
+  "progress": 8,
+  "phase": "Preparando geração de áudio original",
+  "index": 9,
+  "key": "work-from-home",
+  "name": "Work From Home",
+  "title": "Work From Home — 1 Hour Cozy Lofi for Productivity | Peter Lofi 🎧",
+  "playlist": "Work From Home 🏠 | Peter Lofi",
+  "description": "A comfortable one-hour home-office mix for emails, meetings, planning and everyday productivity. Warm keys, soft beats and relaxed textures keep the room calm while helping the workday move forward.",
+  "request_id": "bea516fa-c669-4543-91c4-69babbec6bd9",
+  "github_run_id": 36804729666,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36804729666",
+  "started_at": "2026-10-01T02:12:57.091127+00:00"
+}
