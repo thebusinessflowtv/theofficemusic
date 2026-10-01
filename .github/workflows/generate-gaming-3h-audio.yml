@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: peter-lofi-gaming-3h-audio
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   SECRET_DATASET_SLUG: the-office-music-secrets
@@ -68,26 +68,33 @@ jobs:
             kaggle datasets create -p "$SECRET_DIR" --private -q
           fi
 
-      - name: Prepare Kaggle gaming kernel
+      - name: Prepare two parallel Kaggle gaming shards
         run: |
           set -euo pipefail
-          WORK="$(mktemp -d)"
-          cp kaggle/runner_gaming_3h.py "$WORK/runner.py"
-          REQUEST_ID="gaming-3h-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          KERNEL_NAME="peter-lofi-gaming-3h-${GITHUB_RUN_ID}"
-          python - "$WORK/runner.py" "$REQUEST_ID" <<'PY'
+          ROOT_REQUEST_ID="gaming-3h-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          printf '%s' "$ROOT_REQUEST_ID" > /tmp/request_id
+
+          for SHARD in 1 2; do
+            WORK="$(mktemp -d)"
+            cp kaggle/runner_gaming_3h.py "$WORK/runner.py"
+            REQUEST_ID="${ROOT_REQUEST_ID}-s${SHARD}"
+            KERNEL_NAME="peter-lofi-gaming-${GITHUB_RUN_ID}-s${SHARD}"
+
+            python - "$WORK/runner.py" "$REQUEST_ID" "$SHARD" <<'PY'
           import pathlib,re,sys
-          p=pathlib.Path(sys.argv[1]); request_id=sys.argv[2]
+          p=pathlib.Path(sys.argv[1]); request_id=sys.argv[2]; shard=int(sys.argv[3])
           text=p.read_text(encoding='utf-8')
           text=re.sub(r'REQUEST_ID = "[^"]*"', f'REQUEST_ID = "{request_id}"', text, count=1)
+          text=re.sub(r'SHARD_INDEX = \d+', f'SHARD_INDEX = {shard}', text, count=1)
           p.write_text(text, encoding='utf-8')
           PY
-          python - "$WORK" "$KERNEL_NAME" <<'PY'
+
+            python - "$WORK" "$KERNEL_NAME" "$SHARD" <<'PY'
           import json, os, pathlib, sys
-          p=pathlib.Path(sys.argv[1]); kernel=sys.argv[2]
+          p=pathlib.Path(sys.argv[1]); kernel=sys.argv[2]; shard=sys.argv[3]
           (p/'kernel-metadata.json').write_text(json.dumps({
             'id':f"{os.environ['KAGGLE_USERNAME']}/{kernel}",
-            'title':f"Peter Lofi Gaming 3h {os.environ['GITHUB_RUN_ID']}",
+            'title':f"Peter Lofi Gaming 3h {os.environ['GITHUB_RUN_ID']} shard {shard}",
             'code_file':'runner.py',
             'language':'python',
             'kernel_type':'script',
@@ -100,42 +107,72 @@ jobs:
             'kernel_sources':[]
           }, indent=2))
           PY
-          printf '%s' "$WORK" > /tmp/kernel_workdir
-          printf '%s' "$KERNEL_NAME" > /tmp/kernel_name
-          printf '%s' "$REQUEST_ID" > /tmp/request_id
 
-      - name: Generate 36 fresh 5-minute gaming tracks
+            printf '%s' "$WORK" > "/tmp/kernel_workdir_$SHARD"
+            printf '%s' "$KERNEL_NAME" > "/tmp/kernel_name_$SHARD"
+            printf '%s' "$REQUEST_ID" > "/tmp/request_id_$SHARD"
+          done
+      - name: Generate gaming audio in two parallel progress-visible shards
         run: |
           set -euo pipefail
-          WORK="$(cat /tmp/kernel_workdir)"
-          KERNEL_NAME="$(cat /tmp/kernel_name)"
-          REQUEST_ID="$(cat /tmp/request_id)"
 
-          kaggle kernels push -p "$WORK" --timeout 7200 --accelerator NvidiaTeslaT4
-          for i in $(seq 1 240); do
-            STATUS="$(kaggle kernels status "$KAGGLE_USERNAME/$KERNEL_NAME" 2>&1 || true)"
-            echo "$STATUS"
-            if echo "$STATUS" | grep -Eqi 'complete|completed'; then break; fi
-            if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then
-              kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true
-              exit 1
-            fi
-            if [ "$i" -eq 240 ]; then
-              kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true
-              echo 'Gaming generation timed out.'
+          for SHARD in 1 2; do
+            WORK="$(cat /tmp/kernel_workdir_$SHARD)"
+            echo "Submitting gaming shard $SHARD/2..."
+            kaggle kernels push -p "$WORK" --timeout 7200 --accelerator NvidiaTeslaT4
+          done
+
+          DONE_1=0
+          DONE_2=0
+          for i in $(seq 1 150); do
+            for SHARD in 1 2; do
+              eval "DONE=\${DONE_$SHARD}"
+              if [ "$DONE" -eq 1 ]; then continue; fi
+
+              KERNEL_NAME="$(cat /tmp/kernel_name_$SHARD)"
+              STATUS="$(kaggle kernels status "$KAGGLE_USERNAME/$KERNEL_NAME" 2>&1 || true)"
+              echo "[gaming shard $SHARD/2] $STATUS"
+
+              if [ $(( i % 3 )) -eq 0 ]; then
+                echo "----- live progress shard $SHARD/2 -----"
+                kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" 2>&1 | tail -n 80 || true
+                echo "----------------------------------------"
+              fi
+
+              if echo "$STATUS" | grep -Eqi 'complete|completed'; then
+                echo "Gaming shard $SHARD/2 completed."
+                eval "DONE_$SHARD=1"
+              elif echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then
+                echo "Gaming shard $SHARD/2 failed."
+                kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" 2>&1 | tail -n 250 || true
+                exit 1
+              fi
+            done
+
+            if [ "$DONE_1" -eq 1 ] && [ "$DONE_2" -eq 1 ]; then break; fi
+            if [ "$i" -eq 150 ]; then
+              echo 'Gaming generation timed out before both shards completed.'
               exit 1
             fi
             sleep 60
           done
 
           rm -rf generated && mkdir generated
-          kaggle kernels output "$KAGGLE_USERNAME/$KERNEL_NAME" -p generated
-          WAV_COUNT="$(find generated -type f -name '*.wav' | wc -l | tr -d ' ')"
-          test "$WAV_COUNT" -eq 36 || { echo "Expected 36 final WAVs; got $WAV_COUNT"; exit 1; }
-          MARKER="$(find generated -type f -name request_id.txt -print -quit)"
-          test -n "$MARKER"
-          test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID" || { echo 'Stale generation output rejected'; exit 1; }
+          for SHARD in 1 2; do
+            KERNEL_NAME="$(cat /tmp/kernel_name_$SHARD)"
+            REQUEST_ID="$(cat /tmp/request_id_$SHARD)"
+            DEST="generated/shard-$SHARD"
+            mkdir -p "$DEST"
+            kaggle kernels output "$KAGGLE_USERNAME/$KERNEL_NAME" -p "$DEST"
+            WAV_COUNT="$(find "$DEST" -type f -name '*.wav' | wc -l | tr -d ' ')"
+            test "$WAV_COUNT" -eq 18 || { echo "Expected 18 final WAVs in shard $SHARD; got $WAV_COUNT"; exit 1; }
+            MARKER="$(find "$DEST" -type f -name request_id.txt -print -quit)"
+            test -n "$MARKER"
+            test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID" || { echo "Stale output rejected for shard $SHARD"; exit 1; }
+          done
 
+          TOTAL_WAVS="$(find generated -type f -name '*.wav' | wc -l | tr -d ' ')"
+          test "$TOTAL_WAVS" -eq 36 || { echo "Expected 36 combined final WAVs; got $TOTAL_WAVS"; exit 1; }
       - name: Build 3-hour master and individual MP3 tracks
         run: |
           set -euo pipefail
