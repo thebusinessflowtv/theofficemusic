@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/peter-lofi-live-analytics.yml'
 
 permissions:
   contents: write
@@ -16,9 +19,7 @@ env:
   YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
   YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
   YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-  KICK_CLIENT_ID: ${{ secrets.KICK_CLIENT_ID }}
-  KICK_CLIENT_SECRET: ${{ secrets.KICK_CLIENT_SECRET }}
-  KICK_CHANNEL_SLUG: ${{ secrets.KICK_CHANNEL_SLUG }}
+  KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
 
 jobs:
   snapshot:
@@ -66,16 +67,15 @@ jobs:
               except Exception as e:
                   out['youtube']={'configured':True,'error':str(e),'sessions':[]}
 
-          kc=os.environ.get('KICK_CLIENT_ID',''); ks=os.environ.get('KICK_CLIENT_SECRET',''); slug=os.environ.get('KICK_CHANNEL_SLUG','')
-          if kc and ks and slug:
+          kt=os.environ.get('KICK_ACCESS_TOKEN','').strip()
+          if kt:
               try:
-                  tok=post_form('https://id.kick.com/oauth/token',{'grant_type':'client_credentials','client_id':kc,'client_secret':ks})['access_token']
-                  q=urllib.parse.urlencode({'slug':slug})
-                  payload=get_json('https://api.kick.com/public/v1/channels?'+q,tok)
-                  channel=(payload.get('data') or [None])[0] if isinstance(payload.get('data'),list) else payload.get('data')
-                  out['kick']={'configured':True,'channel_slug':slug,'channel':channel,'raw':payload}
+                  payload=get_json('https://api.kick.com/public/v1/channels',kt)
+                  data=payload.get('data') or []
+                  channel=data[0] if isinstance(data,list) and data else (data if isinstance(data,dict) else None)
+                  out['kick']={'configured':True,'channel_slug':(channel or {}).get('slug'),'channel':channel,'raw':payload}
               except Exception as e:
-                  out['kick']={'configured':True,'channel_slug':slug,'error':str(e),'channel':None}
+                  out['kick']={'configured':True,'error':str(e),'channel':None}
 
           pathlib.Path('control/live-analytics.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
           PY
