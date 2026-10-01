@@ -1,0 +1,88 @@
+name: YouTube Alternate Audio Probe V2
+
+on:
+  push:
+    paths:
+      - 'control/youtube-alt-probe-v2-queue/*.json'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Resolve source video
+        id: req
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" | grep -E '^control/youtube-alt-probe-v2-queue/[^/]+\.json$' | tail -1)"
+          VIDEO_ID="$(jq -r '.video_id' "$FILE")"
+          echo "video_id=$VIDEO_ID" >> "$GITHUB_OUTPUT"
+      - name: Probe Piped and Invidious resolvers
+        env:
+          VIDEO_ID: ${{ steps.req.outputs.video_id }}
+        run: |
+          set -u
+          FOUND=''
+          SOURCE=''
+          PIPED=(
+            'https://api.piped.private.coffee'
+            'https://pipedapi.ducks.party'
+            'https://pipedapi.nosebs.ru'
+            'https://pipedapi.leptons.xyz'
+            'https://api.piped.yt'
+            'https://pipedapi.drgns.space'
+            'https://pipedapi.owo.si'
+            'https://piped-api.codespace.cz'
+            'https://pipedapi.reallyaweso.me'
+            'https://pipedapi.darkness.services'
+            'https://pipedapi.orangenet.cc'
+          )
+          for BASE in "${PIPED[@]}"; do
+            echo "PIPED $BASE"
+            if curl --connect-timeout 8 --max-time 20 -fsSL "$BASE/streams/$VIDEO_ID" -o /tmp/r.json; then
+              COUNT="$(jq -r '.audioStreams | length // 0' /tmp/r.json 2>/dev/null || echo 0)"
+              MSG="$(jq -r '.message // .error // empty' /tmp/r.json 2>/dev/null | head -c 160)"
+              echo "  audioStreams=$COUNT message=$MSG"
+              URL="$(jq -r '[.audioStreams[]? | select(.url != null and .url != "")] | sort_by(.bitrate // 0) | last | .url // empty' /tmp/r.json 2>/dev/null)"
+              if [ -n "$URL" ]; then FOUND="$URL"; SOURCE="piped:$BASE"; break; fi
+            fi
+          done
+
+          if [ -z "$FOUND" ]; then
+            INVIDIOUS=(
+              'https://inv.nadeko.net'
+              'https://invidious.nerdvpn.de'
+              'https://yt.chocolatemoo53.com'
+              'https://invidious.tiekoetter.com'
+            )
+            for BASE in "${INVIDIOUS[@]}"; do
+              echo "INVIDIOUS $BASE"
+              if curl --connect-timeout 8 --max-time 20 -fsSL "$BASE/api/v1/videos/$VIDEO_ID" -o /tmp/r.json; then
+                COUNT="$(jq -r '.adaptiveFormats | length // 0' /tmp/r.json 2>/dev/null || echo 0)"
+                ERR="$(jq -r '.error // empty' /tmp/r.json 2>/dev/null | head -c 160)"
+                echo "  adaptiveFormats=$COUNT error=$ERR"
+                URL="$(jq -r '[.adaptiveFormats[]? | select((.type // "") | startswith("audio/")) | select(.url != null and .url != "")] | sort_by(.bitrate // 0) | last | .url // empty' /tmp/r.json 2>/dev/null)"
+                if [ -n "$URL" ]; then FOUND="$URL"; SOURCE="invidious:$BASE"; break; fi
+              fi
+            done
+          fi
+
+          if [ -z "$FOUND" ]; then echo '::error::No alternate audio stream resolved'; exit 1; fi
+          echo "Resolver succeeded: $SOURCE"
+          if curl --connect-timeout 15 --max-time 120 --retry 3 --retry-all-errors -fL -r 0-1048575 "$FOUND" -o /tmp/audio-sample.bin; then
+            test -s /tmp/audio-sample.bin || exit 1
+            echo "AUDIO_PROBE_BYTES=$(wc -c < /tmp/audio-sample.bin)"
+            echo 'Audio range probe succeeded.'
+          else
+            echo '::error::Resolved stream URL could not be downloaded from runner'
+            exit 1
+          fi
