@@ -55,7 +55,7 @@ jobs:
               continue
             fi
 
-            jq '{ref:"main",inputs:{session_id:(.session_id|tostring),track_urls_b64:(.track_urls_b64|tostring),duration_minutes:(.duration_minutes|tostring),title:(.title|tostring),description:(.description//""|tostring),thumbnail_url:(.thumbnail_url//""|tostring),loop_url:(.loop_url//""|tostring),resume_broadcast_id:"",resume_stream_id:"",segment_index:"1",privacy_status:(.privacy_status//"public"|tostring),segment_seconds_override:(.segment_seconds_override//"0"|tostring),prewarm_lead_seconds:(.prewarm_lead_seconds//"600"|tostring),max_segments:(.max_segments//"0"|tostring)}}' "$FILE" > /tmp/dispatch.json
+            jq '{ref:"main",inputs:{session_id:(.session_id|tostring),track_urls_b64:(.track_urls_b64|tostring),duration_minutes:(.duration_minutes|tostring),title:(.title|tostring),description:(.description//""|tostring),thumbnail_url:(.thumbnail_url//""|tostring),loop_url:(.loop_url//""|tostring),resume_broadcast_id:(.resume_broadcast_id//""|tostring),resume_stream_id:(.resume_stream_id//""|tostring),segment_index:(.segment_index//"1"|tostring),privacy_status:(.privacy_status//"public"|tostring),segment_seconds_override:(.segment_seconds_override//"0"|tostring),prewarm_lead_seconds:(.prewarm_lead_seconds//"600"|tostring),max_segments:(.max_segments//"0"|tostring)}}' "$FILE" > /tmp/dispatch.json
 
             OK=0
             for N in 1 2 3 4 5; do
