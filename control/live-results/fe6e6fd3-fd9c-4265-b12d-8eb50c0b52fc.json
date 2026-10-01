@@ -8,7 +8,7 @@
   "youtube_url": "https://www.youtube.com/watch?v=PNdwQEFaIrA",
   "session_started_at": "2026-10-01T13:21:24.028829+00:00",
   "rtmp_handoff_token": "gAAAAABqvl5WStCbRqoGWI943Qep2dfWjJKzSwrUAHfgZii4-DrFF3eQugU2bjLbtxbit1gw45gAhFznkgq11w9xrjuRGcN3qLp5jA3fuf5fJk_KBsSyFYZhjmEfP-7BaIKAoBY6BnEGYNsK9XHDVmz7cpQfmVn15Q==",
-  "rtmp_resume_mode": "encrypted_handoff_token_ready",
+  "rtmp_resume_mode": "encrypted_handoff_token",
   "segment_index": 2,
   "encoder_resolution": "1920x1080",
   "encoder_fps": 60,
@@ -16,5 +16,8 @@
   "current_segment_started_at": "2026-10-01T13:21:48.457279+00:00",
   "last_verified_lifecycle": "live",
   "youtube_api_quota_limited": false,
-  "live_at": "2026-10-01T13:21:48.457279+00:00"
+  "live_at": "2026-10-01T13:21:48.457279+00:00",
+  "prewarmed_segment_index": 3,
+  "prewarmed_run_id": 36871239044,
+  "prewarmed_at": "2026-10-01T13:47:40.383225+00:00"
 }
