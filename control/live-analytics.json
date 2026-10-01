@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T20:44:33.108711+00:00",
+  "generated_at": "2026-10-01T20:59:03.886939+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -10,7 +10,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "XSsKlVN1hQcdCYBnNU0Lbi9r8Rw",
+          "etag": "sHumcJYfTAIomh-VlnfMllM1izQ",
           "id": "AEvkXXl1rtg",
           "snippet": {
             "publishedAt": "2026-10-01T20:13:30Z",
@@ -85,7 +85,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "1",
+            "viewCount": "2",
             "likeCount": "0",
             "dislikeCount": "0",
             "favoriteCount": "0",
@@ -195,7 +195,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "klclvRaxMA6pxqFBd0bRFCDM-wE",
+          "etag": "FkHwOXXCLGezflERKw6h2Ux2SoE",
           "id": "PNdwQEFaIrA",
           "snippet": {
             "publishedAt": "2026-10-01T20:39:32Z",
