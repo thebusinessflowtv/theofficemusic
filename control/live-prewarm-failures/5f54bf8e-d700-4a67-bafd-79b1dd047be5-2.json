@@ -1,0 +1,9 @@
+{
+  "session_id": "5f54bf8e-d700-4a67-bafd-79b1dd047be5",
+  "segment_index": 2,
+  "run_id": 36827925731,
+  "run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36827925731",
+  "error": "EOF occurred in violation of protocol (_ssl.c:2417)",
+  "failed_at": "2026-10-01T07:11:35.232074+00:00",
+  "took_over": true
+}
