@@ -6,11 +6,14 @@
   "description": "Isolated engineering test for prewarmed runner handoff, audio position continuity and visual loop continuity. Unlisted; not part of the public Peter Lofi programming.",
   "thumbnail_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/98c0bcf3-b1b4-4b19-9200-a210bc5291a2/9c976ea59f23437e8ec8e0cb31f07e344d7126bff4814ff4ab70a2921a73f1eb",
   "loop_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/998ca654-bb42-4c35-99c6-04ac2ebad84c/b6bf0c5819a04630b36f61314ed6de7566e4b48b72df41c59093a5bd7c0f9ab0",
+  "resume_broadcast_id": "sQSwPLlCKt4",
+  "resume_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790832478102292",
   "segment_index": "1",
   "privacy_status": "unlisted",
   "segment_seconds_override": "180",
   "prewarm_lead_seconds": "90",
   "max_segments": "2",
   "requested_at": "2026-10-01T05:20:00Z",
+  "retry_requested_at": "2026-10-01T05:31:00Z",
   "test_mode": true
 }
