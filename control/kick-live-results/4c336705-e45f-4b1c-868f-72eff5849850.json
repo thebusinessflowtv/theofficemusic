@@ -1,0 +1,14 @@
+{
+  "platform": "kick",
+  "status": "starting",
+  "title": "Peter Lofi Radio \ud83c\udfa7 Lofi Beats for Work, Study, Focus & Relax \ud83d\udd34 Live on Peter Lofi",
+  "description": "",
+  "session_id": "4c336705-e45f-4b1c-868f-72eff5849850",
+  "segment_index": 1,
+  "github_run_id": 36807793499,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36807793499",
+  "encoder_resolution": "1920x1080",
+  "encoder_fps": 60,
+  "encoder_bitrate_kbps": 8000,
+  "started_at": "2026-10-01T02:52:28.968778+00:00"
+}
