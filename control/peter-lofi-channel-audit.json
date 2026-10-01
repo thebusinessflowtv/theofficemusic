@@ -1,8 +1,8 @@
 {
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-01T19:19:56.114664+00:00",
-  "public_video_count": 6,
+  "generated_at": "2026-10-01T20:19:43.054585+00:00",
+  "public_video_count": 7,
   "active_managed_playlists": {
     "all_music": {
       "id": "PLcRTCZSXY21w",
@@ -39,6 +39,22 @@
   },
   "videos": [
     {
+      "video_id": "AEvkXXl1rtg",
+      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+      "related_playlist_key": "rainy_cozy",
+      "related_playlist_title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
+      "duration_seconds": 0,
+      "published_at": "2026-10-01T20:13:30Z"
+    },
+    {
+      "video_id": "PNdwQEFaIrA",
+      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+      "related_playlist_key": "lofi_mixes",
+      "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
+      "duration_seconds": 56787,
+      "published_at": "2026-10-01T04:22:36Z"
+    },
+    {
       "video_id": "YTT9UM1M1SY",
       "title": "1 Hour Lofi Lounge Mix 📖 Beats to Study, Focus & Work To | Peter Lofi 🎧",
       "related_playlist_key": "lofi_mixes",
@@ -53,14 +69,6 @@
       "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
       "duration_seconds": 3601,
       "published_at": "2026-10-01T04:28:50Z"
-    },
-    {
-      "video_id": "PNdwQEFaIrA",
-      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-      "related_playlist_key": "rainy_cozy",
-      "related_playlist_title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
-      "duration_seconds": 0,
-      "published_at": "2026-10-01T04:22:36Z"
     },
     {
       "video_id": "teQ-pW_20uk",
