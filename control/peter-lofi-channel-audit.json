@@ -1,7 +1,7 @@
 {
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-01T07:21:51.748390+00:00",
+  "generated_at": "2026-10-01T08:22:32.748158+00:00",
   "public_video_count": 6,
   "active_managed_playlists": {
     "all_music": {
@@ -39,14 +39,6 @@
   },
   "videos": [
     {
-      "video_id": "PNdwQEFaIrA",
-      "title": "Lofi Rainy Late Night Office 🌧️ | Lofi for Deep Focus, Work & Study 🔴 LIVE | Peter Lofi 🎧",
-      "related_playlist_key": "rainy_cozy",
-      "related_playlist_title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
-      "duration_seconds": 0,
-      "published_at": "2026-10-01T04:22:36Z"
-    },
-    {
       "video_id": "YTT9UM1M1SY",
       "title": "Lofi 1 Hour Lounge Mix | Beats to Work, Focus & Study To | Peter Lofi 🎧",
       "related_playlist_key": "lofi_mixes",
@@ -61,6 +53,14 @@
       "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
       "duration_seconds": 3601,
       "published_at": "2026-10-01T04:28:50Z"
+    },
+    {
+      "video_id": "PNdwQEFaIrA",
+      "title": "Lofi Rainy Late Night Office 🌧️ | Lofi for Deep Focus, Work & Study 🔴 LIVE | Peter Lofi 🎧",
+      "related_playlist_key": "rainy_cozy",
+      "related_playlist_title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
+      "duration_seconds": 0,
+      "published_at": "2026-10-01T04:22:36Z"
     },
     {
       "video_id": "teQ-pW_20uk",
