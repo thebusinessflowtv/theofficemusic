@@ -1,0 +1,233 @@
+name: Peter Lofi — Generate 3h Gaming Audio
+
+on:
+  push:
+    paths:
+      - '.github/workflows/generate-gaming-3h-audio.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: peter-lofi-gaming-3h-audio
+  cancel-in-progress: false
+
+env:
+  SECRET_DATASET_SLUG: the-office-music-secrets
+  RESULT_PATH: control/series-results/11-gaming-3h.json
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      GH_TOKEN: ${{ github.token }}
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip kaggle
+          test -n "$KAGGLE_USERNAME"
+          test -n "$KAGGLE_API_TOKEN"
+          test -n "$HF_TOKEN"
+
+      - name: Prepare private Hugging Face credential
+        run: |
+          set -euo pipefail
+          SECRET_DIR="$(mktemp -d)"
+          trap 'rm -rf "$SECRET_DIR"' EXIT
+          printf '%s' "$HF_TOKEN" > "$SECRET_DIR/hf_token.txt"
+          chmod 600 "$SECRET_DIR/hf_token.txt"
+          python - "$SECRET_DIR" <<'PY'
+          import json, os, pathlib, sys
+          p=pathlib.Path(sys.argv[1])
+          (p/'dataset-metadata.json').write_text(json.dumps({
+            'title':'The Office Music Secrets',
+            'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets",
+            'licenses':[{'name':'other'}],
+            'description':'Private CI credential input for Peter Lofi generation.'
+          }, indent=2))
+          PY
+          DATASET="$KAGGLE_USERNAME/$SECRET_DATASET_SLUG"
+          if kaggle datasets status "$DATASET" >/dev/null 2>&1; then
+            kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token for gaming 3h generation" -q
+          else
+            kaggle datasets create -p "$SECRET_DIR" --private -q
+          fi
+
+      - name: Prepare Kaggle gaming kernel
+        run: |
+          set -euo pipefail
+          WORK="$(mktemp -d)"
+          cp kaggle/runner_gaming_3h.py "$WORK/runner.py"
+          REQUEST_ID="gaming-3h-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          KERNEL_NAME="peter-lofi-gaming-3h-${GITHUB_RUN_ID}"
+          python - "$WORK/runner.py" "$REQUEST_ID" <<'PY'
+          import pathlib,re,sys
+          p=pathlib.Path(sys.argv[1]); request_id=sys.argv[2]
+          text=p.read_text(encoding='utf-8')
+          text=re.sub(r'REQUEST_ID = "[^"]*"', f'REQUEST_ID = "{request_id}"', text, count=1)
+          p.write_text(text, encoding='utf-8')
+          PY
+          python - "$WORK" "$KERNEL_NAME" <<'PY'
+          import json, os, pathlib, sys
+          p=pathlib.Path(sys.argv[1]); kernel=sys.argv[2]
+          (p/'kernel-metadata.json').write_text(json.dumps({
+            'id':f"{os.environ['KAGGLE_USERNAME']}/{kernel}",
+            'title':f"Peter Lofi Gaming 3h {os.environ['GITHUB_RUN_ID']}",
+            'code_file':'runner.py',
+            'language':'python',
+            'kernel_type':'script',
+            'is_private':True,
+            'enable_gpu':True,
+            'machine_shape':'NvidiaTeslaT4',
+            'enable_internet':True,
+            'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
+            'competition_sources':[],
+            'kernel_sources':[]
+          }, indent=2))
+          PY
+          printf '%s' "$WORK" > /tmp/kernel_workdir
+          printf '%s' "$KERNEL_NAME" > /tmp/kernel_name
+          printf '%s' "$REQUEST_ID" > /tmp/request_id
+
+      - name: Generate 36 fresh 5-minute gaming tracks
+        run: |
+          set -euo pipefail
+          WORK="$(cat /tmp/kernel_workdir)"
+          KERNEL_NAME="$(cat /tmp/kernel_name)"
+          REQUEST_ID="$(cat /tmp/request_id)"
+
+          kaggle kernels push -p "$WORK" --timeout 7200 --accelerator NvidiaTeslaT4
+          for i in $(seq 1 240); do
+            STATUS="$(kaggle kernels status "$KAGGLE_USERNAME/$KERNEL_NAME" 2>&1 || true)"
+            echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi 'complete|completed'; then break; fi
+            if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then
+              kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true
+              exit 1
+            fi
+            if [ "$i" -eq 240 ]; then
+              kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true
+              echo 'Gaming generation timed out.'
+              exit 1
+            fi
+            sleep 60
+          done
+
+          rm -rf generated && mkdir generated
+          kaggle kernels output "$KAGGLE_USERNAME/$KERNEL_NAME" -p generated
+          WAV_COUNT="$(find generated -type f -name '*.wav' | wc -l | tr -d ' ')"
+          test "$WAV_COUNT" -eq 36 || { echo "Expected 36 final WAVs; got $WAV_COUNT"; exit 1; }
+          MARKER="$(find generated -type f -name request_id.txt -print -quit)"
+          test -n "$MARKER"
+          test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID" || { echo 'Stale generation output rejected'; exit 1; }
+
+      - name: Build 3-hour master and individual MP3 tracks
+        run: |
+          set -euo pipefail
+          mkdir -p build/tracks
+          python - <<'PY'
+          import pathlib,re,subprocess
+          wavs=sorted(pathlib.Path('generated').rglob('*.wav'))
+          if len(wavs)!=36: raise SystemExit(f'Expected 36 WAVs, got {len(wavs)}')
+          with open('build/concat.txt','w',encoding='utf-8') as f:
+              for p in wavs:
+                  f.write("file '"+str(p.resolve()).replace("'","'\\''")+"'\n")
+          for i,p in enumerate(wavs,1):
+              stem=re.sub(r'[^a-zA-Z0-9._-]+','-',p.stem).strip('-').lower()
+              out=pathlib.Path('build/tracks')/f'{i:02d}-{stem}.mp3'
+              subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(p),'-t','300','-vn','-c:a','libmp3lame','-b:a','320k','-ar','48000','-ac','2',str(out)],check=True)
+          PY
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -f concat -safe 0 -i build/concat.txt \
+            -t 10800 -vn -c:a libmp3lame -b:a 320k -ar 48000 -ac 2 \
+            build/peter-lofi-gaming-3h.mp3
+          test -s build/peter-lofi-gaming-3h.mp3
+          DURATION="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 build/peter-lofi-gaming-3h.mp3)"
+          python - "$DURATION" <<'PY'
+          import sys
+          d=float(sys.argv[1])
+          if not 10798 <= d <= 10802: raise SystemExit(f'Unexpected master duration: {d}')
+          print(f'Master duration: {d:.3f}s')
+          PY
+          test "$(find build/tracks -type f -name '*.mp3' | wc -l | tr -d ' ')" -eq 36
+
+      - name: Publish audio-only GitHub Release
+        id: release
+        run: |
+          set -euo pipefail
+          TAG="peter-lofi-gaming-3h-${GITHUB_RUN_ID}"
+          gh release create "$TAG" \
+            build/peter-lofi-gaming-3h.mp3 build/tracks/*.mp3 \
+            --repo "$GITHUB_REPOSITORY" \
+            --target main \
+            --title "Peter Lofi — Gaming Focus · 3 Hour Audio" \
+            --notes "Fresh audio-only gaming session: 36 original 5-minute tracks, 3-hour master, no YouTube upload and no video render."
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "release_url=https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG" >> "$GITHUB_OUTPUT"
+          echo "master_url=https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/peter-lofi-gaming-3h.mp3" >> "$GITHUB_OUTPUT"
+
+      - name: Register in MediaForge catalog source
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_URL: ${{ steps.release.outputs.release_url }}
+          MASTER_URL: ${{ steps.release.outputs.master_url }}
+        run: |
+          set -euo pipefail
+          REQUEST_ID="$(cat /tmp/request_id)"
+          mkdir -p control/series-results
+          python - <<'PY'
+          import datetime as dt, hashlib, json, os, pathlib, subprocess
+          tag=os.environ['TAG']; repo=os.environ['GITHUB_REPOSITORY']; request_id=pathlib.Path('/tmp/request_id').read_text().strip()
+          tracks=[]
+          for pos,p in enumerate(sorted(pathlib.Path('build/tracks').glob('*.mp3')),1):
+              duration=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',str(p)],text=True).strip())
+              sha=hashlib.sha256(p.read_bytes()).hexdigest()
+              tracks.append({
+                  'title':p.stem,
+                  'filename':p.name,
+                  'duration_seconds':round(duration,3),
+                  'position':pos,
+                  'start_seconds':(pos-1)*300,
+                  'sha256':sha,
+                  'download_url':f'https://github.com/{repo}/releases/download/{tag}/{p.name}'
+              })
+          data={
+              'status':'completed','progress':100,'phase':'Concluída e disponível para download',
+              'index':11,'key':'gaming-3h','name':'Gaming Focus','title':'3 Hours Gaming Lofi 🎮 Beats to Play, Focus & Chill | Peter Lofi',
+              'playlist':'Gaming Focus 🎮 | Peter Lofi',
+              'description':'Three hours of original instrumental Peter Lofi music designed for gaming sessions, online matches, exploration, grinding, strategy and long play sessions. Futuristic synth textures, steady electronic grooves and focused lofi energy without vocals or distracting drops.',
+              'request_id':request_id,'duration_minutes':180,'generation_mode':'stable-audio-3-small-music',
+              'release_tag':tag,'release_url':os.environ['RELEASE_URL'],'master_audio_url':os.environ['MASTER_URL'],
+              'master_filename':'peter-lofi-gaming-3h.mp3','tracks':tracks,
+              'github_run_id':int(os.environ['GITHUB_RUN_ID']),
+              'github_run_url':f"https://github.com/{repo}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+              'completed_at':dt.datetime.now(dt.timezone.utc).isoformat()
+          }
+          pathlib.Path(os.environ['RESULT_PATH']).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$RESULT_PATH"
+          git commit -m "mediaforge: register 3h gaming audio" || true
+          for i in $(seq 1 10); do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort || true
+            sleep "$i"
+          done
+          echo 'Could not push MediaForge result metadata.'
+          exit 1
