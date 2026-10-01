@@ -18,5 +18,8 @@
   "youtube_api_quota_limited": false,
   "live_at": "2026-10-01T13:21:48.457279+00:00",
   "encoder_connected": true,
-  "youtube_api_verification_uncertain": false
+  "youtube_api_verification_uncertain": false,
+  "prewarmed_segment_index": 3,
+  "prewarmed_run_id": 36871368687,
+  "prewarmed_at": "2026-10-01T18:49:36.128157+00:00"
 }
