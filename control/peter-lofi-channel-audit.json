@@ -1,7 +1,7 @@
 {
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-01T22:17:36.060547+00:00",
+  "generated_at": "2026-10-01T23:16:05.470741+00:00",
   "public_video_count": 7,
   "active_managed_playlists": {
     "all_music": {
@@ -39,20 +39,20 @@
   },
   "videos": [
     {
-      "video_id": "AEvkXXl1rtg",
-      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-      "related_playlist_key": "rainy_cozy",
-      "related_playlist_title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
-      "duration_seconds": 0,
-      "published_at": "2026-10-01T20:13:30Z"
-    },
-    {
       "video_id": "PNdwQEFaIrA",
       "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
       "related_playlist_key": "lofi_mixes",
       "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
       "duration_seconds": 37119,
       "published_at": "2026-10-01T20:39:32Z"
+    },
+    {
+      "video_id": "AEvkXXl1rtg",
+      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+      "related_playlist_key": "rainy_cozy",
+      "related_playlist_title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
+      "duration_seconds": 0,
+      "published_at": "2026-10-01T20:13:30Z"
     },
     {
       "video_id": "YTT9UM1M1SY",
