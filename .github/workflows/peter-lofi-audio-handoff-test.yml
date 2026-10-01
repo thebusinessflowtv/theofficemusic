@@ -1,0 +1,51 @@
+name: Peter Lofi — Audio Handoff Dry Test
+
+on:
+  push:
+    paths:
+      - 'control/audio-handoff-tests/*.json'
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install FFmpeg
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y >/dev/null
+          sudo apt-get install -y ffmpeg >/dev/null
+
+      - name: Validate resumed audio offset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff-tree --no-commit-id --name-only -r "$AFTER_SHA" | grep -E '^control/audio-handoff-tests/[^/]+\.json$' | tail -1)"
+          [ -n "$FILE" ]
+          SESSION_ID="$(jq -r '.session_id' "$FILE")"
+          FALLBACK="$(jq -r '.track_urls_b64' "$FILE")"
+          EXPECTED="$(jq -r '.expected_offset' "$FILE")"
+
+          set +e
+          timeout 8s python scripts/mediaforge_live_audio_feeder.py \
+            --session-id "$SESSION_ID" \
+            --fallback-b64 "$FALLBACK" \
+            --segment-index 2 \
+            >/dev/null 2>feeder.log
+          RC=$?
+          set -e
+
+          cat feeder.log
+          [ "$RC" -eq 0 ] || [ "$RC" -eq 124 ]
+          grep -q "Resuming segment 2 from handoff" feeder.log
+          grep -q "@ ${EXPECTED}s" feeder.log
+          echo "Audio handoff resume validated at ${EXPECTED}s"
