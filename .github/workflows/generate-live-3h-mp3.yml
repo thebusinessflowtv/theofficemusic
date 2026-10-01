@@ -1,0 +1,273 @@
+name: Peter Lofi — Generate +3h MP3 for Active Lives
+
+on:
+  push:
+    paths:
+      - '.github/workflows/generate-live-3h-mp3.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: peter-lofi-live-3h-mp3-generation
+  cancel-in-progress: false
+
+env:
+  SECRET_DATASET_SLUG: the-office-music-secrets
+
+jobs:
+  generate:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - mix_key: rainy-youtube
+            series_key: rainy-office
+            session_id: fe6e6fd3-fd9c-4265-b12d-8eb50c0b52fc
+            platform: youtube
+            title: Rainy Late Night — 3 Hour MP3 Expansion
+            filename: peter-lofi-rainy-late-night-live-3h.mp3
+            style: rainy late-night lofi for study, work, relax and deep focus
+          - mix_key: deep-house-youtube
+            series_key: luxury-office
+            session_id: 5f54bf8e-d700-4a67-bafd-79b1dd047be5
+            platform: youtube
+            title: Deep House Focus — YouTube 3 Hour MP3 Expansion
+            filename: peter-lofi-deep-house-focus-youtube-3h.mp3
+            style: premium deep house and lounge for work, study and focus
+          - mix_key: deep-house-kick
+            series_key: luxury-office
+            session_id: 4c336705-e45f-4b1c-868f-72eff5849850
+            platform: kick
+            title: Deep House Focus — Kick 3 Hour MP3 Expansion
+            filename: peter-lofi-deep-house-focus-kick-3h.mp3
+            style: premium deep house and lounge for work, study and focus
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      GH_TOKEN: ${{ github.token }}
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      MIX_KEY: ${{ matrix.mix_key }}
+      SERIES_KEY: ${{ matrix.series_key }}
+      SESSION_ID: ${{ matrix.session_id }}
+      PLATFORM: ${{ matrix.platform }}
+      MIX_TITLE: ${{ matrix.title }}
+      MP3_FILENAME: ${{ matrix.filename }}
+      MIX_STYLE: ${{ matrix.style }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install generation runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          python -m pip install --upgrade pip kaggle
+          test -n "$KAGGLE_USERNAME"
+          test -n "$KAGGLE_API_TOKEN"
+          test -n "$HF_TOKEN"
+
+      - name: Prepare private generation credential
+        run: |
+          set -euo pipefail
+          SECRET_DIR="$(mktemp -d)"
+          trap 'rm -rf "$SECRET_DIR"' EXIT
+          printf '%s' "$HF_TOKEN" > "$SECRET_DIR/hf_token.txt"
+          chmod 600 "$SECRET_DIR/hf_token.txt"
+          python - "$SECRET_DIR" <<'PY'
+          import json, os, pathlib, sys
+          p=pathlib.Path(sys.argv[1])
+          (p/'dataset-metadata.json').write_text(json.dumps({
+            'title':'The Office Music Secrets',
+            'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets",
+            'licenses':[{'name':'other'}],
+            'description':'Private CI credential input for Peter Lofi music generation.'
+          },indent=2))
+          PY
+          DATASET="$KAGGLE_USERNAME/$SECRET_DATASET_SLUG"
+          if kaggle datasets status "$DATASET" >/dev/null 2>&1; then
+            kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token for 3h live generation" -q
+          else
+            kaggle datasets create -p "$SECRET_DIR" --private -q
+          fi
+
+      - name: Prepare 3-hour genre-specific Kaggle kernel
+        run: |
+          set -euo pipefail
+          WORK="$(mktemp -d)"
+          cp kaggle/runner.py "$WORK/runner.py"
+          export REQUEST_ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${MIX_KEY}"
+          export KERNEL_NAME="peter-lofi-live-${MIX_KEY}-${GITHUB_RUN_ID}"
+          python - "$WORK/runner.py" <<'PY'
+          import os,pathlib,re,sys
+          p=pathlib.Path(sys.argv[1]); text=p.read_text(encoding='utf-8')
+          text=re.sub(r'TRACK_COUNT = \d+', 'TRACK_COUNT = 30', text)
+          text=re.sub(r'TRACK_DURATION_SECONDS = \d+', 'TRACK_DURATION_SECONDS = 360', text)
+          text=re.sub(r'REQUEST_ID = "[^"]*"', f'REQUEST_ID = "{os.environ["REQUEST_ID"]}"', text, count=1)
+          text=re.sub(r'SERIES_KEY = "[^"]*"', f'SERIES_KEY = "{os.environ["SERIES_KEY"]}"', text, count=1)
+          text=re.sub(r'BATCH_PREFIX = "[^"]*"', f'BATCH_PREFIX = "peter-lofi-live-{os.environ["MIX_KEY"]}"', text, count=1)
+          p.write_text(text,encoding='utf-8')
+          PY
+          python - "$WORK" <<'PY'
+          import json,os,pathlib,sys
+          p=pathlib.Path(sys.argv[1])
+          (p/'kernel-metadata.json').write_text(json.dumps({
+            'id':f"{os.environ['KAGGLE_USERNAME']}/{os.environ['KERNEL_NAME']}",
+            'title':f"Peter Lofi Live {os.environ['MIX_KEY']} {os.environ['GITHUB_RUN_ID']}",
+            'code_file':'runner.py','language':'python','kernel_type':'script','is_private':True,
+            'enable_gpu':True,'machine_shape':'NvidiaL4','enable_internet':True,
+            'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
+            'competition_sources':[],'kernel_sources':[]
+          },indent=2))
+          PY
+          printf '%s' "$WORK" > /tmp/kernel_workdir
+          printf '%s' "$KERNEL_NAME" > /tmp/kernel_name
+          printf '%s' "$REQUEST_ID" > /tmp/request_id
+
+      - name: Generate 30 x 6-minute fresh tracks
+        run: |
+          set -euo pipefail
+          WORK="$(cat /tmp/kernel_workdir)"
+          KERNEL_NAME="$(cat /tmp/kernel_name)"
+          REQUEST_ID="$(cat /tmp/request_id)"
+          kaggle kernels push -p "$WORK" --timeout 7200 --accelerator NvidiaL4
+          COMPLETE=0
+          for i in $(seq 1 150); do
+            STATUS="$(kaggle kernels status "$KAGGLE_USERNAME/$KERNEL_NAME" 2>&1 || true)"
+            echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi 'complete|completed'; then COMPLETE=1; break; fi
+            if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then
+              kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true
+              exit 1
+            fi
+            sleep 60
+          done
+          test "$COMPLETE" = "1" || { kaggle kernels logs "$KAGGLE_USERNAME/$KERNEL_NAME" || true; exit 1; }
+          rm -rf generated && mkdir generated
+          kaggle kernels output "$KAGGLE_USERNAME/$KERNEL_NAME" -p generated
+          WAV_COUNT="$(find generated -type f -name '*.wav' | wc -l | tr -d ' ')"
+          test "$WAV_COUNT" -eq 30 || { echo "Expected 30 fresh WAVs; got $WAV_COUNT"; exit 1; }
+          MARKER="$(find generated -type f -name request_id.txt -print -quit)"
+          test -n "$MARKER"
+          test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID" || { echo 'Stale generation output rejected'; exit 1; }
+
+      - name: Build exactly 3 hours — MP3 only
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          python - <<'PY'
+          import pathlib
+          files=sorted(pathlib.Path('generated').rglob('*.wav'))
+          if len(files)!=30: raise SystemExit(f'Expected 30 WAV files, got {len(files)}')
+          with open('build/concat.txt','w',encoding='utf-8') as f:
+            for p in files:
+              f.write("file '"+str(p.resolve()).replace("'","'\\''")+"'\n")
+          PY
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -f concat -safe 0 -i build/concat.txt \
+            -t 10800 -vn -c:a libmp3lame -b:a 320k -ar 48000 -ac 2 \
+            "build/$MP3_FILENAME"
+          test -s "build/$MP3_FILENAME"
+          DURATION="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "build/$MP3_FILENAME")"
+          python - "$DURATION" <<'PY'
+          import sys
+          d=float(sys.argv[1])
+          if not 10798 <= d <= 10802: raise SystemExit(f'Unexpected MP3 duration: {d}')
+          print(f'Final MP3 duration: {d:.3f}s')
+          PY
+
+      - name: Publish MP3 as GitHub Release asset
+        id: release
+        run: |
+          set -euo pipefail
+          TAG="peter-lofi-${MIX_KEY}-3h-${GITHUB_RUN_ID}"
+          gh release create "$TAG" "build/$MP3_FILENAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target main \
+            --title "$MIX_TITLE" \
+            --notes "Fresh 3-hour MP3 generated for the active Peter Lofi ${PLATFORM} live. Genre: ${MIX_STYLE}. MP3 only; no video asset."
+          URL="https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/$MP3_FILENAME"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Published: $URL"
+
+      - name: Add new 3-hour MP3 to active live playlist
+        env:
+          ASSET_URL: ${{ steps.release.outputs.url }}
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,datetime as dt,hashlib,json,os,time,urllib.error,urllib.request
+          repo=os.environ['GITHUB_REPOSITORY']; token=os.environ['GH_TOKEN']; sid=os.environ['SESSION_ID']
+          url=os.environ['ASSET_URL']; platform=os.environ['PLATFORM']; title=os.environ['MIX_TITLE']; style=os.environ['MIX_STYLE']
+          path=f'control/live-playlists/{sid}.json'; api=f'https://api.github.com/repos/{repo}/contents/{path}'
+          headers={'Authorization':f'Bearer {token}','Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'Peter-Lofi-3h-MP3','Content-Type':'application/json'}
+          for attempt in range(1,9):
+            req=urllib.request.Request(api,headers=headers)
+            with urllib.request.urlopen(req,timeout=30) as r: obj=json.load(r)
+            data=json.loads(base64.b64decode((obj.get('content') or '').replace('\n','')).decode())
+            tracks=data.setdefault('tracks',[])
+            if not any(t.get('url')==url for t in tracks if isinstance(t,dict)):
+              tracks.append({
+                'id':hashlib.md5(url.encode()).hexdigest(),
+                'title':title,
+                'url':url,
+                'duration_seconds':10800,
+                'collection_name':'Peter Lofi · Fresh 3 Hour MP3',
+                'style':style,
+                'format':'mp3',
+                'generated_fresh':True
+              })
+            data['updated_at']=dt.datetime.now(dt.timezone.utc).isoformat().replace('+00:00','Z')
+            body={'message':f'peter-lofi: add fresh 3h MP3 to {platform} live {sid}','branch':'main','sha':obj['sha'],
+                  'content':base64.b64encode((json.dumps(data,ensure_ascii=False,indent=2)+'\n').encode()).decode()}
+            req=urllib.request.Request(api,data=json.dumps(body).encode(),headers=headers,method='PUT')
+            try:
+              with urllib.request.urlopen(req,timeout=30): pass
+              print(f'Added 3h MP3 to live playlist {sid}')
+              break
+            except urllib.error.HTTPError as exc:
+              if exc.code==409 and attempt<8:
+                time.sleep(attempt); continue
+              raise
+          else: raise SystemExit('Could not update live playlist after retries')
+          PY
+
+      - name: Record generation result
+        env:
+          ASSET_URL: ${{ steps.release.outputs.url }}
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          mkdir -p control/live-music-generation
+          python - <<'PY'
+          import json,os,pathlib,datetime as dt
+          p=pathlib.Path('control/live-music-generation')/f"{os.environ['MIX_KEY']}.json"
+          p.write_text(json.dumps({
+            'status':'completed','mix_key':os.environ['MIX_KEY'],'series_key':os.environ['SERIES_KEY'],
+            'session_id':os.environ['SESSION_ID'],'platform':os.environ['PLATFORM'],
+            'duration_seconds':10800,'format':'mp3','bitrate_kbps':320,
+            'asset_url':os.environ['ASSET_URL'],'release_tag':os.environ['TAG'],
+            'github_run_id':int(os.environ['GITHUB_RUN_ID']),
+            'completed_at':dt.datetime.now(dt.timezone.utc).isoformat()
+          },ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/live-music-generation/${MIX_KEY}.json
+          git commit -m "music: completed fresh 3h MP3 ${MIX_KEY}" || true
+          for i in $(seq 1 8); do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort || true
+            sleep "$i"
+          done
+          echo '::warning::Result metadata push failed; MP3 release and live playlist update already succeeded.'
