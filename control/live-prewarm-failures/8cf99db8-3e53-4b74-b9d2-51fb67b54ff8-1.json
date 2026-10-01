@@ -1,0 +1,9 @@
+{
+  "session_id": "8cf99db8-3e53-4b74-b9d2-51fb67b54ff8",
+  "segment_index": 1,
+  "run_id": 36919476188,
+  "run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36919476188",
+  "error": "Encoder stopped unexpectedly:\n[aist#1:0/pcm_s16le @ 0x55fab8060b80] Guessed Channel Layout: stereo\n[in#1/s16le @ 0x55fab808f800] Thread message queue blocking; consider raising the thread_queue_size option (current value: 8192)\n[vost#0:0/libx264 @ 0x55fab80786c0] Error submitting a packet to the muxer: Broken pipe\n[out#0/flv @ 0x55fab7ffab00] Error muxing a packet\n[flv @ 0x55fab8168000] Failed to update header with correct duration.\n[flv @ 0x55fab8168000] Failed to update header with correct filesize.\n[out#0/flv @ 0x55fab7ffab00] Error writing trailer: Broken pipe\n[out#0/flv @ 0x55fab7ffab00] Error closing file: Broken pipe",
+  "failed_at": "2026-10-01T22:54:34.832891+00:00",
+  "took_over": true
+}
