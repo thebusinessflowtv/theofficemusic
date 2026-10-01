@@ -1,0 +1,117 @@
+name: Peter Lofi — Kick Current Session Bridge
+
+on:
+  push:
+    paths:
+      - control/kick-bridge-request.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: peter-lofi-kick-4c336705-e45f-4b1c-868f-72eff5849850-4
+  cancel-in-progress: false
+
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    env:
+      GH_TOKEN: ${{ github.token }}
+      KICK_STREAM_KEY: ${{ secrets.KICK_STREAM_KEY }}
+      KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
+      KICK_RTMP_URL: ${{ secrets.KICK_RTMP_URL }}
+      KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
+      KICK_CHANNEL_SLUG: peterlofi
+      SESSION_ID: 4c336705-e45f-4b1c-868f-72eff5849850
+      SEGMENT_INDEX: '4'
+      DURATION_MINUTES: '0'
+      LEGACY_RUN_ID: '36866116821'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Load current Kick session
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          q=json.load(open('control/kick-live-queue/4c336705-e45f-4b1c-868f-72eff5849850.json'))
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+              for k,env in [('track_urls_b64','TRACK_URLS_B64'),('title','TITLE'),('description','DESCRIPTION'),('thumbnail_url','THUMBNAIL_URL'),('loop_url','LOOP_URL')]:
+                  v=str(q.get(k) or '')
+                  marker=f'MF_{env}_EOF'
+                  f.write(f'{env}<<{marker}\n{v}\n{marker}\n')
+          PY
+
+      - name: Prepare runtime
+        run: |
+          set -euo pipefail
+          MISSING=0
+          command -v ffmpeg >/dev/null 2>&1 || MISSING=1
+          command -v file >/dev/null 2>&1 || MISSING=1
+          if [ "$MISSING" = 1 ]; then
+            sudo apt-get update -y
+            sudo apt-get install -y ffmpeg file
+          fi
+
+      - name: Prewarm legacy-to-V2 bridge
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import time
+          import scripts.mediaforge_kick_segment_v2 as k
+
+          k.validate()
+          loop=k.prepare_media()
+          k.apply_title()
+          k.mark_ready()
+          print('Kick bridge is PREWARMED. Legacy segment remains the only RTMP encoder.', flush=True)
+
+          # Wait for the legacy segment to release the key. It does not know V2 takeover,
+          # so V2's offline fallback performs the one-time migration safely.
+          k.wait_takeover()
+
+          k.mark_result('starting', False)
+          k.start_encoder(loop)
+          k.verify_encoder()
+          print('Kick bridge owns RTMP. Preparing normal V2 successor.', flush=True)
+
+          # The bridge only owns the key for 30 minutes. That keeps total job lifetime
+          # below the hosted-runner ceiling even after waiting for the legacy segment.
+          deadline=time.time()+30*60
+          dispatch_at=deadline-10*60
+          dispatched=False
+          last_dispatch=0
+          while True:
+              k.assert_processes()
+              now=time.time()
+              if k.stop_requested():
+                  k.stop_processes()
+                  k.mark_complete()
+                  raise SystemExit(0)
+              if not dispatched and now >= dispatch_at:
+                  dispatched=k.dispatch_next()
+                  last_dispatch=now
+              if now >= deadline:
+                  if not dispatched:
+                      dispatched=k.dispatch_next(); last_dispatch=now
+                  if k.successor_ready():
+                      print('Normal Kick V2 successor is ready; handing off bridge.', flush=True)
+                      stop_epoch=time.time()
+                      k.stop_processes()
+                      k.github_put_json(
+                          f'control/live-takeover/{k.SESSION_ID}-{k.SEGMENT_INDEX+1}.json',
+                          k.capture_handoff(stop_epoch),
+                          f'peter-lofi: Kick bridge takeover {k.SESSION_ID} {k.SEGMENT_INDEX+1}'
+                      )
+                      break
+                  if now-last_dispatch >= 60:
+                      k.dispatch_next(); last_dispatch=now
+              time.sleep(3)
+          PY
