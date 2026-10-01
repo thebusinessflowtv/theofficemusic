@@ -36,13 +36,25 @@ def update_json(path,mutator,message):
 
 
 def main():
+    live_api_updated=False
+    api_error=None
     if KICK_TOKEN:
-        req=urllib.request.Request('https://api.kick.com/public/v1/channels',data=json.dumps({'stream_title':TITLE}).encode(),headers={'Authorization':f'Bearer {KICK_TOKEN}','Content-Type':'application/json','User-Agent':'Peter-Lofi-Kick-SEO'},method='PATCH')
-        with urllib.request.urlopen(req,timeout=30):pass
-        print('Updated live Kick title:',TITLE)
+        try:
+            req=urllib.request.Request('https://api.kick.com/public/v1/channels',data=json.dumps({'stream_title':TITLE}).encode(),headers={'Authorization':f'Bearer {KICK_TOKEN}','Content-Type':'application/json','User-Agent':'Peter-Lofi-Kick-SEO'},method='PATCH')
+            with urllib.request.urlopen(req,timeout=30):pass
+            live_api_updated=True
+            print('Updated live Kick title:',TITLE)
+        except urllib.error.HTTPError as exc:
+            api_error=f'HTTP {exc.code}'
+            print(f'Kick API title update unavailable ({api_error}); persisting desired title in repo state.')
+        except Exception as exc:
+            api_error=str(exc)
+            print(f'Kick API title update unavailable ({api_error}); persisting desired title in repo state.')
     else:
+        api_error='missing_access_token'
         print('No Kick access token; repo state will still be updated.')
-    update_json(f'control/kick-live-queue/{SESSION_ID}.json',lambda d:d.update({'title':TITLE,'seo_title_updated_at':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())}),f'seo: update Kick live title {SESSION_ID}')
-    update_json(f'control/kick-live-results/{SESSION_ID}.json',lambda d:d.update({'title':TITLE}),f'seo: sync Kick live result title {SESSION_ID}')
+    stamp=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())
+    update_json(f'control/kick-live-queue/{SESSION_ID}.json',lambda d:d.update({'title':TITLE,'seo_title_updated_at':stamp,'kick_title_api_updated':live_api_updated,'kick_title_api_error':api_error}),f'seo: update Kick live title {SESSION_ID}')
+    update_json(f'control/kick-live-results/{SESSION_ID}.json',lambda d:d.update({'desired_title':TITLE,'kick_title_api_updated':live_api_updated,'kick_title_api_error':api_error}),f'seo: sync Kick desired live title {SESSION_ID}')
 
 if __name__=='__main__':main()
