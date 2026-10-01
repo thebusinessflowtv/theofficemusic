@@ -109,9 +109,9 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y ffmpeg file
           python -m pip install --upgrade pip
-          python -m pip install google-api-python-client google-auth google-auth-httplib2
+          python -m pip install google-api-python-client google-auth google-auth-httplib2 cryptography
 
       - name: Run resilient YouTube live segment
         run: |
           set -euo pipefail
-          python scripts/mediaforge_live_segment_v2.py
+          python scripts/mediaforge_live_segment_v3.py
