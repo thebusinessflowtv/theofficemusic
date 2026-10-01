@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-import argparse, base64, json, os, subprocess, sys, time, urllib.request
+import argparse, base64, json, os, pathlib, subprocess, sys, time, urllib.request
 from datetime import datetime, timezone
 
 RAW_BASE = "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main"
 PCM_CHUNK = 32768  # ~171 ms of stereo 48 kHz s16le; small enough for smooth continuous delivery.
+LOCAL_NOW_PLAYING = pathlib.Path("build/now-playing.json")
 
 
 def fetch_json(url, timeout=30):
@@ -33,19 +34,38 @@ def get_playlist(session_id, fallback):
     return fallback
 
 
-def github_upsert(path, payload):
+def publish_now_playing(path, payload):
+    """Keep precise now-playing state local to the runner.
+
+    Previous versions performed a GitHub REST GET+PUT every ~2 minutes for every
+    live stream. Across multiple 24/7 lives this consumed the installation API
+    quota and could indirectly kill the RTMP job during a handoff. The encoder
+    no longer depends on those REST writes. Repository publication is opt-in and
+    disabled by default; handoff code reads this local file instead.
+    """
+    try:
+        LOCAL_NOW_PLAYING.parent.mkdir(parents=True, exist_ok=True)
+        tmp = LOCAL_NOW_PLAYING.with_suffix(".tmp")
+        tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        tmp.replace(LOCAL_NOW_PLAYING)
+    except Exception as e:
+        print(f"local now-playing warning: {e}", file=sys.stderr, flush=True)
+
+    if os.environ.get("MEDIAFORGE_PUBLISH_NOW_PLAYING", "0") != "1":
+        return
+
+    # Optional legacy publication only for diagnostics; never used by production continuity.
     token = os.environ.get("GH_TOKEN", "").strip()
     repo = os.environ.get("GITHUB_REPOSITORY", "thebusinessflowtv/theofficemusic")
     if not token:
         return
     api = f"https://api.github.com/repos/{repo}/contents/{path}"
-    headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "MediaForge-Live-Audio", "Content-Type": "application/json"}
-    last_error = None
-    for attempt in range(1, 7):
+    headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "MediaForge-Live-Audio-Diagnostics", "Content-Type": "application/json"}
+    try:
         sha = None
         try:
             req = urllib.request.Request(api, headers=headers)
-            with urllib.request.urlopen(req, timeout=20) as r:
+            with urllib.request.urlopen(req, timeout=10) as r:
                 sha = json.load(r).get("sha")
         except Exception:
             pass
@@ -53,13 +73,10 @@ def github_upsert(path, payload):
         if sha:
             body["sha"] = sha
         req = urllib.request.Request(api, data=json.dumps(body).encode(), headers=headers, method="PUT")
-        try:
-            with urllib.request.urlopen(req, timeout=30):
-                return
-        except Exception as e:
-            last_error = e
-            time.sleep(min(5, attempt))
-    print(f"now-playing publish warning after retries: {last_error}", file=sys.stderr, flush=True)
+        with urllib.request.urlopen(req, timeout=15):
+            pass
+    except Exception as e:
+        print(f"optional now-playing publish warning: {e}", file=sys.stderr, flush=True)
 
 
 def parse_ts(value):
@@ -111,13 +128,14 @@ def load_resume_state(session_id, segment_index):
             pass
         time.sleep(0.35)
 
+    # Legacy fallback only. New handoffs always persist takeover before cutover.
     try:
         state = raw_json(f"control/live-now-playing/{session_id}.json")
         if state.get("url"):
             started = parse_ts(state.get("started_at"))
             if started is not None:
                 state["position_seconds"] = max(0.0, time.time() - started)
-            state["_source"] = "now-playing"
+            state["_source"] = "now-playing-legacy"
             return state
     except Exception as e:
         print(f"resume-state warning: {e}", file=sys.stderr, flush=True)
@@ -132,12 +150,7 @@ def _write_all(fd, chunk):
 
 
 def play_track(track, start_offset=0.0):
-    """Decode ahead of realtime and let the RTMP encoder provide pacing.
-
-    The old feeder used ffmpeg -re here *and* the outer encoder used realtime pacing.
-    Combined with 256 KiB Python reads, PCM arrived in large bursts and remote/network
-    jitter could starve the encoder, which was audible as repeated micro-cuts.
-    """
+    """Decode ahead of realtime and let the RTMP encoder provide pacing."""
     start_offset = max(0.0, float(start_offset or 0.0))
     cmd = [
         "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin",
@@ -220,7 +233,7 @@ def main():
 
         virtual_started = time.time() - offset
         payload = {"session_id": args.session_id, "segment_index": args.segment_index, "track_id": track.get("id"), "title": track.get("title"), "url": track.get("url"), "started_at": iso_from_epoch(virtual_started), "resumed_at": iso_from_epoch(time.time()) if offset > 0 else None, "resume_offset_seconds": round(offset, 3), "resume_source": source, "playlist_size": len(playlist)}
-        github_upsert(f"control/live-now-playing/{args.session_id}.json", payload)
+        publish_now_playing(f"control/live-now-playing/{args.session_id}.json", payload)
         played = play_track(track, offset)
         if not played and offset > 0:
             print("Resume offset produced no audio; advancing to next track.", file=sys.stderr, flush=True)
