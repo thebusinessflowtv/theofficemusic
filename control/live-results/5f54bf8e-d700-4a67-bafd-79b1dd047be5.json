@@ -4,5 +4,12 @@
   "github_run_id": 36827925731,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36827925731",
   "error_message": "EOF occurred in violation of protocol (_ssl.c:2417)",
-  "completed_at": "2026-10-01T07:11:36.866540+00:00"
+  "completed_at": "2026-10-01T07:11:36.866540+00:00",
+  "youtube_broadcast_id": "GIOCNRogj0g",
+  "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790820645461112",
+  "youtube_url": "https://www.youtube.com/watch?v=GIOCNRogj0g",
+  "session_started_at": "2026-10-01T13:21:54.081359+00:00",
+  "prewarmed_segment_index": 2,
+  "prewarmed_run_id": 36827925731,
+  "prewarmed_at": "2026-10-01T13:21:54.081359+00:00"
 }
