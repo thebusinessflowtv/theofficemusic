@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/update-peter-lofi-seo-titles.yml'
+      - 'scripts/update_peter_lofi_seo_titles.py'
 
 permissions:
   contents: write
@@ -21,5 +22,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install YouTube runtime
         run: python -m pip install google-api-python-client google-auth google-auth-httplib2
-      - name: Update live and future-video titles
+      - name: Update live, existing-video and future-video titles
         run: python scripts/update_peter_lofi_seo_titles.py
