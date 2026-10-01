@@ -6,7 +6,7 @@
   "session_started_at": "2026-10-01T19:53:21.062831+00:00",
   "rtmp_handoff_token": "gAAAAABqvrozuEM84HytUCU-vrE-uyybtMrOkMxyCuoSY9OKoK4eohMPu9T05jABZ82QY9xcRfHtpIyQgEA8kdqW3eFrCqDNImBbzJ1FXxkmfrgIV0g0sErJG4FK3lAAML2WHcEZLE3jksnlQNSbX0IUgEgrLGexpg==",
   "rtmp_resume_mode": "encrypted_handoff_token_ready",
-  "status": "live",
+  "status": "completed",
   "github_run_id": 36917508710,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36917508710",
   "segment_index": 1,
@@ -17,5 +17,8 @@
   "current_segment_started_at": "2026-10-01T19:53:38.011128+00:00",
   "last_verified_lifecycle": "live",
   "youtube_api_verification_uncertain": false,
-  "live_at": "2026-10-01T19:53:38.011128+00:00"
+  "live_at": "2026-10-01T19:53:38.011128+00:00",
+  "session_id": "c3f8a4d2-7e91-4b65-9d0a-1f2c3e4b5a67",
+  "stop_reason": "manual_stop",
+  "completed_at": "2026-10-01T20:09:22.550193+00:00"
 }
