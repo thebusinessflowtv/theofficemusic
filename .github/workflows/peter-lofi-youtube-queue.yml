@@ -15,21 +15,47 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
-      - name: Resolve queued live and dispatch YouTube encoder
+      - name: Resolve queued lives and dispatch YouTube encoders
         env:
           GH_TOKEN: ${{ github.token }}
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          FILE="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" | grep -E '^control/youtube-live-queue/[^/]+\.json$' | tail -1 || true)"
-          if [ -z "$FILE" ]; then
+
+          if git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+            CHANGED="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA")"
+          else
+            CHANGED="$(git diff-tree --no-commit-id --name-only -r "$AFTER_SHA")"
+          fi
+
+          mapfile -t FILES < <(printf '%s\n' "$CHANGED" | grep -E '^control/youtube-live-queue/[^/]+\.json$' || true)
+          if [ "${#FILES[@]}" -eq 0 ]; then
             echo "No YouTube queue file found in this push."
             exit 0
           fi
-          jq -e . "$FILE" >/dev/null
-          jq '{ref:"main",inputs:{session_id:(.session_id|tostring),track_urls_b64:(.track_urls_b64|tostring),duration_minutes:(.duration_minutes|tostring),title:(.title|tostring),description:(.description//""|tostring),thumbnail_url:(.thumbnail_url//""|tostring),loop_url:(.loop_url//""|tostring),resume_broadcast_id:"",resume_stream_id:"",segment_index:"1"}}' "$FILE" > /tmp/dispatch.json
-          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/office-music-live.yml/dispatches" --input /tmp/dispatch.json
-          echo "YouTube encoder workflow dispatched from queue file: $FILE"
+
+          echo "Found ${#FILES[@]} queued YouTube live request(s)."
+
+          for FILE in "${FILES[@]}"; do
+            echo "Processing $FILE"
+            jq -e . "$FILE" >/dev/null
+
+            SESSION_ID="$(jq -r '.session_id // empty' "$FILE")"
+            if ! [[ "$SESSION_ID" =~ ^[0-9a-fA-F-]{36}$ ]]; then
+              echo "Invalid session_id in $FILE: $SESSION_ID"
+              exit 1
+            fi
+
+            RESULT="control/live-results/${SESSION_ID}.json"
+            if [ -f "$RESULT" ] && jq -e '.status == "starting" or .status == "live" or .status == "reconnecting"' "$RESULT" >/dev/null 2>&1; then
+              echo "Session $SESSION_ID is already starting/live; skipping duplicate dispatch."
+              continue
+            fi
+
+            jq '{ref:"main",inputs:{session_id:(.session_id|tostring),track_urls_b64:(.track_urls_b64|tostring),duration_minutes:(.duration_minutes|tostring),title:(.title|tostring),description:(.description//""|tostring),thumbnail_url:(.thumbnail_url//""|tostring),loop_url:(.loop_url//""|tostring),resume_broadcast_id:"",resume_stream_id:"",segment_index:"1"}}' "$FILE" > /tmp/dispatch.json
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/office-music-live.yml/dispatches" --input /tmp/dispatch.json
+            echo "YouTube encoder workflow dispatched for session $SESSION_ID from $FILE"
+          done
