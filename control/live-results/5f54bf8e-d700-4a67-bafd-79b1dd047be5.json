@@ -1,8 +1,8 @@
 {
   "platform": "youtube",
   "status": "live",
-  "title": "Peter Lofi Radio \ud83c\udfa7 Lofi Beats for Work, Study, Focus & Relax \ud83d\udd34 Live",
-  "description": "\ud83c\udfa7 Peter Lofi \u2014 original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n\ud83c\udfa7 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n\u00a9 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
+  "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live",
+  "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
   "github_run_id": 36804539982,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36804539982",
   "youtube_broadcast_id": "GIOCNRogj0g",
@@ -14,5 +14,9 @@
   "encoder_bitrate_kbps": 8000,
   "custom_thumbnail_applied": true,
   "started_at": "2026-10-01T02:10:49.092838+00:00",
-  "live_at": "2026-10-01T02:11:03.805497+00:00"
+  "live_at": "2026-10-01T02:11:03.805497+00:00",
+  "session_started_at": "2026-10-01T02:10:49.092838+00:00",
+  "prewarmed_segment_index": 2,
+  "prewarmed_run_id": 36827925731,
+  "prewarmed_at": "2026-10-01T07:02:21.874448+00:00"
 }
