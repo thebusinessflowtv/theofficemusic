@@ -1,6 +1,6 @@
 {
   "platform": "youtube",
-  "status": "live",
+  "status": "failed",
   "github_run_id": 36871243374,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36871243374",
   "youtube_broadcast_id": "GIOCNRogj0g",
@@ -18,5 +18,7 @@
   "youtube_api_quota_limited": false,
   "live_at": "2026-10-01T13:22:18.740432+00:00",
   "encoder_connected": true,
-  "youtube_api_verification_uncertain": false
+  "youtube_api_verification_uncertain": false,
+  "error_message": "Remote end closed connection without response",
+  "completed_at": "2026-10-01T18:19:12.598847+00:00"
 }
