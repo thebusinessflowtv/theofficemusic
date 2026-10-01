@@ -20,26 +20,50 @@ jobs:
       KICK_RTMP_URL: ${{ secrets.KICK_RTMP_URL }}
       KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
       KICK_CHANNEL_SLUG: peterlofi
-      SESSION_ID: 4c336705-e45f-4b1c-868f-72eff5849850
-      TRACK_URLS_B64: WyJodHRwczovL2dpdGh1Yi5jb20vdGhlYnVzaW5lc3NmbG93dHYvdGhlb2ZmaWNlbXVzaWMvcmVsZWFzZXMvZG93bmxvYWQvb2ZmaWNlLW11c2ljLTVhNGI0Y2M1LWFmNWQtNGMyMi1hM2Y5LTZlZmJkOTlhYWFiMC8wNi13aW5kb3ctc2VhdC1hdmVudWUud2F2Il0=
-      DURATION_MINUTES: '0'
-      TITLE: 'Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live on Peter Lofi'
-      DESCRIPTION: ''
-      THUMBNAIL_URL: 'https://fykwalznmcrjgnyveagy.supabase.co/storage/v1/object/public/office-music-assets/thumbnail/1790803767866-23fd44d8-2ed7-4b76-8b8e-75846bee311f-11---PETER-JD-QUARTO.png'
-      LOOP_URL: 'https://fykwalznmcrjgnyveagy.supabase.co/storage/v1/object/public/office-music-assets/loop/1790807518698-c4135082-e179-4f6e-b0b6-1aa7daa078da-VI-DEO-PARA-LIVE.mp4'
-      SEGMENT_INDEX: '1'
+      SOURCE_QUEUE: control/kick-live-queue/4c336705-e45f-4b1c-868f-72eff5849850.json
+      RECOVERY_SESSION_ID: 6e2f8791-70fb-4dd7-9fb0-4ff650e23f19
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
       - name: Prepare runtime
         run: |
           set -euo pipefail
-          command -v ffmpeg >/dev/null 2>&1 || { sudo apt-get update -y; sudo apt-get install -y ffmpeg file; }
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v file >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo apt-get install -y ffmpeg file
+          fi
 
-      - name: Recover and keep streaming with Kick V3
+      - name: Restore current Kick live configuration
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          q=json.load(open(os.environ['SOURCE_QUEUE'], encoding='utf-8'))
+          values={
+              'SESSION_ID': os.environ['RECOVERY_SESSION_ID'],
+              'TRACK_URLS_B64': str(q['track_urls_b64']),
+              'DURATION_MINUTES': '0',
+              'TITLE': str(q.get('title') or 'Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live on Peter Lofi'),
+              'DESCRIPTION': str(q.get('description') or ''),
+              'THUMBNAIL_URL': str(q.get('thumbnail_url') or ''),
+              'LOOP_URL': str(q.get('loop_url') or 'https://mediaforge-api.guilhermeodsgn.workers.dev/media/a26f2e7f-4203-4788-a3ce-6d6b2052f4dc/c64b196cedad4d05977d887f1be30505023124926b4144dc935c1142fe1b4109'),
+              'SEGMENT_INDEX': '1',
+          }
+          with open(os.environ['GITHUB_ENV'],'a',encoding='utf-8') as f:
+              for key,val in values.items():
+                  if '\n' in val or '\r' in val:
+                      marker=f'__MEDIAFORGE_{key}__'
+                      f.write(f'{key}<<{marker}\n{val}\n{marker}\n')
+                  else:
+                      f.write(f'{key}={val}\n')
+          print('Kick recovery configuration loaded from persisted queue; segment=1 continuous.')
+          PY
+
+      - name: Recover Kick and keep streaming with V3
         run: |
           set -euo pipefail
           python scripts/mediaforge_kick_segment_v3.py
