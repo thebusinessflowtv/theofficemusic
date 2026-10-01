@@ -1,30 +1,30 @@
 #!/usr/bin/env python3
-"""MediaForge Kick segment V3 — continuity-first scheduled cutover.
+"""MediaForge Kick live segment V3 — continuity first.
 
-A single Kick stream key cannot safely accept two intentional publishers at once.
-V3 therefore prepares the successor early, commits a future cutover timestamp while
-the predecessor is still streaming, and lets both runners switch using local clocks.
-GitHub control-plane failures are non-fatal to a healthy encoder.
+The RTMP encoder is the data plane and GitHub is only a control plane. A GitHub
+API outage/rate-limit must never stop a healthy encoder. Successors are prepared
+early and the predecessor only releases the stream key after the takeover state
+has been successfully persisted for a future local cutover instant.
 """
 import time
 
-import mediaforge_kick_segment_v2 as v2
+import mediaforge_kick_segment_v2 as core
 
 _stop_cache = {"checked": 0.0, "value": False}
 _ready_cache = {"checked": 0.0, "value": False}
 
 
-def safe_get(path):
+def _safe_get(path):
     try:
-        return v2.github_get_json(path)
+        return core.github_get_json(path)
     except Exception as exc:
         print(f"::warning::Kick control-plane read ignored for {path}: {exc}", flush=True)
         return None
 
 
-def safe_put(path, payload, message):
+def _safe_put(path, payload, message):
     try:
-        v2.github_put_json(path, payload, message)
+        core.github_put_json(path, payload, message)
         return True
     except Exception as exc:
         print(f"::warning::Kick control-plane write deferred for {path}: {exc}", flush=True)
@@ -36,7 +36,7 @@ def stop_requested_v3():
     if now - _stop_cache["checked"] < 60:
         return _stop_cache["value"]
     _stop_cache["checked"] = now
-    state = safe_get(f"control/kick-live-stop/{v2.SESSION_ID}.json")
+    state = _safe_get(f"control/kick-live-stop/{core.SESSION_ID}.json")
     if state is not None:
         _stop_cache["value"] = bool(state.get("stop") is True)
     return _stop_cache["value"]
@@ -44,85 +44,147 @@ def stop_requested_v3():
 
 def successor_ready_v3():
     now = time.time()
-    if now - _ready_cache["checked"] < 15:
+    if now - _ready_cache["checked"] < 20:
         return _ready_cache["value"]
     _ready_cache["checked"] = now
-    state = safe_get(f"control/kick-prewarm/{v2.SESSION_ID}-{v2.SEGMENT_INDEX + 1}.json")
+    state = _safe_get(f"control/kick-prewarm/{core.SESSION_ID}-{core.SEGMENT_INDEX + 1}.json")
     if not state or state.get("ready") is not True:
         _ready_cache["value"] = False
         return False
+    if int(state.get("segment_index") or 0) != core.SEGMENT_INDEX + 1:
+        _ready_cache["value"] = False
+        return False
     run_id = state.get("run_id")
-    if not run_id:
-        _ready_cache["value"] = True
-        return True
-    try:
-        run = v2.api_request("GET", f"actions/runs/{int(run_id)}")
-        _ready_cache["value"] = run.get("status") in {"queued", "in_progress"}
-    except Exception as exc:
-        print(f"::warning::Kick successor run-state unavailable; ready marker accepted: {exc}", flush=True)
-        _ready_cache["value"] = True
-    return _ready_cache["value"]
+    if run_id:
+        try:
+            run = core.api_request("GET", f"actions/runs/{int(run_id)}")
+            _ready_cache["value"] = run.get("status") in {"queued", "in_progress"}
+            return _ready_cache["value"]
+        except Exception as exc:
+            # Unknown is not permission to disconnect the current encoder.
+            print(f"::warning::Kick successor run-state unavailable: {exc}", flush=True)
+            _ready_cache["value"] = False
+            return False
+    _ready_cache["value"] = True
+    return True
+
+
+def mark_result_v3(status, verified=False):
+    path = f"control/kick-live-results/{core.SESSION_ID}.json"
+    result = _safe_get(path) or {}
+    result.update({
+        "platform": "kick", "status": status, "title": core.TITLE,
+        "description": core.DESCRIPTION, "session_id": core.SESSION_ID,
+        "segment_index": core.SEGMENT_INDEX, "github_run_id": core.RUN_ID,
+        "github_run_url": core.RUN_URL, "encoder_resolution": "1920x1080",
+        "encoder_fps": 60, "encoder_bitrate_kbps": 8000,
+        "encoder_connected": status in {"starting", "live"},
+        "kick_verified": verified, "updated_at": core.iso_now(),
+    })
+    if verified:
+        result["live_at"] = core.iso_now()
+    if status in {"starting", "live"}:
+        for key in ("error_message", "completed_at", "failed_at"):
+            result.pop(key, None)
+    _safe_put(path, result, f"peter-lofi: Kick {status} {core.SESSION_ID} segment {core.SEGMENT_INDEX}")
+
+
+def mark_ready_v3():
+    payload = {
+        "ready": True, "platform": "kick", "session_id": core.SESSION_ID,
+        "segment_index": core.SEGMENT_INDEX, "run_id": core.RUN_ID,
+        "run_url": core.RUN_URL, "prepared_at": core.iso_now(),
+    }
+    path = f"control/kick-prewarm/{core.SESSION_ID}-{core.SEGMENT_INDEX}.json"
+    while True:
+        if _safe_put(path, payload, f"peter-lofi: Kick segment ready {core.SESSION_ID} {core.SEGMENT_INDEX}"):
+            print(f"Kick segment {core.SEGMENT_INDEX} prewarmed.", flush=True)
+            return
+        # Predecessor remains online; waiting here is safer than an unannounced takeover.
+        print("Kick readiness publication unavailable; retrying without touching predecessor.", flush=True)
+        time.sleep(30)
 
 
 def wait_takeover_v3():
-    if v2.SEGMENT_INDEX <= 1:
+    if core.SEGMENT_INDEX <= 1:
         return
-    path = f"control/live-takeover/{v2.SESSION_ID}-{v2.SEGMENT_INDEX}.json"
-    started = time.time()
+    path = f"control/live-takeover/{core.SESSION_ID}-{core.SEGMENT_INDEX}.json"
+    print(f"Kick segment {core.SEGMENT_INDEX} prewarmed; waiting for continuity-first takeover.", flush=True)
     offline_streak = 0
-    print(f"Kick segment {v2.SEGMENT_INDEX} armed; waiting for scheduled cutover.", flush=True)
+    last_kick_check = 0.0
     while True:
-        state = safe_get(path)
-        if state and state.get("takeover") is True and int(state.get("from_segment_index") or 0) == v2.SEGMENT_INDEX - 1:
+        state = _safe_get(path)
+        if state and state.get("takeover") is True and int(state.get("from_segment_index") or 0) == core.SEGMENT_INDEX - 1:
             cutover = float(state.get("cutover_epoch") or 0.0)
             if cutover > time.time():
-                print(f"Kick cutover timestamp received; waiting locally until {cutover:.3f}.", flush=True)
+                print(f"Kick scheduled cutover armed for {cutover:.3f}; waiting locally.", flush=True)
                 while time.time() < cutover:
-                    time.sleep(min(0.05, max(0.005, cutover - time.time())))
-            else:
-                print("Kick takeover signal received without future timestamp; taking over immediately.", flush=True)
+                    time.sleep(min(0.10, max(0.01, cutover - time.time())))
+            print("Kick takeover released.", flush=True)
             return
 
-        # Emergency path only: if predecessor died without being able to signal, recover.
-        if time.time() - started >= 30:
-            ks = v2.kick_state()
+        now = time.time()
+        if now - last_kick_check >= 20:
+            last_kick_check = now
+            ks = core.kick_state()
             offline_streak = offline_streak + 1 if ks == "offline" else 0
-            if offline_streak >= 3:
-                print("Kick predecessor confirmed offline; emergency takeover.", flush=True)
+            if offline_streak >= 2:
+                print("Kick predecessor confirmed offline; emergency successor takeover.", flush=True)
                 return
         time.sleep(10)
 
 
-def capture_scheduled_handoff(cutover_epoch):
-    state = safe_get(f"control/live-now-playing/{v2.SESSION_ID}.json") or {}
-    started = v2.parse_ts(state.get("started_at"))
-    position = max(0.0, cutover_epoch - started) if started is not None else float(state.get("resume_offset_seconds") or 0)
+def replace_previous_session_v3():
+    if core.SEGMENT_INDEX != 1:
+        return
+    active = _safe_get("control/kick-active.json") or {}
+    old = active.get("session_id")
+    ks = core.kick_state()
+    if old and old != core.SESSION_ID and ks == "online":
+        _safe_put(
+            f"control/kick-live-stop/{old}.json",
+            {"stop": True, "reason": "replaced_by_new_mediaforge_live", "replacement_session_id": core.SESSION_ID, "requested_at": core.iso_now()},
+            f"peter-lofi: stop replaced Kick live {old}",
+        )
+        for _ in range(90):
+            if core.kick_state() == "offline":
+                break
+            time.sleep(2)
+        else:
+            raise RuntimeError("Existing Kick encoder still appears online; refusing duplicate RTMP publisher")
+    elif ks == "unavailable":
+        print("::warning::Kick status API unavailable; recovery will proceed with one encoder.", flush=True)
+
+    _safe_put(
+        "control/kick-active.json",
+        {"session_id": core.SESSION_ID, "status": "starting", "segment_index": core.SEGMENT_INDEX, "run_id": core.RUN_ID, "updated_at": core.iso_now()},
+        f"peter-lofi: active Kick session {core.SESSION_ID}",
+    )
+
+
+def _capture_takeover(cutover_epoch):
+    state = _safe_get(f"control/live-now-playing/{core.SESSION_ID}.json") or {}
+    started = core.parse_ts(state.get("started_at"))
+    position = max(0.0, cutover_epoch - started) if started is not None else float(state.get("resume_offset_seconds") or 0.0)
     return {
-        "platform": "kick",
-        "session_id": v2.SESSION_ID,
-        "segment_index": v2.SEGMENT_INDEX + 1,
-        "from_segment_index": v2.SEGMENT_INDEX,
-        "to_segment_index": v2.SEGMENT_INDEX + 1,
-        "takeover": True,
-        "track_id": state.get("track_id"),
-        "title": state.get("title"),
-        "url": state.get("url"),
-        "track_started_at": state.get("started_at"),
+        "platform": "kick", "session_id": core.SESSION_ID,
+        "segment_index": core.SEGMENT_INDEX + 1,
+        "from_segment_index": core.SEGMENT_INDEX,
+        "to_segment_index": core.SEGMENT_INDEX + 1, "takeover": True,
+        "track_id": state.get("track_id"), "title": state.get("title"),
+        "url": state.get("url"), "track_started_at": state.get("started_at"),
         "position_seconds": round(position, 3),
-        "cutover_epoch": round(cutover_epoch, 6),
-        "signaled_at": v2.iso_now(),
-        "source_run_id": v2.RUN_ID,
-        "handoff_mode": "scheduled-single-key",
+        "cutover_epoch": round(cutover_epoch, 6), "signaled_at": core.iso_now(),
+        "source_run_id": core.RUN_ID, "handoff_mode": "scheduled-single-key",
         "handoff_protocol": "kick-v3-continuity-first",
     }
 
 
 def run_segment_v3(loop):
-    chain = v2.DURATION_MINUTES == 0 or v2.DURATION_MINUTES > 300
-    seconds = 300 * 60 if v2.DURATION_MINUTES == 0 else min(300, v2.DURATION_MINUTES) * 60
+    chain = core.DURATION_MINUTES == 0 or core.DURATION_MINUTES > 300
+    seconds = 300 * 60 if core.DURATION_MINUTES == 0 else min(300, core.DURATION_MINUTES) * 60
     deadline = int(time.time()) + seconds
-    # 15-minute runway instead of 10 minutes.
-    prewarm_at = deadline - min(900, max(30, seconds // 2))
+    prewarm_at = deadline - min(900, max(60, seconds // 2))
     dispatched = False
     last_dispatch = 0
     reconnects = 0
@@ -130,67 +192,93 @@ def run_segment_v3(loop):
     while True:
         now = int(time.time())
         if stop_requested_v3():
-            v2.stop_processes()
+            core.stop_processes()
             return False
 
-        if not v2.encoder or v2.encoder.poll() is not None or not v2.feeder or v2.feeder.poll() is not None:
+        if not core.encoder or core.encoder.poll() is not None or not core.feeder or core.feeder.poll() is not None:
             reconnects += 1
-            if reconnects > 8:
-                raise RuntimeError("Kick reconnect limit reached")
-            print(f"Kick reconnect {reconnects}/8.", flush=True)
-            v2.start_encoder(loop)
+            if reconnects > 20:
+                raise RuntimeError("Kick local encoder reconnect limit reached")
+            print(f"Kick local encoder reconnect {reconnects}/20.", flush=True)
+            core.start_encoder(loop)
             time.sleep(12)
+            continue
 
         if chain and not dispatched and now >= prewarm_at:
-            dispatched = v2.dispatch_next()
+            dispatched = core.dispatch_next()
             last_dispatch = now
 
         if now >= deadline:
             if not chain:
-                v2.stop_processes()
+                core.stop_processes()
                 return False
             if not dispatched:
-                dispatched = v2.dispatch_next()
+                dispatched = core.dispatch_next()
                 last_dispatch = now
 
             if successor_ready_v3():
-                # Critical invariant: publish the takeover plan before disconnecting.
+                # Commit takeover before releasing the single Kick stream key.
                 cutover = time.time() + 30.0
-                handoff = capture_scheduled_handoff(cutover)
-                path = f"control/live-takeover/{v2.SESSION_ID}-{v2.SEGMENT_INDEX + 1}.json"
-                if safe_put(path, handoff, f"peter-lofi: Kick V3 scheduled takeover {v2.SESSION_ID} {v2.SEGMENT_INDEX + 1}"):
-                    print(f"Kick V3 cutover fully coordinated for {cutover:.3f}; predecessor remains live until that instant.", flush=True)
+                payload = _capture_takeover(cutover)
+                path = f"control/live-takeover/{core.SESSION_ID}-{core.SEGMENT_INDEX + 1}.json"
+                if _safe_put(path, payload, f"peter-lofi: Kick V3 takeover {core.SESSION_ID} {core.SEGMENT_INDEX + 1}"):
+                    print(f"Kick takeover committed; predecessor remains online until {cutover:.3f}.", flush=True)
                     while time.time() < cutover:
-                        v2.assert_processes()
-                        time.sleep(min(0.05, max(0.005, cutover - time.time())))
-                    # No GitHub/API request is required after this point.
-                    v2.stop_processes()
+                        core.assert_processes()
+                        time.sleep(min(0.10, max(0.01, cutover - time.time())))
+                    core.stop_processes()
                     return True
-                print("Kick takeover coordination failed; current encoder remains online.", flush=True)
-            else:
-                if now - last_dispatch >= 120:
-                    v2.dispatch_next()
-                    last_dispatch = now
-                print("Kick successor not ready; current encoder remains online.", flush=True)
+                print("Kick takeover commit failed; predecessor remains online. No cutover performed.", flush=True)
+            elif now - last_dispatch >= 180:
+                core.dispatch_next()
+                last_dispatch = now
+
+            print("Kick successor not safely coordinated; current encoder remains online.", flush=True)
 
         time.sleep(5)
 
 
-v2.stop_requested = stop_requested_v3
-v2.successor_ready = successor_ready_v3
-v2.wait_takeover = wait_takeover_v3
-v2.capture_handoff = capture_scheduled_handoff
-v2.run_segment = run_segment_v3
+def mark_complete_v3():
+    path = f"control/kick-live-results/{core.SESSION_ID}.json"
+    result = _safe_get(path) or {}
+    result.update({"status": "completed", "encoder_connected": False, "completed_at": core.iso_now()})
+    _safe_put(path, result, f"peter-lofi: Kick complete {core.SESSION_ID}")
+
+
+def record_failure_v3(exc):
+    path = f"control/kick-live-results/{core.SESSION_ID}.json"
+    result = _safe_get(path) or {}
+    result.update({
+        "platform": "kick", "status": "failed", "session_id": core.SESSION_ID,
+        "segment_index": core.SEGMENT_INDEX, "github_run_id": core.RUN_ID,
+        "github_run_url": core.RUN_URL, "encoder_connected": False,
+        "error_message": str(exc), "failed_at": core.iso_now(),
+    })
+    _safe_put(path, result, f"peter-lofi: Kick failed {core.SESSION_ID}")
+
+
+core.stop_requested = stop_requested_v3
+core.successor_ready = successor_ready_v3
+core.mark_result = mark_result_v3
+core.mark_ready = mark_ready_v3
+core.wait_takeover = wait_takeover_v3
+core.replace_previous_session = replace_previous_session_v3
+core.run_segment = run_segment_v3
+core.mark_complete = mark_complete_v3
+core.record_failure = record_failure_v3
 
 
 if __name__ == "__main__":
     try:
-        v2.main()
+        core.main()
     except Exception as exc:
-        print(f"FATAL: {exc}", file=v2.sys.stderr, flush=True)
+        print(f"FATAL: {exc}", file=core.sys.stderr, flush=True)
         try:
-            v2.stop_processes()
+            core.stop_processes()
         except Exception:
             pass
-        v2.record_failure(exc)
+        try:
+            record_failure_v3(exc)
+        except Exception as nested:
+            print(f"failure recorder also failed: {nested}", file=core.sys.stderr, flush=True)
         raise
