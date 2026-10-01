@@ -11,5 +11,7 @@
   "session_started_at": "2026-10-01T13:21:24.028829+00:00",
   "prewarmed_segment_index": 2,
   "prewarmed_run_id": 36841262541,
-  "prewarmed_at": "2026-10-01T13:21:24.028829+00:00"
+  "prewarmed_at": "2026-10-01T13:21:24.028829+00:00",
+  "rtmp_handoff_token": "gAAAAABqvl5WStCbRqoGWI943Qep2dfWjJKzSwrUAHfgZii4-DrFF3eQugU2bjLbtxbit1gw45gAhFznkgq11w9xrjuRGcN3qLp5jA3fuf5fJk_KBsSyFYZhjmEfP-7BaIKAoBY6BnEGYNsK9XHDVmz7cpQfmVn15Q==",
+  "rtmp_resume_mode": "encrypted_handoff_token_ready"
 }
