@@ -44,22 +44,22 @@ on:
         type: string
       privacy_status:
         description: "public, unlisted or private"
-        required: true
+        required: false
         default: "public"
         type: string
       segment_seconds_override:
         description: "Test only. 0 = normal production segment."
-        required: true
+        required: false
         default: "0"
         type: string
       prewarm_lead_seconds:
         description: "How early the successor runner is prepared."
-        required: true
+        required: false
         default: "600"
         type: string
       max_segments:
         description: "0 = unlimited"
-        required: true
+        required: false
         default: "0"
         type: string
 
