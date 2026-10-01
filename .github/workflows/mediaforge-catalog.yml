@@ -1,0 +1,36 @@
+name: MediaForge — Build Catalog
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'control/results/*.json'
+      - 'control/series-results/*.json'
+      - 'scripts/build-mediaforge-catalog.py'
+      - '.github/workflows/mediaforge-catalog.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build unified MediaForge catalog
+        run: python3 scripts/build-mediaforge-catalog.py
+      - name: Publish catalog
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/mediaforge-catalog.json
+          if git diff --cached --quiet; then
+            echo "Catalog already up to date."
+            exit 0
+          fi
+          git commit -m "mediaforge: refresh unified music catalog"
+          git pull --rebase origin main
+          git push origin HEAD:main
