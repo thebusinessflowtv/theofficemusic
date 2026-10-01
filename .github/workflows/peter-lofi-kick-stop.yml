@@ -51,8 +51,9 @@ jobs:
             git checkout origin/main -- "$RESULT" 2>/dev/null || true
           fi
           if [ ! -s "$RESULT" ]; then
-            echo "No Kick result file found for ${SESSION_ID}; nothing to cancel."
-            exit 0
+            echo "No Kick result file found for ${SESSION_ID}; marking queued session as stopped."
+            mkdir -p control/kick-live-results
+            printf '{}\n' > "$RESULT"
           fi
 
           RUN_ID="$(jq -r '.github_run_id // empty' "$RESULT")"
