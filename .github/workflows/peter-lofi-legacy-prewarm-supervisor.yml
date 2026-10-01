@@ -1,0 +1,147 @@
+name: Peter Lofi — Legacy Live Prewarm Supervisor
+
+on:
+  push:
+    paths:
+      - 'control/prewarm-supervisor/*.json'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  supervise:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BEFORE_SHA: ${{ github.event.before }}
+      AFTER_SHA: ${{ github.sha }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve supervisor request
+        run: |
+          set -euo pipefail
+          if git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+            CHANGED="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA")"
+          else
+            CHANGED="$(git diff-tree --no-commit-id --name-only -r "$AFTER_SHA")"
+          fi
+          FILE="$(printf '%s\n' "$CHANGED" | grep -E '^control/prewarm-supervisor/[^/]+\.json$' | tail -1)"
+          [ -n "$FILE" ] || { echo "No supervisor request found."; exit 0; }
+          SESSION_ID="$(jq -r '.session_id' "$FILE")"
+          QUEUE="control/youtube-live-queue/${SESSION_ID}.json"
+          RESULT="control/live-results/${SESSION_ID}.json"
+          [ -f "$QUEUE" ] || { echo "Missing $QUEUE"; exit 1; }
+          [ -f "$RESULT" ] || { echo "Missing $RESULT"; exit 1; }
+
+          SOURCE_RUN="$(jq -r '.github_run_id' "$RESULT")"
+          CURRENT_SEG="$(jq -r '.segment_index // 1' "$RESULT")"
+          NEXT_SEG=$((CURRENT_SEG+1))
+          LIVE_AT="$(jq -r '.current_segment_started_at // .live_at // .started_at' "$RESULT")"
+
+          START_EPOCH="$(python - "$LIVE_AT" <<'PY'
+          import datetime,sys
+          print(int(datetime.datetime.fromisoformat(sys.argv[1].replace('Z','+00:00')).timestamp()))
+          PY
+          )"
+          EXPECTED_END=$((START_EPOCH+18000))
+          PREWARM_AT=$((EXPECTED_END-600))
+
+          {
+            echo "SESSION_ID=$SESSION_ID"
+            echo "QUEUE=$QUEUE"
+            echo "RESULT=$RESULT"
+            echo "SOURCE_RUN=$SOURCE_RUN"
+            echo "CURRENT_SEG=$CURRENT_SEG"
+            echo "NEXT_SEG=$NEXT_SEG"
+            echo "EXPECTED_END=$EXPECTED_END"
+            echo "PREWARM_AT=$PREWARM_AT"
+          } >> "$GITHUB_ENV"
+
+      - name: Wait until legacy prewarm window
+        run: |
+          set -euo pipefail
+          NOW="$(date +%s)"
+          if [ "$PREWARM_AT" -gt "$NOW" ]; then
+            SLEEP_FOR=$((PREWARM_AT-NOW))
+            echo "Waiting ${SLEEP_FOR}s before prewarming segment ${NEXT_SEG}."
+            sleep "$SLEEP_FOR"
+          fi
+
+      - name: Dispatch prewarmed successor
+        run: |
+          set -euo pipefail
+          SOURCE_STATE="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}" --jq '.status' 2>/dev/null || true)"
+          echo "Source legacy run state before prewarm: $SOURCE_STATE"
+
+          jq -n \
+            --arg ref main \
+            --arg session "$(jq -r '.session_id' "$QUEUE")" \
+            --arg tracks "$(jq -r '.track_urls_b64' "$QUEUE")" \
+            --arg dur "$(jq -r '.duration_minutes // "0"' "$QUEUE")" \
+            --arg title "$(jq -r '.title' "$QUEUE")" \
+            --arg description "$(jq -r '.description // ""' "$QUEUE")" \
+            --arg thumb "$(jq -r '.thumbnail_url // ""' "$QUEUE")" \
+            --arg loop "$(jq -r '.loop_url // ""' "$QUEUE")" \
+            --arg bid "$(jq -r '.youtube_broadcast_id' "$RESULT")" \
+            --arg sid "$(jq -r '.youtube_stream_id' "$RESULT")" \
+            --arg seg "$NEXT_SEG" \
+            '{ref:$ref,inputs:{session_id:$session,track_urls_b64:$tracks,duration_minutes:$dur,title:$title,description:$description,thumbnail_url:$thumb,loop_url:$loop,resume_broadcast_id:$bid,resume_stream_id:$sid,segment_index:$seg,privacy_status:"public",segment_seconds_override:"0",prewarm_lead_seconds:"600",max_segments:"0"}}' > /tmp/dispatch.json
+
+          for N in 1 2 3 4 5; do
+            if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/office-music-live.yml/dispatches" --input /tmp/dispatch.json; then
+              echo "Prewarm dispatched for $SESSION_ID segment $NEXT_SEG"
+              exit 0
+            fi
+            sleep $((N*5))
+          done
+          exit 1
+
+      - name: Wait for successor ready and legacy runner to finish
+        run: |
+          set -euo pipefail
+          READY=0
+          SOURCE_DONE=0
+          for I in $(seq 1 2400); do
+            READY_JSON="$(gh api "repos/${GITHUB_REPOSITORY}/contents/control/live-ready/${SESSION_ID}-${NEXT_SEG}.json" --jq '.content' 2>/dev/null | tr -d '\n' | base64 -d 2>/dev/null || true)"
+            if [ -n "$READY_JSON" ] && printf '%s' "$READY_JSON" | jq -e --argjson seg "$NEXT_SEG" '.ready == true and .segment_index == $seg' >/dev/null 2>&1; then
+              READY=1
+            fi
+
+            SOURCE_STATE="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN}" --jq '.status' 2>/dev/null || true)"
+            if [ "$SOURCE_STATE" != "queued" ] && [ "$SOURCE_STATE" != "in_progress" ] && [ -n "$SOURCE_STATE" ]; then
+              SOURCE_DONE=1
+            fi
+
+            if [ "$READY" -eq 1 ] && [ "$SOURCE_DONE" -eq 1 ]; then
+              echo "Successor ready and legacy source finished."
+              break
+            fi
+            sleep 2
+          done
+
+          [ "$READY" -eq 1 ] || { echo "Successor never became ready."; exit 1; }
+          [ "$SOURCE_DONE" -eq 1 ] || { echo "Legacy source did not finish in supervisor window."; exit 1; }
+
+      - name: Release takeover
+        run: |
+          set -euo pipefail
+          jq -n --arg session "$SESSION_ID" --argjson seg "$NEXT_SEG" --argjson from "$CURRENT_SEG" --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{session_id:$session,segment_index:$seg,from_segment_index:$from,takeover:true,signaled_at:$at,source:"legacy-supervisor"}' > /tmp/takeover.json
+
+          API="repos/${GITHUB_REPOSITORY}/contents/control/live-takeover/${SESSION_ID}-${NEXT_SEG}.json"
+          EXISTING="$(gh api "$API" 2>/dev/null || true)"
+          SHA="$(printf '%s' "$EXISTING" | jq -r '.sha // empty' 2>/dev/null || true)"
+          CONTENT="$(base64 -w0 /tmp/takeover.json)"
+          if [ -n "$SHA" ]; then
+            jq -n --arg m "live: legacy takeover ${SESSION_ID} ${NEXT_SEG}" --arg c "$CONTENT" --arg s "$SHA" '{message:$m,content:$c,sha:$s,branch:"main"}' > /tmp/put.json
+          else
+            jq -n --arg m "live: legacy takeover ${SESSION_ID} ${NEXT_SEG}" --arg c "$CONTENT" '{message:$m,content:$c,branch:"main"}' > /tmp/put.json
+          fi
+          gh api --method PUT "$API" --input /tmp/put.json >/dev/null
+          echo "Takeover released for $SESSION_ID segment $NEXT_SEG"
