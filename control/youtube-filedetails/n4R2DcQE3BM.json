@@ -1,0 +1,122 @@
+{
+  "kind": "youtube#video",
+  "etag": "nYyO3JZDhwNG6q3PLEXQZOZE8iM",
+  "id": "n4R2DcQE3BM",
+  "snippet": {
+    "publishedAt": "2026-09-30T14:25:49Z",
+    "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
+    "title": "1 Hour Lofi for Work & Focus ☕ | Chill Beats to Study, Code & Relax | Peter Lofi 🕷️ 🎧",
+    "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
+    "thumbnails": {
+      "default": {
+        "url": "https://i.ytimg.com/vi/n4R2DcQE3BM/default.jpg",
+        "width": 120,
+        "height": 90
+      },
+      "medium": {
+        "url": "https://i.ytimg.com/vi/n4R2DcQE3BM/mqdefault.jpg",
+        "width": 320,
+        "height": 180
+      },
+      "high": {
+        "url": "https://i.ytimg.com/vi/n4R2DcQE3BM/hqdefault.jpg",
+        "width": 480,
+        "height": 360
+      },
+      "standard": {
+        "url": "https://i.ytimg.com/vi/n4R2DcQE3BM/sddefault.jpg",
+        "width": 640,
+        "height": 480
+      },
+      "maxres": {
+        "url": "https://i.ytimg.com/vi/n4R2DcQE3BM/maxresdefault.jpg",
+        "width": 1280,
+        "height": 720
+      },
+      "fhd": {
+        "url": "https://i.ytimg.com/vi/n4R2DcQE3BM/fhddefault.jpg",
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    "channelTitle": "Peter Lofi",
+    "tags": [
+      "1 hour lofi",
+      "Peter Lofi",
+      "PeterLofiSounds",
+      "background music",
+      "chill music",
+      "focus music",
+      "lofi",
+      "lofi beats",
+      "lofi mix",
+      "lofi music",
+      "long lofi mix",
+      "relaxing music",
+      "study music",
+      "work music"
+    ],
+    "categoryId": "22",
+    "liveBroadcastContent": "none",
+    "defaultLanguage": "pt-PT",
+    "localized": {
+      "title": "1 Hour Lofi for Work & Focus ☕ | Chill Beats to Study, Code & Relax | Peter Lofi 🕷️ 🎧",
+      "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix"
+    },
+    "defaultAudioLanguage": "en-US"
+  },
+  "contentDetails": {
+    "duration": "PT1H1S",
+    "dimension": "2d",
+    "definition": "hd",
+    "caption": "false",
+    "licensedContent": false,
+    "contentRating": {},
+    "projection": "rectangular",
+    "hasCustomThumbnail": true
+  },
+  "status": {
+    "uploadStatus": "processed",
+    "privacyStatus": "public",
+    "license": "youtube",
+    "embeddable": true,
+    "publicStatsViewable": true,
+    "madeForKids": false,
+    "selfDeclaredMadeForKids": false
+  },
+  "fileDetails": {
+    "fileName": "PETER LOFI 3.mp4",
+    "fileSize": "9438371849",
+    "fileType": "video",
+    "container": "mov",
+    "videoStreams": [
+      {
+        "widthPixels": 3840,
+        "heightPixels": 2160,
+        "frameRateFps": 30,
+        "aspectRatio": 1.7777777777777777,
+        "codec": "h265",
+        "bitrateBps": "12597738",
+        "vendor": "[0][0][0][0]"
+      }
+    ],
+    "audioStreams": [
+      {
+        "channelCount": 2,
+        "codec": "aac",
+        "bitrateBps": "178992",
+        "vendor": "[0][0][0][0]"
+      }
+    ],
+    "durationMs": "3600100",
+    "bitrateBps": "12776730"
+  },
+  "processingDetails": {
+    "processingStatus": "succeeded",
+    "fileDetailsAvailability": "available",
+    "processingIssuesAvailability": "available",
+    "tagSuggestionsAvailability": "inProgress",
+    "editorSuggestionsAvailability": "inProgress",
+    "thumbnailsAvailability": "available"
+  }
+}
