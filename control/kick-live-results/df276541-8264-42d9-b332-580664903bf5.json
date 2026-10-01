@@ -1,0 +1,16 @@
+{
+  "platform": "kick",
+  "status": "starting",
+  "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi",
+  "description": "",
+  "session_id": "df276541-8264-42d9-b332-580664903bf5",
+  "segment_index": 1,
+  "github_run_id": 36919606338,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36919606338",
+  "encoder_resolution": "1920x1080",
+  "encoder_fps": 60,
+  "encoder_bitrate_kbps": 8000,
+  "encoder_connected": true,
+  "kick_verified": false,
+  "updated_at": "2026-10-01T20:12:30.022729+00:00"
+}
