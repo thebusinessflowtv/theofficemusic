@@ -1,0 +1,45 @@
+name: One-off — Recover Peter Lofi Kick Live
+
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-recover-kick-live.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    env:
+      GH_TOKEN: ${{ secrets.GH_STREAM_CONTROL_TOKEN || github.token }}
+      KICK_STREAM_KEY: ${{ secrets.KICK_STREAM_KEY }}
+      KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
+      KICK_RTMP_URL: ${{ secrets.KICK_RTMP_URL }}
+      KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
+      KICK_CHANNEL_SLUG: peterlofi
+      SESSION_ID: 4c336705-e45f-4b1c-868f-72eff5849850
+      TRACK_URLS_B64: WyJodHRwczovL2dpdGh1Yi5jb20vdGhlYnVzaW5lc3NmbG93dHYvdGhlb2ZmaWNlbXVzaWMvcmVsZWFzZXMvZG93bmxvYWQvb2ZmaWNlLW11c2ljLTVhNGI0Y2M1LWFmNWQtNGMyMi1hM2Y5LTZlZmJkOTlhYWFiMC8wNi13aW5kb3ctc2VhdC1hdmVudWUud2F2Il0=
+      DURATION_MINUTES: '0'
+      TITLE: 'Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live on Peter Lofi'
+      DESCRIPTION: ''
+      THUMBNAIL_URL: 'https://fykwalznmcrjgnyveagy.supabase.co/storage/v1/object/public/office-music-assets/thumbnail/1790803767866-23fd44d8-2ed7-4b76-8b8e-75846bee311f-11---PETER-JD-QUARTO.png'
+      LOOP_URL: 'https://fykwalznmcrjgnyveagy.supabase.co/storage/v1/object/public/office-music-assets/loop/1790807518698-c4135082-e179-4f6e-b0b6-1aa7daa078da-VI-DEO-PARA-LIVE.mp4'
+      SEGMENT_INDEX: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Prepare runtime
+        run: |
+          set -euo pipefail
+          command -v ffmpeg >/dev/null 2>&1 || { sudo apt-get update -y; sudo apt-get install -y ffmpeg file; }
+
+      - name: Recover and keep streaming with Kick V3
+        run: |
+          set -euo pipefail
+          python scripts/mediaforge_kick_segment_v3.py
