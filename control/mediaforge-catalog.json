@@ -1,11 +1,12 @@
 {
-  "version": 1,
-  "generated_at": "2026-10-01T00:10:38.010967+00:00",
+  "version": 2,
+  "generated_at": "2026-10-01T00:24:26.134872+00:00",
   "counts": {
-    "tracks": 133,
+    "tracks": 138,
     "jobs": 4,
     "series": 5,
-    "hour_mixes": 4
+    "hour_mixes": 9,
+    "one_hour_masters": 5
   },
   "tracks": [
     {
@@ -1615,6 +1616,31 @@
       }
     },
     {
+      "id": "d4fc1f57f2cd2bb89dfa04bc23e06b19",
+      "source": "peter_lofi_master",
+      "job_id": null,
+      "series_key": "office-productivity",
+      "collection_key": "master:office-productivity",
+      "collection_name": "Office / Productivity · Master 1 hora",
+      "title": "Office / Productivity — Master 1 Hour",
+      "filename": "peter-lofi-master.m4a",
+      "duration_seconds": 3600,
+      "position": 1,
+      "style": "Peter Lofi · Office / Productivity · 1 Hour Master",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/peter-lofi-master.m4a",
+      "created_at": "2026-09-30T20:44:22.788710+00:00",
+      "metadata": {
+        "release_tag": "peter-lofi-series-01-office-productivity-c7a83f5c",
+        "series_index": 1,
+        "series_name": "Office / Productivity",
+        "series_title": "Office Flow — 1 Hour Lofi for Work & Productivity | Peter Lofi 🎧",
+        "series_playlist": "Office / Productivity 🎧 | Peter Lofi",
+        "generation_mode": "stable-audio-3-small-music",
+        "request_id": "c7a83f5c-2d9e-4b51-b7c9-2bbde4fca8e3",
+        "is_master_audio": true
+      }
+    },
+    {
       "id": "7013b8e143733591c05a36a663d2676f",
       "source": "peter_lofi_series",
       "job_id": null,
@@ -1924,6 +1950,31 @@
         "generation_mode": "stable-audio-3-small-music",
         "request_id": "c7a83f5c-2d9e-4b51-b7c9-2bbde4fca8e3",
         "sha256": "8fbfa7a66207703ae3630e1f01a8b54957cbe15d6d8c78707c071ae267ac6442"
+      }
+    },
+    {
+      "id": "d060c1fcf900bdb566c0574ab1435070",
+      "source": "peter_lofi_master",
+      "job_id": null,
+      "series_key": "late-night-office",
+      "collection_key": "master:late-night-office",
+      "collection_name": "Late Night Office · Master 1 hora",
+      "title": "Late Night Office — Master 1 Hour",
+      "filename": "peter-lofi-master.m4a",
+      "duration_seconds": 3600,
+      "position": 1,
+      "style": "Peter Lofi · Late Night Office · 1 Hour Master",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/peter-lofi-master.m4a",
+      "created_at": "2026-09-30T21:32:07.502130+00:00",
+      "metadata": {
+        "release_tag": "peter-lofi-series-02-late-night-office-8a2398c1",
+        "series_index": 2,
+        "series_name": "Late Night Office",
+        "series_title": "Late Night Office — 1 Hour Lofi for After Hours Focus | Peter Lofi 🎧",
+        "series_playlist": "Late Night Office 🌙 | Peter Lofi",
+        "generation_mode": "stable-audio-3-small-music",
+        "request_id": "8a2398c1-9b3d-4fcc-b7a9-15c68ea61546",
+        "is_master_audio": true
       }
     },
     {
@@ -2239,6 +2290,31 @@
       }
     },
     {
+      "id": "0461d01ab8a81c2390d3bf82cfa6eaa1",
+      "source": "peter_lofi_master",
+      "job_id": null,
+      "series_key": "coffee-shop",
+      "collection_key": "master:coffee-shop",
+      "collection_name": "Coffee Shop · Master 1 hora",
+      "title": "Coffee Shop — Master 1 Hour",
+      "filename": "peter-lofi-master.m4a",
+      "duration_seconds": 3600,
+      "position": 1,
+      "style": "Peter Lofi · Coffee Shop · 1 Hour Master",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/peter-lofi-master.m4a",
+      "created_at": "2026-09-30T22:22:24.511925+00:00",
+      "metadata": {
+        "release_tag": "peter-lofi-series-03-coffee-shop-93ad899a",
+        "series_index": 3,
+        "series_name": "Coffee Shop",
+        "series_title": "Coffee Shop Lofi — 1 Hour Cozy Beats for Work & Study | Peter Lofi 🎧",
+        "series_playlist": "Coffee Shop ☕ | Peter Lofi",
+        "generation_mode": "stable-audio-3-small-music",
+        "request_id": "93ad899a-8cc6-4056-a837-574edb4ace6f",
+        "is_master_audio": true
+      }
+    },
+    {
       "id": "c838cb87291d9e6e3a902f86115c57e7",
       "source": "peter_lofi_series",
       "job_id": null,
@@ -2551,6 +2627,31 @@
       }
     },
     {
+      "id": "3751c91415a5f85c33a0baa9877472e9",
+      "source": "peter_lofi_master",
+      "job_id": null,
+      "series_key": "rooftop-office",
+      "collection_key": "master:rooftop-office",
+      "collection_name": "Rooftop Office · Master 1 hora",
+      "title": "Rooftop Office — Master 1 Hour",
+      "filename": "peter-lofi-master.m4a",
+      "duration_seconds": 3600,
+      "position": 1,
+      "style": "Peter Lofi · Rooftop Office · 1 Hour Master",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/peter-lofi-master.m4a",
+      "created_at": "2026-09-30T23:06:07.624582+00:00",
+      "metadata": {
+        "release_tag": "peter-lofi-series-04-rooftop-office-c0a54074",
+        "series_index": 4,
+        "series_name": "Rooftop Office",
+        "series_title": "Rooftop Office — 1 Hour Skyline Lofi & Chill Beats | Peter Lofi 🎧",
+        "series_playlist": "Rooftop Office 🌆 | Peter Lofi",
+        "generation_mode": "stable-audio-3-small-music",
+        "request_id": "c0a54074-d71b-4ced-b593-2fa958c7b493",
+        "is_master_audio": true
+      }
+    },
+    {
       "id": "5af15de0b9cb47d66a486a81722a89b7",
       "source": "peter_lofi_series",
       "job_id": null,
@@ -2860,6 +2961,31 @@
         "generation_mode": "stable-audio-3-small-music",
         "request_id": "c0a54074-d71b-4ced-b593-2fa958c7b493",
         "sha256": "a47f584a0b33198c13c240fd74510db5f5201b63273fc8c09679a0b9243b2cf8"
+      }
+    },
+    {
+      "id": "195e7fbcb9c979fbae422d11a3be2334",
+      "source": "peter_lofi_master",
+      "job_id": null,
+      "series_key": "rainy-office",
+      "collection_key": "master:rainy-office",
+      "collection_name": "Rainy Office · Master 1 hora",
+      "title": "Rainy Office — Master 1 Hour",
+      "filename": "peter-lofi-master.m4a",
+      "duration_seconds": 3600,
+      "position": 1,
+      "style": "Peter Lofi · Rainy Office · 1 Hour Master",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/peter-lofi-master.m4a",
+      "created_at": "2026-09-30T23:55:05.526857+00:00",
+      "metadata": {
+        "release_tag": "peter-lofi-series-05-rainy-office-8723845d",
+        "series_index": 5,
+        "series_name": "Rainy Office",
+        "series_title": "Rainy Office — 1 Hour Cozy Lofi for Deep Work | Peter Lofi 🎧",
+        "series_playlist": "Rainy Office 🌧️ | Peter Lofi",
+        "generation_mode": "stable-audio-3-small-music",
+        "request_id": "8723845d-36cf-4be3-9db5-1d05d4204b55",
+        "is_master_audio": true
       }
     },
     {
@@ -3321,7 +3447,8 @@
         "0a9f621500190af7cb2f77a852a1add3",
         "0126adefb50439d78d996a6aea1849ea",
         "e4398cd45fec3065e74a4752f06d38c6"
-      ]
+      ],
+      "master_track_id": "d4fc1f57f2cd2bb89dfa04bc23e06b19"
     },
     {
       "id": "series:late-night-office",
@@ -3349,7 +3476,8 @@
         "f57a24482c87d889646f45e489f73f21",
         "482eb2a43d42bb2475c674d1c91d4e5a",
         "c90dfa8e0da6020503eed07a64fb8e18"
-      ]
+      ],
+      "master_track_id": "d060c1fcf900bdb566c0574ab1435070"
     },
     {
       "id": "series:coffee-shop",
@@ -3377,7 +3505,8 @@
         "f8c114745ec98967abd890a4b99af044",
         "a255795554449f02bf784aef827b6dbd",
         "eddf31b335ca9ac8a565abc2a3c26f1e"
-      ]
+      ],
+      "master_track_id": "0461d01ab8a81c2390d3bf82cfa6eaa1"
     },
     {
       "id": "series:rooftop-office",
@@ -3405,7 +3534,8 @@
         "0543f70b9575c115d4eb7fcde4e71a4a",
         "5eb2a6ff4ce783b1bfead55a9931de3e",
         "d7ab0c65312f019fb3301a2746123add"
-      ]
+      ],
+      "master_track_id": "3751c91415a5f85c33a0baa9877472e9"
     },
     {
       "id": "series:rainy-office",
@@ -3433,13 +3563,75 @@
         "af89eb3cdfdf02c59dc7763347559128",
         "9aea7de5408072251dc4232c4dbd2aa2",
         "6b230582ae7e4c878aad93a3da04049d"
-      ]
+      ],
+      "master_track_id": "195e7fbcb9c979fbae422d11a3be2334"
     }
   ],
   "hour_mixes": [
     {
+      "id": "master:coffee-shop",
+      "job_id": null,
+      "series_key": "coffee-shop",
+      "kind": "master_audio",
+      "name": "Coffee Shop · Master pronto de 1 hora",
+      "duration_seconds": 3600,
+      "track_ids": [
+        "0461d01ab8a81c2390d3bf82cfa6eaa1"
+      ],
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/peter-lofi-master.m4a"
+    },
+    {
+      "id": "master:late-night-office",
+      "job_id": null,
+      "series_key": "late-night-office",
+      "kind": "master_audio",
+      "name": "Late Night Office · Master pronto de 1 hora",
+      "duration_seconds": 3600,
+      "track_ids": [
+        "d060c1fcf900bdb566c0574ab1435070"
+      ],
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/peter-lofi-master.m4a"
+    },
+    {
+      "id": "master:office-productivity",
+      "job_id": null,
+      "series_key": "office-productivity",
+      "kind": "master_audio",
+      "name": "Office / Productivity · Master pronto de 1 hora",
+      "duration_seconds": 3600,
+      "track_ids": [
+        "d4fc1f57f2cd2bb89dfa04bc23e06b19"
+      ],
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/peter-lofi-master.m4a"
+    },
+    {
+      "id": "master:rainy-office",
+      "job_id": null,
+      "series_key": "rainy-office",
+      "kind": "master_audio",
+      "name": "Rainy Office · Master pronto de 1 hora",
+      "duration_seconds": 3600,
+      "track_ids": [
+        "195e7fbcb9c979fbae422d11a3be2334"
+      ],
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/peter-lofi-master.m4a"
+    },
+    {
+      "id": "master:rooftop-office",
+      "job_id": null,
+      "series_key": "rooftop-office",
+      "kind": "master_audio",
+      "name": "Rooftop Office · Master pronto de 1 hora",
+      "duration_seconds": 3600,
+      "track_ids": [
+        "3751c91415a5f85c33a0baa9877472e9"
+      ],
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/peter-lofi-master.m4a"
+    },
+    {
       "id": "job:847d72af-3a44-4526-92a7-19de170f7b3d",
       "job_id": "847d72af-3a44-4526-92a7-19de170f7b3d",
+      "kind": "assembled_mix",
       "name": "Mix de 1 hora · 2026-09-29",
       "duration_seconds": 120,
       "track_ids": [
@@ -3451,6 +3643,7 @@
     {
       "id": "job:5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0",
       "job_id": "5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0",
+      "kind": "assembled_mix",
       "name": "Mix de 1 hora · 2026-09-30",
       "duration_seconds": 3600,
       "track_ids": [
@@ -3491,6 +3684,7 @@
     {
       "id": "job:b26c6d09-bac0-4ddf-892c-b02c28f2414e",
       "job_id": "b26c6d09-bac0-4ddf-892c-b02c28f2414e",
+      "kind": "assembled_mix",
       "name": "Mix de 1 hora · 2026-09-30",
       "duration_seconds": 3600,
       "track_ids": [
@@ -3513,6 +3707,7 @@
     {
       "id": "job:c6b32750-0f56-43d2-8b6e-b8066393bb51",
       "job_id": "c6b32750-0f56-43d2-8b6e-b8066393bb51",
+      "kind": "assembled_mix",
       "name": "Mix de 1 hora · 2026-09-30",
       "duration_seconds": 3600,
       "track_ids": [
