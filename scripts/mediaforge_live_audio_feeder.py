@@ -35,22 +35,26 @@ def github_upsert(path, payload):
         return
     api = f"https://api.github.com/repos/{repo}/contents/{path}"
     headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "MediaForge-Live-Audio", "Content-Type": "application/json"}
-    sha = None
-    try:
-        req = urllib.request.Request(api, headers=headers)
-        with urllib.request.urlopen(req, timeout=20) as r:
-            sha = json.load(r).get("sha")
-    except Exception:
-        pass
-    body = {"message": f"mediaforge: now playing {payload.get('session_id','')}", "content": base64.b64encode(json.dumps(payload, ensure_ascii=False, indent=2).encode()).decode(), "branch": "main"}
-    if sha:
-        body["sha"] = sha
-    req = urllib.request.Request(api, data=json.dumps(body).encode(), headers=headers, method="PUT")
-    try:
-        with urllib.request.urlopen(req, timeout=30):
+    last_error = None
+    for attempt in range(1, 7):
+        sha = None
+        try:
+            req = urllib.request.Request(api, headers=headers)
+            with urllib.request.urlopen(req, timeout=20) as r:
+                sha = json.load(r).get("sha")
+        except Exception:
             pass
-    except Exception as e:
-        print(f"now-playing publish warning: {e}", file=sys.stderr, flush=True)
+        body = {"message": f"mediaforge: now playing {payload.get('session_id','')}", "content": base64.b64encode(json.dumps(payload, ensure_ascii=False, indent=2).encode()).decode(), "branch": "main"}
+        if sha:
+            body["sha"] = sha
+        req = urllib.request.Request(api, data=json.dumps(body).encode(), headers=headers, method="PUT")
+        try:
+            with urllib.request.urlopen(req, timeout=30):
+                return
+        except Exception as e:
+            last_error = e
+            time.sleep(min(5, attempt))
+    print(f"now-playing publish warning after retries: {last_error}", file=sys.stderr, flush=True)
 
 def parse_ts(value):
     if not value:
@@ -77,7 +81,20 @@ def load_resume_state(session_id, segment_index):
     if segment_index <= 1:
         return None
     expected_prev = segment_index - 1
-    for _ in range(12):
+
+    # V4 path: one takeover state carries the exact audio + visual position.
+    for _ in range(6):
+        try:
+            state = raw_json(f"control/live-takeover/{session_id}-{segment_index}.json")
+            if state.get("takeover") is True and int(state.get("from_segment_index") or 0) == expected_prev and state.get("url"):
+                state["_source"] = "takeover"
+                return state
+        except Exception:
+            pass
+        time.sleep(0.35)
+
+    # Backward compatibility with V1-V3 and the first migration from legacy runners.
+    for _ in range(6):
         try:
             state = raw_json(f"control/live-handoffs/{session_id}.json")
             if int(state.get("from_segment_index") or 0) == expected_prev and state.get("url"):
@@ -85,7 +102,8 @@ def load_resume_state(session_id, segment_index):
                 return state
         except Exception:
             pass
-        time.sleep(1)
+        time.sleep(0.35)
+
     try:
         state = raw_json(f"control/live-now-playing/{session_id}.json")
         if state.get("url"):
