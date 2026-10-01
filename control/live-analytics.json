@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T21:58:00.584934+00:00",
+  "generated_at": "2026-10-01T22:18:21.569983+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -195,7 +195,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "GWTrQKn6h64hmv2QV9d4R_KdPUY",
+          "etag": "F0T7l3qt5h_Nc8itXW8wJclT8Es",
           "id": "PNdwQEFaIrA",
           "snippet": {
             "publishedAt": "2026-10-01T20:39:32Z",
@@ -270,7 +270,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "9",
+            "viewCount": "10",
             "likeCount": "0",
             "dislikeCount": "0",
             "favoriteCount": "0",
