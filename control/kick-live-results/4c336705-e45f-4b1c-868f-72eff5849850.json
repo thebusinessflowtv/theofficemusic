@@ -1,6 +1,6 @@
 {
   "platform": "kick",
-  "status": "starting",
+  "status": "live",
   "title": "Peter Lofi Radio \ud83c\udfa7 Lofi Beats for Work, Study, Focus & Relax \ud83d\udd34 Live on Peter Lofi",
   "description": "",
   "session_id": "4c336705-e45f-4b1c-868f-72eff5849850",
@@ -10,6 +10,9 @@
   "encoder_resolution": "1920x1080",
   "encoder_fps": 60,
   "encoder_bitrate_kbps": 8000,
-  "kick_verified": false,
-  "started_at": "2026-10-01T03:02:32.537513+00:00"
+  "kick_verified": true,
+  "started_at": "2026-10-01T03:02:32.537513+00:00",
+  "kick_verification_state": "online",
+  "encoder_connected": true,
+  "live_at": "2026-10-01T03:02:55.387829+00:00"
 }
