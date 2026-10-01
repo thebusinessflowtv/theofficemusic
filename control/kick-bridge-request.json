@@ -1,0 +1,7 @@
+{
+  "session_id": "4c336705-e45f-4b1c-868f-72eff5849850",
+  "from_legacy_segment": 3,
+  "prewarm_segment": 4,
+  "requested_at": "2026-10-01",
+  "reason": "one-time migration from legacy stop-then-dispatch handoff to prewarmed Kick V2 takeover"
+}
