@@ -1,0 +1,53 @@
+name: YouTube PO Token Audio Probe V3
+
+on:
+  push:
+    paths:
+      - 'control/youtube-pot-probe-v3-queue/*.json'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Resolve source video
+        id: req
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" | grep -E '^control/youtube-pot-probe-v3-queue/[^/]+\.json$' | tail -1)"
+          VIDEO_ID="$(jq -r '.video_id' "$FILE")"
+          echo "video_id=$VIDEO_ID" >> "$GITHUB_OUTPUT"
+      - name: Install yt-dlp and PO token provider
+        run: |
+          set -euo pipefail
+          python -m pip install -q --upgrade yt-dlp bgutil-ytdlp-pot-provider
+          docker run --name bgutil-provider -d --init -p 127.0.0.1:4416:4416 brainicism/bgutil-ytdlp-pot-provider:latest
+          sleep 5
+          docker ps --filter name=bgutil-provider
+      - name: Probe exact audio download with mweb PO token
+        env:
+          VIDEO_ID: ${{ steps.req.outputs.video_id }}
+        run: |
+          set -euo pipefail
+          yt-dlp -v \
+            --no-playlist \
+            --retries 10 \
+            --fragment-retries 10 \
+            --extractor-args 'youtube:player_client=mweb' \
+            -f 'bestaudio[ext=m4a]/bestaudio' \
+            -o '/tmp/source-audio.%(ext)s' \
+            "https://www.youtube.com/watch?v=${VIDEO_ID}"
+          AUDIO="$(find /tmp -maxdepth 1 -type f -name 'source-audio.*' | head -1)"
+          test -n "$AUDIO" && test -s "$AUDIO"
+          ffprobe -v error -show_entries format=duration,size -of json "$AUDIO"
+          ffmpeg -hide_banner -v error -i "$AUDIO" -map 0:a:0 -t 2 -f null -
+          echo 'PO_TOKEN_AUDIO_PROBE=SUCCESS'
