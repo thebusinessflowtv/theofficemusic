@@ -1,0 +1,8 @@
+{
+  "session_id": "5f54bf8e-d700-4a67-bafd-79b1dd047be5",
+  "segment_index": 2,
+  "from_segment_index": 1,
+  "takeover": true,
+  "signaled_at": "2026-10-01T07:11:19Z",
+  "source": "legacy-supervisor"
+}
