@@ -1,0 +1,287 @@
+name: Peter Lofi — YouTube Visual Remake V7
+
+on:
+  push:
+    paths:
+      - 'control/youtube-remake-v7-queue/*.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: peter-lofi-youtube-remake-v7
+  cancel-in-progress: false
+
+env:
+  YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+  YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+
+jobs:
+  remake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Resolve request
+        id: request
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          FILE="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA" | grep -E '^control/youtube-remake-v7-queue/[^/]+\.json$' | tail -1 || true)"
+          test -n "$FILE" || { echo '::error::No remake queue file found'; exit 1; }
+          jq -e . "$FILE" >/dev/null
+          OLD_VIDEO_ID="$(jq -r '.old_video_id // empty' "$FILE")"
+          LOOP_URL="$(jq -r '.loop_url // empty' "$FILE")"
+          AUDIO_URL="$(jq -r '.audio_url // empty' "$FILE")"
+          SOURCE_JOB_ID="$(jq -r '.source_job_id // empty' "$FILE")"
+          NEW_TITLE="$(jq -r '.new_title // empty' "$FILE")"
+          NEW_DESCRIPTION="$(jq -r '.new_description // empty' "$FILE")"
+          test -n "$OLD_VIDEO_ID" && test -n "$LOOP_URL" && test -n "$AUDIO_URL" && test -n "$NEW_TITLE" && test -n "$NEW_DESCRIPTION"
+          [[ "$OLD_VIDEO_ID" =~ ^[A-Za-z0-9_-]{11}$ ]] || exit 1
+          [[ "$LOOP_URL" =~ ^https:// ]] || exit 1
+          [[ "$AUDIO_URL" =~ ^https:// ]] || exit 1
+          test "${#NEW_TITLE}" -le 100
+          echo "request_file=$FILE" >> "$GITHUB_OUTPUT"
+          echo "old_video_id=$OLD_VIDEO_ID" >> "$GITHUB_OUTPUT"
+          echo "loop_url=$LOOP_URL" >> "$GITHUB_OUTPUT"
+          echo "audio_url=$AUDIO_URL" >> "$GITHUB_OUTPUT"
+          echo "source_job_id=$SOURCE_JOB_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install -q google-api-python-client google-auth google-auth-httplib2
+          mkdir -p build control/youtube-remakes
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Fetch and validate original YouTube video
+        env:
+          OLD_VIDEO_ID: ${{ steps.request.outputs.old_video_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          mine=yt.channels().list(part='id',mine=True).execute().get('items',[])
+          if not mine: raise SystemExit('No authenticated YouTube channel')
+          channel_id=mine[0]['id']
+          expected=os.environ.get('YOUTUBE_CHANNEL_ID','').strip()
+          if expected and channel_id != expected: raise SystemExit('Authenticated YouTube channel mismatch')
+          vid=os.environ['OLD_VIDEO_ID']
+          items=yt.videos().list(part='snippet,status,contentDetails',id=vid).execute().get('items',[])
+          if not items: raise SystemExit('Original YouTube video not found')
+          original=items[0]
+          if original['snippet'].get('channelId') != channel_id: raise SystemExit('Original video is not owned by this channel')
+          if original.get('status',{}).get('privacyStatus') != 'public': raise SystemExit('Original is not currently public; refusing automatic replacement')
+          pathlib.Path('build/original.json').write_text(json.dumps(original,ensure_ascii=False,indent=2),encoding='utf-8')
+          print('ORIGINAL_TITLE='+original['snippet'].get('title',''))
+          print('ORIGINAL_DURATION='+original.get('contentDetails',{}).get('duration',''))
+          PY
+
+      - name: Download verified original master audio
+        env:
+          AUDIO_URL: ${{ steps.request.outputs.audio_url }}
+          SOURCE_JOB_ID: ${{ steps.request.outputs.source_job_id }}
+        run: |
+          set -euo pipefail
+          curl --retry 10 --retry-delay 3 --retry-all-errors -fL "$AUDIO_URL" -o build/original-audio.m4a
+          test -s build/original-audio.m4a
+          ffmpeg -hide_banner -v error -i build/original-audio.m4a -map 0:a:0 -t 1 -f null -
+          ffprobe -v error -show_entries format=duration -of csv=p=0 build/original-audio.m4a
+          python - <<'PY'
+          import subprocess
+          d=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0','build/original-audio.m4a'],text=True).strip())
+          if not (3599.0 <= d <= 3601.5): raise SystemExit(f'Unexpected master duration: {d}')
+          PY
+          echo "MASTER_SOURCE_JOB=${SOURCE_JOB_ID}"
+
+      - name: Download and validate attached replacement visual
+        env:
+          LOOP_URL: ${{ steps.request.outputs.loop_url }}
+        run: |
+          set -euo pipefail
+          curl --retry 10 --retry-delay 3 --retry-all-errors -fL "$LOOP_URL" -o build/loop.mp4
+          test -s build/loop.mp4
+          ffmpeg -hide_banner -v error -i build/loop.mp4 -map 0:v:0 -frames:v 1 -f null -
+          WIDTH="$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 build/loop.mp4)"
+          HEIGHT="$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 build/loop.mp4)"
+          FPS="$(ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of csv=p=0 build/loop.mp4)"
+          DURATION="$(ffprobe -v error -show_entries format=duration -of csv=p=0 build/loop.mp4)"
+          echo "VISUAL=${WIDTH}x${HEIGHT} @ ${FPS}; duration=${DURATION}s"
+          test "$WIDTH" -gt 0 && test "$HEIGHT" -gt 0
+
+      - name: Assemble one-hour replacement with looped attached video
+        run: |
+          set -euo pipefail
+          AUDIO_SECONDS="$(ffprobe -v error -show_entries format=duration -of csv=p=0 build/original-audio.m4a)"
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -fflags +genpts -stream_loop -1 -i build/loop.mp4 \
+            -i build/original-audio.m4a \
+            -map 0:v:0 -map 1:a:0 \
+            -t "$AUDIO_SECONDS" -shortest \
+            -c:v copy -c:a copy \
+            -avoid_negative_ts make_zero -movflags +faststart \
+            build/peter-lofi-remake.mp4
+          test -s build/peter-lofi-remake.mp4
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration,size -of json build/peter-lofi-remake.mp4
+
+      - name: Preserve original thumbnail
+        env:
+          OLD_VIDEO_ID: ${{ steps.request.outputs.old_video_id }}
+        run: |
+          set -euo pipefail
+          for NAME in maxresdefault.jpg hqdefault.jpg; do
+            URL="https://i.ytimg.com/vi/${OLD_VIDEO_ID}/${NAME}"
+            if curl --retry 5 -fL "$URL" -o build/original-thumbnail.jpg && [ -s build/original-thumbnail.jpg ]; then break; fi
+          done
+          test -s build/original-thumbnail.jpg
+
+      - name: Upload replacement PUBLIC with improved metadata
+        env:
+          REQUEST_FILE: ${{ steps.request.outputs.request_file }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, time
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          original=json.loads(pathlib.Path('build/original.json').read_text(encoding='utf-8'))
+          request=json.loads(pathlib.Path(os.environ['REQUEST_FILE']).read_text(encoding='utf-8'))
+          s=original['snippet']; st0=original['status']
+          new_title=request['new_title'].strip()
+          new_description=request['new_description']
+          if not new_title or len(new_title)>100: raise SystemExit('Invalid new title')
+          if not new_description or len(new_description)>5000: raise SystemExit('Invalid new description')
+          snippet={'title':new_title,'description':new_description,'categoryId':s.get('categoryId','10')}
+          for k in ('tags','defaultLanguage','defaultAudioLanguage'):
+              if k in s: snippet[k]=s[k]
+          status={'privacyStatus':'public','selfDeclaredMadeForKids':bool(st0.get('selfDeclaredMadeForKids',False))}
+          media=MediaFileUpload('build/peter-lofi-remake.mp4',mimetype='video/mp4',chunksize=32*1024*1024,resumable=True)
+          req=yt.videos().insert(part='snippet,status',body={'snippet':snippet,'status':status},media_body=media)
+          response=None
+          while response is None:
+              progress,response=req.next_chunk(num_retries=10)
+              if progress: print(f'UPLOAD_PROGRESS={int(progress.progress()*100)}%')
+          new_id=response['id']
+          pathlib.Path('build/new-video-id.txt').write_text(new_id,encoding='utf-8')
+          print('NEW_VIDEO_URL=https://www.youtube.com/watch?v='+new_id)
+
+          thumb=MediaFileUpload('build/original-thumbnail.jpg',mimetype='image/jpeg',resumable=False)
+          yt.thumbnails().set(videoId=new_id,media_body=thumb).execute()
+
+          verified=False
+          for attempt in range(200):
+              items=yt.videos().list(part='snippet,status,processingDetails,contentDetails',id=new_id).execute().get('items',[])
+              if items:
+                  v=items[0]; st=v.get('status',{}); pd=v.get('processingDetails',{}); cd=v.get('contentDetails',{})
+                  privacy=st.get('privacyStatus'); upload=st.get('uploadStatus'); processing=pd.get('processingStatus'); duration=cd.get('duration')
+                  title_ok=v.get('snippet',{}).get('title')==new_title
+                  desc_ok=v.get('snippet',{}).get('description')==new_description
+                  print(f'VERIFY {attempt+1}: privacy={privacy} upload={upload} processing={processing} duration={duration} title={title_ok} desc={desc_ok}')
+                  if privacy=='public' and upload=='processed' and processing not in ('failed','terminated') and duration not in (None,'P0D') and title_ok and desc_ok:
+                      verified=True
+                      pathlib.Path('build/new-final.json').write_text(json.dumps(v,ensure_ascii=False,indent=2),encoding='utf-8')
+                      break
+              time.sleep(15)
+          if not verified: raise SystemExit('New upload was not fully processed and verified; original remains public')
+          PY
+
+      - name: Privatize original only after full replacement verification
+        env:
+          OLD_VIDEO_ID: ${{ steps.request.outputs.old_video_id }}
+          SOURCE_JOB_ID: ${{ steps.request.outputs.source_job_id }}
+          AUDIO_URL: ${{ steps.request.outputs.audio_url }}
+          REQUEST_FILE: ${{ steps.request.outputs.request_file }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, time
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          old_id=os.environ['OLD_VIDEO_ID']
+          new_id=pathlib.Path('build/new-video-id.txt').read_text().strip()
+          request=json.loads(pathlib.Path(os.environ['REQUEST_FILE']).read_text(encoding='utf-8'))
+
+          def get_video(vid, parts='snippet,status,contentDetails'):
+              items=yt.videos().list(part=parts,id=vid).execute().get('items',[])
+              if not items: raise SystemExit(f'Video not found: {vid}')
+              return items[0]
+
+          new=get_video(new_id)
+          if new.get('status',{}).get('privacyStatus')!='public': raise SystemExit('Replacement not public; refusing to privatize original')
+          if new.get('status',{}).get('uploadStatus')!='processed': raise SystemExit('Replacement not processed; refusing to privatize original')
+          if new.get('snippet',{}).get('title')!=request['new_title'].strip(): raise SystemExit('Replacement title mismatch')
+          if new.get('snippet',{}).get('description')!=request['new_description']: raise SystemExit('Replacement description mismatch')
+
+          old=get_video(old_id)
+          if old.get('status',{}).get('privacyStatus')!='private':
+              os0=old.get('status',{})
+              private={'privacyStatus':'private','selfDeclaredMadeForKids':bool(os0.get('selfDeclaredMadeForKids',False))}
+              for k in ('embeddable','license','publicStatsViewable'):
+                  if k in os0: private[k]=os0[k]
+              yt.videos().update(part='status',body={'id':old_id,'status':private}).execute()
+
+          old_privacy=None
+          for attempt in range(20):
+              old_privacy=get_video(old_id,'status').get('status',{}).get('privacyStatus')
+              print(f'PRIVACY_CHECK {attempt+1}: {old_privacy}')
+              if old_privacy=='private': break
+              time.sleep(3)
+          if old_privacy!='private': raise SystemExit('Original still not private after retries')
+
+          new_final=get_video(new_id)
+          result={
+            'status':'completed',
+            'old_video_id':old_id,
+            'old_video_url':'https://www.youtube.com/watch?v='+old_id,
+            'old_privacy':'private',
+            'new_video_id':new_id,
+            'new_video_url':'https://www.youtube.com/watch?v='+new_id,
+            'new_privacy':new_final.get('status',{}).get('privacyStatus'),
+            'upload_status':new_final.get('status',{}).get('uploadStatus'),
+            'title':new_final.get('snippet',{}).get('title'),
+            'description':new_final.get('snippet',{}).get('description'),
+            'duration':new_final.get('contentDetails',{}).get('duration'),
+            'audio_source':'verified_original_generation_master',
+            'source_job_id':os.environ.get('SOURCE_JOB_ID',''),
+            'audio_url':os.environ.get('AUDIO_URL',''),
+            'visual_loop':'user_supplied_attachment',
+            'metadata_mode':'improved_title_and_description'
+          }
+          pathlib.Path('build/result.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Record completed replacement
+        if: success()
+        env:
+          OLD_VIDEO_ID: ${{ steps.request.outputs.old_video_id }}
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git rebase origin/main
+          cp build/result.json "control/youtube-remakes/${OLD_VIDEO_ID}.json"
+          git add "control/youtube-remakes/${OLD_VIDEO_ID}.json"
+          git commit -m "mediaforge: record optimized YouTube visual remake ${OLD_VIDEO_ID}" || exit 0
+          git push origin HEAD:main
