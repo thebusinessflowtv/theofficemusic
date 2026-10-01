@@ -1,0 +1,19 @@
+{
+  "platform": "youtube",
+  "status": "starting",
+  "title": "MediaForge Handoff Test — UNLISTED",
+  "description": "Isolated engineering test for prewarmed runner handoff, audio position continuity and visual loop continuity. Unlisted; not part of the public Peter Lofi programming.",
+  "github_run_id": 36819832922,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36819832922",
+  "youtube_broadcast_id": "sQSwPLlCKt4",
+  "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790832478102292",
+  "youtube_url": "https://www.youtube.com/watch?v=sQSwPLlCKt4",
+  "segment_index": 1,
+  "encoder_resolution": "1920x1080",
+  "encoder_fps": 60,
+  "encoder_bitrate_kbps": 8000,
+  "custom_thumbnail_applied": false,
+  "privacy_status": "unlisted",
+  "started_at": "2026-10-01T05:27:56.625060+00:00",
+  "session_started_at": "2026-10-01T05:27:56.625060+00:00"
+}
