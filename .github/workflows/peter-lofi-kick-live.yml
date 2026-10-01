@@ -18,6 +18,10 @@ on:
         required: true
         default: "Peter Lofi — Live"
         type: string
+      description:
+        required: false
+        default: ""
+        type: string
       thumbnail_url:
         required: false
         default: ""
@@ -136,6 +140,7 @@ jobs:
         env:
           SESSION_ID: ${{ inputs.session_id }}
           TITLE: ${{ inputs.title }}
+          DESCRIPTION: ${{ inputs.description }}
           SEGMENT_INDEX: ${{ inputs.segment_index }}
         run: |
           set -euo pipefail
@@ -144,7 +149,7 @@ jobs:
           git reset --hard origin/main
           python - <<'PY'
           import datetime,json,os,pathlib
-          d={'platform':'kick','status':'starting','title':os.environ['TITLE'],'session_id':os.environ['SESSION_ID'],'segment_index':int(os.environ['SEGMENT_INDEX']),'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          d={'platform':'kick','status':'starting','title':os.environ['TITLE'],'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'segment_index':int(os.environ['SEGMENT_INDEX']),'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
           p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,indent=2),encoding='utf-8')
           PY
           git add control/kick-live-results/${SESSION_ID}.json
@@ -209,6 +214,7 @@ jobs:
           TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
           DURATION_MINUTES: ${{ inputs.duration_minutes }}
           TITLE: ${{ inputs.title }}
+          DESCRIPTION: ${{ inputs.description }}
           THUMBNAIL_URL: ${{ inputs.thumbnail_url }}
           LOOP_URL: ${{ inputs.loop_url }}
           SEGMENT_INDEX: ${{ inputs.segment_index }}
@@ -216,7 +222,7 @@ jobs:
           set -euo pipefail
           if [ "$DURATION_MINUTES" -eq 0 ]; then REMAIN=0; else REMAIN=$((DURATION_MINUTES-300)); [ "$REMAIN" -lt 1 ] && REMAIN=1; fi
           NEXT=$((SEGMENT_INDEX+1))
-          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-kick-live.yml/dispatches" -f ref=main -f "inputs[session_id]=${SESSION_ID}" -f "inputs[track_urls_b64]=${TRACK_URLS_B64}" -f "inputs[duration_minutes]=${REMAIN}" -f "inputs[title]=${TITLE}" -f "inputs[thumbnail_url]=${THUMBNAIL_URL}" -f "inputs[loop_url]=${LOOP_URL}" -f "inputs[segment_index]=${NEXT}"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-kick-live.yml/dispatches" -f ref=main -f "inputs[session_id]=${SESSION_ID}" -f "inputs[track_urls_b64]=${TRACK_URLS_B64}" -f "inputs[duration_minutes]=${REMAIN}" -f "inputs[title]=${TITLE}" -f "inputs[description]=${DESCRIPTION}" -f "inputs[thumbnail_url]=${THUMBNAIL_URL}" -f "inputs[loop_url]=${LOOP_URL}" -f "inputs[segment_index]=${NEXT}"
 
       - name: Mark Kick live complete
         if: steps.keepalive.outputs.chain != 'true'
@@ -240,6 +246,7 @@ jobs:
         env:
           SESSION_ID: ${{ inputs.session_id }}
           TITLE: ${{ inputs.title }}
+          DESCRIPTION: ${{ inputs.description }}
         run: |
           set +e
           git rebase --abort >/dev/null 2>&1 || true
@@ -251,7 +258,7 @@ jobs:
           p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');d={}
           try:d=json.loads(p.read_text())
           except Exception:pass
-          d.update({'platform':'kick','status':'failed','title':os.environ.get('TITLE','Peter Lofi — Live'),'session_id':os.environ['SESSION_ID'],'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'Kick live workflow failed. Open github_run_url for details.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()});p.write_text(json.dumps(d,indent=2))
+          d.update({'platform':'kick','status':'failed','title':os.environ.get('TITLE','Peter Lofi — Live'),'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'Kick live workflow failed. Open github_run_url for details.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()});p.write_text(json.dumps(d,indent=2))
           PY
           git add control/kick-live-results/${SESSION_ID}.json
           git commit -m "peter-lofi: Kick live failed ${SESSION_ID}" || true
