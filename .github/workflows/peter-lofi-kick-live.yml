@@ -39,9 +39,11 @@ permissions:
   contents: write
   actions: write
 
+# There is only one Kick channel / stream key. A new MediaForge Kick live
+# must replace any stale encoder instead of competing with it.
 concurrency:
-  group: peter-lofi-kick-${{ inputs.session_id }}
-  cancel-in-progress: false
+  group: peter-lofi-kick-channel
+  cancel-in-progress: true
 
 env:
   GH_TOKEN: ${{ github.token }}
@@ -49,6 +51,7 @@ env:
   KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
   KICK_RTMP_URL: ${{ secrets.KICK_RTMP_URL }}
   KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
+  KICK_CHANNEL_SLUG: peterlofi
 
 jobs:
   live:
@@ -60,11 +63,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install runtime
+      - name: Prepare runtime
         run: |
           set -euo pipefail
-          sudo apt-get update -y
-          sudo apt-get install -y ffmpeg jq file
+          MISSING=0
+          command -v ffmpeg >/dev/null 2>&1 || MISSING=1
+          command -v jq >/dev/null 2>&1 || MISSING=1
+          command -v file >/dev/null 2>&1 || MISSING=1
+          if [ "$MISSING" = 1 ]; then
+            sudo apt-get update -y
+            sudo apt-get install -y ffmpeg jq file
+          fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
@@ -104,13 +113,13 @@ jobs:
           THUMBNAIL_URL: ${{ inputs.thumbnail_url }}
         run: |
           set -euo pipefail
-          if [ -n "$THUMBNAIL_URL" ]; then curl --retry 5 --retry-all-errors -fL "$THUMBNAIL_URL" -o build/thumbnail.jpg || true; fi
+          if [ -n "$THUMBNAIL_URL" ]; then curl --connect-timeout 10 --max-time 120 --retry 3 --retry-all-errors -fL "$THUMBNAIL_URL" -o build/thumbnail.jpg || true; fi
           if [ ! -s build/thumbnail.jpg ]; then tr -d '\r\n ' < assets/bootstrap/thumb_compact.b64 | base64 --decode > build/thumbnail.jpg; fi
           ffmpeg -hide_banner -v error -i build/thumbnail.jpg -frames:v 1 -f null - >/dev/null
 
           HAVE_LOOP=0
           if [ -n "$LOOP_URL" ]; then
-            if curl --retry 5 --retry-all-errors -fL "$LOOP_URL" -o build/visual-source; then
+            if curl --connect-timeout 10 --max-time 180 --retry 3 --retry-all-errors -fL "$LOOP_URL" -o build/visual-source; then
               MIME_KIND="$(file -b --mime-type build/visual-source || true)"
               if echo "$MIME_KIND" | grep -q '^image/'; then
                 ffmpeg -hide_banner -loglevel warning -y -loop 1 -i build/visual-source -t 12 \
@@ -143,7 +152,7 @@ jobs:
           git reset --hard origin/main
           python - <<'PY'
           import datetime,json,os,pathlib
-          d={'platform':'kick','status':'starting','title':os.environ['TITLE'],'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'segment_index':int(os.environ['SEGMENT_INDEX']),'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'encoder_resolution':'1920x1080','encoder_fps':60,'encoder_bitrate_kbps':8000,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          d={'platform':'kick','status':'starting','title':os.environ['TITLE'],'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'segment_index':int(os.environ['SEGMENT_INDEX']),'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'encoder_resolution':'1920x1080','encoder_fps':60,'encoder_bitrate_kbps':8000,'kick_verified':False,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
           p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,indent=2),encoding='utf-8')
           PY
           git add control/kick-live-results/${SESSION_ID}.json
@@ -160,72 +169,185 @@ jobs:
             exit 0
           fi
           jq -n --arg stream_title "$TITLE" '{stream_title:$stream_title}' > build/kick-metadata.json
-          CODE="$(curl -sS -o build/kick-metadata-response.json -w '%{http_code}' -X PATCH 'https://api.kick.com/public/v1/channels' -H "Authorization: Bearer ${KICK_ACCESS_TOKEN}" -H 'Content-Type: application/json' --data-binary @build/kick-metadata.json)"
+          CODE="$(curl --connect-timeout 10 --max-time 20 -sS -o build/kick-metadata-response.json -w '%{http_code}' -X PATCH 'https://api.kick.com/public/v1/channels' -H "Authorization: Bearer ${KICK_ACCESS_TOKEN}" -H 'Content-Type: application/json' --data-binary @build/kick-metadata.json || true)"
           if [ "$CODE" != "204" ]; then
-            echo "::warning::Kick metadata update returned HTTP $CODE"
-            cat build/kick-metadata-response.json || true
+            echo "::warning::Kick metadata update returned HTTP ${CODE:-network_error}. Streaming will continue; refresh KICK_ACCESS_TOKEN to restore metadata/analytics."
           else
             echo "Kick stream title updated from MediaForge."
           fi
 
-      - name: Start Kick RTMPS encoder at 1080p60
+      - name: Start Kick RTMPS encoder with automatic retry
         env:
           SESSION_ID: ${{ inputs.session_id }}
           TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
         run: |
           set -euo pipefail
-          mkfifo build/audio.pcm
-          python scripts/mediaforge_live_audio_feeder.py --session-id "$SESSION_ID" --fallback-b64 "$TRACK_URLS_B64" > build/audio.pcm 2>build/audio-feeder.log &
-          echo $! > build/audio-feeder.pid
-
           BASE="${KICK_STREAM_URL:-${KICK_RTMP_URL:-rtmps://fa723fc1b171.global-contribute.live-video.net:443/app}}"
           TARGET="${BASE%/}/${KICK_STREAM_KEY}"
-          ffmpeg -hide_banner -loglevel warning \
-            -re -stream_loop -1 -i build/loop.mp4 \
-            -thread_queue_size 512 -f s16le -ar 48000 -ac 2 -i build/audio.pcm \
-            -map 0:v:0 -map 1:a:0 \
-            -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
-            -r 60 -s:v 1920x1080 -pix_fmt yuv420p \
-            -c:v libx264 -preset veryfast -tune zerolatency -profile:v high -level:v 4.2 \
-            -b:v 8000k -minrate 8000k -maxrate 8000k -bufsize 16000k \
-            -g 120 -keyint_min 120 -sc_threshold 0 -x264-params "nal-hrd=cbr:force-cfr=1" \
-            -c:a aac -b:a 160k -ar 48000 -ac 2 \
-            -f flv "$TARGET" >build/ffmpeg.log 2>&1 &
-          echo $! > build/ffmpeg.pid
-          sleep 15
-          kill -0 "$(cat build/ffmpeg.pid)" || { tail -100 build/ffmpeg.log; exit 1; }
-          kill -0 "$(cat build/audio-feeder.pid)" || { tail -100 build/audio-feeder.log; exit 1; }
+
+          cleanup_pair() {
+            [ -f build/ffmpeg.pid ] && kill -INT "$(cat build/ffmpeg.pid)" 2>/dev/null || true
+            [ -f build/audio-feeder.pid ] && kill -TERM "$(cat build/audio-feeder.pid)" 2>/dev/null || true
+            sleep 2
+            [ -f build/ffmpeg.pid ] && kill -KILL "$(cat build/ffmpeg.pid)" 2>/dev/null || true
+            [ -f build/audio-feeder.pid ] && kill -KILL "$(cat build/audio-feeder.pid)" 2>/dev/null || true
+            rm -f build/audio.pcm build/ffmpeg.pid build/audio-feeder.pid
+          }
+
+          start_pair() {
+            cleanup_pair
+            mkfifo build/audio.pcm
+            : > build/audio-feeder.log
+            : > build/ffmpeg.log
+            python scripts/mediaforge_live_audio_feeder.py --session-id "$SESSION_ID" --fallback-b64 "$TRACK_URLS_B64" > build/audio.pcm 2>build/audio-feeder.log &
+            echo $! > build/audio-feeder.pid
+            ffmpeg -hide_banner -loglevel warning \
+              -re -stream_loop -1 -i build/loop.mp4 \
+              -thread_queue_size 512 -f s16le -ar 48000 -ac 2 -i build/audio.pcm \
+              -map 0:v:0 -map 1:a:0 \
+              -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
+              -r 60 -s:v 1920x1080 -pix_fmt yuv420p \
+              -c:v libx264 -preset veryfast -tune zerolatency -profile:v high -level:v 4.2 \
+              -b:v 8000k -minrate 8000k -maxrate 8000k -bufsize 16000k \
+              -g 120 -keyint_min 120 -sc_threshold 0 -x264-params "nal-hrd=cbr:force-cfr=1" \
+              -c:a aac -b:a 160k -ar 48000 -ac 2 -flvflags no_duration_filesize \
+              -f flv "$TARGET" >build/ffmpeg.log 2>&1 &
+            echo $! > build/ffmpeg.pid
+          }
+
+          kick_state() {
+            # 1) Official API when the OAuth token is still valid.
+            if [ -n "${KICK_ACCESS_TOKEN:-}" ]; then
+              CODE="$(curl --connect-timeout 5 --max-time 10 -sS -o build/kick-state-official.json -w '%{http_code}' 'https://api.kick.com/public/v1/channels' -H "Authorization: Bearer ${KICK_ACCESS_TOKEN}" || true)"
+              if [ "$CODE" = "200" ]; then
+                if jq -e '.data[0].stream.is_live == true' build/kick-state-official.json >/dev/null 2>&1; then echo online; return; fi
+                echo offline; return
+              fi
+            fi
+            # 2) Public channel payload as fallback. This keeps auto-start independent of OAuth expiry.
+            CODE="$(curl --connect-timeout 5 --max-time 10 -A 'Mozilla/5.0 MediaForge/1.0' -sS -o build/kick-state-public.json -w '%{http_code}' "https://kick.com/api/v2/channels/${KICK_CHANNEL_SLUG}" || true)"
+            if [ "$CODE" = "200" ]; then
+              if jq -e '.livestream != null' build/kick-state-public.json >/dev/null 2>&1; then echo online; else echo offline; fi
+              return
+            fi
+            echo unavailable
+          }
+
+          VERIFIED=false
+          VERIFY_STATE=unavailable
+          for ATTEMPT in 1 2 3 4; do
+            echo "Starting Kick encoder attempt ${ATTEMPT}/4..."
+            start_pair
+            sleep 18
+            if ! kill -0 "$(cat build/ffmpeg.pid)" 2>/dev/null || ! kill -0 "$(cat build/audio-feeder.pid)" 2>/dev/null; then
+              echo "Encoder pair exited during startup; retrying automatically."
+              tail -80 build/ffmpeg.log || true
+              cleanup_pair
+              sleep $((ATTEMPT*4))
+              continue
+            fi
+
+            # Give Kick time to publish the channel state. If the status endpoint is available
+            # and explicitly remains offline, restart the ingest automatically.
+            OFFLINE_SEEN=false
+            for CHECK in $(seq 1 12); do
+              VERIFY_STATE="$(kick_state)"
+              echo "Kick verification ${CHECK}/12: ${VERIFY_STATE}"
+              if [ "$VERIFY_STATE" = "online" ]; then VERIFIED=true; break; fi
+              if [ "$VERIFY_STATE" = "offline" ]; then OFFLINE_SEEN=true; fi
+              sleep 5
+            done
+            if [ "$VERIFIED" = true ]; then break; fi
+            if [ "$OFFLINE_SEEN" = true ]; then
+              echo "Kick accepted the connection locally but the channel stayed offline; restarting ingest."
+              cleanup_pair
+              sleep $((ATTEMPT*5))
+              continue
+            fi
+            # If Kick status endpoints are temporarily unavailable, a stable RTMPS encoder is
+            # preferable to tearing down a healthy stream. Keep it running and mark unverified.
+            echo "Kick status API unavailable; keeping stable RTMPS encoder running."
+            break
+          done
+
+          if [ ! -f build/ffmpeg.pid ] || ! kill -0 "$(cat build/ffmpeg.pid)" 2>/dev/null; then
+            echo "Kick encoder could not stay connected after automatic retries."
+            tail -120 build/ffmpeg.log || true
+            exit 1
+          fi
+          if [ ! -f build/audio-feeder.pid ] || ! kill -0 "$(cat build/audio-feeder.pid)" 2>/dev/null; then
+            echo "Audio feeder could not stay connected after automatic retries."
+            tail -120 build/audio-feeder.log || true
+            exit 1
+          fi
+
+          printf '{"verified":%s,"state":"%s"}\n' "$VERIFIED" "$VERIFY_STATE" > build/kick-verification.json
           git fetch origin main
           git reset --hard origin/main
+          export VERIFIED VERIFY_STATE
           python - <<'PY'
           import json,os,pathlib,datetime
-          p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');d=json.loads(p.read_text());d['status']='live';d['live_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();d['encoder_resolution']='1920x1080';d['encoder_fps']=60;d['encoder_bitrate_kbps']=8000;p.write_text(json.dumps(d,indent=2))
+          p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json')
+          d=json.loads(p.read_text())
+          verified=os.environ.get('VERIFIED','false').lower()=='true'
+          d['status']='live' if verified else 'starting'
+          d['kick_verified']=verified
+          d['kick_verification_state']=os.environ.get('VERIFY_STATE','unavailable')
+          d['encoder_connected']=True
+          d['live_at']=datetime.datetime.now(datetime.timezone.utc).isoformat() if verified else d.get('live_at')
+          d['encoder_resolution']='1920x1080';d['encoder_fps']=60;d['encoder_bitrate_kbps']=8000
+          p.write_text(json.dumps(d,indent=2))
           PY
           git add control/kick-live-results/${SESSION_ID}.json
-          git commit -m "peter-lofi: Kick live ${SESSION_ID}" || true
+          git commit -m "peter-lofi: Kick encoder connected ${SESSION_ID}" || true
           git push origin HEAD:main
 
-      - name: Keep Kick live running and watch stop flag
+      - name: Keep Kick live running, reconnect automatically, and watch stop flag
         id: keepalive
         env:
           SESSION_ID: ${{ inputs.session_id }}
+          TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
           DURATION_MINUTES: ${{ inputs.duration_minutes }}
         run: |
           set -euo pipefail
-          PID="$(cat build/ffmpeg.pid)"; FEEDER_PID="$(cat build/audio-feeder.pid)"; DURATION="$DURATION_MINUTES"
+          DURATION="$DURATION_MINUTES"
           if [ "$DURATION" -eq 0 ]; then SEGMENT_MIN=300; else SEGMENT_MIN="$DURATION"; [ "$SEGMENT_MIN" -gt 300 ] && SEGMENT_MIN=300; fi
           DEADLINE=$(( $(date +%s) + SEGMENT_MIN*60 )); REASON=segment_complete
+          BASE="${KICK_STREAM_URL:-${KICK_RTMP_URL:-rtmps://fa723fc1b171.global-contribute.live-video.net:443/app}}"
+          TARGET="${BASE%/}/${KICK_STREAM_KEY}"
+
+          restart_pair() {
+            [ -f build/ffmpeg.pid ] && kill -KILL "$(cat build/ffmpeg.pid)" 2>/dev/null || true
+            [ -f build/audio-feeder.pid ] && kill -KILL "$(cat build/audio-feeder.pid)" 2>/dev/null || true
+            rm -f build/audio.pcm
+            mkfifo build/audio.pcm
+            python scripts/mediaforge_live_audio_feeder.py --session-id "$SESSION_ID" --fallback-b64 "$TRACK_URLS_B64" > build/audio.pcm 2>>build/audio-feeder.log & echo $! > build/audio-feeder.pid
+            ffmpeg -hide_banner -loglevel warning -re -stream_loop -1 -i build/loop.mp4 -thread_queue_size 512 -f s16le -ar 48000 -ac 2 -i build/audio.pcm -map 0:v:0 -map 1:a:0 -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" -r 60 -s:v 1920x1080 -pix_fmt yuv420p -c:v libx264 -preset veryfast -tune zerolatency -profile:v high -level:v 4.2 -b:v 8000k -minrate 8000k -maxrate 8000k -bufsize 16000k -g 120 -keyint_min 120 -sc_threshold 0 -x264-params "nal-hrd=cbr:force-cfr=1" -c:a aac -b:a 160k -ar 48000 -ac 2 -flvflags no_duration_filesize -f flv "$TARGET" >>build/ffmpeg.log 2>&1 & echo $! > build/ffmpeg.pid
+            sleep 15
+          }
+
+          RECONNECTS=0
           while [ "$(date +%s)" -lt "$DEADLINE" ]; do
-            if ! kill -0 "$PID" 2>/dev/null; then tail -100 build/ffmpeg.log || true; echo "reason=encoder_failed" >> "$GITHUB_OUTPUT"; exit 1; fi
-            if ! kill -0 "$FEEDER_PID" 2>/dev/null; then tail -100 build/audio-feeder.log || true; echo "reason=audio_feeder_failed" >> "$GITHUB_OUTPUT"; exit 1; fi
+            if ! kill -0 "$(cat build/ffmpeg.pid 2>/dev/null || echo 0)" 2>/dev/null || ! kill -0 "$(cat build/audio-feeder.pid 2>/dev/null || echo 0)" 2>/dev/null; then
+              RECONNECTS=$((RECONNECTS+1))
+              if [ "$RECONNECTS" -gt 6 ]; then
+                echo "Automatic reconnect limit reached."
+                tail -120 build/ffmpeg.log || true
+                echo "reason=encoder_failed" >> "$GITHUB_OUTPUT"
+                exit 1
+              fi
+              echo "Kick encoder disconnected; automatic reconnect ${RECONNECTS}/6."
+              restart_pair
+              continue
+            fi
             if curl -fsS "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/control/kick-live-stop/${SESSION_ID}.json?ts=$(date +%s)" 2>/dev/null | grep -q '"stop"[[:space:]]*:[[:space:]]*true'; then REASON=manual_stop; break; fi
-            sleep 30
+            sleep 20
           done
-          kill -INT "$PID" 2>/dev/null || true
-          kill -TERM "$FEEDER_PID" 2>/dev/null || true
-          for i in $(seq 1 20); do kill -0 "$PID" 2>/dev/null || break; sleep 1; done
-          kill -KILL "$PID" 2>/dev/null || true
-          kill -KILL "$FEEDER_PID" 2>/dev/null || true
+          kill -INT "$(cat build/ffmpeg.pid)" 2>/dev/null || true
+          kill -TERM "$(cat build/audio-feeder.pid)" 2>/dev/null || true
+          sleep 3
+          kill -KILL "$(cat build/ffmpeg.pid)" 2>/dev/null || true
+          kill -KILL "$(cat build/audio-feeder.pid)" 2>/dev/null || true
           echo "reason=$REASON" >> "$GITHUB_OUTPUT"
           if [ "$REASON" = segment_complete ] && { [ "$DURATION" -eq 0 ] || [ "$DURATION" -gt 300 ]; }; then echo "chain=true" >> "$GITHUB_OUTPUT"; else echo "chain=false" >> "$GITHUB_OUTPUT"; fi
 
@@ -282,7 +404,7 @@ jobs:
           p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');d={}
           try:d=json.loads(p.read_text())
           except Exception:pass
-          d.update({'platform':'kick','status':'failed','title':os.environ.get('TITLE','Peter Lofi — Live'),'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'Kick live workflow failed. Open github_run_url for details.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()});p.write_text(json.dumps(d,indent=2),encoding='utf-8')
+          d.update({'platform':'kick','status':'failed','title':os.environ.get('TITLE','Peter Lofi — Live'),'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'Kick live workflow failed after automatic reconnect attempts. Open github_run_url for details.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()});p.write_text(json.dumps(d,indent=2),encoding='utf-8')
           PY
           git add control/kick-live-results/${SESSION_ID}.json
           git commit -m "peter-lofi: Kick live failed ${SESSION_ID}" || true
