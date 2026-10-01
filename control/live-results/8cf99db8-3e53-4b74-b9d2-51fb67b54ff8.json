@@ -4,9 +4,18 @@
   "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790820645461112",
   "youtube_url": "https://www.youtube.com/watch?v=GIOCNRogj0g",
   "session_started_at": "2026-10-01T20:09:56.620909+00:00",
-  "prewarmed_segment_index": 1,
-  "prewarmed_run_id": 36919476188,
-  "prewarmed_at": "2026-10-01T20:09:56.620909+00:00",
   "rtmp_handoff_token": "gAAAAABqvr4W8dkITzJsrUGHwUB_iFtdHkkzy5vprfFiRk1rfzmYqFFuMsR3MZdCTRL5wxCUlM_cW2FMA3fDt3DY2bEG3tHWDtWRk2oWUbOSU798dZwb1qSpU_Cts7nyMeyaALqrlOeORAms8NyjuvlOlamvhWrabg==",
-  "rtmp_resume_mode": "encrypted_handoff_token_ready"
+  "rtmp_resume_mode": "encrypted_handoff_token_ready",
+  "status": "live",
+  "github_run_id": 36919476188,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36919476188",
+  "segment_index": 1,
+  "encoder_resolution": "1920x1080",
+  "encoder_fps": 60,
+  "encoder_bitrate_kbps": 8000,
+  "encoder_connected": true,
+  "current_segment_started_at": "2026-10-01T20:10:12.945939+00:00",
+  "last_verified_lifecycle": "live",
+  "youtube_api_verification_uncertain": false,
+  "live_at": "2026-10-01T20:10:12.945939+00:00"
 }
