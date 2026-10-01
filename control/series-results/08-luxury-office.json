@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 8,
   "key": "luxury-office",
   "name": "Luxury Office / Zara-style ambience",
@@ -9,7 +9,122 @@
   "playlist": "Luxury Office ✨ | Peter Lofi",
   "description": "A polished luxury-office session inspired by premium fashion-retail ambience: clean deep-house pulse, elegant synth textures and refined lounge energy for work, showrooms, studios and sophisticated background listening.",
   "request_id": "125803e4-7427-4022-a0ec-594939b752b8",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-08-luxury-office-125803e4",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-08-luxury-office-125803e4",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-silver-floor",
+      "filename": "01-silver-floor.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "06d7a5c66237cad798daab14815261b10f2efb9b0e2f947f9d0e059490a0af07",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/01-silver-floor.wav"
+    },
+    {
+      "title": "02-executive-suite",
+      "filename": "02-executive-suite.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "eee99884ade6dbe91cfcd91414bc974b185bbc1703ae654b500217b76dd76133",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/02-executive-suite.wav"
+    },
+    {
+      "title": "03-marble-elevator",
+      "filename": "03-marble-elevator.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "96cd645661171bd27dac1466a01ba447c04ff2f897a5e68b2139727984fbeefa",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/03-marble-elevator.wav"
+    },
+    {
+      "title": "04-executive-floor",
+      "filename": "04-executive-floor.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "78b2b545a5b95d71e956fc1c2ac32f8b90f41e1adb91bc3deaedda569f44e3fb",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/04-executive-floor.wav"
+    },
+    {
+      "title": "05-executive-avenue-11",
+      "filename": "05-executive-avenue-11.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "f44f68a8f7dd76b88b4324506a09d88b150d150cc9ef93dce629f0a134111e9b",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/05-executive-avenue-11.wav"
+    },
+    {
+      "title": "06-private-suite",
+      "filename": "06-private-suite.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "24471fe865d779282db6b34676888ad6389d8a61ade8cface38a7952cb214e46",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/06-private-suite.wav"
+    },
+    {
+      "title": "07-private-showroom",
+      "filename": "07-private-showroom.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "6d715ae36bdf468c53571b20924d9f9476c11d75ca606a6059edf3256da2059f",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/07-private-showroom.wav"
+    },
+    {
+      "title": "08-marble-elevator-18",
+      "filename": "08-marble-elevator-18.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "961311ee3a7986837106b15b9ad1e6228a1a7b0d24749d0af07c8becee458189",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/08-marble-elevator-18.wav"
+    },
+    {
+      "title": "09-silver-floor-21",
+      "filename": "09-silver-floor-21.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "1d07bb160b229fee65677dcd3641b4884112160399204d7094466993bccef4a2",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/09-silver-floor-21.wav"
+    },
+    {
+      "title": "10-marble-elevator-23",
+      "filename": "10-marble-elevator-23.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "b430a3286bfcdaaabea86ac774cafe831bc0e075c6635766c4c8cb9e86ba0da7",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/10-marble-elevator-23.wav"
+    },
+    {
+      "title": "11-gallery-lobby-26",
+      "filename": "11-gallery-lobby-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "ee6d6f3484508e7265cc363ca2bc694eca3e7030f5640e9de4198c7682e5da91",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/11-gallery-lobby-26.wav"
+    },
+    {
+      "title": "12-gallery-suite",
+      "filename": "12-gallery-suite.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "2bb24f5b6bb8a3ec6d25006f6e8fd9a39274df72d52ffed9b6f08d7fcbf3f4d1",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/12-gallery-suite.wav"
+    }
+  ],
   "github_run_id": 36801070891,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36801070891",
-  "started_at": "2026-10-01T01:26:41.317476+00:00"
+  "completed_at": "2026-10-01T02:12:25.488080+00:00"
 }
