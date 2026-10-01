@@ -21,7 +21,8 @@ jobs:
       KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
       KICK_CHANNEL_SLUG: peterlofi
       SOURCE_QUEUE: control/kick-live-queue/4c336705-e45f-4b1c-868f-72eff5849850.json
-      RECOVERY_SESSION_ID: 6e2f8791-70fb-4dd7-9fb0-4ff650e23f19
+      RECOVERY_SESSION_ID: df276541-8264-42d9-b332-580664903bf5
+      CORRECT_LOOP_URL: https://mediaforge-api.guilhermeodsgn.workers.dev/media/a26f2e7f-4203-4788-a3ce-6d6b2052f4dc/c64b196cedad4d05977d887f1be30505023124926b4144dc935c1142fe1b4109
 
     steps:
       - name: Checkout
@@ -37,20 +38,24 @@ jobs:
             sudo apt-get install -y ffmpeg file
           fi
 
-      - name: Restore current Kick live configuration
+      - name: Restore exact current Kick live configuration
         run: |
           set -euo pipefail
           python - <<'PY'
           import json, os
           q=json.load(open(os.environ['SOURCE_QUEUE'], encoding='utf-8'))
+          queue_loop=str(q.get('loop_url') or '')
+          correct=os.environ['CORRECT_LOOP_URL']
+          if queue_loop and queue_loop != correct:
+              raise SystemExit(f'Refusing wrong Kick video. Queue loop does not match approved Deep House loop: {queue_loop}')
           values={
               'SESSION_ID': os.environ['RECOVERY_SESSION_ID'],
               'TRACK_URLS_B64': str(q['track_urls_b64']),
               'DURATION_MINUTES': '0',
-              'TITLE': str(q.get('title') or 'Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live on Peter Lofi'),
+              'TITLE': str(q.get('title') or 'deep house radio 💻 music to work/study/focus to | Peter Lofi'),
               'DESCRIPTION': str(q.get('description') or ''),
               'THUMBNAIL_URL': str(q.get('thumbnail_url') or ''),
-              'LOOP_URL': str(q.get('loop_url') or 'https://mediaforge-api.guilhermeodsgn.workers.dev/media/a26f2e7f-4203-4788-a3ce-6d6b2052f4dc/c64b196cedad4d05977d887f1be30505023124926b4144dc935c1142fe1b4109'),
+              'LOOP_URL': correct,
               'SEGMENT_INDEX': '1',
           }
           with open(os.environ['GITHUB_ENV'],'a',encoding='utf-8') as f:
@@ -60,7 +65,8 @@ jobs:
                       f.write(f'{key}<<{marker}\n{val}\n{marker}\n')
                   else:
                       f.write(f'{key}={val}\n')
-          print('Kick recovery configuration loaded from persisted queue; segment=1 continuous.')
+          print('KICK_VIDEO_CONFIRMED=' + correct)
+          print('Kick recovery uses the exact current Deep House loop; no stale Supabase asset is allowed.')
           PY
 
       - name: Recover Kick and keep streaming with V3
