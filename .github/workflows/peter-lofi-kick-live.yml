@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 345
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.GH_STREAM_CONTROL_TOKEN || github.token }}
       KICK_STREAM_KEY: ${{ secrets.KICK_STREAM_KEY }}
       KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
       KICK_RTMP_URL: ${{ secrets.KICK_RTMP_URL }}
@@ -95,7 +95,11 @@ jobs:
                   with urllib.request.urlopen(req,timeout=20) as r:return json.load(r)
               except urllib.error.HTTPError as e:
                   if e.code==404:return None
-                  raise
+                  print(f'Owner check degraded by HTTP {e.code}; allowing runner to continue safely.')
+                  return None
+              except Exception as e:
+                  print(f'Owner check unavailable; allowing runner to continue safely: {e}')
+                  return None
           obj=get(f'https://api.github.com/repos/{repo}/contents/control/kick-prewarm/{sid}-{seg}.json')
           skip=False
           if obj:
@@ -110,8 +114,8 @@ jobs:
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write(f'skip={str(skip).lower()}\n')
           PY
 
-      - name: Run prewarmed Kick live segment
+      - name: Run continuity-first Kick live segment
         if: steps.owner.outputs.skip != 'true'
         run: |
           set -euo pipefail
-          python scripts/mediaforge_kick_segment_v2.py
+          python scripts/mediaforge_kick_segment_v3.py
