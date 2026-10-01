@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T03:37:37.090730+00:00",
+  "generated_at": "2026-10-01T04:19:53.773983+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -10,13 +10,13 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "oTrzYw95iKdK0Wjvu5Tlp0-tHvw",
+          "etag": "6cz7z80-tk2Q9EXyLXfyOuiIgrc",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
             "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
             "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live 🎧",
-            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi",
+            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #StudyMusic #WorkMusic #ChillMusic #musicforwork #lofimusic #officemusic #workmusic #studymusic #focusmusic #relaxingmusic #chillmusic #backgroundmusic #productivitymusic #deepfocus #concentrationmusic #musicforwork #musicforstudying #musicforoffice #coffeeshopmusic #cafemusic #jazzlofi #chillhop #instrumentalmusic #calmmusic #codingmusic #readingmusic #creativeworkmusic #homeofficemusic #workspacemusic #ambientmusic #peacefulmusic #stressreliefmusic #beatstoworkto #beatstostudyto #TheOfficeMusic #nocopyrightmusic",
             "thumbnails": {
               "default": {
                 "url": "https://i.ytimg.com/vi/GIOCNRogj0g/default_live.jpg",
@@ -66,7 +66,7 @@
             "defaultLanguage": "en",
             "localized": {
               "title": "Peter Lofi Radio 🎧 Lofi Beats for Work, Study, Focus & Relax 🔴 Live 🎧",
-              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi"
+              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #StudyMusic #WorkMusic #ChillMusic #musicforwork #lofimusic #officemusic #workmusic #studymusic #focusmusic #relaxingmusic #chillmusic #backgroundmusic #productivitymusic #deepfocus #concentrationmusic #musicforwork #musicforstudying #musicforoffice #coffeeshopmusic #cafemusic #jazzlofi #chillhop #instrumentalmusic #calmmusic #codingmusic #readingmusic #creativeworkmusic #homeofficemusic #workspacemusic #ambientmusic #peacefulmusic #stressreliefmusic #beatstoworkto #beatstostudyto #TheOfficeMusic #nocopyrightmusic"
             },
             "defaultAudioLanguage": "en-US"
           },
@@ -80,7 +80,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "2",
+            "viewCount": "3",
             "likeCount": "1",
             "dislikeCount": "0",
             "favoriteCount": "0",
