@@ -1,0 +1,159 @@
+name: Peter Lofi — YouTube Autostart Guard
+
+on:
+  push:
+    paths:
+      - 'control/live-results/*.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: youtube-autostart-guard-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+
+jobs:
+  ensure-live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure every changed YouTube session really reaches LIVE
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+          import time
+          import urllib.parse
+          import urllib.request
+          import urllib.error
+
+          for key in ('YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN'):
+              if not os.environ.get(key):
+                  raise SystemExit(f'Missing {key}')
+
+          before=os.environ.get('BEFORE_SHA','')
+          after=os.environ['AFTER_SHA']
+          try:
+              subprocess.run(['git','cat-file','-e',f'{before}^{{commit}}'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+              diff=subprocess.check_output(['git','diff','--name-only',before,after],text=True)
+          except Exception:
+              diff=subprocess.check_output(['git','diff-tree','--no-commit-id','--name-only','-r',after],text=True)
+
+          files=[p for p in diff.splitlines() if p.startswith('control/live-results/') and p.endswith('.json')]
+          if not files:
+              print('No changed live result files.')
+              raise SystemExit(0)
+
+          token_body=urllib.parse.urlencode({
+              'client_id':os.environ['YOUTUBE_CLIENT_ID'],
+              'client_secret':os.environ['YOUTUBE_CLIENT_SECRET'],
+              'refresh_token':os.environ['YOUTUBE_REFRESH_TOKEN'],
+              'grant_type':'refresh_token',
+          }).encode()
+          token_req=urllib.request.Request('https://oauth2.googleapis.com/token',data=token_body,headers={'Content-Type':'application/x-www-form-urlencoded'})
+          with urllib.request.urlopen(token_req,timeout=30) as r:
+              access_token=json.load(r)['access_token']
+
+          headers={'Authorization':f'Bearer {access_token}','Accept':'application/json'}
+
+          def api_get(url):
+              req=urllib.request.Request(url,headers=headers)
+              with urllib.request.urlopen(req,timeout=30) as r:
+                  return json.load(r)
+
+          def api_post(url):
+              req=urllib.request.Request(url,data=b'',headers=headers,method='POST')
+              with urllib.request.urlopen(req,timeout=30) as r:
+                  raw=r.read()
+                  return json.loads(raw.decode()) if raw else {}
+
+          def get_broadcast(bid):
+              q=urllib.parse.urlencode({'part':'status,contentDetails','id':bid})
+              data=api_get('https://www.googleapis.com/youtube/v3/liveBroadcasts?'+q)
+              items=data.get('items',[])
+              if not items:
+                  raise RuntimeError(f'Broadcast not found: {bid}')
+              return items[0]
+
+          def get_stream(sid):
+              q=urllib.parse.urlencode({'part':'status','id':sid})
+              data=api_get('https://www.googleapis.com/youtube/v3/liveStreams?'+q)
+              items=data.get('items',[])
+              if not items:
+                  raise RuntimeError(f'Stream not found: {sid}')
+              return items[0]
+
+          def transition_live(bid):
+              q=urllib.parse.urlencode({'part':'status','id':bid,'broadcastStatus':'live'})
+              return api_post('https://www.googleapis.com/youtube/v3/liveBroadcasts/transition?'+q)
+
+          for file in files:
+              p=pathlib.Path(file)
+              try:
+                  data=json.loads(p.read_text())
+              except Exception as e:
+                  print(f'Skip unreadable {file}: {e}')
+                  continue
+
+              if data.get('platform')!='youtube':
+                  continue
+              if data.get('status') not in ('starting','reconnecting','live'):
+                  print(f"Skip {file}: status={data.get('status')}")
+                  continue
+
+              bid=str(data.get('youtube_broadcast_id') or '').strip()
+              sid=str(data.get('youtube_stream_id') or '').strip()
+              if not bid or not sid:
+                  print(f'Skip {file}: missing broadcast/stream id')
+                  continue
+
+              print(f'Guarding session {p.stem}: broadcast={bid} stream={sid}')
+              verified=False
+              last_lifecycle='unknown'
+              last_stream='unknown'
+
+              for attempt in range(72):
+                  b=get_broadcast(bid)
+                  last_lifecycle=b.get('status',{}).get('lifeCycleStatus','unknown')
+                  if last_lifecycle=='live':
+                      verified=True
+                      print(f'LIVE confirmed on attempt {attempt+1}.')
+                      break
+                  if last_lifecycle in ('complete','revoked'):
+                      raise RuntimeError(f'Broadcast entered terminal state {last_lifecycle} before LIVE')
+
+                  s=get_stream(sid)
+                  last_stream=s.get('status',{}).get('streamStatus','unknown')
+                  print(f'attempt={attempt+1} lifecycle={last_lifecycle} stream={last_stream}')
+
+                  if last_stream=='active' and last_lifecycle not in ('liveStarting',):
+                      try:
+                          transition_live(bid)
+                          print('Manual transition to LIVE requested.')
+                      except urllib.error.HTTPError as e:
+                          body=e.read().decode('utf-8','replace')[:1000]
+                          if e.code in (400,403,409):
+                              print(f'Transition not ready yet ({e.code}); retrying. {body}')
+                          else:
+                              raise
+                  time.sleep(5)
+
+              if not verified:
+                  raise RuntimeError(f'YouTube live was not confirmed after retries: lifecycle={last_lifecycle}, stream={last_stream}, broadcast={bid}')
+
+          print('YouTube autostart guard finished successfully.')
+          PY
