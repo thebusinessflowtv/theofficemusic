@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 10,
   "key": "night-shift",
   "name": "Night Shift",
@@ -9,7 +9,122 @@
   "playlist": "Night Shift 🌃 | Peter Lofi",
   "description": "A darker one-hour Peter Lofi set for overnight work, editing, coding and long late sessions. Deep bass, restrained drums and subtle neon synth textures create momentum without breaking concentration.",
   "request_id": "e1e17eaf-4339-421f-b736-22fc4f911f1f",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-10-night-shift-e1e17eaf",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-10-night-shift-e1e17eaf",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-neon-train",
+      "filename": "01-neon-train.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "3c19983e3a16acd74a9ce3ec1b203ae1804d26bc6b36317fcdbb73d0206e0d93",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/01-neon-train.wav"
+    },
+    {
+      "title": "02-dark-monitor",
+      "filename": "02-dark-monitor.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "852ef3dc6d04ebcc4315e0f68f7bb2c278717373e7138f12ea5c8ca2dd0fa55c",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/02-dark-monitor.wav"
+    },
+    {
+      "title": "03-dark-street",
+      "filename": "03-dark-street.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "2483690750cb46a2bff7d6bd467438fae60f6874f213caf42d8e04a42611937c",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/03-dark-street.wav"
+    },
+    {
+      "title": "04-night-hours",
+      "filename": "04-night-hours.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "a460bfd62e649e81ae72a9ac2ebdfb17565aa928b470dd4b145a71778192bca8",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/04-night-hours.wav"
+    },
+    {
+      "title": "05-neon-monitor",
+      "filename": "05-neon-monitor.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "14fb7d79def4ec1976bc1ecb4113f0fabe186326a47e5b6f504185c6b686e641",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/05-neon-monitor.wav"
+    },
+    {
+      "title": "06-dark-street-13",
+      "filename": "06-dark-street-13.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "d7a58d2843978603fc9a5af5b81d0b46bf625f618d13c0673ab61f09af5d8837",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/06-dark-street-13.wav"
+    },
+    {
+      "title": "07-night-train",
+      "filename": "07-night-train.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "4030fe9df341be347d6e5023c18302d5e68be6f29c386dabaddb676c133c0f27",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/07-night-train.wav"
+    },
+    {
+      "title": "08-last-street",
+      "filename": "08-last-street.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "07f6bf3614249fe72ac808d6839036a036249e7c3b5156c3155a7ca632bc7b18",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/08-last-street.wav"
+    },
+    {
+      "title": "09-night-shift-21",
+      "filename": "09-night-shift-21.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "1ae4f9611123ff32f08fb063ab2fcccd13f2fef6c6893762fb090bd6e111b06d",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/09-night-shift-21.wav"
+    },
+    {
+      "title": "10-after-floor-23",
+      "filename": "10-after-floor-23.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "7d9835bdca06cab6d4318b8bfca2c0ac8cf23d5ae1b7a3b96bb4270283d9787f",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/10-after-floor-23.wav"
+    },
+    {
+      "title": "11-night-train-26",
+      "filename": "11-night-train-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "a3b8ccdb453048ccb4b6435e4ece22a497b5c0135f93d2cf040429908469b255",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/11-night-train-26.wav"
+    },
+    {
+      "title": "12-after-street-28",
+      "filename": "12-after-street-28.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "8557358a09d9ac5c85e26af7781c382c189fc98b653f1942c63c589dc0d36f09",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/12-after-street-28.wav"
+    }
+  ],
   "github_run_id": 36808652875,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36808652875",
-  "started_at": "2026-10-01T03:03:12.704436+00:00"
+  "completed_at": "2026-10-01T03:44:52.806127+00:00"
 }
