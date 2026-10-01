@@ -1,0 +1,36 @@
+{
+  "checked_at": "2026-10-01T20:12:01.526243+00:00",
+  "youtube": {
+    "deep_house": {
+      "broadcast_id": "GIOCNRogj0g",
+      "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790820645461112",
+      "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
+      "lifecycle": "live",
+      "privacy": "public",
+      "stream_status": "active",
+      "health_status": "good",
+      "configuration_issues": [],
+      "bound_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790820645461112",
+      "actual_start_time": "2026-10-01T02:11:02Z"
+    },
+    "rainy": {
+      "broadcast_id": "PNdwQEFaIrA",
+      "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790828557622468",
+      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+      "lifecycle": "complete",
+      "privacy": "public",
+      "stream_status": "inactive",
+      "health_status": "noData",
+      "configuration_issues": [],
+      "bound_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790828557622468",
+      "actual_start_time": "2026-10-01T04:22:54Z"
+    }
+  },
+  "kick": {
+    "reachable": true,
+    "is_live": false,
+    "title": null,
+    "viewer_count": null,
+    "started_at": null
+  }
+}
