@@ -48,6 +48,7 @@ env:
   KICK_STREAM_KEY: ${{ secrets.KICK_STREAM_KEY }}
   KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
   KICK_RTMP_URL: ${{ secrets.KICK_RTMP_URL }}
+  KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
 
 jobs:
   live:
@@ -63,7 +64,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -y
-          sudo apt-get install -y ffmpeg jq
+          sudo apt-get install -y ffmpeg jq file
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
@@ -83,21 +84,18 @@ jobs:
           if not os.environ.get('KICK_STREAM_KEY','').strip(): raise SystemExit('Missing KICK_STREAM_KEY GitHub secret')
           PY
 
-      - name: Decode playlist for on-demand streaming
+      - name: Validate playlist payload
         env:
           TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
         run: |
           set -euo pipefail
-          mkdir -p build control/kick-live-results
+          mkdir -p build control/kick-live-results control/live-now-playing
           python - <<'PY'
           import os,base64,json,pathlib
           urls=json.loads(base64.b64decode(os.environ['TRACK_URLS_B64']).decode('utf-8'))
           if not isinstance(urls,list) or not urls: raise SystemExit('No track URLs')
-          with open('build/playlist.txt','w',encoding='utf-8') as f:
-              for u in urls:
-                  u=str(u).replace("'","'\\''")
-                  f.write("file '"+u+"'\n")
-          print(f'Prepared {len(urls)} remote tracks for on-demand playback; no startup download required')
+          pathlib.Path('build/initial-tracks.json').write_text(json.dumps(urls),encoding='utf-8')
+          print(f'Prepared {len(urls)} initial remote tracks. Live playlist can be changed while streaming.')
           PY
 
       - name: Prepare live visual
@@ -113,23 +111,19 @@ jobs:
           HAVE_LOOP=0
           if [ -n "$LOOP_URL" ]; then
             if curl --retry 5 --retry-all-errors -fL "$LOOP_URL" -o build/visual-source; then
-              if ffmpeg -hide_banner -v error -i build/visual-source -map 0:v:0 -t 1 -f null - >/dev/null 2>&1; then
-                MIME_KIND="$(file -b --mime-type build/visual-source || true)"
-                if echo "$MIME_KIND" | grep -q '^image/'; then
-                  echo "Selected visual is an image; building a reusable 60 FPS video loop."
-                  ffmpeg -hide_banner -loglevel warning -y -loop 1 -i build/visual-source -t 12 \
-                    -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
-                    -an -c:v libx264 -preset veryfast -crf 18 -g 120 -keyint_min 120 -sc_threshold 0 build/loop.mp4
-                else
-                  echo "Selected visual is a video; preserving its complete duration and looping it during the stream."
-                  cp build/visual-source build/loop.mp4
-                fi
+              MIME_KIND="$(file -b --mime-type build/visual-source || true)"
+              if echo "$MIME_KIND" | grep -q '^image/'; then
+                ffmpeg -hide_banner -loglevel warning -y -loop 1 -i build/visual-source -t 12 \
+                  -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
+                  -an -c:v libx264 -preset veryfast -crf 18 -g 120 -keyint_min 120 -sc_threshold 0 build/loop.mp4
+                HAVE_LOOP=1
+              elif ffmpeg -hide_banner -v error -i build/visual-source -map 0:v:0 -t 1 -f null - >/dev/null 2>&1; then
+                cp build/visual-source build/loop.mp4
                 HAVE_LOOP=1
               fi
             fi
           fi
           if [ "$HAVE_LOOP" = 0 ]; then
-            echo "No valid custom visual was available; using the thumbnail as a fixed loop."
             ffmpeg -hide_banner -loglevel warning -y -loop 1 -i build/thumbnail.jpg -t 12 \
               -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
               -an -c:v libx264 -preset veryfast -crf 18 -g 120 -keyint_min 120 -sc_threshold 0 build/loop.mp4
@@ -149,26 +143,50 @@ jobs:
           git reset --hard origin/main
           python - <<'PY'
           import datetime,json,os,pathlib
-          d={'platform':'kick','status':'starting','title':os.environ['TITLE'],'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'segment_index':int(os.environ['SEGMENT_INDEX']),'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          d={'platform':'kick','status':'starting','title':os.environ['TITLE'],'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'segment_index':int(os.environ['SEGMENT_INDEX']),'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'encoder_resolution':'1920x1080','encoder_fps':60,'encoder_bitrate_kbps':8000,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
           p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,indent=2),encoding='utf-8')
           PY
           git add control/kick-live-results/${SESSION_ID}.json
           git commit -m "peter-lofi: Kick live starting ${SESSION_ID}" || true
           git push origin HEAD:main
 
-      - name: Start Kick RTMPS encoder
+      - name: Apply MediaForge title to Kick
         env:
-          SESSION_ID: ${{ inputs.session_id }}
+          TITLE: ${{ inputs.title }}
         run: |
           set -euo pipefail
+          if [ -z "${KICK_ACCESS_TOKEN:-}" ]; then
+            echo "::warning::KICK_ACCESS_TOKEN missing; stream title cannot be updated automatically."
+            exit 0
+          fi
+          jq -n --arg stream_title "$TITLE" '{stream_title:$stream_title}' > build/kick-metadata.json
+          CODE="$(curl -sS -o build/kick-metadata-response.json -w '%{http_code}' -X PATCH 'https://api.kick.com/public/v1/channels' -H "Authorization: Bearer ${KICK_ACCESS_TOKEN}" -H 'Content-Type: application/json' --data-binary @build/kick-metadata.json)"
+          if [ "$CODE" != "204" ]; then
+            echo "::warning::Kick metadata update returned HTTP $CODE"
+            cat build/kick-metadata-response.json || true
+          else
+            echo "Kick stream title updated from MediaForge."
+          fi
+
+      - name: Start Kick RTMPS encoder at 1080p60
+        env:
+          SESSION_ID: ${{ inputs.session_id }}
+          TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
+        run: |
+          set -euo pipefail
+          mkfifo build/audio.pcm
+          python scripts/mediaforge_live_audio_feeder.py --session-id "$SESSION_ID" --fallback-b64 "$TRACK_URLS_B64" > build/audio.pcm 2>build/audio-feeder.log &
+          echo $! > build/audio-feeder.pid
+
           BASE="${KICK_STREAM_URL:-${KICK_RTMP_URL:-rtmps://fa723fc1b171.global-contribute.live-video.net:443/app}}"
           TARGET="${BASE%/}/${KICK_STREAM_KEY}"
           ffmpeg -hide_banner -loglevel warning \
             -re -stream_loop -1 -i build/loop.mp4 \
-            -stream_loop -1 -protocol_whitelist file,http,https,tcp,tls,crypto -f concat -safe 0 -i build/playlist.txt \
+            -thread_queue_size 512 -f s16le -ar 48000 -ac 2 -i build/audio.pcm \
             -map 0:v:0 -map 1:a:0 \
             -vf "scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p" \
-            -c:v libx264 -preset veryfast -tune zerolatency -profile:v high \
+            -r 60 -s:v 1920x1080 -pix_fmt yuv420p \
+            -c:v libx264 -preset veryfast -tune zerolatency -profile:v high -level:v 4.2 \
             -b:v 8000k -minrate 8000k -maxrate 8000k -bufsize 16000k \
             -g 120 -keyint_min 120 -sc_threshold 0 -x264-params "nal-hrd=cbr:force-cfr=1" \
             -c:a aac -b:a 160k -ar 48000 -ac 2 \
@@ -176,11 +194,12 @@ jobs:
           echo $! > build/ffmpeg.pid
           sleep 15
           kill -0 "$(cat build/ffmpeg.pid)" || { tail -100 build/ffmpeg.log; exit 1; }
+          kill -0 "$(cat build/audio-feeder.pid)" || { tail -100 build/audio-feeder.log; exit 1; }
           git fetch origin main
           git reset --hard origin/main
           python - <<'PY'
           import json,os,pathlib,datetime
-          p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');d=json.loads(p.read_text());d['status']='live';d['live_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();p.write_text(json.dumps(d,indent=2))
+          p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');d=json.loads(p.read_text());d['status']='live';d['live_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();d['encoder_resolution']='1920x1080';d['encoder_fps']=60;d['encoder_bitrate_kbps']=8000;p.write_text(json.dumps(d,indent=2))
           PY
           git add control/kick-live-results/${SESSION_ID}.json
           git commit -m "peter-lofi: Kick live ${SESSION_ID}" || true
@@ -193,17 +212,20 @@ jobs:
           DURATION_MINUTES: ${{ inputs.duration_minutes }}
         run: |
           set -euo pipefail
-          PID="$(cat build/ffmpeg.pid)"; DURATION="$DURATION_MINUTES"
+          PID="$(cat build/ffmpeg.pid)"; FEEDER_PID="$(cat build/audio-feeder.pid)"; DURATION="$DURATION_MINUTES"
           if [ "$DURATION" -eq 0 ]; then SEGMENT_MIN=300; else SEGMENT_MIN="$DURATION"; [ "$SEGMENT_MIN" -gt 300 ] && SEGMENT_MIN=300; fi
           DEADLINE=$(( $(date +%s) + SEGMENT_MIN*60 )); REASON=segment_complete
           while [ "$(date +%s)" -lt "$DEADLINE" ]; do
             if ! kill -0 "$PID" 2>/dev/null; then tail -100 build/ffmpeg.log || true; echo "reason=encoder_failed" >> "$GITHUB_OUTPUT"; exit 1; fi
-            if curl -fsS "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/control/kick-live-stop/${SESSION_ID}.json" 2>/dev/null | grep -q '"stop"[[:space:]]*:[[:space:]]*true'; then REASON=manual_stop; break; fi
+            if ! kill -0 "$FEEDER_PID" 2>/dev/null; then tail -100 build/audio-feeder.log || true; echo "reason=audio_feeder_failed" >> "$GITHUB_OUTPUT"; exit 1; fi
+            if curl -fsS "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/control/kick-live-stop/${SESSION_ID}.json?ts=$(date +%s)" 2>/dev/null | grep -q '"stop"[[:space:]]*:[[:space:]]*true'; then REASON=manual_stop; break; fi
             sleep 30
           done
           kill -INT "$PID" 2>/dev/null || true
+          kill -TERM "$FEEDER_PID" 2>/dev/null || true
           for i in $(seq 1 20); do kill -0 "$PID" 2>/dev/null || break; sleep 1; done
           kill -KILL "$PID" 2>/dev/null || true
+          kill -KILL "$FEEDER_PID" 2>/dev/null || true
           echo "reason=$REASON" >> "$GITHUB_OUTPUT"
           if [ "$REASON" = segment_complete ] && { [ "$DURATION" -eq 0 ] || [ "$DURATION" -gt 300 ]; }; then echo "chain=true" >> "$GITHUB_OUTPUT"; else echo "chain=false" >> "$GITHUB_OUTPUT"; fi
 
@@ -249,6 +271,8 @@ jobs:
           DESCRIPTION: ${{ inputs.description }}
         run: |
           set +e
+          [ -f build/ffmpeg.pid ] && kill -KILL "$(cat build/ffmpeg.pid)" 2>/dev/null || true
+          [ -f build/audio-feeder.pid ] && kill -KILL "$(cat build/audio-feeder.pid)" 2>/dev/null || true
           git rebase --abort >/dev/null 2>&1 || true
           git fetch origin main
           git reset --hard origin/main
@@ -258,7 +282,7 @@ jobs:
           p=pathlib.Path('control/kick-live-results')/(os.environ['SESSION_ID']+'.json');d={}
           try:d=json.loads(p.read_text())
           except Exception:pass
-          d.update({'platform':'kick','status':'failed','title':os.environ.get('TITLE','Peter Lofi — Live'),'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'Kick live workflow failed. Open github_run_url for details.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()});p.write_text(json.dumps(d,indent=2))
+          d.update({'platform':'kick','status':'failed','title':os.environ.get('TITLE','Peter Lofi — Live'),'description':os.environ.get('DESCRIPTION',''),'session_id':os.environ['SESSION_ID'],'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'Kick live workflow failed. Open github_run_url for details.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()});p.write_text(json.dumps(d,indent=2),encoding='utf-8')
           PY
           git add control/kick-live-results/${SESSION_ID}.json
           git commit -m "peter-lofi: Kick live failed ${SESSION_ID}" || true
