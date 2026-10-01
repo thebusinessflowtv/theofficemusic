@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 7,
   "key": "deep-focus-coding",
   "name": "Deep Focus / Coding",
@@ -9,7 +9,122 @@
   "playlist": "Deep Focus / Coding 💻 | Peter Lofi",
   "description": "A minimal one-hour coding soundtrack engineered for long focus blocks. Repetitive but evolving motifs, controlled low end and precise restrained drums help maintain flow without pulling attention away from the screen.",
   "request_id": "ab805b59-331d-41a2-b5b4-d1113372c7e2",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-07-deep-focus-coding-ab805b59",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-07-deep-focus-coding-ab805b59",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-syntax-terminal",
+      "filename": "01-syntax-terminal.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "6f36a7ec6f8e38cbe70298c0a46da182f7325dc30bf417eea0dafc8f0bd5ad89",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/01-syntax-terminal.wav"
+    },
+    {
+      "title": "02-quiet-session",
+      "filename": "02-quiet-session.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "3965463c0f2e469c2cac9a5f541a520a2c4838e1fd6f4b38c0140ae58f41dfb2",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/02-quiet-session.wav"
+    },
+    {
+      "title": "03-loop-compile",
+      "filename": "03-loop-compile.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "6552a883fa3cb0a53d60fb010ceaca1555d755af743d0a9260c93e77a4543447",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/03-loop-compile.wav"
+    },
+    {
+      "title": "04-quiet-session-08",
+      "filename": "04-quiet-session-08.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "bbdc9003beb32d87b3ea1b16e48a250eeabf3c02e715805c9807d564d0d61550",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/04-quiet-session-08.wav"
+    },
+    {
+      "title": "05-night-mode",
+      "filename": "05-night-mode.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "c1765f9c057785c4d6cd2c970d1a411d854970a02b0f02195e969b34877bb30f",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/05-night-mode.wav"
+    },
+    {
+      "title": "06-quiet-stack",
+      "filename": "06-quiet-stack.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "2b74072d0d84060dc294fa67bc9dffdedb1dc0659368791dbbc8fc9cf96e63dc",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/06-quiet-stack.wav"
+    },
+    {
+      "title": "07-soft-stack",
+      "filename": "07-soft-stack.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "3772c31341fa537261631eb44f47ffa5f0ac4d00fb8c319e9975ee7bc1830f7e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/07-soft-stack.wav"
+    },
+    {
+      "title": "08-loop-flow-18",
+      "filename": "08-loop-flow-18.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "79b6ce2f859dae60431ae03d55b379a9025ea1cab7528875ee9383cbf53e9663",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/08-loop-flow-18.wav"
+    },
+    {
+      "title": "09-soft-flow",
+      "filename": "09-soft-flow.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "1c43dcb7a1a583b5e3c5bf6459f1af776cebda414bd032178f5365b2682c4427",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/09-soft-flow.wav"
+    },
+    {
+      "title": "10-night-terminal",
+      "filename": "10-night-terminal.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "ecffc0b24cd0cfc29613b1681fb5b8e493644a986b16c293901bcdeeed2ac518",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/10-night-terminal.wav"
+    },
+    {
+      "title": "11-loop-session",
+      "filename": "11-loop-session.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "4317d8ea2d0a6827afef232d42368177b44ed4fc681a59fd50aac98bd92e55c5",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/11-loop-session.wav"
+    },
+    {
+      "title": "12-syntax-stack",
+      "filename": "12-syntax-stack.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "13150c861cae0a4c0376dc1fba71207860b1429ceb56654489ffae6d0a656505",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/12-syntax-stack.wav"
+    }
+  ],
   "github_run_id": 36797377017,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36797377017",
-  "started_at": "2026-10-01T00:41:25.354437+00:00"
+  "completed_at": "2026-10-01T01:26:00.784601+00:00"
 }
