@@ -14,5 +14,6 @@
   "encoder_bitrate_kbps": 8000,
   "custom_thumbnail_applied": true,
   "started_at": "2026-10-01T04:22:42.178117+00:00",
-  "live_at": "2026-10-01T04:22:57.585533+00:00"
+  "live_at": "2026-10-01T04:22:57.585533+00:00",
+  "startup_guard": "requested"
 }
