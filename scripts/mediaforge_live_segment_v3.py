@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import base64
 import hashlib
-import json
 import time
 
 from cryptography.fernet import Fernet, InvalidToken
@@ -16,10 +15,10 @@ def is_quota_error(exc):
 
 
 def fernet():
-    # Derive an encryption key exclusively from GitHub Actions secrets. The stored token
-    # can safely live in the public repository; it is useless without these secrets.
+    # Derive an encryption key only from stable GitHub Actions secrets/project identity.
+    # A future OAuth refresh-token rotation therefore does not invalidate a live handoff.
     material = (
-        core.YOUTUBE_CLIENT_SECRET + "\0" + core.YOUTUBE_REFRESH_TOKEN + "\0" + core.YOUTUBE_CHANNEL_ID
+        core.YOUTUBE_CLIENT_ID + "\0" + core.YOUTUBE_CLIENT_SECRET + "\0" + core.YOUTUBE_CHANNEL_ID
     ).encode("utf-8")
     key = base64.urlsafe_b64encode(hashlib.sha256(material).digest())
     return Fernet(key)
