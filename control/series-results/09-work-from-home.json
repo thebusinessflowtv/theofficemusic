@@ -1,7 +1,7 @@
 {
-  "status": "generating",
-  "progress": 8,
-  "phase": "Preparando geração de áudio original",
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
   "index": 9,
   "key": "work-from-home",
   "name": "Work From Home",
@@ -9,7 +9,122 @@
   "playlist": "Work From Home 🏠 | Peter Lofi",
   "description": "A comfortable one-hour home-office mix for emails, meetings, planning and everyday productivity. Warm keys, soft beats and relaxed textures keep the room calm while helping the workday move forward.",
   "request_id": "bea516fa-c669-4543-91c4-69babbec6bd9",
+  "duration_minutes": 60,
+  "generation_mode": "stable-audio-3-small-music",
+  "release_tag": "peter-lofi-series-09-work-from-home-bea516fa",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-series-09-work-from-home-bea516fa",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/peter-lofi-master.m4a",
+  "tracks": [
+    {
+      "title": "01-home-routine",
+      "filename": "01-home-routine.wav",
+      "duration_seconds": 300.0,
+      "position": 1,
+      "start_seconds": 0.0,
+      "sha256": "ebb009c5c6b35ea769bcbc3faf7291f0482caf277f5e0932db6777835cb939d9",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/01-home-routine.wav"
+    },
+    {
+      "title": "02-window-morning",
+      "filename": "02-window-morning.wav",
+      "duration_seconds": 300.0,
+      "position": 2,
+      "start_seconds": 300.0,
+      "sha256": "dadd5d8ca17928fec976f4f7ae9042d55636d5249e11845fa38464905733afab",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/02-window-morning.wav"
+    },
+    {
+      "title": "03-home-room-06",
+      "filename": "03-home-room-06.wav",
+      "duration_seconds": 300.0,
+      "position": 3,
+      "start_seconds": 600.0,
+      "sha256": "00b4d35c44be163cf68012d1223730218397ffb12de06976dda064e366d121a9",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/03-home-room-06.wav"
+    },
+    {
+      "title": "04-quiet-workspace",
+      "filename": "04-quiet-workspace.wav",
+      "duration_seconds": 300.0,
+      "position": 4,
+      "start_seconds": 900.0,
+      "sha256": "3d13b27304c35a4ffc269048cf9024b7e1b2f9f4bf2c10f5f152e49c545be314",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/04-quiet-workspace.wav"
+    },
+    {
+      "title": "05-home-break",
+      "filename": "05-home-break.wav",
+      "duration_seconds": 300.0,
+      "position": 5,
+      "start_seconds": 1200.0,
+      "sha256": "d0dc496d1b5ef0ef73bb51f273f469744edbccb70830f03f2ddfece94f7550ba",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/05-home-break.wav"
+    },
+    {
+      "title": "06-cozy-break",
+      "filename": "06-cozy-break.wav",
+      "duration_seconds": 300.0,
+      "position": 6,
+      "start_seconds": 1500.0,
+      "sha256": "cf11831617feb6f2e47c43eabae6e389235ce3d8c4b2ada77c5afb5b710f3e3f",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/06-cozy-break.wav"
+    },
+    {
+      "title": "07-soft-desk",
+      "filename": "07-soft-desk.wav",
+      "duration_seconds": 300.0,
+      "position": 7,
+      "start_seconds": 1800.0,
+      "sha256": "7b54afa505984d680c5d86e330a0c4151fae08031d730e872b00ba77f52c0b43",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/07-soft-desk.wav"
+    },
+    {
+      "title": "08-remote-room-18",
+      "filename": "08-remote-room-18.wav",
+      "duration_seconds": 300.0,
+      "position": 8,
+      "start_seconds": 2100.0,
+      "sha256": "1f4d2b0090d52198eb016d3b4a8571c81dff0c832d25989960e878f4fbd653fa",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/08-remote-room-18.wav"
+    },
+    {
+      "title": "09-soft-workspace",
+      "filename": "09-soft-workspace.wav",
+      "duration_seconds": 300.0,
+      "position": 9,
+      "start_seconds": 2400.0,
+      "sha256": "f81cc719db512149c4200541a373541478097ef4e42fe7c08f42b4d066a6699e",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/09-soft-workspace.wav"
+    },
+    {
+      "title": "10-quiet-morning-23",
+      "filename": "10-quiet-morning-23.wav",
+      "duration_seconds": 300.0,
+      "position": 10,
+      "start_seconds": 2700.0,
+      "sha256": "6499043694e144802a93ac5a77f65324d17fb1ec3c7712c0818d23624ae4d64d",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/10-quiet-morning-23.wav"
+    },
+    {
+      "title": "11-home-routine-26",
+      "filename": "11-home-routine-26.wav",
+      "duration_seconds": 300.0,
+      "position": 11,
+      "start_seconds": 3000.0,
+      "sha256": "86c4012e0149b6e233f19875d6d6d6ddfa062ca9f1ef9f6dab872a9f4b1ab503",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/11-home-routine-26.wav"
+    },
+    {
+      "title": "12-window-workspace-28",
+      "filename": "12-window-workspace-28.wav",
+      "duration_seconds": 300.0,
+      "position": 12,
+      "start_seconds": 3300.0,
+      "sha256": "8e87ba700c5935959fb3d96a75423fd029e0b5d6e2a22758c8c3c3bd1ffd363c",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/12-window-workspace-28.wav"
+    }
+  ],
   "github_run_id": 36804729666,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36804729666",
-  "started_at": "2026-10-01T02:12:57.091127+00:00"
+  "completed_at": "2026-10-01T03:02:24.784872+00:00"
 }
