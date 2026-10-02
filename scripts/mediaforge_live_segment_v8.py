@@ -44,33 +44,46 @@ def successor_ready_v8():
 
 
 def dispatch_next_v8(bid, sid):
-    path = f"control/live-successor-youtube/{core.SESSION_ID}-{core.SEGMENT_INDEX + 1}.json"
-    payload = {
+    inputs = {
         "session_id": core.SESSION_ID,
         "track_urls_b64": core.TRACK_URLS_B64,
-        "duration_minutes": core.next_duration(),
+        "duration_minutes": str(core.next_duration()),
         "title": core.TITLE,
         "description": core.DESCRIPTION,
         "thumbnail_url": core.THUMBNAIL_URL,
         "loop_url": core.LOOP_URL,
         "resume_broadcast_id": bid,
         "resume_stream_id": sid,
-        "segment_index": core.SEGMENT_INDEX + 1,
+        "segment_index": str(core.SEGMENT_INDEX + 1),
         "privacy_status": core.PRIVACY_STATUS,
-        "segment_seconds_override": core.SEGMENT_SECONDS_OVERRIDE,
-        "prewarm_lead_seconds": max(900, core.PREWARM_LEAD_SECONDS),
-        "max_segments": core.MAX_SEGMENTS,
+        "segment_seconds_override": str(core.SEGMENT_SECONDS_OVERRIDE),
+        "prewarm_lead_seconds": str(max(900, core.PREWARM_LEAD_SECONDS)),
+        "max_segments": str(core.MAX_SEGMENTS),
+    }
+    direct_ok = False
+    for attempt in range(1, 6):
+        try:
+            core.dispatch_workflow(inputs)
+            print(f"YouTube successor {core.SEGMENT_INDEX + 1} dispatched directly on attempt {attempt}.", flush=True)
+            direct_ok = True
+            break
+        except Exception as exc:
+            print(f"YouTube direct successor dispatch attempt {attempt}/5 failed: {exc}", flush=True)
+            time.sleep(attempt * 5)
+
+    path = f"control/live-successor-youtube/{core.SESSION_ID}-{core.SEGMENT_INDEX + 1}.json"
+    payload = {
+        **inputs,
         "requested_at": core.iso_now(),
         "source_run_id": core.RUN_ID,
-        "protocol": "youtube-v8-git-trigger",
+        "protocol": "youtube-v9-direct-dispatch",
+        "direct_dispatch_ok": direct_ok,
     }
-    ok = git_put(path, payload, f"live: trigger YouTube successor {core.SESSION_ID} {core.SEGMENT_INDEX + 1}")
-    print(
-        f"YouTube successor {core.SEGMENT_INDEX + 1} " + ("triggered by git push." if ok else "trigger failed; predecessor stays online."),
-        flush=True,
-    )
-    return ok
-
+    try:
+        git_put(path, payload, f"live: audit YouTube successor {core.SESSION_ID} {core.SEGMENT_INDEX + 1}")
+    except Exception as exc:
+        print(f"::warning::YouTube successor audit marker failed: {exc}", flush=True)
+    return direct_ok
 
 def handoff_state_v8(cutover_epoch, session_started, mode):
     state = local_now_playing() or raw_get(f"control/live-now-playing/{core.SESSION_ID}.json") or {}
