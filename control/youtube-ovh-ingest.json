@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-10-02T21:00:05.527771+00:00",
+  "stations": {
+    "deep-house": {
+      "session_id": "8cf99db8-3e53-4b74-b9d2-51fb67b54ff8",
+      "youtube_broadcast_id": "WYJuqbEQYZQ",
+      "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790973399832628",
+      "youtube_url": "https://www.youtube.com/watch?v=WYJuqbEQYZQ",
+      "stream_status": "active",
+      "rtmp_backup_ingestion_address": "rtmp://b.rtmp.youtube.com/live2?backup=1",
+      "rtmps_backup_ingestion_address": "rtmps://b.rtmps.youtube.com/live2?backup=1"
+    },
+    "rainy": {
+      "session_id": "72fcb955-bbb3-41d1-b8d0-fd90427c57a5",
+      "youtube_broadcast_id": "C9Et10tejC8",
+      "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790974075552944",
+      "youtube_url": "https://www.youtube.com/watch?v=C9Et10tejC8",
+      "stream_status": "active",
+      "rtmp_backup_ingestion_address": "rtmp://b.rtmp.youtube.com/live2?backup=1",
+      "rtmps_backup_ingestion_address": "rtmps://b.rtmps.youtube.com/live2?backup=1"
+    }
+  }
+}
