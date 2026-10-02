@@ -264,7 +264,7 @@ def run_segment_v3(loop):
                     return True
                 print("Kick takeover commit failed; predecessor remains online. No cutover performed.", flush=True)
             elif now - last_dispatch >= 180:
-                core.dispatch_next()
+                dispatch_next_v3()
                 last_dispatch = now
 
             print("Kick successor not safely coordinated; current encoder remains online.", flush=True)
