@@ -201,8 +201,7 @@ def wait_takeover():
 
 def dispatch_next():
     remain=0 if DURATION_MINUTES==0 else max(1,DURATION_MINUTES-300)
-    path=f"control/twitch-successor/{SESSION_ID}-{SEGMENT_INDEX+1}.json"
-    payload={
+    inputs={
         "session_id":SESSION_ID,
         "track_urls_b64":TRACK_URLS_B64,
         "duration_minutes":str(remain),
@@ -210,13 +209,35 @@ def dispatch_next():
         "description":DESCRIPTION,
         "loop_url":LOOP_URL,
         "segment_index":str(SEGMENT_INDEX+1),
+    }
+    direct_ok=False
+    for n in range(1,6):
+        try:
+            gh_request(
+                "POST",
+                "actions/workflows/peter-lofi-twitch-live.yml/dispatches",
+                {"ref":"main","inputs":inputs},
+            )
+            print(f"Twitch successor {SEGMENT_INDEX+1} dispatched directly on attempt {n}.",flush=True)
+            direct_ok=True
+            break
+        except Exception as e:
+            print(f"Twitch direct successor dispatch attempt {n}/5 failed: {e}",flush=True)
+            time.sleep(n*5)
+
+    path=f"control/twitch-successor/{SESSION_ID}-{SEGMENT_INDEX+1}.json"
+    payload={
+        **inputs,
         "requested_at":iso_now(),
         "source_run_id":RUN_ID,
-        "protocol":"twitch-v2-git-successor",
+        "protocol":"twitch-v2-direct-dispatch",
+        "direct_dispatch_ok":direct_ok,
     }
-    ok=cp.git_put_json(path,payload,f"live: trigger Twitch successor {SESSION_ID} {SEGMENT_INDEX+1}")
-    print(f"Twitch successor {SEGMENT_INDEX+1} "+("triggered by git push." if ok else "trigger failed; predecessor stays online."),flush=True)
-    return ok
+    try:
+        cp.git_put_json(path,payload,f"live: audit Twitch successor {SESSION_ID} {SEGMENT_INDEX+1}")
+    except Exception as e:
+        print(f"::warning::Twitch successor audit marker failed: {e}",flush=True)
+    return direct_ok
 
 def successor_ready():
     d=raw_get(f"control/twitch-prewarm/{SESSION_ID}-{SEGMENT_INDEX+1}.json")
