@@ -39,6 +39,7 @@ class StreamCore:
         self.abitrate = int(os.environ.get("AUDIO_BITRATE_KBPS", "160"))
         self.vprofile = os.environ.get("VIDEO_PROFILE", "high").strip() or "high"
         self.vpreset = os.environ.get("VIDEO_PRESET", "veryfast").strip() or "veryfast"
+        self.video_copy_mode = os.environ.get("VIDEO_COPY_MODE", "0").strip().lower() in {"1", "true", "yes", "on"}
         self.encoder = None
         self.feeder = None
         self.fd = None
@@ -72,7 +73,28 @@ class StreamCore:
              "-of", "default=nw=1:nk=1", str(source)],
             capture_output=True, text=True
         )
-        if probe.returncode == 0 and "video" in probe.stdout:
+        source_is_video = probe.returncode == 0 and "video" in probe.stdout
+
+        if self.video_copy_mode:
+            args = ["ffmpeg", "-hide_banner", "-loglevel", "warning", "-y"]
+            if not source_is_video:
+                args += ["-loop", "1"]
+            args += ["-i", str(source)]
+            if not source_is_video:
+                args += ["-t", "12"]
+            args += [
+                "-vf", f"scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,"
+                       f"pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps={self.fps},format=yuv420p",
+                "-an", "-c:v", "libx264", "-preset", self.vpreset,
+                "-profile:v", self.vprofile,
+                "-b:v", f"{self.vbitrate}k", "-minrate", f"{self.vbitrate}k",
+                "-maxrate", f"{self.vbitrate}k", "-bufsize", f"{self.bufsize}k",
+                "-g", str(self.fps * 2), "-keyint_min", str(self.fps * 2), "-sc_threshold", "0",
+                "-x264-params", "nal-hrd=cbr:force-cfr=1",
+                str(loop),
+            ]
+            subprocess.run(args, check=True)
+        elif source_is_video:
             loop.write_bytes(source.read_bytes())
         else:
             subprocess.run([
@@ -143,22 +165,33 @@ class StreamCore:
         ], stdout=self.fd, stderr=subprocess.DEVNULL)
 
         gop = self.fps * 2
-        cmd = [
-            "ffmpeg", "-hide_banner", "-loglevel", "warning",
-            "-re", "-stream_loop", "-1", "-i", str(loop),
-            "-thread_queue_size", "1024", "-f", "s16le", "-ar", "48000", "-ac", "2", "-i", str(fifo),
-            "-map", "0:v:0", "-map", "1:a:0",
-            "-vf", f"scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,"
-                   f"pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps={self.fps},format=yuv420p",
-            "-r", str(self.fps), "-s:v", "1920x1080", "-pix_fmt", "yuv420p",
-            "-c:v", "libx264", "-preset", self.vpreset, "-tune", "zerolatency",
-            "-profile:v", self.vprofile, "-b:v", f"{self.vbitrate}k",
-            "-minrate", f"{self.vbitrate}k", "-maxrate", f"{self.vbitrate}k",
-            "-bufsize", f"{self.bufsize}k", "-g", str(gop), "-keyint_min", str(gop),
-            "-sc_threshold", "0", "-x264-params", "nal-hrd=cbr:force-cfr=1",
-            "-c:a", "aac", "-b:a", f"{self.abitrate}k", "-ar", "48000", "-ac", "2",
-            "-flvflags", "no_duration_filesize", "-f", "flv", self.target()
-        ]
+        if self.video_copy_mode:
+            cmd = [
+                "ffmpeg", "-hide_banner", "-loglevel", "warning",
+                "-re", "-stream_loop", "-1", "-i", str(loop),
+                "-thread_queue_size", "1024", "-f", "s16le", "-ar", "48000", "-ac", "2", "-i", str(fifo),
+                "-map", "0:v:0", "-map", "1:a:0",
+                "-c:v", "copy",
+                "-c:a", "aac", "-b:a", f"{self.abitrate}k", "-ar", "48000", "-ac", "2",
+                "-flvflags", "no_duration_filesize", "-f", "flv", self.target()
+            ]
+        else:
+            cmd = [
+                "ffmpeg", "-hide_banner", "-loglevel", "warning",
+                "-re", "-stream_loop", "-1", "-i", str(loop),
+                "-thread_queue_size", "1024", "-f", "s16le", "-ar", "48000", "-ac", "2", "-i", str(fifo),
+                "-map", "0:v:0", "-map", "1:a:0",
+                "-vf", f"scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,"
+                       f"pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps={self.fps},format=yuv420p",
+                "-r", str(self.fps), "-s:v", "1920x1080", "-pix_fmt", "yuv420p",
+                "-c:v", "libx264", "-preset", self.vpreset, "-tune", "zerolatency",
+                "-profile:v", self.vprofile, "-b:v", f"{self.vbitrate}k",
+                "-minrate", f"{self.vbitrate}k", "-maxrate", f"{self.vbitrate}k",
+                "-bufsize", f"{self.bufsize}k", "-g", str(gop), "-keyint_min", str(gop),
+                "-sc_threshold", "0", "-x264-params", "nal-hrd=cbr:force-cfr=1",
+                "-c:a", "aac", "-b:a", f"{self.abitrate}k", "-ar", "48000", "-ac", "2",
+                "-flvflags", "no_duration_filesize", "-f", "flv", self.target()
+            ]
         ffmpeg_log_path = self.state / "ffmpeg.log"
         self.ffmpeg_log = open(ffmpeg_log_path, "ab", buffering=0)
         self.encoder = subprocess.Popen(cmd, stdout=self.ffmpeg_log, stderr=self.ffmpeg_log)
@@ -211,7 +244,7 @@ class StreamCore:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--platform", required=True, choices=["kick", "twitch"])
+    ap.add_argument("--platform", required=True, choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy"])
     args = ap.parse_args()
     core = StreamCore(args.platform)
 
