@@ -18,6 +18,8 @@ import time
 import urllib.error
 import urllib.request
 
+import mediaforge_control_plane as cp
+
 REPO=os.environ["GITHUB_REPOSITORY"]
 TOKEN=os.environ["GH_TOKEN"]
 RUN_ID=int(os.environ["GITHUB_RUN_ID"])
@@ -199,15 +201,22 @@ def wait_takeover():
 
 def dispatch_next():
     remain=0 if DURATION_MINUTES==0 else max(1,DURATION_MINUTES-300)
-    body={"ref":"main","inputs":{
-        "session_id":SESSION_ID,"track_urls_b64":TRACK_URLS_B64,"duration_minutes":str(remain),
-        "title":TITLE,"description":DESCRIPTION,"loop_url":LOOP_URL,"segment_index":str(SEGMENT_INDEX+1)
-    }}
-    try:
-        gh_request("POST","actions/workflows/peter-lofi-twitch-live.yml/dispatches",body)
-        print(f"Twitch successor {SEGMENT_INDEX+1} dispatched.",flush=True); return True
-    except Exception as e:
-        print(f"::warning::Twitch successor dispatch failed: {e}",flush=True); return False
+    path=f"control/twitch-successor/{SESSION_ID}-{SEGMENT_INDEX+1}.json"
+    payload={
+        "session_id":SESSION_ID,
+        "track_urls_b64":TRACK_URLS_B64,
+        "duration_minutes":str(remain),
+        "title":TITLE,
+        "description":DESCRIPTION,
+        "loop_url":LOOP_URL,
+        "segment_index":str(SEGMENT_INDEX+1),
+        "requested_at":iso_now(),
+        "source_run_id":RUN_ID,
+        "protocol":"twitch-v2-git-successor",
+    }
+    ok=cp.git_put_json(path,payload,f"live: trigger Twitch successor {SESSION_ID} {SEGMENT_INDEX+1}")
+    print(f"Twitch successor {SEGMENT_INDEX+1} "+("triggered by git push." if ok else "trigger failed; predecessor stays online."),flush=True)
+    return ok
 
 def successor_ready():
     d=raw_get(f"control/twitch-prewarm/{SESSION_ID}-{SEGMENT_INDEX+1}.json")
