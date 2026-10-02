@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import random
 from pathlib import Path
 
@@ -19,6 +20,9 @@ def load_profile(path: str) -> dict:
 def resolve_runtime(model_name: str) -> tuple[str, bool]:
     """Return (device, model_half) for a supported Stable Audio 3 model."""
     if model_name in {"small-music", "small-sfx"}:
+        prefer_cuda = os.getenv("SA3_PREFER_CUDA", "0").strip().lower() in {"1", "true", "yes", "on"}
+        if prefer_cuda and torch.cuda.is_available():
+            return "cuda", False
         return "cpu", False
 
     if model_name in {"medium", "medium-base"}:
