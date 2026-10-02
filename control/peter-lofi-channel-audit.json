@@ -1,8 +1,8 @@
 {
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-02T16:20:06.973974+00:00",
-  "public_video_count": 9,
+  "generated_at": "2026-10-02T17:19:38.193110+00:00",
+  "public_video_count": 10,
   "active_managed_playlists": {
     "all_music": {
       "id": "PLcRTCZSXY21w",
@@ -38,6 +38,14 @@
     }
   },
   "videos": [
+    {
+      "video_id": "tsBeo7eejPI",
+      "title": "3 Hours Gaming Lofi 🎮 Chill Beats for Gaming, Focus & Relax | Peter Lofi 🎧",
+      "related_playlist_key": "lofi_mixes",
+      "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
+      "duration_seconds": 10801,
+      "published_at": "2026-10-02T16:46:35Z"
+    },
     {
       "video_id": "PNdwQEFaIrA",
       "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
