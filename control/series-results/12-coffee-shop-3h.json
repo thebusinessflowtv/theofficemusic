@@ -1,7 +1,7 @@
 {
-  "status": "completed",
+  "status": "quarantined_copyright",
   "progress": 100,
-  "phase": "Concluída, renderizada e enviada ao YouTube como privada",
+  "phase": "Quarentena: Content ID detectou correspondências; não publicar nem distribuir até regeneração e nova verificação.",
   "index": 12,
   "key": "coffee-shop-3h",
   "name": "Coffee Shop 3H",
@@ -348,5 +348,29 @@
   ],
   "github_run_id": 36960440265,
   "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36960440265",
-  "completed_at": "2026-10-02T04:20:13.620917+00:00"
+  "completed_at": "2026-10-02T04:20:13.620917+00:00",
+  "copyright_status": "quarantined",
+  "copyright_claims": [
+    {
+      "claimant": "HAAWK for a 3rd Party",
+      "on_behalf_of": "Onoychenko",
+      "matched_work": "Calm River",
+      "master_range": "00:14:00-00:14:21",
+      "affected_track_position": 3,
+      "affected_track": "03-03-s1-03-corner-cafe.mp3",
+      "track_local_range": "00:04:00-00:04:21"
+    },
+    {
+      "claimant": "HAAWK for a 3rd Party",
+      "on_behalf_of": "Onoychenko",
+      "matched_work": "Calm River",
+      "master_range": "00:44:32-00:44:45",
+      "affected_track_position": 9,
+      "affected_track": "09-03-s2-03-golden-morning.mp3",
+      "track_local_range": "00:04:32-00:04:45"
+    }
+  ],
+  "distribution_blocked": true,
+  "block_reason": "YouTube Content ID claim on private preflight upload h0Ri7Sj4wMU",
+  "quarantined_at": "2026-10-02T05:08:07.351Z"
 }
