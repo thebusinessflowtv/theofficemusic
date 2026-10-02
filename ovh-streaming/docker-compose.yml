@@ -9,11 +9,12 @@ services:
       STREAM_KEY: ${KICK_STREAM_KEY}
       LOOP_URL: ${LOOP_URL}
       PLAYLIST_FILE: /config/gaming.json
-      VIDEO_FPS: "60"
-      VIDEO_BITRATE_KBPS: "7000"
-      VIDEO_BUFSIZE_KBPS: "14000"
+      VIDEO_FPS: "30"
+      VIDEO_BITRATE_KBPS: "6000"
+      VIDEO_BUFSIZE_KBPS: "12000"
       AUDIO_BITRATE_KBPS: "160"
       VIDEO_PROFILE: "main"
+      VIDEO_PRESET: "superfast"
     volumes:
       - ./state:/state
 
