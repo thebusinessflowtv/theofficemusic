@@ -22,5 +22,8 @@
   "current_segment_started_at": "2026-10-02T01:14:16.385525+00:00",
   "last_verified_lifecycle": "live",
   "youtube_api_verification_uncertain": false,
-  "live_at": "2026-10-01T20:13:51.854133+00:00"
+  "live_at": "2026-10-01T20:13:51.854133+00:00",
+  "prewarmed_segment_index": 3,
+  "prewarmed_run_id": 36971406318,
+  "prewarmed_at": "2026-10-02T06:00:04.811633+00:00"
 }
