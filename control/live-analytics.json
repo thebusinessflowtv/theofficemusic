@@ -1,82 +1,61 @@
 {
-  "generated_at": "2026-10-02T20:41:16.834474+00:00",
+  "generated_at": "2026-10-02T20:58:24.859736+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
       {
         "session_id": "72fcb955-bbb3-41d1-b8d0-fd90427c57a5",
-        "video_id": "AEvkXXl1rtg",
-        "youtube_url": "https://www.youtube.com/watch?v=AEvkXXl1rtg",
+        "video_id": "C9Et10tejC8",
+        "youtube_url": "https://www.youtube.com/watch?v=C9Et10tejC8",
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "nQZT61rMpOGBF6_aVxQFKWbwbuA",
-          "id": "AEvkXXl1rtg",
+          "etag": "nNpJ9zkLKf7VbzEiELzo37_r88o",
+          "id": "C9Et10tejC8",
           "snippet": {
-            "publishedAt": "2026-10-02T18:24:21Z",
+            "publishedAt": "2026-10-02T20:47:54Z",
             "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-            "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
+            "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi",
+            "description": "The city is quiet, the rain is falling, and there’s still work to do. 🌧️🌙\n\nWelcome to the Late Night Office + Rainy Office LIVE — a continuous lofi session made for deep focus, studying, coding, reading, working, and those long nights when you just need to get things done.\n\nPut on your headphones, leave the rain outside, and stay here for a while.\n\n🎧 Perfect for:\nDeep Focus • Work • Study • Coding • Reading • Productivity • Late Night Sessions\n\nPeter Lofi — your soundtrack for getting things done.\n\n#Lofi #LofiMusic #LofiBeats #LofiLive #RainyLofi #RainSounds #LateNightLofi #LateNightOffice #RainyOffice #DeepFocus #FocusMusic #WorkMusic #StudyMusic #ProductivityMusic #CodingMusic #ReadingMusic #BackgroundMusic #ChillBeats #RelaxingMusic #NightVibes #CozyVibes #OfficeMusic #MusicForWork #MusicForStudy #StudyWithMe #WorkWithMe #DeepWork #ConcentrationMusic #AmbientMusic #PeterLofi",
             "thumbnails": {
               "default": {
-                "url": "https://i.ytimg.com/vi/AEvkXXl1rtg/default.jpg",
+                "url": "https://i.ytimg.com/vi/C9Et10tejC8/default_live.jpg",
                 "width": 120,
                 "height": 90
               },
               "medium": {
-                "url": "https://i.ytimg.com/vi/AEvkXXl1rtg/mqdefault.jpg",
+                "url": "https://i.ytimg.com/vi/C9Et10tejC8/mqdefault_live.jpg",
                 "width": 320,
                 "height": 180
               },
               "high": {
-                "url": "https://i.ytimg.com/vi/AEvkXXl1rtg/hqdefault.jpg",
+                "url": "https://i.ytimg.com/vi/C9Et10tejC8/hqdefault_live.jpg",
                 "width": 480,
                 "height": 360
               },
               "standard": {
-                "url": "https://i.ytimg.com/vi/AEvkXXl1rtg/sddefault.jpg",
+                "url": "https://i.ytimg.com/vi/C9Et10tejC8/sddefault_live.jpg",
                 "width": 640,
                 "height": 480
               },
               "maxres": {
-                "url": "https://i.ytimg.com/vi/AEvkXXl1rtg/maxresdefault.jpg",
+                "url": "https://i.ytimg.com/vi/C9Et10tejC8/maxresdefault_live.jpg",
                 "width": 1280,
                 "height": 720
-              },
-              "fhd": {
-                "url": "https://i.ytimg.com/vi/AEvkXXl1rtg/fhddefault.jpg",
-                "width": 1920,
-                "height": 1080
               }
             },
             "channelTitle": "Peter Lofi",
-            "tags": [
-              "1 hour lofi",
-              "Peter Lofi",
-              "PeterLofiSounds",
-              "background music",
-              "chill music",
-              "focus music",
-              "lofi",
-              "lofi beats",
-              "lofi mix",
-              "lofi music",
-              "long lofi mix",
-              "relaxing music",
-              "study music",
-              "work music"
-            ],
             "categoryId": "10",
-            "liveBroadcastContent": "none",
+            "liveBroadcastContent": "live",
             "defaultLanguage": "en",
             "localized": {
-              "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix"
+              "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi",
+              "description": "The city is quiet, the rain is falling, and there’s still work to do. 🌧️🌙\n\nWelcome to the Late Night Office + Rainy Office LIVE — a continuous lofi session made for deep focus, studying, coding, reading, working, and those long nights when you just need to get things done.\n\nPut on your headphones, leave the rain outside, and stay here for a while.\n\n🎧 Perfect for:\nDeep Focus • Work • Study • Coding • Reading • Productivity • Late Night Sessions\n\nPeter Lofi — your soundtrack for getting things done.\n\n#Lofi #LofiMusic #LofiBeats #LofiLive #RainyLofi #RainSounds #LateNightLofi #LateNightOffice #RainyOffice #DeepFocus #FocusMusic #WorkMusic #StudyMusic #ProductivityMusic #CodingMusic #ReadingMusic #BackgroundMusic #ChillBeats #RelaxingMusic #NightVibes #CozyVibes #OfficeMusic #MusicForWork #MusicForStudy #StudyWithMe #WorkWithMe #DeepWork #ConcentrationMusic #AmbientMusic #PeterLofi"
             },
-            "defaultAudioLanguage": "en-US"
+            "defaultAudioLanguage": "en"
           },
           "status": {
-            "uploadStatus": "processed",
+            "uploadStatus": "uploaded",
             "privacyStatus": "public",
             "license": "youtube",
             "embeddable": true,
@@ -85,16 +64,16 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "6",
+            "viewCount": "2",
             "likeCount": "0",
             "dislikeCount": "0",
             "favoriteCount": "0",
             "commentCount": "0"
           },
           "liveStreamingDetails": {
-            "actualStartTime": "2026-10-01T20:13:46Z",
-            "actualEndTime": "2026-10-02T11:44:56Z",
-            "scheduledStartTime": "2026-10-01T20:13:50Z"
+            "actualStartTime": "2026-10-02T20:48:07Z",
+            "scheduledStartTime": "2026-10-02T20:48:13Z",
+            "activeLiveChatId": "Cg0KC0M5RXQxMHRlakM4KicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILQzlFdDEwdGVqQzg"
           }
         }
       },
@@ -195,7 +174,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "uuHZW0HkmfAQZyEVSfQCq--eK_4",
+          "etag": "rmhgJKRe-cRexYKVrdVuiSyBXjo",
           "id": "PNdwQEFaIrA",
           "snippet": {
             "publishedAt": "2026-10-01T20:39:32Z",
@@ -204,32 +183,32 @@
             "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
             "thumbnails": {
               "default": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/default.jpg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/default.jpg?sqp=CKS0gNYG&rs=AOn4CLBgsTGRbuDIlICqlgnlCnAJcyIq2A",
                 "width": 120,
                 "height": 90
               },
               "medium": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/mqdefault.jpg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/mqdefault.jpg?sqp=CKS0gNYG&rs=AOn4CLA1mT4IiaNK9ODDL7gNFMmtZnCU3Q",
                 "width": 320,
                 "height": 180
               },
               "high": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/hqdefault.jpg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/hqdefault.jpg?sqp=CKS0gNYG&rs=AOn4CLB873tSRGJzRWH_LICodKhQiEhLcA",
                 "width": 480,
                 "height": 360
               },
               "standard": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/sddefault.jpg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/sddefault.jpg?sqp=CKS0gNYG&rs=AOn4CLCiXixApVxmip5g37x2MDSAbdQZog",
                 "width": 640,
                 "height": 480
               },
               "maxres": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/maxresdefault.jpg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/maxresdefault.jpg?sqp=CKS0gNYG&rs=AOn4CLCffZliT5SPq8NNKRxMUiw2DQdYlQ",
                 "width": 1280,
                 "height": 720
               },
               "fhd": {
-                "url": "https://i.ytimg.com/vi/PNdwQEFaIrA/fhddefault.jpg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/fhddefault.jpg?sqp=CKS0gNYG&rs=AOn4CLAb3oyebk2Dzps6XX1kxjclQ0YvKQ",
                 "width": 1920,
                 "height": 1080
               }
@@ -262,7 +241,7 @@
           },
           "status": {
             "uploadStatus": "processed",
-            "privacyStatus": "public",
+            "privacyStatus": "private",
             "license": "youtube",
             "embeddable": true,
             "publicStatsViewable": true,
@@ -290,7 +269,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "-nRboLccwpm5PUdigpKPGRsw2DI",
+          "etag": "EsaUyw1wzJGhxq02pJ8_fsZFsIM",
           "id": "WYJuqbEQYZQ",
           "snippet": {
             "publishedAt": "2026-10-02T20:36:38Z",
@@ -344,7 +323,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "0",
+            "viewCount": "1",
             "likeCount": "0",
             "dislikeCount": "0",
             "favoriteCount": "0",
