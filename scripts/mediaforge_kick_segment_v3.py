@@ -188,10 +188,9 @@ def _capture_takeover(cutover_epoch):
 
 
 def dispatch_next_v3():
-    """Trigger the successor through git transport instead of the rate-limited Actions REST API."""
+    """Dispatch successor directly; persist a git marker only as audit/fallback."""
     remain = 0 if core.DURATION_MINUTES == 0 else max(1, core.DURATION_MINUTES - 300)
-    path = f"control/kick-successor/{core.SESSION_ID}-{core.SEGMENT_INDEX + 1}.json"
-    payload = {
+    inputs = {
         "session_id": core.SESSION_ID,
         "track_urls_b64": core.TRACK_URLS_B64,
         "duration_minutes": str(remain),
@@ -200,20 +199,35 @@ def dispatch_next_v3():
         "thumbnail_url": core.THUMBNAIL_URL,
         "loop_url": core.LOOP_URL,
         "segment_index": str(core.SEGMENT_INDEX + 1),
+    }
+    direct_ok = False
+    for attempt in range(1, 6):
+        try:
+            core.api_request(
+                "POST",
+                "actions/workflows/peter-lofi-kick-live.yml/dispatches",
+                {"ref": "main", "inputs": inputs},
+            )
+            print(f"Kick successor {core.SEGMENT_INDEX + 1} dispatched directly on attempt {attempt}.", flush=True)
+            direct_ok = True
+            break
+        except Exception as exc:
+            print(f"Kick direct successor dispatch attempt {attempt}/5 failed: {exc}", flush=True)
+            time.sleep(attempt * 5)
+
+    path = f"control/kick-successor/{core.SESSION_ID}-{core.SEGMENT_INDEX + 1}.json"
+    payload = {
+        **inputs,
         "requested_at": core.iso_now(),
         "source_run_id": core.RUN_ID,
-        "protocol": "kick-v4-git-successor",
+        "protocol": "kick-v5-direct-dispatch",
+        "direct_dispatch_ok": direct_ok,
     }
-    ok = cp.git_put_json(
-        path,
-        payload,
-        f"live: trigger Kick successor {core.SESSION_ID} {core.SEGMENT_INDEX + 1}",
-    )
-    print(
-        f"Kick successor {core.SEGMENT_INDEX + 1} " + ("triggered by git push." if ok else "trigger failed; predecessor stays online."),
-        flush=True,
-    )
-    return ok
+    try:
+        cp.git_put_json(path, payload, f"live: audit Kick successor {core.SESSION_ID} {core.SEGMENT_INDEX + 1}")
+    except Exception as exc:
+        print(f"::warning::Kick successor audit marker failed: {exc}", flush=True)
+    return direct_ok
 
 def run_segment_v3(loop):
     chain = core.DURATION_MINUTES == 0 or core.DURATION_MINUTES > 300
