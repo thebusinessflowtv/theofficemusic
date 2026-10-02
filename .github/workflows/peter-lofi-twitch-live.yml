@@ -71,7 +71,24 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y ffmpeg file
 
+      - name: Check prewarm owner
+        id: owner
+        if: inputs.segment_index != '1'
+        run: |
+          set -euo pipefail
+          READY="control/twitch-prewarm/${SESSION_ID}-${SEGMENT_INDEX}.json"
+          if [ -s "$READY" ]; then
+            OWNER="$(jq -r '.run_id // 0' "$READY")"
+            if [ "$OWNER" != "0" ] && [ "$OWNER" != "$GITHUB_RUN_ID" ]; then
+              echo "Twitch segment already owned by active prewarm run $OWNER; duplicate exits."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
       - name: Run Twitch live segment
+        if: steps.owner.outputs.skip != 'true'
         run: |
           set -euo pipefail
           python scripts/mediaforge_twitch_segment_v1.py
