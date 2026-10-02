@@ -52,3 +52,5 @@ jobs:
 
           gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-twitch-live.yml/dispatches" --input /tmp/twitch-dispatch.json
           echo "Twitch stable-profile restart dispatched for ${SESSION_ID}."
+
+# restart-trigger: 2026-10-02T19:34:00Z
