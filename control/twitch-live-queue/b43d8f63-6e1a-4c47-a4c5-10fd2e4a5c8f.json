@@ -8,5 +8,6 @@
   "segment_index": "1",
   "source_station": "gaming",
   "source_platform_payload": "kick",
-  "requested_at": "2026-10-02T04:02:38.334Z"
+  "requested_at": "2026-10-02T14:13:03.610Z",
+  "restart_reason": "manual_recovery_after_runner_timeout"
 }
