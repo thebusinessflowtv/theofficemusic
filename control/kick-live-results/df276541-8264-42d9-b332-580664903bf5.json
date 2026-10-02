@@ -1,7 +1,7 @@
 {
   "platform": "kick",
-  "status": "live",
-  "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi",
+  "status": "completed",
+  "title": "deep house radio \ud83d\udcbb music to work/study/focus to | Peter Lofi",
   "description": "",
   "session_id": "df276541-8264-42d9-b332-580664903bf5",
   "segment_index": 2,
@@ -13,5 +13,7 @@
   "encoder_connected": true,
   "kick_verified": true,
   "updated_at": "2026-10-02T01:14:09.766860+00:00",
-  "live_at": "2026-10-02T01:14:09.766877+00:00"
+  "live_at": "2026-10-02T01:14:09.766877+00:00",
+  "stop_reason": "manual_stop",
+  "completed_at": "2026-10-02T03:04:32.381703+00:00"
 }
