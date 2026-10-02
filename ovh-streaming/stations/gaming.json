@@ -1,0 +1,11 @@
+{
+  "station": "gaming",
+  "shuffle": true,
+  "tracks": [
+    {
+      "id": "gaming-3h-current",
+      "title": "Peter Lofi Gaming — Current 3 Hour Mix",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/peter-lofi-gaming-3h.mp3"
+    }
+  ]
+}
