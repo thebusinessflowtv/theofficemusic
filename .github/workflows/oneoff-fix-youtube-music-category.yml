@@ -1,0 +1,143 @@
+name: One-off — Fix YouTube Music Category and Live Metadata
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/oneoff-fix-youtube-music-category.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install YouTube API runtime
+        run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Set every active Peter Lofi live to Music and align genre metadata
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          MUSIC_CATEGORY_ID = "10"
+          DEEP_HOUSE_DESCRIPTION = """🎧 Peter Lofi — original deep house and chill house music for work, study, focus and late-night sessions.
+
+          A continuous deep house radio with polished lounge grooves, clean basslines and smooth electronic textures built for focused work, studying, design, coding and background listening.
+
+          Put on your headphones, settle into the flow and stay awhile.
+
+          🎧 Subscribe to Peter Lofi:
+          https://www.youtube.com/@PeterLofiSounds
+
+          Original music by Peter Lofi.
+          © 2026 Peter Lofi. All rights reserved.
+
+          #PeterLofi #DeepHouse #DeepHouseMusic #ChillHouse #LoungeHouse #OfficeMusic #FocusMusic #WorkMusic #StudyMusic""".replace("\n          ","\n").strip()
+
+          DEEP_HOUSE_TAGS = [
+              "Peter Lofi","PeterLofiSounds","deep house","deep house radio","deep house music",
+              "chill house","lounge house","office music","music for work","work music",
+              "study music","focus music","background music","relaxing music"
+          ]
+
+          creds = Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"],
+          )
+          creds.refresh(Request())
+          yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
+
+          channel = yt.channels().list(part="id", mine=True).execute().get("items") or []
+          if not channel or channel[0]["id"] != os.environ["YOUTUBE_CHANNEL_ID"]:
+              raise SystemExit("YouTube channel mismatch")
+
+          broadcasts = yt.liveBroadcasts().list(
+              part="snippet,status",
+              broadcastStatus="active",
+              broadcastType="all",
+              maxResults=50,
+          ).execute().get("items") or []
+
+          results = []
+          allowed = {"title","description","tags","categoryId","defaultLanguage","defaultAudioLanguage"}
+          for broadcast in broadcasts:
+              video_id = broadcast["id"]
+              videos = yt.videos().list(part="snippet,status,liveStreamingDetails", id=video_id).execute().get("items") or []
+              if not videos:
+                  continue
+              video = videos[0]
+              original = dict(video.get("snippet") or {})
+              snippet = {k:v for k,v in original.items() if k in allowed}
+              title = str(original.get("title") or "")
+              before_category = str(original.get("categoryId") or "")
+
+              snippet["categoryId"] = MUSIC_CATEGORY_ID
+              changes = ["categoryId:10"]
+
+              if "deep house" in title.lower():
+                  snippet["description"] = DEEP_HOUSE_DESCRIPTION
+                  snippet["tags"] = DEEP_HOUSE_TAGS
+                  changes += ["deep-house-description", "deep-house-tags"]
+
+              yt.videos().update(
+                  part="snippet",
+                  body={"id": video_id, "snippet": snippet},
+              ).execute()
+
+              verify = yt.videos().list(part="snippet,statistics,liveStreamingDetails,status", id=video_id).execute()["items"][0]
+              results.append({
+                  "video_id": video_id,
+                  "title": verify["snippet"].get("title"),
+                  "before_category_id": before_category,
+                  "after_category_id": verify["snippet"].get("categoryId"),
+                  "privacy": verify.get("status",{}).get("privacyStatus"),
+                  "concurrent_viewers": verify.get("liveStreamingDetails",{}).get("concurrentViewers"),
+                  "view_count": verify.get("statistics",{}).get("viewCount"),
+                  "changes": changes,
+              })
+
+          out = {
+              "checked_at": datetime.now(timezone.utc).isoformat(),
+              "expected_category_id": MUSIC_CATEGORY_ID,
+              "active_live_count": len(broadcasts),
+              "updated": results,
+          }
+          os.makedirs("control/diagnostics", exist_ok=True)
+          with open("control/diagnostics/youtube-music-category-fix.json","w",encoding="utf-8") as f:
+              json.dump(out,f,ensure_ascii=False,indent=2)
+          print(json.dumps(out,ensure_ascii=False,indent=2))
+          if any(str(x.get("after_category_id")) != MUSIC_CATEGORY_ID for x in results):
+              raise SystemExit("At least one active live was not updated to Music")
+          PY
+
+      - name: Persist verification
+        if: always()
+        run: |
+          set -euo pipefail
+          test -f control/diagnostics/youtube-music-category-fix.json || exit 0
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/youtube-music-category-fix.json
+          git commit -m "youtube: verify active lives use Music category" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
