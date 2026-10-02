@@ -1,0 +1,7 @@
+{
+  "checked_at": "2026-10-02T03:50:39.196029+00:00",
+  "configured": true,
+  "active": false,
+  "http_status": 401,
+  "error": "token introspection failed"
+}
