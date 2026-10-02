@@ -12,6 +12,7 @@ import urllib.error
 import urllib.request
 
 import mediaforge_kick_segment_v2 as core
+import mediaforge_control_plane as cp
 
 _stop_cache = {"checked": 0.0, "value": False}
 _ready_cache = {"checked": 0.0, "value": False}
@@ -185,6 +186,35 @@ def _capture_takeover(cutover_epoch):
     }
 
 
+
+def dispatch_next_v3():
+    """Trigger the successor through git transport instead of the rate-limited Actions REST API."""
+    remain = 0 if core.DURATION_MINUTES == 0 else max(1, core.DURATION_MINUTES - 300)
+    path = f"control/kick-successor/{core.SESSION_ID}-{core.SEGMENT_INDEX + 1}.json"
+    payload = {
+        "session_id": core.SESSION_ID,
+        "track_urls_b64": core.TRACK_URLS_B64,
+        "duration_minutes": str(remain),
+        "title": core.TITLE,
+        "description": core.DESCRIPTION,
+        "thumbnail_url": core.THUMBNAIL_URL,
+        "loop_url": core.LOOP_URL,
+        "segment_index": str(core.SEGMENT_INDEX + 1),
+        "requested_at": core.iso_now(),
+        "source_run_id": core.RUN_ID,
+        "protocol": "kick-v4-git-successor",
+    }
+    ok = cp.git_put_json(
+        path,
+        payload,
+        f"live: trigger Kick successor {core.SESSION_ID} {core.SEGMENT_INDEX + 1}",
+    )
+    print(
+        f"Kick successor {core.SEGMENT_INDEX + 1} " + ("triggered by git push." if ok else "trigger failed; predecessor stays online."),
+        flush=True,
+    )
+    return ok
+
 def run_segment_v3(loop):
     chain = core.DURATION_MINUTES == 0 or core.DURATION_MINUTES > 300
     seconds = 300 * 60 if core.DURATION_MINUTES == 0 else min(300, core.DURATION_MINUTES) * 60
@@ -210,7 +240,7 @@ def run_segment_v3(loop):
             continue
 
         if chain and not dispatched and now >= prewarm_at:
-            dispatched = core.dispatch_next()
+            dispatched = dispatch_next_v3()
             last_dispatch = now
 
         if now >= deadline:
@@ -218,7 +248,7 @@ def run_segment_v3(loop):
                 core.stop_processes()
                 return False
             if not dispatched:
-                dispatched = core.dispatch_next()
+                dispatched = dispatch_next_v3()
                 last_dispatch = now
 
             if successor_ready_v3():
@@ -288,6 +318,7 @@ core.mark_ready = mark_ready_v3
 core.wait_takeover = wait_takeover_v3
 core.replace_previous_session = replace_previous_session_v3
 core.run_segment = run_segment_v3
+core.dispatch_next = dispatch_next_v3
 core.mark_complete = mark_complete_v3
 core.record_failure = record_failure_v3
 
