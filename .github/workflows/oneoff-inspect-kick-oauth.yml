@@ -1,0 +1,60 @@
+name: One-off — Inspect Kick OAuth Scopes
+
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-inspect-kick-oauth.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    env:
+      KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect token without exposing it
+        run: |
+          set -euo pipefail
+          mkdir -p control/diagnostics
+          python - <<'PY'
+          import json, os, urllib.request, urllib.error, pathlib, datetime
+          tok=(os.environ.get('KICK_ACCESS_TOKEN') or '').strip()
+          out={'checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'configured':bool(tok)}
+          if not tok:
+              out.update({'active':False,'error':'KICK_ACCESS_TOKEN not configured'})
+          else:
+              req=urllib.request.Request('https://id.kick.com/oauth/token/introspect',
+                  data=b'', method='POST',
+                  headers={'Authorization':f'Bearer {tok}','User-Agent':'MediaForge-Kick-OAuth-Inspector'})
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as r:
+                      data=json.load(r)
+                  d=data.get('data') or {}
+                  out.update({
+                      'active':bool(d.get('active')),
+                      'token_type':d.get('token_type'),
+                      'scope':d.get('scope') or '',
+                      'has_chat_write':'chat:write' in (d.get('scope') or '').split(),
+                      'has_events_subscribe':'events:subscribe' in (d.get('scope') or '').split(),
+                      'has_channel_write':'channel:write' in (d.get('scope') or '').split(),
+                      'expires_at':d.get('exp'),
+                  })
+              except urllib.error.HTTPError as e:
+                  out.update({'active':False,'http_status':e.code,'error':'token introspection failed'})
+              except Exception as e:
+                  out.update({'active':False,'error':str(e)})
+          pathlib.Path('control/diagnostics/kick-oauth.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - name: Save diagnostic
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/kick-oauth.json
+          git commit -m "ops: inspect Kick OAuth scopes" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
