@@ -1,6 +1,6 @@
 {
   "platform": "twitch",
-  "status": "starting",
+  "status": "failed",
   "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
   "description": "🎮 Welcome to Peter Lofi Gaming Radio.\n🎧 Gaming • Focus • Chill • Late Night Sessions\n🔴 Live 24/7 with Peter Lofi  \n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.",
   "session_id": "b43d8f63-6e1a-4c47-a4c5-10fd2e4a5c8f",
@@ -10,9 +10,10 @@
   "encoder_resolution": "1920x1080",
   "encoder_fps": 30,
   "encoder_bitrate_kbps": 4500,
-  "encoder_connected": true,
+  "encoder_connected": false,
   "twitch_ingest_verified": false,
-  "updated_at": "2026-10-02T19:39:11.427641+00:00",
+  "updated_at": "2026-10-02T19:39:18.063682+00:00",
   "live_at": "2026-10-02T14:14:35.025421+00:00",
-  "bitrate_profile": "twitch-recommended-1080p30-cbr"
+  "bitrate_profile": "twitch-recommended-1080p30-cbr",
+  "error_message": "Twitch FFmpeg stopped unexpectedly:\n[aist#1:0/pcm_s16le @ 0x5608f5e4b140] Guessed Channel Layout: stereo\n[tls @ 0x5608f5dff700] Error in the pull function.\n[tls @ 0x5608f5dff700] IO error: End of file\n[out#0/flv @ 0x5608f5d08dc0] Error opening output rtmps://live.twitch.tv:443/app/live_1548303442_r9a7YMRf9q8gxFhsThuLhuHck3vJT1: Input/output error\nError opening output file rtmps://live.twitch.tv:443/app/live_1548303442_r9a7YMRf9q8gxFhsThuLhuHck3vJT1.\nError opening output files: Input/output error\n"
 }
