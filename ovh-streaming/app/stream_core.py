@@ -8,6 +8,7 @@ import subprocess
 import sys
 import time
 import urllib.request
+import urllib.parse
 from datetime import datetime, timezone
 
 
@@ -84,7 +85,18 @@ class StreamCore:
         return loop
 
     def target(self):
-        return f"{self.stream_url}/{self.stream_key.lstrip('/')}"
+        base = self.stream_url.rstrip("/")
+        if self.platform == "kick":
+            parsed = urllib.parse.urlparse(base)
+            if parsed.scheme == "rtmps" and "global-contribute.live-video.net" in (parsed.hostname or ""):
+                netloc = parsed.netloc
+                if parsed.port is None:
+                    netloc = f"{parsed.hostname}:443"
+                path = parsed.path.rstrip("/")
+                if not path:
+                    path = "/app"
+                base = urllib.parse.urlunparse((parsed.scheme, netloc, path, "", "", "")).rstrip("/")
+        return f"{base}/{self.stream_key.lstrip('/')}"
 
     def cleanup(self):
         for proc in (self.encoder, self.feeder):
