@@ -1,6 +1,6 @@
 {
   "platform": "youtube",
-  "status": "starting",
+  "status": "live",
   "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi",
   "description": "The city is quiet, the rain is falling, and there’s still work to do. 🌧️🌙\n\nWelcome to the Late Night Office + Rainy Office LIVE — a continuous lofi session made for deep focus, studying, coding, reading, working, and those long nights when you just need to get things done.\n\nPut on your headphones, leave the rain outside, and stay here for a while.\n\n🎧 Perfect for:\nDeep Focus • Work • Study • Coding • Reading • Productivity • Late Night Sessions\n\nPeter Lofi — your soundtrack for getting things done.\n\n#Lofi #LofiMusic #LofiBeats #LofiLive #RainyLofi #RainSounds #LateNightLofi #LateNightOffice #RainyOffice #DeepFocus #FocusMusic #WorkMusic #StudyMusic #ProductivityMusic #CodingMusic #ReadingMusic #BackgroundMusic #ChillBeats #RelaxingMusic #NightVibes #CozyVibes #OfficeMusic #MusicForWork #MusicForStudy #StudyWithMe #WorkWithMe #DeepWork #ConcentrationMusic #AmbientMusic #PeterLofi",
   "github_run_id": 37062786091,
@@ -18,5 +18,10 @@
   "started_at": "2026-10-02T20:47:53.765347+00:00",
   "session_started_at": "2026-10-01T20:13:30.174623+00:00",
   "rtmp_handoff_token": "gAAAAABqwBiAuzbdcuArUAacJnXP9utgs0IRmfheQI810EU59SvycUIvg883RWYDSz7EJPJ4sNZML-aepunxla5MUYfQzrW8WqF8UjVRsYRi24DlSQjIHqAju-yu0uWb0QOzpOD0Yr4AqLoSUZ3Vb5jGcD6DGo7qcQ==",
-  "rtmp_resume_mode": "encrypted_handoff_token_ready"
+  "rtmp_resume_mode": "encrypted_handoff_token_ready",
+  "encoder_connected": true,
+  "current_segment_started_at": "2026-10-02T20:48:15.057710+00:00",
+  "last_verified_lifecycle": "live",
+  "youtube_api_verification_uncertain": false,
+  "live_at": "2026-10-02T20:48:15.057710+00:00"
 }
