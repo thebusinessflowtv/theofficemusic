@@ -1,19 +1,18 @@
 {
   "platform": "twitch",
-  "status": "failed",
+  "status": "starting",
   "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
   "description": "🎮 Welcome to Peter Lofi Gaming Radio.\n🎧 Gaming • Focus • Chill • Late Night Sessions\n🔴 Live 24/7 with Peter Lofi  \n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.",
   "session_id": "b43d8f63-6e1a-4c47-a4c5-10fd2e4a5c8f",
   "segment_index": 1,
-  "github_run_id": 37055450559,
-  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/37055450559",
+  "github_run_id": 37056016453,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/37056016453",
   "encoder_resolution": "1920x1080",
   "encoder_fps": 30,
   "encoder_bitrate_kbps": 4500,
-  "encoder_connected": false,
+  "encoder_connected": true,
   "twitch_ingest_verified": false,
-  "updated_at": "2026-10-02T19:39:18.063682+00:00",
+  "updated_at": "2026-10-02T19:44:38.344554+00:00",
   "live_at": "2026-10-02T14:14:35.025421+00:00",
-  "bitrate_profile": "twitch-recommended-1080p30-cbr",
-  "error_message": "Twitch RTMPS handshake failed; sensitive target details redacted."
+  "bitrate_profile": "twitch-recommended-1080p30-cbr"
 }
