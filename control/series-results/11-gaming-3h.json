@@ -1,0 +1,347 @@
+{
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída e disponível para download",
+  "index": 11,
+  "key": "gaming-3h",
+  "name": "Gaming Focus",
+  "title": "3 Hours Gaming Lofi 🎮 Beats to Play, Focus & Chill | Peter Lofi",
+  "playlist": "Gaming Focus 🎮 | Peter Lofi",
+  "description": "Three hours of original instrumental Peter Lofi music for gaming, focus and long play sessions.",
+  "duration_minutes": 180,
+  "generation_mode": "stable-audio-3-small-music-resumable-v2",
+  "checkpoint_tag": "peter-lofi-gaming-3h-checkpoint-v2",
+  "release_tag": "peter-lofi-gaming-3h-v2-36956897081",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-gaming-3h-v2-36956897081",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/peter-lofi-gaming-3h.mp3",
+  "master_filename": "peter-lofi-gaming-3h.mp3",
+  "tracks": [
+    {
+      "title": "01-01-s1-01-respawn-grid",
+      "filename": "01-01-s1-01-respawn-grid.mp3",
+      "duration_seconds": 300.024,
+      "position": 1,
+      "start_seconds": 0,
+      "sha256": "af5c3b426e364744026062ccb4d331192b54eb8399a6d14a0f16f55fc67cc4ac",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/01-01-s1-01-respawn-grid.mp3"
+    },
+    {
+      "title": "02-02-s1-02-velocity-lobby",
+      "filename": "02-02-s1-02-velocity-lobby.mp3",
+      "duration_seconds": 300.024,
+      "position": 2,
+      "start_seconds": 300,
+      "sha256": "df5c0b563ae29b67ba1cc59a0c0f95cca82a22be11bfce25666a5f29c0aa7c70",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/02-02-s1-02-velocity-lobby.mp3"
+    },
+    {
+      "title": "03-03-s1-03-midnight-lobby",
+      "filename": "03-03-s1-03-midnight-lobby.mp3",
+      "duration_seconds": 300.024,
+      "position": 3,
+      "start_seconds": 600,
+      "sha256": "ae6e3a5585b22dcc594ecc82115c1f20e778c50cbf388a468f50a97fb40609c9",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/03-03-s1-03-midnight-lobby.mp3"
+    },
+    {
+      "title": "04-04-s1-04-checkpoint-flow",
+      "filename": "04-04-s1-04-checkpoint-flow.mp3",
+      "duration_seconds": 300.024,
+      "position": 4,
+      "start_seconds": 900,
+      "sha256": "047e0bfe40d9eb032d58ef5ca17f618dd1bf222c210a55f94d5d0980d7af23f4",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/04-04-s1-04-checkpoint-flow.mp3"
+    },
+    {
+      "title": "05-05-s1-05-cyber-circuit",
+      "filename": "05-05-s1-05-cyber-circuit.mp3",
+      "duration_seconds": 300.024,
+      "position": 5,
+      "start_seconds": 1200,
+      "sha256": "a2b776e1b961cc7c3941089b3d0948f1a005c5bfc8b582c0a8b6df37b46d8c25",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/05-05-s1-05-cyber-circuit.mp3"
+    },
+    {
+      "title": "06-06-s1-06-level-session",
+      "filename": "06-06-s1-06-level-session.mp3",
+      "duration_seconds": 300.024,
+      "position": 6,
+      "start_seconds": 1500,
+      "sha256": "e0c9654e0a622145900e7f83a40b7cf0bd117cdd627130df36d97d577ed16791",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/06-06-s1-06-level-session.mp3"
+    },
+    {
+      "title": "07-01-s1-07-cyber-run",
+      "filename": "07-01-s1-07-cyber-run.mp3",
+      "duration_seconds": 300.024,
+      "position": 7,
+      "start_seconds": 1800,
+      "sha256": "74b71febe8e15ed989d5329797e6ec709a709a550ca68233305ef321532d6a0b",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/07-01-s1-07-cyber-run.mp3"
+    },
+    {
+      "title": "08-02-s1-08-pixel-grid-18",
+      "filename": "08-02-s1-08-pixel-grid-18.mp3",
+      "duration_seconds": 300.024,
+      "position": 8,
+      "start_seconds": 2100,
+      "sha256": "52eb46a946b8ad843d525a2434ed7ab53113368e38ac34e8a91315ebfe4e8f1a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/08-02-s1-08-pixel-grid-18.mp3"
+    },
+    {
+      "title": "09-03-s1-09-loading-match",
+      "filename": "09-03-s1-09-loading-match.mp3",
+      "duration_seconds": 300.024,
+      "position": 9,
+      "start_seconds": 2400,
+      "sha256": "63c1218f9cf79918e0211e001657bae1e1f779aa454b5cd71c2a2574f2e8f794",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/09-03-s1-09-loading-match.mp3"
+    },
+    {
+      "title": "10-04-s1-10-neon-arena",
+      "filename": "10-04-s1-10-neon-arena.mp3",
+      "duration_seconds": 300.024,
+      "position": 10,
+      "start_seconds": 2700,
+      "sha256": "0bccdf89347a844f04f66dd634195c82743b707bf150b729dc5d46436717bfc5",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/10-04-s1-10-neon-arena.mp3"
+    },
+    {
+      "title": "11-05-s1-11-velocity-session",
+      "filename": "11-05-s1-11-velocity-session.mp3",
+      "duration_seconds": 300.024,
+      "position": 11,
+      "start_seconds": 3000,
+      "sha256": "1ca1f0f9338886566ee6a49b1314bbe44221ae535c9b1af9dacd51b90aaf7510",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/11-05-s1-11-velocity-session.mp3"
+    },
+    {
+      "title": "12-06-s1-12-night-flow",
+      "filename": "12-06-s1-12-night-flow.mp3",
+      "duration_seconds": 300.024,
+      "position": 12,
+      "start_seconds": 3300,
+      "sha256": "dd3a7a56dd68ba91c9b1b27be69098881000e8f853b1e15758677225e9a31338",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/12-06-s1-12-night-flow.mp3"
+    },
+    {
+      "title": "13-01-s1-13-level-zone",
+      "filename": "13-01-s1-13-level-zone.mp3",
+      "duration_seconds": 300.024,
+      "position": 13,
+      "start_seconds": 3600,
+      "sha256": "69cf091e40efa82d7fdf9ab3c44587e2d0eb682b5095b96a1345f4afaec4c27f",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/13-01-s1-13-level-zone.mp3"
+    },
+    {
+      "title": "14-02-s1-14-velocity-session-33",
+      "filename": "14-02-s1-14-velocity-session-33.mp3",
+      "duration_seconds": 300.024,
+      "position": 14,
+      "start_seconds": 3900,
+      "sha256": "4cb58525995c78378b2d8b04a83e9d2db8fe64d07d90066f31d93222511c7036",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/14-02-s1-14-velocity-session-33.mp3"
+    },
+    {
+      "title": "15-03-s1-15-pixel-match-36",
+      "filename": "15-03-s1-15-pixel-match-36.mp3",
+      "duration_seconds": 300.024,
+      "position": 15,
+      "start_seconds": 4200,
+      "sha256": "966f868283b09827ade0497f7698ab3dc1ab503afb6a3ebe07563fd6ca716d63",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/15-03-s1-15-pixel-match-36.mp3"
+    },
+    {
+      "title": "16-04-s1-16-cyber-mode",
+      "filename": "16-04-s1-16-cyber-mode.mp3",
+      "duration_seconds": 300.024,
+      "position": 16,
+      "start_seconds": 4500,
+      "sha256": "5f8b889eac8bc018879c6ba21f4ced8f69c7ffbe0f9484928eaceb30e8ee8a05",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/16-04-s1-16-cyber-mode.mp3"
+    },
+    {
+      "title": "17-05-s1-17-night-circuit",
+      "filename": "17-05-s1-17-night-circuit.mp3",
+      "duration_seconds": 300.024,
+      "position": 17,
+      "start_seconds": 4800,
+      "sha256": "e85b2a6dda8be7cc289bf35a3df95a7732f9db9a89f5bd3eb1ca99daba839006",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/17-05-s1-17-night-circuit.mp3"
+    },
+    {
+      "title": "18-06-s1-18-loading-session",
+      "filename": "18-06-s1-18-loading-session.mp3",
+      "duration_seconds": 300.024,
+      "position": 18,
+      "start_seconds": 5100,
+      "sha256": "fc243c8a828a169fcb54702ce7a845bf09a0d77d825491109b08497d92e4a7f0",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/18-06-s1-18-loading-session.mp3"
+    },
+    {
+      "title": "19-01-s2-01-arcade-mode",
+      "filename": "19-01-s2-01-arcade-mode.mp3",
+      "duration_seconds": 300.024,
+      "position": 19,
+      "start_seconds": 5400,
+      "sha256": "f262dc3952836c371ac87fcb814ec5a62da2b9c62e20581afd5f9f1dbf8ccebf",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/19-01-s2-01-arcade-mode.mp3"
+    },
+    {
+      "title": "20-02-s2-02-respawn-grid",
+      "filename": "20-02-s2-02-respawn-grid.mp3",
+      "duration_seconds": 300.024,
+      "position": 20,
+      "start_seconds": 5700,
+      "sha256": "6aec16b75611f3fc98ca60d1742fb10ddc5f70012a4169be4756ecf1c1210a26",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/20-02-s2-02-respawn-grid.mp3"
+    },
+    {
+      "title": "21-03-s2-03-neon-session",
+      "filename": "21-03-s2-03-neon-session.mp3",
+      "duration_seconds": 300.024,
+      "position": 21,
+      "start_seconds": 6000,
+      "sha256": "53038c481ef8324439078002dc98190e4bf2de3332cf2c2cf6cee5405abdc3c5",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/21-03-s2-03-neon-session.mp3"
+    },
+    {
+      "title": "22-04-s2-04-cyber-lobby",
+      "filename": "22-04-s2-04-cyber-lobby.mp3",
+      "duration_seconds": 300.024,
+      "position": 22,
+      "start_seconds": 6300,
+      "sha256": "fbb0ceb85df81285a74d8abbae2e0351dea1980062ed4076dadc4929d3e598ae",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/22-04-s2-04-cyber-lobby.mp3"
+    },
+    {
+      "title": "23-05-s2-05-cyber-lobby-11",
+      "filename": "23-05-s2-05-cyber-lobby-11.mp3",
+      "duration_seconds": 300.024,
+      "position": 23,
+      "start_seconds": 6600,
+      "sha256": "dbd723b08f00d3d1cb0d34ee02ed9dfd42cb8857b14240245961114953365535",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/23-05-s2-05-cyber-lobby-11.mp3"
+    },
+    {
+      "title": "24-06-s2-06-velocity-lobby",
+      "filename": "24-06-s2-06-velocity-lobby.mp3",
+      "duration_seconds": 300.024,
+      "position": 24,
+      "start_seconds": 6900,
+      "sha256": "db86abd9fcff8c14db675ec58e2efd42f897826bfcd29b0c0c69521f38851916",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/24-06-s2-06-velocity-lobby.mp3"
+    },
+    {
+      "title": "25-01-s2-07-checkpoint-drive",
+      "filename": "25-01-s2-07-checkpoint-drive.mp3",
+      "duration_seconds": 300.024,
+      "position": 25,
+      "start_seconds": 7200,
+      "sha256": "19201e15b0fec30b5cae34b8a3cf93c4bab45db7e1bc29bc3f915abc62be14bf",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/25-01-s2-07-checkpoint-drive.mp3"
+    },
+    {
+      "title": "26-02-s2-08-cyber-run-18",
+      "filename": "26-02-s2-08-cyber-run-18.mp3",
+      "duration_seconds": 300.024,
+      "position": 26,
+      "start_seconds": 7500,
+      "sha256": "3e9719ec928dc2cca5a67cde2db7dab3e059b909d1ae7066b6921ed0a6f8a892",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/26-02-s2-08-cyber-run-18.mp3"
+    },
+    {
+      "title": "27-03-s2-09-checkpoint-match",
+      "filename": "27-03-s2-09-checkpoint-match.mp3",
+      "duration_seconds": 300.024,
+      "position": 27,
+      "start_seconds": 7800,
+      "sha256": "d7d12d1cbeea1466efdc149f9091ae2e43998521ecd3d0b721356a223e57814a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/27-03-s2-09-checkpoint-match.mp3"
+    },
+    {
+      "title": "28-04-s2-10-respawn-run",
+      "filename": "28-04-s2-10-respawn-run.mp3",
+      "duration_seconds": 300.024,
+      "position": 28,
+      "start_seconds": 8100,
+      "sha256": "eb425e7326af26f2420e4f39878bfb2d7fdec9eacf100c1d8d1f246fd196e2a1",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/28-04-s2-10-respawn-run.mp3"
+    },
+    {
+      "title": "29-05-s2-11-level-quest",
+      "filename": "29-05-s2-11-level-quest.mp3",
+      "duration_seconds": 300.024,
+      "position": 29,
+      "start_seconds": 8400,
+      "sha256": "c331e16a28516836b881600e4ad9808b2445b0f339ea3cf1641c023e8df3a921",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/29-05-s2-11-level-quest.mp3"
+    },
+    {
+      "title": "30-06-s2-12-checkpoint-flow",
+      "filename": "30-06-s2-12-checkpoint-flow.mp3",
+      "duration_seconds": 300.024,
+      "position": 30,
+      "start_seconds": 8700,
+      "sha256": "b3a8665f8284920c1425fe6d39a8bd4756119f8bcfe8137d2989b0341b0b5489",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/30-06-s2-12-checkpoint-flow.mp3"
+    },
+    {
+      "title": "31-01-s2-13-level-zone",
+      "filename": "31-01-s2-13-level-zone.mp3",
+      "duration_seconds": 300.024,
+      "position": 31,
+      "start_seconds": 9000,
+      "sha256": "c1f814ae4f1964341a5f1ee9247e4a3b6c6b80e65ef63f8eaf126c3d6e589e0f",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/31-01-s2-13-level-zone.mp3"
+    },
+    {
+      "title": "32-02-s2-14-velocity-mode",
+      "filename": "32-02-s2-14-velocity-mode.mp3",
+      "duration_seconds": 300.024,
+      "position": 32,
+      "start_seconds": 9300,
+      "sha256": "ac0c452e28ca7ac901982a0afdcf29b36566b64a39d502b6685f7171079d1b2a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/32-02-s2-14-velocity-mode.mp3"
+    },
+    {
+      "title": "33-03-s2-15-digital-mode",
+      "filename": "33-03-s2-15-digital-mode.mp3",
+      "duration_seconds": 300.024,
+      "position": 33,
+      "start_seconds": 9600,
+      "sha256": "b1546fb6d245052e3b385c1dc70d56837a3af19e4809a812a4765991bf9670ec",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/33-03-s2-15-digital-mode.mp3"
+    },
+    {
+      "title": "34-04-s2-16-arcade-zone",
+      "filename": "34-04-s2-16-arcade-zone.mp3",
+      "duration_seconds": 300.024,
+      "position": 34,
+      "start_seconds": 9900,
+      "sha256": "f6750125cdbe682f3ef817e73fe89c523a93b599bfea77de3990875cfb7f3ac0",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/34-04-s2-16-arcade-zone.mp3"
+    },
+    {
+      "title": "35-05-s2-17-velocity-zone",
+      "filename": "35-05-s2-17-velocity-zone.mp3",
+      "duration_seconds": 300.024,
+      "position": 35,
+      "start_seconds": 10200,
+      "sha256": "23db9f82422db67f6f3f8e7c2e887317b3eade0ccce42bc95464372585f46886",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/35-05-s2-17-velocity-zone.mp3"
+    },
+    {
+      "title": "36-06-s2-18-checkpoint-run",
+      "filename": "36-06-s2-18-checkpoint-run.mp3",
+      "duration_seconds": 300.024,
+      "position": 36,
+      "start_seconds": 10500,
+      "sha256": "93143b0d9ad0fcc9b4621d5bc0bfcfda935a9bc9f3eb1a51e6e20a398470a291",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/36-06-s2-18-checkpoint-run.mp3"
+    }
+  ],
+  "github_run_id": 36956897081,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36956897081",
+  "completed_at": "2026-10-02T02:52:49.733674+00:00"
+}
