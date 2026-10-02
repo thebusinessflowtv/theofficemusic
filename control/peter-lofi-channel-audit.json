@@ -1,8 +1,8 @@
 {
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-02T03:19:38.244572+00:00",
-  "public_video_count": 7,
+  "generated_at": "2026-10-02T04:20:16.173912+00:00",
+  "public_video_count": 9,
   "active_managed_playlists": {
     "all_music": {
       "id": "PLcRTCZSXY21w",
@@ -93,6 +93,22 @@
       "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
       "duration_seconds": 3601,
       "published_at": "2026-09-30T14:25:49Z"
+    },
+    {
+      "video_id": "mLolLsDRctA",
+      "title": "Stylish office beats to work to Coffee | 60 min Lounge House Mix | Lofi | Music 🕷️ | Peter Lofi 🎧",
+      "related_playlist_key": "lofi_mixes",
+      "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
+      "duration_seconds": 3601,
+      "published_at": "2026-09-30T06:19:56Z"
+    },
+    {
+      "video_id": "nRQG5Z00RxU",
+      "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
+      "related_playlist_key": "lofi_mixes",
+      "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
+      "duration_seconds": 3601,
+      "published_at": "2026-09-30T05:34:00Z"
     }
   ]
 }
