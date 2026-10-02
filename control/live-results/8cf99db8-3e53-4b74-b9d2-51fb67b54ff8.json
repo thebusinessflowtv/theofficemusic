@@ -1,6 +1,6 @@
 {
   "platform": "youtube",
-  "status": "starting",
+  "status": "live",
   "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi",
   "description": "🎧 Peter Lofi — original deep house and chill house music for work, study, focus and late-night sessions.\n\nA continuous deep house radio with polished lounge grooves, clean basslines and smooth electronic textures built for focused work, studying, design, coding and background listening.\n\nPut on your headphones, settle into the flow and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #DeepHouse #DeepHouseMusic #ChillHouse #LoungeHouse #OfficeMusic #FocusMusic #WorkMusic #StudyMusic",
   "github_run_id": 37061628366,
@@ -18,5 +18,10 @@
   "started_at": "2026-10-02T20:36:38.197384+00:00",
   "session_started_at": "2026-10-01T20:09:56.620909+00:00",
   "rtmp_handoff_token": "gAAAAABqwBXfkE_lAP3fb8zniUaX8WaBbbEqZqTt3r3_XwVgCx0VWIhmBoD_zkTYV4rVADZmRhc5wHR0J3Wfa5Ytat4N8uu9MyJyMpebYlHxFQDyE0Hor4zRAbEfjc0JIcUgSZ3tHnLbOz0BUFhzU49faP3ibHi0_Q==",
-  "rtmp_resume_mode": "encrypted_handoff_token_ready"
+  "rtmp_resume_mode": "encrypted_handoff_token_ready",
+  "encoder_connected": true,
+  "current_segment_started_at": "2026-10-02T20:37:01.277779+00:00",
+  "last_verified_lifecycle": "live",
+  "youtube_api_verification_uncertain": false,
+  "live_at": "2026-10-02T20:37:01.277779+00:00"
 }
