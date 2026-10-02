@@ -1,0 +1,46 @@
+name: One-off — Patch Twitch Stability
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/oneoff-patch-twitch-stability.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply Twitch 1080p30 stability profile
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/mediaforge_twitch_segment_v1.py')
+          s=p.read_text(encoding='utf-8')
+          old='"-profile:v","high","-level:v","4.1","-b:v","6000k","-minrate","6000k","-maxrate","6000k","-bufsize","12000k",'
+          new='"-profile:v","high","-level:v","4.1","-b:v","4500k","-minrate","4500k","-maxrate","4500k","-bufsize","9000k","-bf","2",'
+          if old not in s and new not in s:
+              raise SystemExit('Expected Twitch bitrate block not found')
+          s=s.replace(old,new)
+          s=s.replace('"encoder_bitrate_kbps":6000,','"encoder_bitrate_kbps":4500,"bitrate_profile":"twitch-recommended-1080p30-cbr",')
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Persist patch
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add scripts/mediaforge_twitch_segment_v1.py
+          git diff --cached --quiet && exit 0
+          git commit -m 'twitch: stabilize 1080p30 at 4500kbps CBR'
+          git pull --rebase origin main
+          git push origin HEAD:main
