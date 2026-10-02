@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import base64
 import json
 import os
 import pathlib
@@ -41,7 +42,14 @@ class Playlist:
             return
         data = json.loads(self.path.read_text(encoding="utf-8"))
         tracks = []
-        for item in data.get("tracks") or []:
+        raw_tracks = data.get("tracks") or []
+        if not raw_tracks and data.get("track_urls_b64"):
+            urls = json.loads(base64.b64decode(data["track_urls_b64"]).decode("utf-8"))
+            raw_tracks = [
+                {"id": f"track-{i+1:02d}", "title": f"Track {i+1:02d}", "url": url}
+                for i, url in enumerate(urls)
+            ]
+        for item in raw_tracks:
             if not isinstance(item, dict) or not item.get("url"):
                 continue
             tracks.append({
@@ -194,7 +202,7 @@ class AudioEngine:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--platform", required=True, choices=["kick", "twitch"])
+    ap.add_argument("--platform", required=True, choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy"])
     ap.add_argument("--playlist-file", required=True)
     ap.add_argument("--state-dir", default="/state")
     args = ap.parse_args()
