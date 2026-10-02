@@ -12,7 +12,6 @@
       "cdn": {
         "ingestionType": "rtmp",
         "ingestionInfo": {
-          "streamName": "6yw3-s6dj-ct30-kq4t-12ar",
           "ingestionAddress": "rtmp://a.rtmp.youtube.com/live2",
           "backupIngestionAddress": "rtmp://b.rtmp.youtube.com/live2?backup=1",
           "rtmpsIngestionAddress": "rtmps://a.rtmps.youtube.com/live2",
@@ -40,7 +39,6 @@
       "cdn": {
         "ingestionType": "rtmp",
         "ingestionInfo": {
-          "streamName": "byx8-cfpa-ju09-pv4m-ah8y",
           "ingestionAddress": "rtmp://a.rtmp.youtube.com/live2",
           "backupIngestionAddress": "rtmp://b.rtmp.youtube.com/live2?backup=1",
           "rtmpsIngestionAddress": "rtmps://a.rtmps.youtube.com/live2",
