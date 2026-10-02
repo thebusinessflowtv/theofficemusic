@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T05:20:51.930551+00:00",
+  "generated_at": "2026-10-02T05:40:23.790236+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -10,7 +10,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "UXpqyaD_u99R-Z2KqhLivKrpNng",
+          "etag": "T2FrSxhd3viOFriIG_QA6XHQMT0",
           "id": "AEvkXXl1rtg",
           "snippet": {
             "publishedAt": "2026-10-01T20:13:30Z",
@@ -66,7 +66,7 @@
               "study music",
               "work music"
             ],
-            "categoryId": "24",
+            "categoryId": "10",
             "liveBroadcastContent": "live",
             "defaultLanguage": "en",
             "localized": {
@@ -105,13 +105,13 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "U7Bz4ayGXk0_Dcy3m7fhV93TKOU",
+          "etag": "V2Pt8C5nHgGf4-HF-q_G1y0ksZ0",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
             "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
             "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi",
+            "description": "🎧 Peter Lofi — original deep house and chill house music for work, study, focus and late-night sessions.\n\nA continuous deep house radio with polished lounge grooves, clean basslines and smooth electronic textures built for focused work, studying, design, coding and background listening.\n\nPut on your headphones, settle into the flow and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #DeepHouse #DeepHouseMusic #ChillHouse #LoungeHouse #OfficeMusic #FocusMusic #WorkMusic #StudyMusic",
             "thumbnails": {
               "default": {
                 "url": "https://i.ytimg.com/vi/GIOCNRogj0g/default_live.jpg",
@@ -144,24 +144,24 @@
               "Peter Lofi",
               "PeterLofiSounds",
               "background music",
-              "chill music",
+              "chill house",
+              "deep house",
+              "deep house music",
+              "deep house radio",
               "focus music",
-              "late night lofi",
-              "lofi",
-              "lofi beats",
-              "lofi music",
-              "neon lofi",
-              "night lofi",
+              "lounge house",
+              "music for work",
+              "office music",
               "relaxing music",
               "study music",
               "work music"
             ],
-            "categoryId": "24",
+            "categoryId": "10",
             "liveBroadcastContent": "live",
             "defaultLanguage": "en",
             "localized": {
               "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi"
+              "description": "🎧 Peter Lofi — original deep house and chill house music for work, study, focus and late-night sessions.\n\nA continuous deep house radio with polished lounge grooves, clean basslines and smooth electronic textures built for focused work, studying, design, coding and background listening.\n\nPut on your headphones, settle into the flow and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #DeepHouse #DeepHouseMusic #ChillHouse #LoungeHouse #OfficeMusic #FocusMusic #WorkMusic #StudyMusic"
             },
             "defaultAudioLanguage": "en-US"
           },
@@ -184,7 +184,7 @@
           "liveStreamingDetails": {
             "actualStartTime": "2026-10-01T02:11:02Z",
             "scheduledStartTime": "2026-10-01T02:11:03Z",
-            "concurrentViewers": "1",
+            "concurrentViewers": "2",
             "activeLiveChatId": "Cg0KC0dJT0NOUm9najBnKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILR0lPQ05Sb2dqMGc"
           }
         }
@@ -291,13 +291,13 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "U7Bz4ayGXk0_Dcy3m7fhV93TKOU",
+          "etag": "V2Pt8C5nHgGf4-HF-q_G1y0ksZ0",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
             "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
             "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi",
+            "description": "🎧 Peter Lofi — original deep house and chill house music for work, study, focus and late-night sessions.\n\nA continuous deep house radio with polished lounge grooves, clean basslines and smooth electronic textures built for focused work, studying, design, coding and background listening.\n\nPut on your headphones, settle into the flow and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #DeepHouse #DeepHouseMusic #ChillHouse #LoungeHouse #OfficeMusic #FocusMusic #WorkMusic #StudyMusic",
             "thumbnails": {
               "default": {
                 "url": "https://i.ytimg.com/vi/GIOCNRogj0g/default_live.jpg",
@@ -330,24 +330,24 @@
               "Peter Lofi",
               "PeterLofiSounds",
               "background music",
-              "chill music",
+              "chill house",
+              "deep house",
+              "deep house music",
+              "deep house radio",
               "focus music",
-              "late night lofi",
-              "lofi",
-              "lofi beats",
-              "lofi music",
-              "neon lofi",
-              "night lofi",
+              "lounge house",
+              "music for work",
+              "office music",
               "relaxing music",
               "study music",
               "work music"
             ],
-            "categoryId": "24",
+            "categoryId": "10",
             "liveBroadcastContent": "live",
             "defaultLanguage": "en",
             "localized": {
               "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi"
+              "description": "🎧 Peter Lofi — original deep house and chill house music for work, study, focus and late-night sessions.\n\nA continuous deep house radio with polished lounge grooves, clean basslines and smooth electronic textures built for focused work, studying, design, coding and background listening.\n\nPut on your headphones, settle into the flow and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #DeepHouse #DeepHouseMusic #ChillHouse #LoungeHouse #OfficeMusic #FocusMusic #WorkMusic #StudyMusic"
             },
             "defaultAudioLanguage": "en-US"
           },
@@ -370,7 +370,7 @@
           "liveStreamingDetails": {
             "actualStartTime": "2026-10-01T02:11:02Z",
             "scheduledStartTime": "2026-10-01T02:11:03Z",
-            "concurrentViewers": "1",
+            "concurrentViewers": "2",
             "activeLiveChatId": "Cg0KC0dJT0NOUm9najBnKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILR0lPQ05Sb2dqMGc"
           }
         }
