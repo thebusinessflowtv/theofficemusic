@@ -1,0 +1,352 @@
+{
+  "status": "completed",
+  "progress": 100,
+  "phase": "Concluída, renderizada e enviada ao YouTube como privada",
+  "index": 12,
+  "key": "coffee-shop-3h",
+  "name": "Coffee Shop 3H",
+  "title": "3 Hours Coffee Shop Lofi ☕ Beats to Work, Study & Focus | Peter Lofi",
+  "playlist": "Coffee Shop ☕ | Peter Lofi",
+  "description": "Three hours of original instrumental Peter Lofi coffee-shop music for work, study, reading and relaxed focus.",
+  "duration_minutes": 180,
+  "generation_mode": "stable-audio-3-small-music-resumable-v2",
+  "checkpoint_tag": "peter-lofi-coffee-shop-3h-checkpoint-v2",
+  "release_tag": "peter-lofi-coffee-shop-3h-v2-36960440265",
+  "release_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/tag/peter-lofi-coffee-shop-3h-v2-36960440265",
+  "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/peter-lofi-coffee-shop-3h.mp3",
+  "master_filename": "peter-lofi-coffee-shop-3h.mp3",
+  "master_video_filename": "peter-lofi-coffee-shop-3h-video.mp4",
+  "visual_loop_source": "user-uploaded-video",
+  "youtube_video_id": "h0Ri7Sj4wMU",
+  "youtube_url": "https://www.youtube.com/watch?v=h0Ri7Sj4wMU",
+  "youtube_privacy": "private",
+  "tracks": [
+    {
+      "title": "01-01-s1-01-corner-blend",
+      "filename": "01-01-s1-01-corner-blend.mp3",
+      "duration_seconds": 300.024,
+      "position": 1,
+      "start_seconds": 0,
+      "sha256": "458d91f88c6b0aa0db7b0739598d4d724c70d7c389f4bb5efc9b1edc10f73922",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/01-01-s1-01-corner-blend.mp3"
+    },
+    {
+      "title": "02-02-s1-02-soft-blend",
+      "filename": "02-02-s1-02-soft-blend.mp3",
+      "duration_seconds": 300.024,
+      "position": 2,
+      "start_seconds": 300,
+      "sha256": "023337b20ef6419878d35260d5f6e15b68f68757ec4e64c6598fbb741e9b28ec",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/02-02-s1-02-soft-blend.mp3"
+    },
+    {
+      "title": "03-03-s1-03-corner-cafe",
+      "filename": "03-03-s1-03-corner-cafe.mp3",
+      "duration_seconds": 300.024,
+      "position": 3,
+      "start_seconds": 600,
+      "sha256": "2e49579a79569f6506a318214187a62ece9731008a0a6217a461d6c5365fde56",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/03-03-s1-03-corner-cafe.mp3"
+    },
+    {
+      "title": "04-04-s1-04-soft-morning",
+      "filename": "04-04-s1-04-soft-morning.mp3",
+      "duration_seconds": 300.024,
+      "position": 4,
+      "start_seconds": 900,
+      "sha256": "cd82dfb0d2929711f3b4ff446442a439d1cec9a0c213033e17b92f5875379a78",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/04-04-s1-04-soft-morning.mp3"
+    },
+    {
+      "title": "05-05-s1-05-warm-hours",
+      "filename": "05-05-s1-05-warm-hours.mp3",
+      "duration_seconds": 300.024,
+      "position": 5,
+      "start_seconds": 1200,
+      "sha256": "82d3c0b69d0a08131654b68c1e4ab356fe862425ffc76e800b7e50b248739337",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/05-05-s1-05-warm-hours.mp3"
+    },
+    {
+      "title": "06-06-s1-06-soft-break",
+      "filename": "06-06-s1-06-soft-break.mp3",
+      "duration_seconds": 300.024,
+      "position": 6,
+      "start_seconds": 1500,
+      "sha256": "613fe6902539ad2573a1f1d0bd9810549e0ef3a3a237038a5abc7d404beb2673",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/06-06-s1-06-soft-break.mp3"
+    },
+    {
+      "title": "07-01-s2-01-sunday-cup",
+      "filename": "07-01-s2-01-sunday-cup.mp3",
+      "duration_seconds": 300.024,
+      "position": 7,
+      "start_seconds": 1800,
+      "sha256": "0c194a5eac5bb6f45f3016c79cd2290be0c4e07f46e064ba0e1b2ff22f3640db",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/07-01-s2-01-sunday-cup.mp3"
+    },
+    {
+      "title": "08-02-s2-02-warm-corner",
+      "filename": "08-02-s2-02-warm-corner.mp3",
+      "duration_seconds": 300.024,
+      "position": 8,
+      "start_seconds": 2100,
+      "sha256": "bedbdee9cf583483ef69f58b9cec13bedaa9275e8e0ecd7504b8833ef33eb691",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/08-02-s2-02-warm-corner.mp3"
+    },
+    {
+      "title": "09-03-s2-03-golden-morning",
+      "filename": "09-03-s2-03-golden-morning.mp3",
+      "duration_seconds": 300.024,
+      "position": 9,
+      "start_seconds": 2400,
+      "sha256": "719b8008fa21a0f1f4add292440e25bcca082a28dd954ef4b8ab03c0c3a06c74",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/09-03-s2-03-golden-morning.mp3"
+    },
+    {
+      "title": "10-04-s2-04-corner-cup",
+      "filename": "10-04-s2-04-corner-cup.mp3",
+      "duration_seconds": 300.024,
+      "position": 10,
+      "start_seconds": 2700,
+      "sha256": "a4677d0b16280fb27ee43e00215469d420d698513be979122a9e0c2ed64e41e0",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/10-04-s2-04-corner-cup.mp3"
+    },
+    {
+      "title": "11-05-s2-05-city-corner",
+      "filename": "11-05-s2-05-city-corner.mp3",
+      "duration_seconds": 300.024,
+      "position": 11,
+      "start_seconds": 3000,
+      "sha256": "b5461f00e6f02b326f28e2004398029c57e06f7907ebfd71afb6fa8ab6b18077",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/11-05-s2-05-city-corner.mp3"
+    },
+    {
+      "title": "12-06-s2-06-quiet-morning",
+      "filename": "12-06-s2-06-quiet-morning.mp3",
+      "duration_seconds": 300.024,
+      "position": 12,
+      "start_seconds": 3300,
+      "sha256": "5ed4cc6edc6bbfd8e3e12032b3fb4227b02fc8d3b27da57a3f4b967e3da387c2",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/12-06-s2-06-quiet-morning.mp3"
+    },
+    {
+      "title": "13-01-s3-01-cafe-pages",
+      "filename": "13-01-s3-01-cafe-pages.mp3",
+      "duration_seconds": 300.024,
+      "position": 13,
+      "start_seconds": 3600,
+      "sha256": "a5569da8ca20b03df68afad0f693a6703141ac3ec3e833cf6c2f6621fa779306",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/13-01-s3-01-cafe-pages.mp3"
+    },
+    {
+      "title": "14-02-s3-02-warm-cafe",
+      "filename": "14-02-s3-02-warm-cafe.mp3",
+      "duration_seconds": 300.024,
+      "position": 14,
+      "start_seconds": 3900,
+      "sha256": "fd89fc7a443570a3d5fd08d085ce33802330ef936adf7ece294610d31430f877",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/14-02-s3-02-warm-cafe.mp3"
+    },
+    {
+      "title": "15-03-s3-03-sunday-morning",
+      "filename": "15-03-s3-03-sunday-morning.mp3",
+      "duration_seconds": 300.024,
+      "position": 15,
+      "start_seconds": 4200,
+      "sha256": "1ffef15cc25ea19da7fb564c99ccc90b6dde64426bdf86d8ce610bc251804d45",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/15-03-s3-03-sunday-morning.mp3"
+    },
+    {
+      "title": "16-04-s3-04-warm-window",
+      "filename": "16-04-s3-04-warm-window.mp3",
+      "duration_seconds": 300.024,
+      "position": 16,
+      "start_seconds": 4500,
+      "sha256": "0a711b8a4daf8726a7c9c56eab6a27a583363cefe03877e92aa5ad0d86bcb5c3",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/16-04-s3-04-warm-window.mp3"
+    },
+    {
+      "title": "17-05-s3-05-golden-blend",
+      "filename": "17-05-s3-05-golden-blend.mp3",
+      "duration_seconds": 300.024,
+      "position": 17,
+      "start_seconds": 4800,
+      "sha256": "8b7f2cc35f20d279b601488a1ef9922b02d3b5360b7bb282e40ebdcc59ca91e4",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/17-05-s3-05-golden-blend.mp3"
+    },
+    {
+      "title": "18-06-s3-06-roasted-break",
+      "filename": "18-06-s3-06-roasted-break.mp3",
+      "duration_seconds": 300.024,
+      "position": 18,
+      "start_seconds": 5100,
+      "sha256": "969a779e0c61eb79be3d0cfdca802ac9a51e7221f268ae48d4d4b55d1c28b83b",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/18-06-s3-06-roasted-break.mp3"
+    },
+    {
+      "title": "19-01-s4-01-soft-break",
+      "filename": "19-01-s4-01-soft-break.mp3",
+      "duration_seconds": 300.024,
+      "position": 19,
+      "start_seconds": 5400,
+      "sha256": "2b83c32204fe91f505bb74e222fee3055e4080d23ad59dc2720e895ef2b72a72",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/19-01-s4-01-soft-break.mp3"
+    },
+    {
+      "title": "20-02-s4-02-corner-hours",
+      "filename": "20-02-s4-02-corner-hours.mp3",
+      "duration_seconds": 300.024,
+      "position": 20,
+      "start_seconds": 5700,
+      "sha256": "fd782c2529d3fac1265150d3c514711454d803568cd407fab8d6290e841871a5",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/20-02-s4-02-corner-hours.mp3"
+    },
+    {
+      "title": "21-03-s4-03-golden-corner",
+      "filename": "21-03-s4-03-golden-corner.mp3",
+      "duration_seconds": 300.024,
+      "position": 21,
+      "start_seconds": 6000,
+      "sha256": "ee7121ddc42c24dd8c7ae3bf95c350eb1500ea0e479b973fb28607c6f8f85d0f",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/21-03-s4-03-golden-corner.mp3"
+    },
+    {
+      "title": "22-04-s4-04-sunday-hours",
+      "filename": "22-04-s4-04-sunday-hours.mp3",
+      "duration_seconds": 300.024,
+      "position": 22,
+      "start_seconds": 6300,
+      "sha256": "fd7d763eb8e059f7fd7e8856df13c56d6952d7228f50d89ff83e6bdf5532f232",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/22-04-s4-04-sunday-hours.mp3"
+    },
+    {
+      "title": "23-05-s4-05-city-hours-11",
+      "filename": "23-05-s4-05-city-hours-11.mp3",
+      "duration_seconds": 300.024,
+      "position": 23,
+      "start_seconds": 6600,
+      "sha256": "cc172bdf12edaf73e3fde705fc6464c63642d2c6139960d89a78219588a82a04",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/23-05-s4-05-city-hours-11.mp3"
+    },
+    {
+      "title": "24-06-s4-06-warm-cafe",
+      "filename": "24-06-s4-06-warm-cafe.mp3",
+      "duration_seconds": 300.024,
+      "position": 24,
+      "start_seconds": 6900,
+      "sha256": "7e19f3746dde0d0138e18db8d247ba33d143b564708b0833537278b5a631a25f",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/24-06-s4-06-warm-cafe.mp3"
+    },
+    {
+      "title": "25-01-s5-01-cafe-cafe",
+      "filename": "25-01-s5-01-cafe-cafe.mp3",
+      "duration_seconds": 300.024,
+      "position": 25,
+      "start_seconds": 7200,
+      "sha256": "b177ebb4e4b204238503e3c9d5fa1dd8c7688c67f384ede9442eab607a5c4606",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/25-01-s5-01-cafe-cafe.mp3"
+    },
+    {
+      "title": "26-02-s5-02-roasted-hours",
+      "filename": "26-02-s5-02-roasted-hours.mp3",
+      "duration_seconds": 300.024,
+      "position": 26,
+      "start_seconds": 7500,
+      "sha256": "efabe838f643dd2335486428b8df9451dd63bafd32d387f6c5967ba7c22708c1",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/26-02-s5-02-roasted-hours.mp3"
+    },
+    {
+      "title": "27-03-s5-03-cozy-coffee",
+      "filename": "27-03-s5-03-cozy-coffee.mp3",
+      "duration_seconds": 300.024,
+      "position": 27,
+      "start_seconds": 7800,
+      "sha256": "c46f16705223c5c8724d0ddd8fca30046c3f45a0288a306557da8721d680411c",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/27-03-s5-03-cozy-coffee.mp3"
+    },
+    {
+      "title": "28-04-s5-04-quiet-blend",
+      "filename": "28-04-s5-04-quiet-blend.mp3",
+      "duration_seconds": 300.024,
+      "position": 28,
+      "start_seconds": 8100,
+      "sha256": "efd4562af5ee77465cfcf4da7e2107a37fead06e41a4a21f2dc96f83f5fd45d4",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/28-04-s5-04-quiet-blend.mp3"
+    },
+    {
+      "title": "29-05-s5-05-morning-table",
+      "filename": "29-05-s5-05-morning-table.mp3",
+      "duration_seconds": 300.024,
+      "position": 29,
+      "start_seconds": 8400,
+      "sha256": "3a699f682ca19f950792e2907f4485a707a581e1553ea9d00bedbfd80637997a",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/29-05-s5-05-morning-table.mp3"
+    },
+    {
+      "title": "30-06-s5-06-cozy-pages",
+      "filename": "30-06-s5-06-cozy-pages.mp3",
+      "duration_seconds": 300.024,
+      "position": 30,
+      "start_seconds": 8700,
+      "sha256": "8e4289011dc729edc023d2ce230c094809bc44804af5b32ece7b23950d9d8b7d",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/30-06-s5-06-cozy-pages.mp3"
+    },
+    {
+      "title": "31-01-s6-01-city-pages",
+      "filename": "31-01-s6-01-city-pages.mp3",
+      "duration_seconds": 300.024,
+      "position": 31,
+      "start_seconds": 9000,
+      "sha256": "f250b96d77c1af113dd5a1edab633c3f9adde8d3d6a78167f561fda09ddc1a23",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/31-01-s6-01-city-pages.mp3"
+    },
+    {
+      "title": "32-02-s6-02-sunday-cafe",
+      "filename": "32-02-s6-02-sunday-cafe.mp3",
+      "duration_seconds": 300.024,
+      "position": 32,
+      "start_seconds": 9300,
+      "sha256": "6620c1b671867245ea609650a73646f43b712d168d904a6cc10d2637bb37e205",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/32-02-s6-02-sunday-cafe.mp3"
+    },
+    {
+      "title": "33-03-s6-03-city-hours",
+      "filename": "33-03-s6-03-city-hours.mp3",
+      "duration_seconds": 300.024,
+      "position": 33,
+      "start_seconds": 9600,
+      "sha256": "83e1108d03a59b4b122d40c3c2a59bcaa507c1a537c7d0532c04c2f77341c1ef",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/33-03-s6-03-city-hours.mp3"
+    },
+    {
+      "title": "34-04-s6-04-corner-notebook",
+      "filename": "34-04-s6-04-corner-notebook.mp3",
+      "duration_seconds": 300.024,
+      "position": 34,
+      "start_seconds": 9900,
+      "sha256": "842e12160ae54d1842950a152888e8faa5f1d3e4fb13a2f9a27ddacddb1626fd",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/34-04-s6-04-corner-notebook.mp3"
+    },
+    {
+      "title": "35-05-s6-05-city-window",
+      "filename": "35-05-s6-05-city-window.mp3",
+      "duration_seconds": 300.024,
+      "position": 35,
+      "start_seconds": 10200,
+      "sha256": "27001b5ee6fc21711fa01133a883b09e777ab25d4f4b8455d4d6e017057b2ab4",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/35-05-s6-05-city-window.mp3"
+    },
+    {
+      "title": "36-06-s6-06-morning-coffee",
+      "filename": "36-06-s6-06-morning-coffee.mp3",
+      "duration_seconds": 300.024,
+      "position": 36,
+      "start_seconds": 10500,
+      "sha256": "d5d6332f5d5cf72d7a590e56e45f6a241a7a2d60af9c546104dda0e159fc7767",
+      "download_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36960440265/36-06-s6-06-morning-coffee.mp3"
+    }
+  ],
+  "github_run_id": 36960440265,
+  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/36960440265",
+  "completed_at": "2026-10-02T04:20:13.620917+00:00"
+}
