@@ -35,6 +35,46 @@ services:
     volumes:
       - ./state:/state
 
+  youtube-deep-house:
+    build: .
+    container_name: peter-lofi-youtube-deep-house
+    command: ["python", "/app/stream_core.py", "--platform", "youtube-deep-house"]
+    restart: unless-stopped
+    environment:
+      STREAM_URL: ${YOUTUBE_DEEP_HOUSE_STREAM_URL}
+      STREAM_KEY: ${YOUTUBE_DEEP_HOUSE_STREAM_KEY}
+      LOOP_URL: "https://mediaforge-api.guilhermeodsgn.workers.dev/media/a26f2e7f-4203-4788-a3ce-6d6b2052f4dc/c64b196cedad4d05977d887f1be30505023124926b4144dc935c1142fe1b4109"
+      PLAYLIST_FILE: /config/youtube-deep-house.json
+      VIDEO_FPS: "30"
+      VIDEO_BITRATE_KBPS: "6000"
+      VIDEO_BUFSIZE_KBPS: "12000"
+      AUDIO_BITRATE_KBPS: "192"
+      VIDEO_PROFILE: "main"
+      VIDEO_PRESET: "superfast"
+      VIDEO_COPY_MODE: "1"
+    volumes:
+      - ./state:/state
+
+  youtube-rainy:
+    build: .
+    container_name: peter-lofi-youtube-rainy
+    command: ["python", "/app/stream_core.py", "--platform", "youtube-rainy"]
+    restart: unless-stopped
+    environment:
+      STREAM_URL: ${YOUTUBE_RAINY_STREAM_URL}
+      STREAM_KEY: ${YOUTUBE_RAINY_STREAM_KEY}
+      LOOP_URL: "https://mediaforge-api.guilhermeodsgn.workers.dev/media/998ca654-bb42-4c35-99c6-04ac2ebad84c/b6bf0c5819a04630b36f61314ed6de7566e4b48b72df41c59093a5bd7c0f9ab0"
+      PLAYLIST_FILE: /config/youtube-rainy.json
+      VIDEO_FPS: "30"
+      VIDEO_BITRATE_KBPS: "6000"
+      VIDEO_BUFSIZE_KBPS: "12000"
+      AUDIO_BITRATE_KBPS: "192"
+      VIDEO_PROFILE: "main"
+      VIDEO_PRESET: "superfast"
+      VIDEO_COPY_MODE: "1"
+    volumes:
+      - ./state:/state
+
   control-api:
     build: .
     container_name: peter-lofi-control-api
