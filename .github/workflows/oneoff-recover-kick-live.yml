@@ -1,75 +1,57 @@
-name: One-off — Recover Peter Lofi Kick Live
+name: One-off — Restart Kick Current Session
 
 on:
   push:
+    branches: [main]
     paths:
       - '.github/workflows/oneoff-recover-kick-live.yml'
 
 permissions:
-  contents: write
+  contents: read
   actions: write
 
 jobs:
-  recover:
+  restart:
     runs-on: ubuntu-latest
-    timeout-minutes: 345
-    env:
-      GH_TOKEN: ${{ secrets.GH_STREAM_CONTROL_TOKEN || github.token }}
-      KICK_STREAM_KEY: ${{ secrets.KICK_STREAM_KEY }}
-      KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
-      KICK_RTMP_URL: ${{ secrets.KICK_RTMP_URL }}
-      KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
-      KICK_CHANNEL_SLUG: peterlofi
-      SOURCE_QUEUE: control/kick-live-queue/4c336705-e45f-4b1c-868f-72eff5849850.json
-      RECOVERY_SESSION_ID: df276541-8264-42d9-b332-580664903bf5
-      CORRECT_LOOP_URL: https://mediaforge-api.guilhermeodsgn.workers.dev/media/a26f2e7f-4203-4788-a3ce-6d6b2052f4dc/c64b196cedad4d05977d887f1be30505023124926b4144dc935c1142fe1b4109
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Prepare runtime
+      - name: Stop current Kick encoder and restart same station
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v file >/dev/null 2>&1; then
-            sudo apt-get update -y
-            sudo apt-get install -y ffmpeg file
+          ACTIVE="control/kick-active.json"
+          test -s "$ACTIVE"
+          SESSION_ID="$(jq -r '.session_id' "$ACTIVE")"
+          RUN_ID="$(jq -r '.run_id // empty' "$ACTIVE")"
+          QUEUE="control/kick-live-queue/${SESSION_ID}.json"
+          test -s "$QUEUE"
+
+          if [ -n "$RUN_ID" ]; then
+            echo "Cancelling current Kick run $RUN_ID"
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/cancel" >/dev/null 2>&1 || true
+            for i in $(seq 1 30); do
+              STATE="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" --jq '.status' 2>/dev/null || true)"
+              [ "$STATE" = "completed" ] && break
+              sleep 2
+            done
           fi
 
-      - name: Restore exact current Kick live configuration
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import json, os
-          q=json.load(open(os.environ['SOURCE_QUEUE'], encoding='utf-8'))
-          queue_loop=str(q.get('loop_url') or '')
-          correct=os.environ['CORRECT_LOOP_URL']
-          if queue_loop and queue_loop != correct:
-              raise SystemExit(f'Refusing wrong Kick video. Queue loop does not match approved Deep House loop: {queue_loop}')
-          values={
-              'SESSION_ID': os.environ['RECOVERY_SESSION_ID'],
-              'TRACK_URLS_B64': str(q['track_urls_b64']),
-              'DURATION_MINUTES': '0',
-              'TITLE': str(q.get('title') or 'deep house radio 💻 music to work/study/focus to | Peter Lofi'),
-              'DESCRIPTION': str(q.get('description') or ''),
-              'THUMBNAIL_URL': str(q.get('thumbnail_url') or ''),
-              'LOOP_URL': correct,
-              'SEGMENT_INDEX': '1',
-          }
-          with open(os.environ['GITHUB_ENV'],'a',encoding='utf-8') as f:
-              for key,val in values.items():
-                  if '\n' in val or '\r' in val:
-                      marker=f'__MEDIAFORGE_{key}__'
-                      f.write(f'{key}<<{marker}\n{val}\n{marker}\n')
-                  else:
-                      f.write(f'{key}={val}\n')
-          print('KICK_VIDEO_CONFIRMED=' + correct)
-          print('Kick recovery uses the exact current Deep House loop; no stale Supabase asset is allowed.')
-          PY
+          jq '{ref:"main",inputs:{
+            session_id:(.session_id|tostring),
+            track_urls_b64:(.track_urls_b64|tostring),
+            duration_minutes:(.duration_minutes//"0"|tostring),
+            title:(.title|tostring),
+            description:(.description//""|tostring),
+            thumbnail_url:(.thumbnail_url//""|tostring),
+            loop_url:(.loop_url|tostring),
+            segment_index:"1"
+          }}' "$QUEUE" > /tmp/kick-dispatch.json
 
-      - name: Recover Kick and keep streaming with V3
-        run: |
-          set -euo pipefail
-          python scripts/mediaforge_kick_segment_v3.py
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-kick-live.yml/dispatches" --input /tmp/kick-dispatch.json
+          echo "Kick restart dispatched for ${SESSION_ID}."
+
+# restart-trigger: 2026-10-02T19:34:00Z
