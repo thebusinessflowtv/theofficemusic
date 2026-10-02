@@ -85,6 +85,9 @@ jobs:
 
           for station in cfg.get('stations',[]):
               if not station.get('enabled',True): continue
+              if station.get('runtime') == 'ovh':
+                  print(f"[{station['key']}] managed by OVH; workflow-run recovery skipped.")
+                  continue
               session=station['session_id']
               result_path=root/f'control/live-results/{session}.json'
               if not result_path.exists(): continue
