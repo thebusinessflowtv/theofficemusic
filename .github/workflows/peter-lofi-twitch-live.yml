@@ -1,0 +1,77 @@
+name: Peter Lofi — Twitch Live
+
+on:
+  workflow_dispatch:
+    inputs:
+      session_id:
+        required: true
+        type: string
+      track_urls_b64:
+        required: true
+        type: string
+      duration_minutes:
+        required: true
+        default: "0"
+        type: string
+      title:
+        required: true
+        default: "Peter Lofi Gaming Radio"
+        type: string
+      description:
+        required: false
+        default: ""
+        type: string
+      loop_url:
+        required: true
+        type: string
+      segment_index:
+        required: true
+        default: "1"
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: peter-lofi-twitch-${{ inputs.session_id }}-${{ inputs.segment_index }}
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    env:
+      GH_TOKEN: ${{ secrets.GH_STREAM_CONTROL_TOKEN || github.token }}
+      TWITCH_STREAM_KEY: ${{ secrets.TWITCH_STREAM_KEY }}
+      TWITCH_INGEST_URL: rtmp://live.twitch.tv/app
+      SESSION_ID: ${{ inputs.session_id }}
+      TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
+      DURATION_MINUTES: ${{ inputs.duration_minutes }}
+      TITLE: ${{ inputs.title }}
+      DESCRIPTION: ${{ inputs.description }}
+      LOOP_URL: ${{ inputs.loop_url }}
+      SEGMENT_INDEX: ${{ inputs.segment_index }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Verify Twitch secret exists
+        run: |
+          set -euo pipefail
+          test -n "$TWITCH_STREAM_KEY" || { echo "::error::TWITCH_STREAM_KEY is missing"; exit 1; }
+          echo "TWITCH_STREAM_KEY is configured."
+
+      - name: Prepare runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg file
+
+      - name: Run Twitch live segment
+        run: |
+          set -euo pipefail
+          python scripts/mediaforge_twitch_segment_v1.py
