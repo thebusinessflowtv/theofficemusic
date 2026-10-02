@@ -1,0 +1,38 @@
+name: Peter Lofi — Twitch Active Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'control/twitch-live-results/*.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: peter-lofi-twitch-active-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Publish latest Twitch state
+        run: |
+          set -euo pipefail
+          FILE="$(git diff --name-only HEAD^ HEAD | grep -E '^control/twitch-live-results/[^/]+\.json$' | tail -1 || true)"
+          [ -n "$FILE" ] || exit 0
+          jq -e . "$FILE" >/dev/null
+          mkdir -p control
+          jq '{platform:"twitch",session_id:(.session_id // ""),status:(.status // "unknown"),segment_index:(.segment_index // 1),run_id:(.github_run_id // null),github_run_url:(.github_run_url // ""),title:(.title // "Peter Lofi Gaming Radio"),live_at:(.live_at // null),updated_at:(.updated_at // .live_at // null)}' "$FILE" > control/twitch-active.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/twitch-active.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'twitch: sync active state'
+          git pull --rebase origin main
+          git push origin HEAD:main
