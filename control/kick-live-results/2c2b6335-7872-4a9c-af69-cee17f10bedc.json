@@ -1,8 +1,8 @@
 {
   "platform": "kick",
   "status": "completed",
-  "title": "Peter Lofi Gaming Radio \ud83c\udfae Lofi Beats to Play, Focus & Chill \ud83d\udd34 LIVE",
-  "description": "\ud83c\udfae Welcome to Peter Lofi Gaming Radio.\n\ud83c\udfa7 Gaming \u2022 Focus \u2022 Chill \u2022 Late Night Sessions\n\ud83d\udd34 Live 24/7 with Peter Lofi  \n\nOriginal music by Peter Lofi.\n\u00a9 2026 Peter Lofi. All rights reserved.",
+  "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
+  "description": "🎮 Welcome to Peter Lofi Gaming Radio.\n🎧 Gaming • Focus • Chill • Late Night Sessions\n🔴 Live 24/7 with Peter Lofi  \n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.",
   "session_id": "2c2b6335-7872-4a9c-af69-cee17f10bedc",
   "segment_index": 1,
   "github_run_id": 37055444579,
@@ -10,10 +10,10 @@
   "encoder_resolution": "1920x1080",
   "encoder_fps": 60,
   "encoder_bitrate_kbps": 8000,
-  "encoder_connected": true,
+  "encoder_connected": false,
   "kick_verified": true,
   "updated_at": "2026-10-02T19:39:39.769610+00:00",
   "live_at": "2026-10-02T19:39:39.769628+00:00",
   "stop_reason": "manual_stop",
-  "completed_at": "2026-10-02T20:28:34.053024+00:00"
+  "completed_at": "2026-10-02T20:28:47.497244+00:00"
 }
