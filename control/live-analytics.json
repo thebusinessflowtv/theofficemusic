@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T09:29:47.757558+00:00",
+  "generated_at": "2026-10-02T09:50:07.152031+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -105,7 +105,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "Jx5Ph_67WZk0YNRXdnJ8jZVQKMU",
+          "etag": "0w1dtJsSutdeZkgOfoOqZVcXkDA",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
@@ -175,7 +175,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "18",
+            "viewCount": "19",
             "likeCount": "2",
             "dislikeCount": "0",
             "favoriteCount": "0",
@@ -291,7 +291,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "Jx5Ph_67WZk0YNRXdnJ8jZVQKMU",
+          "etag": "0w1dtJsSutdeZkgOfoOqZVcXkDA",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
@@ -361,7 +361,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "18",
+            "viewCount": "19",
             "likeCount": "2",
             "dislikeCount": "0",
             "favoriteCount": "0",
