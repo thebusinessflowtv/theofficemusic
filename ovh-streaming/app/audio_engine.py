@@ -143,7 +143,7 @@ class AudioEngine:
             "-af", "aresample=48000:async=1:first_pts=0",
             "-ac", "2", "-ar", "48000", "-c:a", "pcm_s16le", "-f", "s16le", "pipe:1",
         ]
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=0)
         src = proc.stdout.fileno()
         dst = sys.stdout.fileno()
         interrupted = None
