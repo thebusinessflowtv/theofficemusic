@@ -1,0 +1,18 @@
+{
+  "session_id": "72fcb955-bbb3-41d1-b8d0-fd90427c57a5",
+  "from_segment_index": 1,
+  "to_segment_index": 2,
+  "segment_index": 2,
+  "track_id": null,
+  "title": null,
+  "url": null,
+  "track_started_at": null,
+  "position_seconds": 0.0,
+  "visual_position_seconds": 18028.455,
+  "cutover_epoch": 1790903638.629733,
+  "takeover": true,
+  "handoff_mode": "dual-ingest-overlap",
+  "handoff_protocol": "youtube-v7-continuity-first",
+  "signaled_at": "2026-10-02T01:13:58.820706+00:00",
+  "source_run_id": 36919917443
+}
