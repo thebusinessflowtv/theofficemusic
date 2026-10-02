@@ -10,9 +10,9 @@
   "url": null,
   "track_started_at": null,
   "position_seconds": 0.0,
-  "cutover_epoch": 1790928768.779663,
-  "signaled_at": "2026-10-02T08:12:18.849710+00:00",
-  "source_run_id": 36959055397,
+  "cutover_epoch": 1790968504.879254,
+  "signaled_at": "2026-10-02T19:14:34.996752+00:00",
+  "source_run_id": 37018347437,
   "handoff_mode": "scheduled-single-key",
   "handoff_protocol": "kick-v3-continuity-first"
 }
