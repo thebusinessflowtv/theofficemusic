@@ -1,0 +1,83 @@
+name: Peter Lofi — Kick Successor Direct
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'control/kick-successor/*.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: peter-lofi-kick-successor-direct
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    env:
+      GH_TOKEN: ${{ github.token }}
+      KICK_STREAM_KEY: ${{ secrets.KICK_STREAM_KEY }}
+      KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
+      KICK_RTMP_URL: ${{ secrets.KICK_RTMP_URL }}
+      KICK_ACCESS_TOKEN: ${{ secrets.KICK_ACCESS_TOKEN }}
+      KICK_CHANNEL_SLUG: peterlofi
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve successor payload
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          CHANGED="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA")"
+          FILE="$(printf '%s\n' "$CHANGED" | grep -E '^control/kick-successor/[^/]+\.json$' | tail -1 || true)"
+          [ -n "$FILE" ] && [ -s "$FILE" ] || { echo "No Kick successor payload."; exit 1; }
+          jq -e . "$FILE" >/dev/null
+          python - "$FILE" <<'PY'
+          import json,os,sys
+          d=json.load(open(sys.argv[1],encoding="utf-8"))
+          mapping={
+            "SESSION_ID":"session_id","TRACK_URLS_B64":"track_urls_b64","DURATION_MINUTES":"duration_minutes",
+            "TITLE":"title","DESCRIPTION":"description","THUMBNAIL_URL":"thumbnail_url",
+            "LOOP_URL":"loop_url","SEGMENT_INDEX":"segment_index",
+          }
+          with open(os.environ["GITHUB_ENV"],"a",encoding="utf-8") as f:
+              for env,key in mapping.items():
+                  v=str(d.get(key) or "")
+                  marker="MF_"+env+"_EOF"
+                  f.write(f"{env}<<{marker}\n{v}\n{marker}\n")
+          PY
+
+      - name: Prepare runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg file
+
+      - name: Refuse duplicate owner
+        id: owner
+        run: |
+          set -euo pipefail
+          READY="control/kick-prewarm/${SESSION_ID}-${SEGMENT_INDEX}.json"
+          if [ -s "$READY" ]; then
+            OWNER="$(jq -r '.run_id // 0' "$READY")"
+            if [ "$OWNER" != "0" ] && [ "$OWNER" != "$GITHUB_RUN_ID" ]; then
+              echo "Existing prewarm owner: $OWNER"
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Run prewarmed Kick successor
+        if: steps.owner.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          python scripts/mediaforge_kick_segment_v3.py
