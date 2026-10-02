@@ -44,6 +44,7 @@ YOUTUBE_CLIENT_ID = os.environ["YOUTUBE_CLIENT_ID"]
 YOUTUBE_CLIENT_SECRET = os.environ["YOUTUBE_CLIENT_SECRET"]
 YOUTUBE_REFRESH_TOKEN = os.environ["YOUTUBE_REFRESH_TOKEN"]
 YOUTUBE_CHANNEL_ID = os.environ["YOUTUBE_CHANNEL_ID"]
+YOUTUBE_CATEGORY_ID = os.environ.get("YOUTUBE_CATEGORY_ID", "10").strip() or "10"
 
 encoder = None
 feeder = None
@@ -271,6 +272,27 @@ def youtube_client():
     )
     return build("youtube", "v3", credentials=creds, cache_discovery=False)
 
+def apply_youtube_category(yt, video_id):
+    """Force the YouTube video resource behind a live broadcast into the Music category."""
+    last_error = None
+    for attempt in range(1, 7):
+        try:
+            items = yt.videos().list(part="snippet", id=video_id).execute().get("items") or []
+            if not items:
+                raise RuntimeError(f"YouTube video resource not ready for {video_id}")
+            snippet = dict(items[0].get("snippet") or {})
+            allowed = {"title", "description", "tags", "categoryId", "defaultLanguage", "defaultAudioLanguage"}
+            snippet = {k: v for k, v in snippet.items() if k in allowed}
+            snippet["categoryId"] = YOUTUBE_CATEGORY_ID
+            yt.videos().update(part="snippet", body={"id": video_id, "snippet": snippet}).execute()
+            print(f"YouTube category applied: video={video_id} categoryId={YOUTUBE_CATEGORY_ID}", flush=True)
+            return True
+        except Exception as exc:
+            last_error = exc
+            print(f"YouTube category update retry {attempt}/6 for {video_id}: {exc}", flush=True)
+            time.sleep(min(10, attempt * 2))
+    raise RuntimeError(f"Could not apply YouTube category {YOUTUBE_CATEGORY_ID} to {video_id}: {last_error}")
+
 def create_or_resume_youtube(thumb):
     yt = youtube_client()
     ch = yt.channels().list(part="id,snippet", mine=True).execute()["items"][0]
@@ -304,6 +326,7 @@ def create_or_resume_youtube(thumb):
             },
         ).execute()
         bid = b["id"]
+        apply_youtube_category(yt, bid)
         s = yt.liveStreams().insert(
             part="snippet,cdn,contentDetails",
             body={
@@ -364,6 +387,7 @@ def create_or_resume_youtube(thumb):
             "encoder_bitrate_kbps": 8000,
             "custom_thumbnail_applied": custom_thumb,
             "privacy_status": PRIVACY_STATUS,
+            "youtube_category_id": YOUTUBE_CATEGORY_ID,
             "started_at": now.isoformat(),
             "session_started_at": session_started,
         }
