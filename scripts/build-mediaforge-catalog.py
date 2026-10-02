@@ -31,6 +31,8 @@ for path in sorted(RESULTS.glob("*.json")):
     data = read_json(path)
     if not isinstance(data, dict) or data.get("status") != "completed":
         continue
+    if str(data.get("copyright_status") or "").lower() in {"pending_private_youtube_check","quarantined","blocked","unverified"} or data.get("distribution_blocked") is True:
+        continue
     job_id = path.stem
     item_tracks = []
     for t in data.get("tracks") or []:
