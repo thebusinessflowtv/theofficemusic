@@ -151,7 +151,7 @@ def start_encoder(loop):
         "-map","0:v:0","-map","1:a:0",
         "-vf","scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p",
         "-r","30","-s:v","1920x1080","-pix_fmt","yuv420p","-c:v","libx264","-preset","veryfast","-tune","zerolatency",
-        "-profile:v","high","-level:v","4.1","-b:v","6000k","-minrate","6000k","-maxrate","6000k","-bufsize","12000k",
+        "-profile:v","high","-level:v","4.1","-b:v","4500k","-minrate","4500k","-maxrate","4500k","-bufsize","9000k","-bf","2",
         "-g","60","-keyint_min","60","-sc_threshold","0","-x264-params","nal-hrd=cbr:force-cfr=1",
         "-c:a","aac","-b:a","160k","-ar","48000","-ac","2","-flvflags","no_duration_filesize","-f","flv",target()
     ],stdout=encoder_log,stderr=encoder_log)
@@ -172,7 +172,7 @@ def mark(status,verified=False,error=None):
     d.update({"platform":"twitch","status":status,"title":TITLE,"description":DESCRIPTION,
               "session_id":SESSION_ID,"segment_index":SEGMENT_INDEX,"github_run_id":RUN_ID,
               "github_run_url":RUN_URL,"encoder_resolution":"1920x1080","encoder_fps":30,
-              "encoder_bitrate_kbps":6000,"encoder_connected":status in {"starting","live"},
+              "encoder_bitrate_kbps":4500,"bitrate_profile":"twitch-recommended-1080p30-cbr","encoder_connected":status in {"starting","live"},
               "twitch_ingest_verified":verified,"updated_at":iso_now()})
     if verified:d["live_at"]=iso_now()
     if error:d["error_message"]=str(error)
