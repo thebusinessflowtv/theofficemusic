@@ -45,6 +45,12 @@ jobs:
             exit 0
           fi
           jq -e . "$FILE" >/dev/null
+          DISPATCH_MODE="$(jq -r '.dispatch_mode // "bridge"' "$FILE")"
+          if [ "$DISPATCH_MODE" = "direct" ]; then
+            echo "MediaForge already dispatches this Kick session directly; bridge will not duplicate it."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           echo "file=$FILE" >> "$GITHUB_OUTPUT"
           echo "skip=false" >> "$GITHUB_OUTPUT"
 
