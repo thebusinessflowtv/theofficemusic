@@ -1,0 +1,226 @@
+name: One-off — Finalize YouTube OVH Cutover
+
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-finalize-youtube-ovh-cutover.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  cutover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Wait until both OVH backup ingests are valid
+        run: |
+          python - <<'PY'
+          import json, os, time, pathlib
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          root=pathlib.Path('.')
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube'],
+          )
+          creds.refresh(Request())
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+
+          stations={
+            'deep-house':'8cf99db8-3e53-4b74-b9d2-51fb67b54ff8',
+            'rainy':'72fcb955-bbb3-41d1-b8d0-fd90427c57a5',
+          }
+
+          def probe(name,session):
+              res=json.load(open(root/f'control/live-results/{session}.json',encoding='utf-8'))
+              sid=res['youtube_stream_id']; bid=res['youtube_broadcast_id']
+              s=(yt.liveStreams().list(part='status',id=sid).execute().get('items') or [None])[0]
+              b=(yt.liveBroadcasts().list(part='status',id=bid).execute().get('items') or [None])[0]
+              st=(s or {}).get('status') or {}
+              health=st.get('healthStatus') or {}
+              issues=health.get('configurationIssues') or []
+              blockers=[]
+              for issue in issues:
+                  typ=str(issue.get('type') or '')
+                  reason=str(issue.get('reason') or '')
+                  desc=str(issue.get('description') or '')
+                  txt=(typ+' '+reason+' '+desc).lower()
+                  if 'frameratemismatch' in txt or 'bad secondary stream' in txt or typ=='typeUnspecified':
+                      blockers.append({'type':typ,'reason':reason})
+              lifecycle=((b or {}).get('status') or {}).get('lifeCycleStatus')
+              active=st.get('streamStatus')=='active' and lifecycle=='live'
+              print(name, 'active=',active,'health=',health.get('status'),'blockers=',blockers, flush=True)
+              return active and not blockers
+
+          consecutive=0
+          deadline=time.time()+20*60
+          while time.time()<deadline:
+              ok=True
+              for name,session in stations.items():
+                  try:
+                      ok = probe(name,session) and ok
+                  except Exception as exc:
+                      print(name,'probe error',exc,flush=True)
+                      ok=False
+              if ok:
+                  consecutive += 1
+                  if consecutive >= 2:
+                      print('OVH_BACKUPS_VALIDATED',flush=True)
+                      raise SystemExit(0)
+              else:
+                  consecutive=0
+              time.sleep(30)
+          raise SystemExit('OVH backup ingests did not validate within 20 minutes; NO CUTOVER performed.')
+          PY
+
+      - name: Mark YouTube stations as OVH managed before stopping GitHub encoders
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib, datetime
+          p=pathlib.Path('control/youtube-stations.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          for st in d.get('stations',[]):
+              if st.get('key') in {'deep-house','rainy'}:
+                  st['runtime']='ovh'
+                  st['migrated_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/youtube-stations.json
+          git commit -m "youtube: hand Deep House and Rainy to OVH"
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main || { git rebase --abort 2>/dev/null || true; sleep $((N*2)); continue; }
+            git push origin HEAD:main && exit 0
+            sleep $((N*2))
+          done
+          exit 1
+
+      - name: Stop old GitHub primary encoders
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          for SESSION in 8cf99db8-3e53-4b74-b9d2-51fb67b54ff8 72fcb955-bbb3-41d1-b8d0-fd90427c57a5; do
+            RUN_ID="$(jq -r '.github_run_id // empty' "control/live-results/$SESSION.json")"
+            if [ -n "$RUN_ID" ]; then
+              echo "Cancelling old GitHub encoder run $RUN_ID for $SESSION"
+              gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/$RUN_ID/cancel" || true
+            fi
+          done
+
+      - name: Verify backup takeover
+        id: verify
+        continue-on-error: true
+        run: |
+          sleep 75
+          python - <<'PY'
+          import json, os, pathlib
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          creds.refresh(Request()); yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          stations={'deep-house':'8cf99db8-3e53-4b74-b9d2-51fb67b54ff8','rainy':'72fcb955-bbb3-41d1-b8d0-fd90427c57a5'}
+          root=pathlib.Path('.')
+          bad=[]
+          for name,session in stations.items():
+              res=json.load(open(root/f'control/live-results/{session}.json',encoding='utf-8'))
+              sid=res['youtube_stream_id']; bid=res['youtube_broadcast_id']
+              s=(yt.liveStreams().list(part='status',id=sid).execute().get('items') or [None])[0]
+              b=(yt.liveBroadcasts().list(part='status',id=bid).execute().get('items') or [None])[0]
+              st=(s or {}).get('status') or {}; hs=st.get('healthStatus') or {}
+              lifecycle=((b or {}).get('status') or {}).get('lifeCycleStatus')
+              issues=hs.get('configurationIssues') or []
+              secondary_bad=any(
+                  ('frameratemismatch' in ((str(i.get('type') or '')+' '+str(i.get('reason') or '')).lower()))
+                  or ('bad secondary stream' in str(i.get('reason') or '').lower())
+                  or str(i.get('type') or '')=='typeUnspecified'
+                  for i in issues
+              )
+              ok=st.get('streamStatus')=='active' and lifecycle=='live' and not secondary_bad
+              print(name,'stream=',st.get('streamStatus'),'lifecycle=',lifecycle,'health=',hs.get('status'),'ok=',ok,flush=True)
+              if not ok: bad.append(name)
+          if bad:
+              raise SystemExit('Takeover verification failed: '+','.join(bad))
+          print('YOUTUBE_OVH_CUTOVER_CONFIRMED')
+          PY
+
+      - name: Roll back to GitHub encoders if takeover failed
+        if: steps.verify.outcome == 'failure'
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('control/youtube-stations.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          for st in d.get('stations',[]):
+              if st.get('key') in {'deep-house','rainy'}:
+                  st['runtime']='github'
+                  st.pop('migrated_at',None)
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/youtube-stations.json
+          git commit -m "youtube: rollback OVH handoff after failed verification" || true
+          git pull --rebase origin main || true
+          git push origin HEAD:main || true
+
+          python - <<'PY' >/tmp/recover.jsonl
+          import json,pathlib
+          root=pathlib.Path('.')
+          for station in json.load(open('control/youtube-stations.json',encoding='utf-8'))['stations']:
+              if station['key'] not in {'deep-house','rainy'}: continue
+              session=station['session_id']
+              q=json.load(open(station['source_queue'],encoding='utf-8'))
+              r=json.load(open(f'control/live-results/{session}.json',encoding='utf-8'))
+              inputs={
+                  'session_id':session,
+                  'track_urls_b64':str(q['track_urls_b64']),
+                  'duration_minutes':'0',
+                  'title':str(q.get('title') or 'Peter Lofi Radio'),
+                  'description':str(q.get('description') or ''),
+                  'thumbnail_url':str(q.get('thumbnail_url') or ''),
+                  'loop_url':str(q.get('loop_url') or ''),
+                  'resume_broadcast_id':str(r.get('youtube_broadcast_id') or ''),
+                  'resume_stream_id':str(r.get('youtube_stream_id') or ''),
+                  'segment_index':str(int(r.get('segment_index') or 1)+1),
+                  'privacy_status':'public',
+                  'segment_seconds_override':'0',
+                  'prewarm_lead_seconds':'900',
+                  'max_segments':'0',
+              }
+              print(json.dumps({'ref':'main','inputs':inputs}))
+          PY
+
+          while IFS= read -r BODY; do
+            printf '%s' "$BODY" >/tmp/dispatch.json
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/office-music-live.yml/dispatches" --input /tmp/dispatch.json
+          done </tmp/recover.jsonl
+
+          echo "::error::OVH takeover failed verification. GitHub recovery was re-enabled and dispatched."
+          exit 1
