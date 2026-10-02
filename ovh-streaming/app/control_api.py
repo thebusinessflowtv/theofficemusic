@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 STATE = pathlib.Path("/state")
+PLATFORMS = ("kick", "twitch", "youtube-deep-house", "youtube-rainy")
 
 
 def iso_now():
@@ -39,13 +40,13 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/health":
             payload = {}
-            for platform in ("kick", "twitch"):
+            for platform in PLATFORMS:
                 payload[platform] = read_json(STATE / platform / "health.json") or {"status": "unknown"}
             return self.send_json(200, payload)
 
         if self.path.startswith("/now-playing/"):
             platform = self.path.rsplit("/", 1)[-1]
-            if platform not in {"kick", "twitch"}:
+            if platform not in set(PLATFORMS):
                 return self.send_json(404, {"error": "unknown_platform"})
             data = read_json(STATE / platform / "now-playing.json")
             return self.send_json(200 if data else 404, data or {"error": "not_ready"})
