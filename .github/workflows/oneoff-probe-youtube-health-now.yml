@@ -54,6 +54,7 @@ jobs:
               broadcast=(yt.liveBroadcasts().list(part='status',id=bid).execute().get('items') or [None])[0]
               st=(stream or {}).get('status') or {}
               hs=st.get('healthStatus') or {}
+              ingest=((stream or {}).get('cdn') or {}).get('ingestionInfo') or {}
               out['stations'][name]={
                 'broadcast_id':bid,
                 'stream_id':sid,
@@ -62,7 +63,11 @@ jobs:
                 'configuration_issues':hs.get('configurationIssues') or [],
                 'broadcast_lifecycle':((broadcast or {}).get('status') or {}).get('lifeCycleStatus'),
                 'privacy_status':((broadcast or {}).get('status') or {}).get('privacyStatus'),
-                'cdn':(stream or {}).get('cdn') or {},
+                'cdn':{
+                    k:v for k,v in ((stream or {}).get('cdn') or {}).items()
+                    if k != 'ingestionInfo'
+                },
+                'backup_ingest_configured': bool(ingest.get('backupIngestionAddress') or ingest.get('rtmpsBackupIngestionAddress')),
               }
           pathlib.Path('control/youtube-health-now.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           PY
@@ -75,3 +80,5 @@ jobs:
           git commit -m "youtube: probe live health" || exit 0
           git pull --rebase origin main
           git push origin HEAD:main
+
+# hardened 2026-10-02T21:41:55.123Z
