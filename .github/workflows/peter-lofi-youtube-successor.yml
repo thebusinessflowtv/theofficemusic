@@ -1,0 +1,79 @@
+name: Peter Lofi — YouTube Successor Bridge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'control/live-successor-youtube/*.json'
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: peter-lofi-youtube-successor-bridge
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Dispatch every V8 successor request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          if git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+            CHANGED="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA")"
+          else
+            CHANGED="$(git diff-tree --no-commit-id --name-only -r "$AFTER_SHA")"
+          fi
+
+          mapfile -t FILES < <(printf '%s\n' "$CHANGED" | grep -E '^control/live-successor-youtube/[^/]+\.json$' || true)
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "No YouTube successor request in this push."
+            exit 0
+          fi
+
+          for FILE in "${FILES[@]}"; do
+            echo "Processing successor request: $FILE"
+            jq -e . "$FILE" >/dev/null
+            SESSION_ID="$(jq -r '.session_id // empty' "$FILE")"
+            SEGMENT_INDEX="$(jq -r '.segment_index // empty' "$FILE")"
+            test -n "$SESSION_ID" && test -n "$SEGMENT_INDEX"
+
+            jq '{ref:"main",inputs:{
+              session_id:(.session_id|tostring),
+              track_urls_b64:(.track_urls_b64|tostring),
+              duration_minutes:(.duration_minutes|tostring),
+              title:(.title|tostring),
+              description:(.description//""|tostring),
+              thumbnail_url:(.thumbnail_url//""|tostring),
+              loop_url:(.loop_url//""|tostring),
+              resume_broadcast_id:(.resume_broadcast_id//""|tostring),
+              resume_stream_id:(.resume_stream_id//""|tostring),
+              segment_index:(.segment_index|tostring),
+              privacy_status:(.privacy_status//"public"|tostring),
+              segment_seconds_override:(.segment_seconds_override//"0"|tostring),
+              prewarm_lead_seconds:(.prewarm_lead_seconds//"900"|tostring),
+              max_segments:(.max_segments//"0"|tostring)
+            }}' "$FILE" > /tmp/dispatch.json
+
+            OK=0
+            for N in 1 2 3 4 5; do
+              if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/office-music-live.yml/dispatches" --input /tmp/dispatch.json; then
+                OK=1
+                break
+              fi
+              sleep $((N*5))
+            done
+            [ "$OK" -eq 1 ] || { echo "::error::Failed successor dispatch for $SESSION_ID segment $SEGMENT_INDEX"; exit 1; }
+            echo "Dispatched V8 successor: session=$SESSION_ID segment=$SEGMENT_INDEX"
+          done
