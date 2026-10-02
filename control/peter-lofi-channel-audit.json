@@ -1,8 +1,8 @@
 {
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-02T20:18:34.813577+00:00",
-  "public_video_count": 10,
+  "generated_at": "2026-10-02T21:18:53.379860+00:00",
+  "public_video_count": 11,
   "active_managed_playlists": {
     "all_music": {
       "id": "PLcRTCZSXY21w",
@@ -12,6 +12,14 @@
         "All Songs 🎧 | The Office Music"
       ]
     },
+    "late_night": {
+      "id": "PLK7t_rzb57VA",
+      "title": "Late Night Lofi 🌙 | Peter Lofi",
+      "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
+      "legacy": [
+        "Late Night Chill 🎧 | The Office Music"
+      ]
+    },
     "lofi_mixes": {
       "id": "PLZF6rzbRB0EA",
       "title": "Lofi Mixes 🎧 | Peter Lofi",
@@ -19,9 +27,33 @@
       "legacy": [
         "Lounge House Mix"
       ]
+    },
+    "rainy_cozy": {
+      "id": "PLT0hbJFvnftc",
+      "title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
+      "description": "Rainy-night and cozy-window lofi by Peter Lofi for calm focus, reading and relaxing.",
+      "legacy": [
+        "Deep Focus Lofi 🎧 | The Office Music"
+      ]
     }
   },
   "videos": [
+    {
+      "video_id": "C9Et10tejC8",
+      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+      "related_playlist_key": "rainy_cozy",
+      "related_playlist_title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
+      "duration_seconds": 0,
+      "published_at": "2026-10-02T20:47:54Z"
+    },
+    {
+      "video_id": "WYJuqbEQYZQ",
+      "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
+      "related_playlist_key": "late_night",
+      "related_playlist_title": "Late Night Lofi 🌙 | Peter Lofi",
+      "duration_seconds": 0,
+      "published_at": "2026-10-02T20:36:38Z"
+    },
     {
       "video_id": "AEvkXXl1rtg",
       "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
@@ -45,14 +77,6 @@
       "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
       "duration_seconds": 121136,
       "published_at": "2026-10-01T02:10:44Z"
-    },
-    {
-      "video_id": "PNdwQEFaIrA",
-      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-      "related_playlist_key": "lofi_mixes",
-      "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
-      "duration_seconds": 37119,
-      "published_at": "2026-10-01T20:39:32Z"
     },
     {
       "video_id": "YTT9UM1M1SY",
