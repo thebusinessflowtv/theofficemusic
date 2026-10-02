@@ -23,6 +23,7 @@ jobs:
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
       YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
+      YOUTUBE_CATEGORY_ID: "10"
 
     steps:
       - uses: actions/checkout@v4
