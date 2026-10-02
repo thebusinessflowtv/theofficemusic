@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: peter-lofi-unified-handoff-supervisor
@@ -131,6 +132,86 @@ jobs:
                           }
                           write(trigger,payload)
           PY
+
+      - name: Dispatch successor runners directly
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          dispatch_file() {
+            local FILE="$1"
+            local WORKFLOW="$2"
+            local KIND="$3"
+
+            [ -s "$FILE" ] || return 0
+
+            case "$KIND" in
+              youtube)
+                jq '{ref:"main",inputs:{
+                  session_id:(.session_id|tostring),
+                  track_urls_b64:(.track_urls_b64|tostring),
+                  duration_minutes:(.duration_minutes//"0"|tostring),
+                  title:(.title|tostring),
+                  description:(.description//""|tostring),
+                  thumbnail_url:(.thumbnail_url//""|tostring),
+                  loop_url:(.loop_url//""|tostring),
+                  resume_broadcast_id:(.resume_broadcast_id//""|tostring),
+                  resume_stream_id:(.resume_stream_id//""|tostring),
+                  segment_index:(.segment_index|tostring),
+                  privacy_status:(.privacy_status//"public"|tostring),
+                  segment_seconds_override:(.segment_seconds_override//"0"|tostring),
+                  prewarm_lead_seconds:(.prewarm_lead_seconds//"900"|tostring),
+                  max_segments:(.max_segments//"0"|tostring)
+                }}' "$FILE" > /tmp/dispatch.json
+                ;;
+              kick)
+                jq '{ref:"main",inputs:{
+                  session_id:(.session_id|tostring),
+                  track_urls_b64:(.track_urls_b64|tostring),
+                  duration_minutes:(.duration_minutes//"0"|tostring),
+                  title:(.title|tostring),
+                  description:(.description//""|tostring),
+                  thumbnail_url:(.thumbnail_url//""|tostring),
+                  loop_url:(.loop_url//""|tostring),
+                  segment_index:(.segment_index|tostring)
+                }}' "$FILE" > /tmp/dispatch.json
+                ;;
+              twitch)
+                jq '{ref:"main",inputs:{
+                  session_id:(.session_id|tostring),
+                  track_urls_b64:(.track_urls_b64|tostring),
+                  duration_minutes:(.duration_minutes//"0"|tostring),
+                  title:(.title|tostring),
+                  description:(.description//""|tostring),
+                  loop_url:(.loop_url|tostring),
+                  segment_index:(.segment_index|tostring)
+                }}' "$FILE" > /tmp/dispatch.json
+                ;;
+            esac
+
+            for N in 1 2 3 4 5; do
+              if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/${WORKFLOW}/dispatches" --input /tmp/dispatch.json; then
+                echo "Directly dispatched $KIND successor from $FILE"
+                return 0
+              fi
+              sleep $((N*5))
+            done
+            echo "::error::Failed to dispatch $KIND successor from $FILE"
+            return 1
+          }
+
+          while IFS= read -r FILE; do
+            dispatch_file "$FILE" "office-music-live.yml" youtube
+          done < <(git diff --name-only -- 'control/live-successor-youtube/*.json')
+
+          while IFS= read -r FILE; do
+            dispatch_file "$FILE" "peter-lofi-kick-live.yml" kick
+          done < <(git diff --name-only -- 'control/kick-successor/*.json')
+
+          while IFS= read -r FILE; do
+            dispatch_file "$FILE" "peter-lofi-twitch-live.yml" twitch
+          done < <(git diff --name-only -- 'control/twitch-successor/*.json')
 
       - name: Publish successor triggers
         run: |
