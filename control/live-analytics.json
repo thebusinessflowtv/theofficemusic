@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T23:58:30.868727+00:00",
+  "generated_at": "2026-10-02T00:28:57.576727+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -195,7 +195,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "99ch1P2rD41O_uRcS-8poi5S3fI",
+          "etag": "uuHZW0HkmfAQZyEVSfQCq--eK_4",
           "id": "PNdwQEFaIrA",
           "snippet": {
             "publishedAt": "2026-10-01T20:39:32Z",
