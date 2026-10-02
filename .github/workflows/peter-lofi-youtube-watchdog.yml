@@ -101,6 +101,9 @@ jobs:
           for station in cfg.get('stations',[]):
               if not station.get('enabled',True):
                   continue
+              if station.get('runtime') == 'ovh':
+                  print(f"[{station['key']}] managed by OVH; GitHub watchdog skipped.")
+                  continue
 
               key=station['key']
               sid_session=station['session_id']
