@@ -1,6 +1,6 @@
 {
   "platform": "twitch",
-  "status": "live",
+  "status": "completed",
   "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
   "description": "🎮 Welcome to Peter Lofi Gaming Radio.\n🎧 Gaming • Focus • Chill • Late Night Sessions\n🔴 Live 24/7 with Peter Lofi  \n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.",
   "session_id": "b43d8f63-6e1a-4c47-a4c5-10fd2e4a5c8f",
@@ -10,9 +10,9 @@
   "encoder_resolution": "1920x1080",
   "encoder_fps": 30,
   "encoder_bitrate_kbps": 4500,
-  "encoder_connected": true,
-  "twitch_ingest_verified": true,
-  "updated_at": "2026-10-02T19:45:09.811570+00:00",
+  "encoder_connected": false,
+  "twitch_ingest_verified": false,
+  "updated_at": "2026-10-02T20:28:55.033832+00:00",
   "live_at": "2026-10-02T19:45:09.811586+00:00",
   "bitrate_profile": "twitch-recommended-1080p30-cbr"
 }
