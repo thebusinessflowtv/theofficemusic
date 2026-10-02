@@ -18,13 +18,22 @@ cd "$SA3_DIR"
 echo "Stable Audio target model: $TARGET_MODEL"
 
 if [[ "$TARGET_MODEL" == small-* ]]; then
-  # Small-Music is officially CPU-capable. Use the CPU PyTorch build so this
-  # path is completely independent of Kaggle GPU provisioning.
+  # Small models remain CPU-compatible by default. Dedicated long-running jobs
+  # can opt into CUDA without changing the behavior of the rest of the factory.
   uv sync --no-install-package torch --no-install-package torchaudio
   VENV_PY="$SA3_DIR/.venv/bin/python"
-  uv pip install --python "$VENV_PY" \
-    torch==2.7.1 torchaudio==2.7.1 \
-    --index-url https://download.pytorch.org/whl/cpu
+
+  if [[ "${SA3_PREFER_CUDA:-0}" =~ ^(1|true|yes|on)$ ]] && command -v nvidia-smi >/dev/null 2>&1; then
+    echo "Installing CUDA PyTorch for Stable Audio small-model acceleration."
+    uv pip install --python "$VENV_PY" \
+      torch==2.7.1 torchaudio==2.7.1 \
+      --index-url https://download.pytorch.org/whl/cu126
+  else
+    echo "Installing CPU PyTorch for Stable Audio small-model compatibility."
+    uv pip install --python "$VENV_PY" \
+      torch==2.7.1 torchaudio==2.7.1 \
+      --index-url https://download.pytorch.org/whl/cpu
+  fi
   uv pip install --python "$VENV_PY" pyyaml
 
   "$VENV_PY" - <<'PY'
@@ -32,7 +41,11 @@ import sys
 import torch
 print("Python:", sys.version)
 print("Torch:", torch.__version__)
-print("Calibration runtime: CPU")
+print("CUDA available:", torch.cuda.is_available())
+if torch.cuda.is_available():
+    print("CUDA device:", torch.cuda.get_device_name(0))
+else:
+    print("Calibration runtime: CPU")
 PY
 else
   # Medium requires CUDA + Flash Attention 2 on an Ampere-or-newer GPU.
