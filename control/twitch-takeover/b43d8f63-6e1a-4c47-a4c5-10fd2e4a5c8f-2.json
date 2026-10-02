@@ -1,0 +1,12 @@
+{
+  "platform": "twitch",
+  "session_id": "b43d8f63-6e1a-4c47-a4c5-10fd2e4a5c8f",
+  "from_segment_index": 1,
+  "to_segment_index": 2,
+  "segment_index": 2,
+  "takeover": true,
+  "cutover_epoch": 1790968498.530633,
+  "signaled_at": "2026-10-02T19:14:38.530650+00:00",
+  "source_run_id": 37018344546,
+  "handoff_protocol": "twitch-v1-single-key"
+}
