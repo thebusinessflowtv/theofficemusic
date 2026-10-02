@@ -15,8 +15,8 @@ REPO_DIR = Path("/kaggle/working/theofficemusic")
 SA3_DIR = Path("/kaggle/working/stable-audio-3")
 OUTPUT_DIR = Path("/kaggle/working/output")
 RAW_DIR = Path("/kaggle/working/output-raw")
-TRACK_COUNT = 45
-FINAL_TRACK_COUNT = 18
+TRACK_COUNT = 15
+FINAL_TRACK_COUNT = 6
 SHARD_INDEX = 1
 TRACK_DURATION_SECONDS = 120
 MIN_FINAL_TRACK_SECONDS = 300
@@ -216,6 +216,7 @@ def main():
     os.environ["HUGGING_FACE_HUB_TOKEN"] = token
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     os.environ["SA3_TARGET_MODEL"] = "small-music"
+    os.environ["SA3_PREFER_CUDA"] = "1"
 
     for p in (REPO_DIR, SA3_DIR, OUTPUT_DIR, RAW_DIR):
         if p.exists():
