@@ -1,33 +1,31 @@
 {
-  "checked_at": "2026-10-02T05:26:57.918268+00:00",
+  "checked_at": "2026-10-02T05:28:35.203113+00:00",
   "expected_category_id": "10",
   "active_live_count": 2,
   "updated": [
     {
       "video_id": "AEvkXXl1rtg",
       "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-      "before_category_id": "24",
-      "after_category_id": "24",
+      "before_broadcast_category_id": "10",
+      "after_broadcast_category_id": "10",
+      "before_video_category_id": "10",
+      "after_video_category_id": "10",
       "privacy": "public",
       "concurrent_viewers": null,
       "view_count": "4",
-      "changes": [
-        "categoryId:10"
-      ]
+      "deep_house_metadata_aligned": false
     },
     {
       "video_id": "GIOCNRogj0g",
       "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-      "before_category_id": "24",
-      "after_category_id": "24",
+      "before_broadcast_category_id": "10",
+      "after_broadcast_category_id": "10",
+      "before_video_category_id": "10",
+      "after_video_category_id": "10",
       "privacy": "public",
       "concurrent_viewers": "2",
       "view_count": "17",
-      "changes": [
-        "categoryId:10",
-        "deep-house-description",
-        "deep-house-tags"
-      ]
+      "deep_house_metadata_aligned": true
     }
   ]
 }
