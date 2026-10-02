@@ -1,0 +1,194 @@
+name: Peter Lofi — YouTube 24x7 Watchdog
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: peter-lofi-youtube-24x7-watchdog
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install YouTube client
+        run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Verify protected stations and self-heal
+        run: |
+          set -euo pipefail
+          mkdir -p control/live-watchdog
+          python - <<'PY'
+          import json, os, pathlib, time, urllib.request
+          from datetime import datetime, timezone
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          ROOT=pathlib.Path('.')
+          REPO=os.environ['GITHUB_REPOSITORY']
+          GH=os.environ['GITHUB_TOKEN']
+          cfg=json.loads((ROOT/'control/youtube-stations.json').read_text(encoding='utf-8'))
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube'],
+          )
+          creds.refresh(Request())
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+
+          def now_iso():
+              return datetime.now(timezone.utc).isoformat()
+
+          def parse_ts(v):
+              if not v: return None
+              try: return datetime.fromisoformat(str(v).replace('Z','+00:00')).timestamp()
+              except Exception: return None
+
+          def state_of(bid,sid):
+              lifecycle=stream_status=privacy=None
+              if bid:
+                  b=(yt.liveBroadcasts().list(part='status',id=bid).execute().get('items') or [])
+                  if b:
+                      st=b[0].get('status') or {}
+                      lifecycle=st.get('lifeCycleStatus')
+                      privacy=st.get('privacyStatus')
+              if sid:
+                  s=(yt.liveStreams().list(part='status',id=sid).execute().get('items') or [])
+                  if s:
+                      stream_status=(s[0].get('status') or {}).get('streamStatus')
+              return lifecycle,stream_status,privacy
+
+          def dispatch(inputs):
+              url=f'https://api.github.com/repos/{REPO}/actions/workflows/office-music-live.yml/dispatches'
+              body=json.dumps({'ref':'main','inputs':inputs}).encode()
+              req=urllib.request.Request(url,data=body,method='POST',headers={
+                  'Authorization':f'Bearer {GH}',
+                  'Accept':'application/vnd.github+json',
+                  'X-GitHub-Api-Version':'2022-11-28',
+                  'Content-Type':'application/json',
+                  'User-Agent':'MediaForge-YouTube-Watchdog',
+              })
+              with urllib.request.urlopen(req,timeout=30) as r:
+                  if r.status not in (200,201,204):
+                      raise RuntimeError(f'dispatch HTTP {r.status}')
+
+          for station in cfg.get('stations',[]):
+              if not station.get('enabled',True):
+                  continue
+
+              key=station['key']
+              sid_session=station['session_id']
+              queue=json.loads((ROOT/station['source_queue']).read_text(encoding='utf-8'))
+              result_path=ROOT/f'control/live-results/{sid_session}.json'
+              result=json.loads(result_path.read_text(encoding='utf-8')) if result_path.exists() else {}
+
+              bid=str(result.get('youtube_broadcast_id') or '')
+              stream_id=str(result.get('youtube_stream_id') or '')
+              lifecycle=stream_status=privacy=None
+
+              try:
+                  lifecycle,stream_status,privacy=state_of(bid,stream_id)
+              except Exception as exc:
+                  print(f'[{key}] API verification failed; preserving current encoder: {exc}')
+                  continue
+
+              healthy=(lifecycle=='live' and stream_status=='active' and privacy=='public')
+              print(f'[{key}] lifecycle={lifecycle} stream={stream_status} privacy={privacy} healthy={healthy}')
+              if healthy:
+                  continue
+
+              # Re-check twice before recovery to avoid reacting to a short handoff blip.
+              for attempt in (2,3):
+                  time.sleep(10)
+                  try:
+                      lifecycle,stream_status,privacy=state_of(bid,stream_id)
+                  except Exception as exc:
+                      print(f'[{key}] verification attempt {attempt} failed; aborting recovery: {exc}')
+                      healthy=True
+                      break
+                  healthy=(lifecycle=='live' and stream_status=='active' and privacy=='public')
+                  print(f'[{key}] verify {attempt}/3 lifecycle={lifecycle} stream={stream_status} privacy={privacy}')
+                  if healthy:
+                      break
+              if healthy:
+                  continue
+
+              lock_path=ROOT/f'control/live-watchdog/{sid_session}.json'
+              lock=json.loads(lock_path.read_text(encoding='utf-8')) if lock_path.exists() else {}
+              recent_candidates=[
+                  parse_ts(lock.get('last_recovery_requested_at')),
+                  parse_ts(result.get('prewarmed_at')),
+                  parse_ts(result.get('current_segment_started_at')) if result.get('status') in ('starting','reconnecting') else None,
+              ]
+              recent=max([x for x in recent_candidates if x is not None], default=0)
+              if recent and time.time()-recent < 1800:
+                  print(f'[{key}] recovery/startup already requested recently; not duplicating.')
+                  continue
+
+              terminal=lifecycle in ('complete','revoked') or not bid or not stream_id
+              resume_bid='' if terminal else bid
+              resume_sid='' if terminal else stream_id
+              next_segment=str(int(result.get('segment_index') or 0)+1)
+
+              inputs={
+                  'session_id':sid_session,
+                  'track_urls_b64':str(queue['track_urls_b64']),
+                  'duration_minutes':'0',
+                  'title':str(queue.get('title') or f'Peter Lofi — {station.get("name",key)}'),
+                  'description':str(queue.get('description') or ''),
+                  'thumbnail_url':str(queue.get('thumbnail_url') or ''),
+                  'loop_url':str(queue.get('loop_url') or ''),
+                  'resume_broadcast_id':resume_bid,
+                  'resume_stream_id':resume_sid,
+                  'segment_index':next_segment,
+                  'privacy_status':'public',
+                  'segment_seconds_override':'0',
+                  'prewarm_lead_seconds':'900',
+                  'max_segments':'0',
+              }
+              dispatch(inputs)
+              stamp=now_iso()
+              lock_path.write_text(json.dumps({
+                  'station':key,
+                  'session_id':sid_session,
+                  'last_recovery_requested_at':stamp,
+                  'observed_lifecycle':lifecycle,
+                  'observed_stream_status':stream_status,
+                  'observed_privacy':privacy,
+                  'resume_existing_broadcast':not terminal,
+                  'requested_segment_index':int(next_segment),
+              },ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+              print(f'[{key}] SELF-HEAL dispatched at {stamp}; resume={not terminal}; segment={next_segment}')
+          PY
+
+      - name: Persist recovery locks
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/live-watchdog
+          git diff --cached --quiet && exit 0
+          git commit -m "live: watchdog recovery state"
+          git pull --rebase origin main
+          git push origin HEAD:main
