@@ -1,0 +1,144 @@
+name: Peter Lofi — Unified Live Handoff Supervisor
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: peter-lofi-unified-handoff-supervisor
+  cancel-in-progress: false
+
+jobs:
+  supervise:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare direct successor triggers before the 5h runner ceiling
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          python - <<'PY'
+          import json,time,pathlib,datetime
+
+          ROOT=pathlib.Path(".")
+          NOW=time.time()
+          PREWARM_AFTER=4*3600+35*60  # 4h35m: successor gets ~25m to prepare
+          RETRY_AFTER=10*60
+
+          def read(path):
+              p=ROOT/path
+              if not p.exists(): return None
+              try:return json.loads(p.read_text(encoding="utf-8"))
+              except Exception:return None
+
+          def ts(v):
+              if not v:return None
+              try:return datetime.datetime.fromisoformat(str(v).replace("Z","+00:00")).timestamp()
+              except Exception:return None
+
+          def write(path,payload):
+              p=ROOT/path;p.parent.mkdir(parents=True,exist_ok=True)
+              p.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+              print("TRIGGER",path)
+
+          def stale_trigger(path):
+              d=read(path)
+              if not d:return True
+              t=ts(d.get("requested_at"))
+              return (t is None) or (NOW-t>=RETRY_AFTER)
+
+          # YouTube protected stations
+          cfg=read("control/youtube-stations.json") or {}
+          for st in cfg.get("stations",[]):
+              if not st.get("enabled",True):continue
+              sid=st["session_id"]
+              res=read(f"control/live-results/{sid}.json") or {}
+              q=read(st["source_queue"]) or {}
+              seg=int(res.get("segment_index") or 0)
+              started=ts(res.get("current_segment_started_at"))
+              if not started or NOW-started<PREWARM_AFTER:continue
+              nxt=seg+1
+              ready=read(f"control/live-ready/{sid}-{nxt}.json")
+              if ready and ready.get("ready") is True:continue
+              trigger=f"control/live-successor-youtube/{sid}-{nxt}.json"
+              if not stale_trigger(trigger):continue
+              payload={
+                "session_id":sid,"track_urls_b64":q.get("track_urls_b64",""),"duration_minutes":"0",
+                "title":q.get("title","Peter Lofi Radio — Live"),"description":q.get("description",""),
+                "thumbnail_url":q.get("thumbnail_url",""),"loop_url":q.get("loop_url",""),
+                "resume_broadcast_id":res.get("youtube_broadcast_id",""),"resume_stream_id":res.get("youtube_stream_id",""),
+                "segment_index":str(nxt),"privacy_status":"public","segment_seconds_override":"0",
+                "prewarm_lead_seconds":"900","max_segments":"0","requested_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "source_run_id":res.get("github_run_id"),"protocol":"supervisor-youtube-direct","retry":int((read(trigger) or {}).get("retry") or 0)+1
+              }
+              write(trigger,payload)
+
+          # Kick current station
+          ka=read("control/kick-active.json") or {}
+          ksid=ka.get("session_id")
+          if ksid:
+              res=read(f"control/kick-live-results/{ksid}.json") or {}
+              q=read(f"control/kick-live-queue/{ksid}.json") or {}
+              seg=int(res.get("segment_index") or ka.get("segment_index") or 0)
+              started=ts(res.get("updated_at") or res.get("live_at") or ka.get("updated_at"))
+              if started and NOW-started>=PREWARM_AFTER and res.get("status") in ("live","starting","reconnecting"):
+                  nxt=seg+1
+                  ready=read(f"control/kick-prewarm/{ksid}-{nxt}.json")
+                  if not (ready and ready.get("ready") is True):
+                      trigger=f"control/kick-successor/{ksid}-{nxt}.json"
+                      if stale_trigger(trigger):
+                          payload={
+                            "session_id":ksid,"track_urls_b64":q.get("track_urls_b64",""),"duration_minutes":"0",
+                            "title":q.get("title","Peter Lofi Gaming Radio"),"description":q.get("description",""),
+                            "thumbnail_url":q.get("thumbnail_url",""),"loop_url":q.get("loop_url",""),
+                            "segment_index":str(nxt),"requested_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                            "source_run_id":res.get("github_run_id"),"protocol":"supervisor-kick-direct","retry":int((read(trigger) or {}).get("retry") or 0)+1
+                          }
+                          write(trigger,payload)
+
+          # Twitch current station
+          ta=read("control/twitch-active.json") or {}
+          tsid=ta.get("session_id")
+          if tsid:
+              res=read(f"control/twitch-live-results/{tsid}.json") or {}
+              q=read(f"control/twitch-live-queue/{tsid}.json") or {}
+              seg=int(res.get("segment_index") or ta.get("segment_index") or 0)
+              started=ts(res.get("updated_at") or res.get("live_at") or ta.get("updated_at"))
+              if started and NOW-started>=PREWARM_AFTER and res.get("status") in ("live","starting","reconnecting"):
+                  nxt=seg+1
+                  ready=read(f"control/twitch-prewarm/{tsid}-{nxt}.json")
+                  if not (ready and ready.get("ready") is True):
+                      trigger=f"control/twitch-successor/{tsid}-{nxt}.json"
+                      if stale_trigger(trigger):
+                          payload={
+                            "session_id":tsid,"track_urls_b64":q.get("track_urls_b64",""),"duration_minutes":"0",
+                            "title":q.get("title","Peter Lofi Gaming Radio"),"description":q.get("description",""),
+                            "loop_url":q.get("loop_url",""),"segment_index":str(nxt),
+                            "requested_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                            "source_run_id":res.get("github_run_id"),"protocol":"supervisor-twitch-direct","retry":int((read(trigger) or {}).get("retry") or 0)+1
+                          }
+                          write(trigger,payload)
+          PY
+
+      - name: Publish successor triggers
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/live-successor-youtube control/kick-successor control/twitch-successor 2>/dev/null || true
+          git diff --cached --quiet && { echo "No handoff trigger needed."; exit 0; }
+          git commit -m "live: prewarm protected station successors"
+          for N in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((N*3))
+          done
+          exit 1
