@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T23:05:17.723896+00:00",
+  "generated_at": "2026-10-02T23:22:14.150741+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -190,7 +190,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "7Vq08juhr6-C0JmARWwKCMDaNu0",
+          "etag": "ObKvNrp9TB77qKPLXYXVCup2l1I",
           "id": "PNdwQEFaIrA",
           "snippet": {
             "publishedAt": "2026-10-01T20:39:32Z",
@@ -199,32 +199,32 @@
             "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
             "thumbnails": {
               "default": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/default.jpg?sqp=CJzxgNYG&rs=AOn4CLCRYp0nUVOjJ3p0yFgZcFyRzcn_0g",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/default.jpg?sqp=CKD4gNYG&rs=AOn4CLBFNh4EJXHQ6aAYkBZvPyPHty2eeA",
                 "width": 120,
                 "height": 90
               },
               "medium": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/mqdefault.jpg?sqp=CJzxgNYG&rs=AOn4CLCi02V48ZVTex-puOd9X1UFhTqBdg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/mqdefault.jpg?sqp=CKD4gNYG&rs=AOn4CLBg69szHon6jfl4219vUn19Srm5IQ",
                 "width": 320,
                 "height": 180
               },
               "high": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/hqdefault.jpg?sqp=CJzxgNYG&rs=AOn4CLBRe4pqzcljj3W7flieNcAfuXgLEA",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/hqdefault.jpg?sqp=CKD4gNYG&rs=AOn4CLCADaIptAMAYUg8FPJRuMc9Jx5AsA",
                 "width": 480,
                 "height": 360
               },
               "standard": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/sddefault.jpg?sqp=CJzxgNYG&rs=AOn4CLDU_57G3Zvz8ZdcSFtXPb48Lg8h_w",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/sddefault.jpg?sqp=CKD4gNYG&rs=AOn4CLDLkwt9IYSNdCRS6zVGXjnnEMUmBQ",
                 "width": 640,
                 "height": 480
               },
               "maxres": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/maxresdefault.jpg?sqp=CJzxgNYG&rs=AOn4CLDIHRP5-WW9AwYk7xeovzZbUd0-OA",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/maxresdefault.jpg?sqp=CKD4gNYG&rs=AOn4CLB_5bs5W-gj-U6jNs4ti254Tg67_Q",
                 "width": 1280,
                 "height": 720
               },
               "fhd": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/fhddefault.jpg?sqp=CJzxgNYG&rs=AOn4CLA8EPxuOvY71ui2orwXc7qpnpvpkg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/fhddefault.jpg?sqp=CKD4gNYG&rs=AOn4CLAyQFWzZsFxcj8bpokl2D-fL2U7BQ",
                 "width": 1920,
                 "height": 1080
               }
