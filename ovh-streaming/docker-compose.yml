@@ -7,8 +7,8 @@ services:
     environment:
       STREAM_URL: ${KICK_STREAM_URL}
       STREAM_KEY: ${KICK_STREAM_KEY}
-      LOOP_URL: ${KICK_LOOP_URL}
-      PLAYLIST_FILE: ${KICK_PLAYLIST_FILE:-/config/kick.json}
+      LOOP_URL: ${LOOP_URL}
+      PLAYLIST_FILE: /config/gaming.json
       VIDEO_FPS: "60"
       VIDEO_BITRATE_KBPS: "8000"
       VIDEO_BUFSIZE_KBPS: "16000"
@@ -24,8 +24,8 @@ services:
     environment:
       STREAM_URL: "rtmps://live.twitch.tv:443/app"
       STREAM_KEY: ${TWITCH_STREAM_KEY}
-      LOOP_URL: ${TWITCH_LOOP_URL}
-      PLAYLIST_FILE: ${TWITCH_PLAYLIST_FILE:-/config/twitch.json}
+      LOOP_URL: ${LOOP_URL}
+      PLAYLIST_FILE: /config/gaming.json
       VIDEO_FPS: "30"
       VIDEO_BITRATE_KBPS: "4500"
       VIDEO_BUFSIZE_KBPS: "9000"
