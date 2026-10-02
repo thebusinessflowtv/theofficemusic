@@ -175,7 +175,11 @@ def mark(status,verified=False,error=None):
               "encoder_bitrate_kbps":4500,"bitrate_profile":"twitch-recommended-1080p30-cbr","encoder_connected":status in {"starting","live"},
               "twitch_ingest_verified":verified,"updated_at":iso_now()})
     if verified:d["live_at"]=iso_now()
-    if error:d["error_message"]=str(error)
+    if error:
+        safe_error=str(error)
+        if STREAM_KEY:
+            safe_error=safe_error.replace(STREAM_KEY,"<redacted-stream-key>")
+        d["error_message"]=safe_error
     elif status in {"starting","live"}:
         d.pop("error_message",None); d.pop("failed_at",None); d.pop("completed_at",None)
     gh_put(p,d,f"peter-lofi: Twitch {status} {SESSION_ID} segment {SEGMENT_INDEX}")
