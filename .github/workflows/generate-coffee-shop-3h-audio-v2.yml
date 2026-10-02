@@ -380,9 +380,20 @@ jobs:
           print(f'Visual loop validated: {d:.3f}s')
           PY
 
-          echo "Building 3-hour Coffee Shop video from the visual loop + generated master..."
+          echo "Preparing the loop at 1280x720 / 24 fps..."
+          ffmpeg -hide_banner -loglevel warning -y \
+            -i build/coffee-shop-loop.mp4 -an \
+            -vf "scale=1280:720:flags=lanczos,fps=24,format=yuv420p" \
+            -c:v libx264 -preset slow -crf 18 -profile:v high \
+            -g 48 -keyint_min 48 -sc_threshold 0 -movflags +faststart \
+            build/coffee-shop-loop-720p.mp4
+          test -s build/coffee-shop-loop-720p.mp4
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 build/coffee-shop-loop-720p.mp4)" = "1280"
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 build/coffee-shop-loop-720p.mp4)" = "720"
+
+          echo "Building 3-hour Coffee Shop video from the 720p visual loop + generated master..."
           ffmpeg -hide_banner -loglevel warning -stats -y \
-            -stream_loop -1 -i build/coffee-shop-loop.mp4 \
+            -stream_loop -1 -i build/coffee-shop-loop-720p.mp4 \
             -i build/peter-lofi-coffee-shop-3h.mp3 \
             -map 0:v:0 -map 1:a:0 \
             -c:v copy -c:a aac -b:a 320k -ar 48000 -ac 2 \
