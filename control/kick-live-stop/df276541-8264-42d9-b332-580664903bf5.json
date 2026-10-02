@@ -1,0 +1,6 @@
+{
+  "stop": true,
+  "requested_at": "2026-10-02T03:04:17.386Z",
+  "requested_by": "user",
+  "reason": "manual_stop"
+}
