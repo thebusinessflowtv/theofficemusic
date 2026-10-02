@@ -1,0 +1,10 @@
+{
+  "station": "deep-house",
+  "session_id": "8cf99db8-3e53-4b74-b9d2-51fb67b54ff8",
+  "last_recovery_requested_at": "2026-10-02T12:02:02.103128+00:00",
+  "observed_lifecycle": "live",
+  "observed_stream_status": "inactive",
+  "observed_privacy": "public",
+  "resume_existing_broadcast": true,
+  "requested_segment_index": 3
+}
