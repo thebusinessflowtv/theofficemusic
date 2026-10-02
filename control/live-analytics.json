@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T03:59:39.455558+00:00",
+  "generated_at": "2026-10-02T04:22:46.984495+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -105,7 +105,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "IFWjS-wy1H-YwdcESy72jEGoKus",
+          "etag": "U7Bz4ayGXk0_Dcy3m7fhV93TKOU",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
@@ -184,6 +184,7 @@
           "liveStreamingDetails": {
             "actualStartTime": "2026-10-01T02:11:02Z",
             "scheduledStartTime": "2026-10-01T02:11:03Z",
+            "concurrentViewers": "1",
             "activeLiveChatId": "Cg0KC0dJT0NOUm9najBnKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILR0lPQ05Sb2dqMGc"
           }
         }
@@ -290,7 +291,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "IFWjS-wy1H-YwdcESy72jEGoKus",
+          "etag": "U7Bz4ayGXk0_Dcy3m7fhV93TKOU",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
@@ -369,6 +370,7 @@
           "liveStreamingDetails": {
             "actualStartTime": "2026-10-01T02:11:02Z",
             "scheduledStartTime": "2026-10-01T02:11:03Z",
+            "concurrentViewers": "1",
             "activeLiveChatId": "Cg0KC0dJT0NOUm9najBnKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILR0lPQ05Sb2dqMGc"
           }
         }
