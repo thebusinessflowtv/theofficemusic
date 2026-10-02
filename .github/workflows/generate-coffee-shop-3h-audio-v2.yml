@@ -511,8 +511,10 @@ jobs:
               })
           data={
               'status':'completed',
+              'copyright_status':'pending_private_youtube_check',
+              'distribution_blocked':True,
               'progress':100,
-              'phase':'Concluída, renderizada e enviada ao YouTube como privada',
+              'phase':'Gerada e enviada ao YouTube como privada; aguardando verificação de direitos antes da distribuição',
               'index':12,
               'key':'coffee-shop-3h',
               'name':'Coffee Shop 3H',
