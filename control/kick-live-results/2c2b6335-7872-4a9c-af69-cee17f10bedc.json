@@ -1,6 +1,6 @@
 {
   "platform": "kick",
-  "status": "starting",
+  "status": "live",
   "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
   "description": "🎮 Welcome to Peter Lofi Gaming Radio.\n🎧 Gaming • Focus • Chill • Late Night Sessions\n🔴 Live 24/7 with Peter Lofi  \n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.",
   "session_id": "2c2b6335-7872-4a9c-af69-cee17f10bedc",
@@ -11,7 +11,7 @@
   "encoder_fps": 60,
   "encoder_bitrate_kbps": 8000,
   "encoder_connected": true,
-  "kick_verified": false,
-  "updated_at": "2026-10-02T14:14:13.382170+00:00",
-  "live_at": "2026-10-02T08:13:08.198283+00:00"
+  "kick_verified": true,
+  "updated_at": "2026-10-02T14:14:29.875833+00:00",
+  "live_at": "2026-10-02T14:14:29.875846+00:00"
 }
