@@ -1,10 +1,10 @@
 {
   "station": "rainy",
   "session_id": "72fcb955-bbb3-41d1-b8d0-fd90427c57a5",
-  "last_recovery_requested_at": "2026-10-02T17:26:28.959482+00:00",
-  "observed_lifecycle": "live",
+  "last_recovery_requested_at": "2026-10-02T18:02:10.978608+00:00",
+  "observed_lifecycle": "complete",
   "observed_stream_status": "inactive",
   "observed_privacy": "public",
-  "resume_existing_broadcast": true,
+  "resume_existing_broadcast": false,
   "requested_segment_index": 4
 }
