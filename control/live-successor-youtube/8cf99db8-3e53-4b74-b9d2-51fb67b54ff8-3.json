@@ -13,7 +13,7 @@
   "segment_seconds_override": 0,
   "prewarm_lead_seconds": 900,
   "max_segments": 0,
-  "requested_at": "2026-10-02T11:24:16.054645+00:00",
+  "requested_at": "2026-10-02T11:26:17.751982+00:00",
   "source_run_id": 36971810531,
   "protocol": "youtube-v8-git-trigger"
 }
