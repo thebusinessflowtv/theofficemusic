@@ -11,7 +11,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: peter-lofi-gaming-3h-audio
+  group: peter-lofi-gaming-3h-audio-v2
   cancel-in-progress: false
 
 env:
@@ -178,14 +178,18 @@ jobs:
           done
           update_progress
 
-          # Recover usable output from the immediately previous V1 run when possible.
-          # Each old half contained 18 x 5-minute WAVs, which maps to three V2 shards.
-          PREV_V1_RUN="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=30" | jq -r '
+          # Recover usable output from recent V1 runs when possible.
+          # Older V1 revisions submitted two 90-minute halves. Each half contains
+          # 18 x 5-minute WAVs and maps to three V2 checkpoint shards.
+          mapfile -t RECOVERY_RUNS < <(gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=50" | jq -r '
             .workflow_runs[]
             | select(.path == ".github/workflows/generate-gaming-3h-audio.yml")
-            | .id' | head -n 1)"
-          if [ -n "$PREV_V1_RUN" ] && [ "$PREV_V1_RUN" != "null" ]; then
-            echo "Attempting recovery from previous V1 run $PREV_V1_RUN..."
+            | .id' | head -n 8)
+
+          for PREV_V1_RUN in "${RECOVERY_RUNS[@]}"; do
+            [ -n "$PREV_V1_RUN" ] && [ "$PREV_V1_RUN" != "null" ] || continue
+            echo "Attempting recovery from V1 run $PREV_V1_RUN..."
+
             for HALF in 1 2; do
               START_SHARD=$(( (HALF-1)*3 + 1 ))
               NEED=0
@@ -195,10 +199,14 @@ jobs:
               [ "$NEED" -eq 1 ] || continue
 
               LEGACY_REF=""
-              for NAME in                 "peter-lofi-gaming-3h-$PREV_V1_RUN-shard-$HALF"                 "peter-lofi-gaming-3h-$PREV_V1_RUN-s$HALF"; do
+              for NAME in \
+                "peter-lofi-gaming-3h-$PREV_V1_RUN-shard-$HALF" \
+                "peter-lofi-gaming-3h-$PREV_V1_RUN-s$HALF" \
+                "peter-lofi-gaming-$PREV_V1_RUN-shard-$HALF" \
+                "peter-lofi-gaming-$PREV_V1_RUN-s$HALF"; do
                 REF="$KAGGLE_USERNAME/$NAME"
                 STATUS="$(kaggle kernels status "$REF" 2>&1 || true)"
-                echo "[legacy half $HALF] $REF -> $STATUS"
+                echo "[legacy run $PREV_V1_RUN half $HALF] $REF -> $STATUS"
                 if echo "$STATUS" | grep -Eqi 'complete|completed'; then
                   LEGACY_REF="$REF"
                   break
@@ -206,22 +214,29 @@ jobs:
               done
 
               if [ -n "$LEGACY_REF" ]; then
-                DEST="/tmp/legacy-half-$HALF"
+                DEST="/tmp/legacy-$PREV_V1_RUN-half-$HALF"
                 rm -rf "$DEST"
                 mkdir -p "$DEST"
                 kaggle kernels output "$LEGACY_REF" -p "$DEST" || true
                 mapfile -t LEGACY_WAVS < <(find "$DEST" -type f -name '*.wav' | sort)
+                echo "Recovered ${#LEGACY_WAVS[@]} WAV files from $LEGACY_REF"
+
                 if [ "${#LEGACY_WAVS[@]}" -eq 18 ]; then
                   for OFFSET in 0 1 2; do
                     LOGICAL=$((START_SHARD+OFFSET))
                     if valid_shard "$LOGICAL"; then continue; fi
                     BASE=$((OFFSET*6))
-                    store_shard "$LOGICAL"                       "${LEGACY_WAVS[$BASE]}" "${LEGACY_WAVS[$((BASE+1))]}"                       "${LEGACY_WAVS[$((BASE+2))]}" "${LEGACY_WAVS[$((BASE+3))]}"                       "${LEGACY_WAVS[$((BASE+4))]}" "${LEGACY_WAVS[$((BASE+5))]}"
+                    store_shard "$LOGICAL" \
+                      "${LEGACY_WAVS[$BASE]}" "${LEGACY_WAVS[$((BASE+1))]}" \
+                      "${LEGACY_WAVS[$((BASE+2))]}" "${LEGACY_WAVS[$((BASE+3))]}" \
+                      "${LEGACY_WAVS[$((BASE+4))]}" "${LEGACY_WAVS[$((BASE+5))]}"
                   done
+                else
+                  echo "Legacy output from $LEGACY_REF is incomplete; keeping any existing checkpoints and continuing recovery."
                 fi
               fi
             done
-          fi
+          done
 
           ROOT_REQUEST_ID="gaming-3h-v2-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 
