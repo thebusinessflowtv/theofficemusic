@@ -1,6 +1,6 @@
 {
   "platform": "kick",
-  "status": "starting",
+  "status": "live",
   "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi",
   "description": "",
   "session_id": "df276541-8264-42d9-b332-580664903bf5",
@@ -11,7 +11,7 @@
   "encoder_fps": 60,
   "encoder_bitrate_kbps": 8000,
   "encoder_connected": true,
-  "kick_verified": false,
-  "updated_at": "2026-10-02T01:13:52.780061+00:00",
-  "live_at": "2026-10-01T20:12:47.172704+00:00"
+  "kick_verified": true,
+  "updated_at": "2026-10-02T01:14:09.766860+00:00",
+  "live_at": "2026-10-02T01:14:09.766877+00:00"
 }
