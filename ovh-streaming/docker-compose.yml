@@ -10,9 +10,10 @@ services:
       LOOP_URL: ${LOOP_URL}
       PLAYLIST_FILE: /config/gaming.json
       VIDEO_FPS: "60"
-      VIDEO_BITRATE_KBPS: "8000"
-      VIDEO_BUFSIZE_KBPS: "16000"
+      VIDEO_BITRATE_KBPS: "7000"
+      VIDEO_BUFSIZE_KBPS: "14000"
       AUDIO_BITRATE_KBPS: "160"
+      VIDEO_PROFILE: "main"
     volumes:
       - ./state:/state
 
