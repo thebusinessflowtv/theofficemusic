@@ -119,7 +119,7 @@ class StreamCore:
             "--platform", self.platform,
             "--playlist-file", self.playlist_file,
             "--state-dir", "/state",
-        ], stdout=self.fd, stderr=subprocess.STDOUT)
+        ], stdout=self.fd, stderr=subprocess.DEVNULL)
 
         gop = self.fps * 2
         cmd = [
