@@ -1,0 +1,39 @@
+name: One-off — Repair Coffee Copyright Matches
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/oneoff-repair-coffee-copyright.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CHECKPOINT_TAG: peter-lofi-coffee-shop-3h-checkpoint-v2
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove only affected Coffee checkpoints
+        run: |
+          set -euo pipefail
+          for ASSET in coffee-shop-shard-1.tar.gz coffee-shop-shard-2.tar.gz; do
+            if gh release view "$CHECKPOINT_TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' | grep -Fxq "$ASSET"; then
+              echo "Removing affected checkpoint: $ASSET"
+              gh release delete-asset "$CHECKPOINT_TAG" "$ASSET" --repo "$GITHUB_REPOSITORY" -y
+            else
+              echo "$ASSET is already absent."
+            fi
+          done
+
+      - name: Start resumable Coffee regeneration
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/generate-coffee-shop-3h-audio-v2.yml/dispatches" -f ref=main
+          echo "Coffee repair dispatched. Shards 3-6 remain checkpointed; shards 1-2 will be regenerated."
