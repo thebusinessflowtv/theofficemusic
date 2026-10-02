@@ -1,0 +1,48 @@
+name: Peter Lofi — Twitch Queue Bridge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'control/twitch-live-queue/*.json'
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: peter-lofi-twitch-dispatch
+  cancel-in-progress: true
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Dispatch Twitch live
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          CHANGED="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA")"
+          FILE="$(printf '%s\n' "$CHANGED" | grep -E '^control/twitch-live-queue/[^/]+\.json$' | tail -1 || true)"
+          [ -n "$FILE" ] || { echo "No Twitch queue request found."; exit 0; }
+          jq -e . "$FILE" >/dev/null
+
+          jq '{ref:"main",inputs:{
+            session_id:(.session_id|tostring),
+            track_urls_b64:(.track_urls_b64|tostring),
+            duration_minutes:(.duration_minutes//"0"|tostring),
+            title:(.title|tostring),
+            description:(.description//""|tostring),
+            loop_url:(.loop_url|tostring),
+            segment_index:(.segment_index//"1"|tostring)
+          }}' "$FILE" > /tmp/twitch-dispatch.json
+
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-twitch-live.yml/dispatches" --input /tmp/twitch-dispatch.json
+          echo "Twitch live dispatched from $FILE"
