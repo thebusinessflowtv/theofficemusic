@@ -91,3 +91,4 @@ jobs:
           set -euo pipefail
           python scripts/mediaforge_live_segment_v7.py
 # retrigger 2026-10-02T01:16Z — recover Deep House after encoder termination
+# retrigger 2026-10-02T20:36:00.415Z — restore YouTube live after OVH migration
