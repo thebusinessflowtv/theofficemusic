@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: peter-lofi-coffee-shop-3h-audio-v2
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   SECRET_DATASET_SLUG: the-office-music-secrets
@@ -29,6 +29,10 @@ jobs:
       KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
       KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      YOUTUBE_CHANNEL_ID: ${{ secrets.YOUTUBE_CHANNEL_ID }}
 
     steps:
       - name: Checkout
@@ -41,7 +45,8 @@ jobs:
           set -euo pipefail
           sudo apt-get update -y
           sudo apt-get install -y ffmpeg jq
-          python -m pip install --upgrade pip kaggle
+          python -m pip install --upgrade pip
+          python -m pip install kaggle google-api-python-client google-auth google-auth-httplib2
           test -n "$KAGGLE_USERNAME"
           test -n "$KAGGLE_API_TOKEN"
           test -n "$HF_TOKEN"
@@ -180,12 +185,12 @@ jobs:
 
           ROOT_REQUEST_ID="coffee-shop-3h-v2-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
 
-          for WAVE_START in 1 3 5; do
-            WAVE_END=$((WAVE_START+1))
+          for WAVE_START in 1 2 3 4 5 6; do
+            WAVE_END="$WAVE_START"
             echo "Preparing shards $WAVE_START-$WAVE_END..."
 
             SUBMITTED=0
-            for SHARD in "$WAVE_START" "$WAVE_END"; do
+            for SHARD in $(seq "$WAVE_START" "$WAVE_END"); do
               if valid_shard "$SHARD"; then
                 echo "Shard $SHARD/6 already checkpointed; skipping generation."
                 continue
@@ -227,12 +232,26 @@ jobs:
           PY
 
               echo "Submitting coffee shop shard $SHARD/6..."
-              PUSH_OUTPUT="$(kaggle kernels push -p "$WORK" --timeout 7200 --accelerator NvidiaTeslaT4 2>&1)"
-              printf '%s\n' "$PUSH_OUTPUT"
-              KERNEL_REF="$(printf '%s\n' "$PUSH_OUTPUT" | sed -nE 's#.*https://www\.kaggle\.com/code/([^/[:space:]]+)/([^[:space:]]+).*#\1/\2#p' | tail -n 1)"
-              if [ -z "$KERNEL_REF" ]; then
-                KERNEL_REF="$KAGGLE_USERNAME/$KERNEL_NAME"
-              fi
+              KERNEL_REF=""
+              for PUSH_TRY in $(seq 1 60); do
+                PUSH_OUTPUT="$(kaggle kernels push -p "$WORK" --timeout 7200 --accelerator NvidiaTeslaT4 2>&1 || true)"
+                printf '%s\n' "$PUSH_OUTPUT"
+                if echo "$PUSH_OUTPUT" | grep -Eqi 'Maximum batch GPU session count|maximum.*GPU.*session'; then
+                  echo "Kaggle GPU capacity is busy (attempt $PUSH_TRY/60). Retrying in 60 seconds..."
+                  sleep 60
+                  continue
+                fi
+                if echo "$PUSH_OUTPUT" | grep -Eqi 'Kernel push error|Traceback|Permission.*denied'; then
+                  echo "Kaggle rejected shard $SHARD for a non-capacity reason."
+                  exit 1
+                fi
+                KERNEL_REF="$(printf '%s\n' "$PUSH_OUTPUT" | sed -nE 's#.*https://www\.kaggle\.com/code/([^/[:space:]]+)/([^[:space:]]+).*#\1/\2#p' | tail -n 1)"
+                if [ -z "$KERNEL_REF" ]; then
+                  KERNEL_REF="$KAGGLE_USERNAME/$KERNEL_NAME"
+                fi
+                break
+              done
+              test -n "$KERNEL_REF" || { echo "Could not obtain a Kaggle GPU slot for shard $SHARD."; exit 1; }
               printf '%s' "$KERNEL_REF" > "/tmp/kernel_ref_$SHARD"
               printf '%s' "$REQUEST_ID" > "/tmp/request_id_$SHARD"
               rm -f "/tmp/done_$SHARD"
@@ -245,7 +264,7 @@ jobs:
             WAVE_COMPLETE=0
             for i in $(seq 1 90); do
               ALL_DONE=1
-              for SHARD in "$WAVE_START" "$WAVE_END"; do
+              for SHARD in $(seq "$WAVE_START" "$WAVE_END"); do
                 if valid_shard "$SHARD" || [ -f "/tmp/done_$SHARD" ]; then
                   continue
                 fi
@@ -348,6 +367,109 @@ jobs:
           PY
           test "$(find build/tracks -type f -name '*.mp3' | wc -l | tr -d ' ')" -eq 36
 
+          echo "Reconstructing the user-provided Coffee Shop visual loop..."
+          cat assets/coffee-shop-3h-loop/0*.b64 | tr -d '\r\n ' | base64 --decode > build/coffee-shop-loop.mp4
+          test -s build/coffee-shop-loop.mp4
+          ffmpeg -hide_banner -v error -i build/coffee-shop-loop.mp4 -map 0:v:0 -f null -
+          LOOP_DURATION="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 build/coffee-shop-loop.mp4)"
+          python - "$LOOP_DURATION" <<'PY'
+          import sys
+          d=float(sys.argv[1])
+          if not 7.9 <= d <= 8.1:
+              raise SystemExit(f'Unexpected loop duration: {d}')
+          print(f'Visual loop validated: {d:.3f}s')
+          PY
+
+          echo "Building 3-hour Coffee Shop video from the visual loop + generated master..."
+          ffmpeg -hide_banner -loglevel warning -stats -y \
+            -stream_loop -1 -i build/coffee-shop-loop.mp4 \
+            -i build/peter-lofi-coffee-shop-3h.mp3 \
+            -map 0:v:0 -map 1:a:0 \
+            -c:v copy -c:a aac -b:a 320k -ar 48000 -ac 2 \
+            -t 10800 -shortest -movflags +faststart \
+            build/peter-lofi-coffee-shop-3h-video.mp4
+          test -s build/peter-lofi-coffee-shop-3h-video.mp4
+          VIDEO_DURATION="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 build/peter-lofi-coffee-shop-3h-video.mp4)"
+          python - "$VIDEO_DURATION" <<'PY'
+          import sys
+          d=float(sys.argv[1])
+          if not 10798 <= d <= 10802:
+              raise SystemExit(f'Unexpected final video duration: {d}')
+          print(f'Final video duration: {d:.3f}s')
+          PY
+
+          echo "Uploading Coffee Shop 3h to YouTube as PRIVATE..."
+          python - <<'PY'
+          import json, os, pathlib
+          from google.oauth2.credentials import Credentials
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+
+          required=['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN','YOUTUBE_CHANNEL_ID']
+          missing=[k for k in required if not os.environ.get(k)]
+          if missing:
+              raise SystemExit('Missing YouTube credentials: '+', '.join(missing))
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube'],
+          )
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          channel=yt.channels().list(part='id,snippet',mine=True).execute()['items'][0]
+          if channel['id'] != os.environ['YOUTUBE_CHANNEL_ID']:
+              raise SystemExit('Authenticated YouTube channel does not match YOUTUBE_CHANNEL_ID')
+
+          body={
+              'snippet':{
+                  'title':'3 Hours Coffee Shop Lofi ☕ Beats to Work, Study & Focus | Peter Lofi',
+                  'description':(
+                      'Three hours of original instrumental Peter Lofi coffee-shop music '
+                      'for work, study, reading and relaxed focus.\n\n'
+                      'Original music with a seamless looping visual.\n\n'
+                      '#lofi #coffeeshoplofi #studymusic #workmusic #focusmusic #PeterLofi'
+                  ),
+                  'tags':[
+                      'coffee shop lofi','lofi','lofi music','study music','work music',
+                      'focus music','coffee shop music','Peter Lofi','background music',
+                      'chill beats','beats to study to','beats to work to'
+                  ],
+                  'categoryId':'10',
+                  'defaultLanguage':'en',
+              },
+              'status':{
+                  'privacyStatus':'private',
+                  'selfDeclaredMadeForKids':False,
+              },
+          }
+          media=MediaFileUpload(
+              'build/peter-lofi-coffee-shop-3h-video.mp4',
+              mimetype='video/mp4',
+              chunksize=32*1024*1024,
+              resumable=True,
+          )
+          req=yt.videos().insert(part='snippet,status',body=body,media_body=media)
+          response=None
+          while response is None:
+              status,response=req.next_chunk(num_retries=8)
+              if status:
+                  print(f'YouTube upload: {int(status.progress()*100)}%')
+          video_id=response['id']
+          privacy=response.get('status',{}).get('privacyStatus')
+          if privacy != 'private':
+              raise SystemExit(f'Unexpected YouTube privacy status: {privacy}')
+          result={
+              'youtube_video_id':video_id,
+              'youtube_url':f'https://www.youtube.com/watch?v={video_id}',
+              'youtube_privacy':'private'
+          }
+          pathlib.Path('build/youtube.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
+          print('YouTube private upload complete:', result['youtube_url'])
+          PY
+
           TAG="peter-lofi-coffee-shop-3h-v2-$GITHUB_RUN_ID"
           gh release create "$TAG"             build/peter-lofi-coffee-shop-3h.mp3 build/tracks/*.mp3             --repo "$GITHUB_REPOSITORY"             --target main             --title "Peter Lofi — Coffee Shop · 3 Hour Audio"             --notes "Resumable V2 output: 36 original 5-minute tracks, 3-hour master, audio only."
 
@@ -360,6 +482,7 @@ jobs:
           python - "$TAG" "$RELEASE_URL" "$MASTER_URL" <<'PY'
           import datetime as dt, hashlib, json, os, pathlib, subprocess, sys
           tag,release_url,master_url=sys.argv[1:4]
+          youtube=json.loads(pathlib.Path('build/youtube.json').read_text(encoding='utf-8'))
           tracks=[]
           for pos,p in enumerate(sorted(pathlib.Path('build/tracks').glob('*.mp3')),1):
               duration=float(subprocess.check_output([
@@ -378,7 +501,7 @@ jobs:
           data={
               'status':'completed',
               'progress':100,
-              'phase':'Concluída e disponível para download',
+              'phase':'Concluída, renderizada e enviada ao YouTube como privada',
               'index':12,
               'key':'coffee-shop-3h',
               'name':'Coffee Shop 3H',
@@ -392,6 +515,11 @@ jobs:
               'release_url':release_url,
               'master_audio_url':master_url,
               'master_filename':'peter-lofi-coffee-shop-3h.mp3',
+              'master_video_filename':'peter-lofi-coffee-shop-3h-video.mp4',
+              'visual_loop_source':'user-uploaded-video',
+              'youtube_video_id':youtube['youtube_video_id'],
+              'youtube_url':youtube['youtube_url'],
+              'youtube_privacy':youtube['youtube_privacy'],
               'tracks':tracks,
               'github_run_id':int(os.environ['GITHUB_RUN_ID']),
               'github_run_url':f'https://github.com/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}',
