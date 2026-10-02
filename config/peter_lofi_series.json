@@ -9,7 +9,7 @@
     "generation": {
       "model": "medium",
       "tracks_per_batch": 10,
-      "track_duration_seconds": 360,
+      "track_duration_seconds": 300,
       "steps": 8,
       "cfg_scale": 1.0,
       "chunked_decode": true,
@@ -49,7 +49,7 @@
       "bass": "warm rounded bassline, controlled and supportive, never overpowering",
       "melody_density": "low to medium-low, memorable minimalist motifs with gradual variation",
       "brightness": "smooth polished top end with warm low mids",
-      "arrangement": "six-minute continuous instrumental arrangement with natural evolution, restrained transitions, no abrupt drops or genre changes",
+      "arrangement": "five-minute continuous instrumental arrangement with natural evolution, restrained transitions, no abrupt drops or genre changes",
       "production": "premium clean stereo mix, warm, spacious and unobtrusive enough for long work sessions",
       "title_left": [
         "Quiet",
