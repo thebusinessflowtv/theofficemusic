@@ -1,0 +1,18 @@
+{
+  "session_id": "8cf99db8-3e53-4b74-b9d2-51fb67b54ff8",
+  "from_segment_index": 1,
+  "to_segment_index": 2,
+  "segment_index": 2,
+  "track_id": "71",
+  "title": "Faixa 71",
+  "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/10-golden-boulevard.wav",
+  "track_started_at": "2026-10-01T22:54:07.881940Z",
+  "position_seconds": 26773.643,
+  "visual_position_seconds": 36624.904,
+  "cutover_epoch": 1790922021.524647,
+  "takeover": true,
+  "handoff_mode": "dual-ingest-overlap",
+  "handoff_protocol": "youtube-v7-continuity-first",
+  "signaled_at": "2026-10-02T06:20:21.756503+00:00",
+  "source_run_id": 36950278573
+}
