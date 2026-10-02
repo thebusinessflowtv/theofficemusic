@@ -1,0 +1,18 @@
+{
+  "platform": "kick",
+  "session_id": "df276541-8264-42d9-b332-580664903bf5",
+  "segment_index": 2,
+  "from_segment_index": 1,
+  "to_segment_index": 2,
+  "takeover": true,
+  "track_id": null,
+  "title": null,
+  "url": null,
+  "track_started_at": null,
+  "position_seconds": 0.0,
+  "cutover_epoch": 1790903602.17717,
+  "signaled_at": "2026-10-02T01:12:52.296423+00:00",
+  "source_run_id": 36919606338,
+  "handoff_mode": "scheduled-single-key",
+  "handoff_protocol": "kick-v3-continuity-first"
+}
