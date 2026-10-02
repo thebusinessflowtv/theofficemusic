@@ -114,4 +114,4 @@ jobs:
       - name: Run continuity-first YouTube live segment
         run: |
           set -euo pipefail
-          python scripts/mediaforge_live_segment_v7.py
+          python scripts/mediaforge_live_segment_v8.py
