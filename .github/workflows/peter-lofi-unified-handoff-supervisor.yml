@@ -64,6 +64,9 @@ jobs:
           cfg=read("control/youtube-stations.json") or {}
           for st in cfg.get("stations",[]):
               if not st.get("enabled",True):continue
+              if st.get("runtime") == "ovh":
+                  print(f"SKIP {st.get('key')} managed by OVH")
+                  continue
               sid=st["session_id"]
               res=read(f"control/live-results/{sid}.json") or {}
               q=read(st["source_queue"]) or {}
