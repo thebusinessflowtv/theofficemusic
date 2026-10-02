@@ -90,3 +90,4 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/mediaforge_live_segment_v7.py
+# retrigger 2026-10-02T01:16Z — recover Deep House after encoder termination
