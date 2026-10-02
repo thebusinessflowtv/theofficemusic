@@ -1,0 +1,468 @@
+name: Peter Lofi — Generate 3h Gaming Audio V2 Resumable
+
+on:
+  push:
+    paths:
+      - '.github/workflows/generate-gaming-3h-audio-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: peter-lofi-gaming-3h-audio
+  cancel-in-progress: false
+
+env:
+  SECRET_DATASET_SLUG: the-office-music-secrets
+  RESULT_PATH: control/series-results/11-gaming-3h.json
+  CHECKPOINT_TAG: peter-lofi-gaming-3h-checkpoint-v2
+  TOTAL_SHARDS: 6
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      GH_TOKEN: ${{ github.token }}
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip kaggle
+          test -n "$KAGGLE_USERNAME"
+          test -n "$KAGGLE_API_TOKEN"
+          test -n "$HF_TOKEN"
+
+      - name: Prepare private Hugging Face credential
+        run: |
+          set -euo pipefail
+          SECRET_DIR="$(mktemp -d)"
+          trap 'rm -rf "$SECRET_DIR"' EXIT
+          printf '%s' "$HF_TOKEN" > "$SECRET_DIR/hf_token.txt"
+          chmod 600 "$SECRET_DIR/hf_token.txt"
+          python - "$SECRET_DIR" <<'PY'
+          import json, os, pathlib, sys
+          p=pathlib.Path(sys.argv[1])
+          (p/'dataset-metadata.json').write_text(json.dumps({
+            'title':'The Office Music Secrets',
+            'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets",
+            'licenses':[{'name':'other'}],
+            'description':'Private CI credential input for Peter Lofi generation.'
+          }, indent=2))
+          PY
+          DATASET="$KAGGLE_USERNAME/$SECRET_DATASET_SLUG"
+          if kaggle datasets status "$DATASET" >/dev/null 2>&1; then
+            kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token for gaming 3h resumable generation" -q
+          else
+            kaggle datasets create -p "$SECRET_DIR" --private -q
+          fi
+
+      - name: Generate or resume Gaming 3h audio
+        run: |
+          set -euo pipefail
+
+          git fetch origin main
+          if git show "origin/main:$RESULT_PATH" > /tmp/existing-result.json 2>/dev/null; then
+            if python - <<'PY'
+          import json
+          p='/tmp/existing-result.json'
+          try:
+              d=json.load(open(p,encoding='utf-8'))
+          except Exception:
+              raise SystemExit(1)
+          raise SystemExit(0 if d.get('status')=='completed' and d.get('master_audio_url') else 1)
+          PY
+            then
+              echo "Gaming 3h is already completed on origin/main. Nothing to regenerate."
+              cat /tmp/existing-result.json
+              exit 0
+            fi
+          fi
+
+          mkdir -p checkpoint build/tracks /tmp/checkpoint-download
+
+          if ! gh release view "$CHECKPOINT_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$CHECKPOINT_TAG"               --repo "$GITHUB_REPOSITORY"               --target main               --prerelease               --title "Peter Lofi Gaming 3h — Persistent Checkpoint"               --notes "Resumable generation checkpoint. Each asset is one validated 30-minute shard. Do not delete while generation is incomplete."
+          fi
+
+          asset_exists() {
+            local asset="$1"
+            gh release view "$CHECKPOINT_TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' | grep -Fxq "$asset"
+          }
+
+          valid_shard() {
+            local shard="$1"
+            local dir="checkpoint/shard-$shard"
+            [ -d "$dir" ] || return 1
+            local count
+            count="$(find "$dir" -maxdepth 1 -type f -name '*.flac' | wc -l | tr -d ' ')"
+            [ "$count" -eq 6 ] || return 1
+            while IFS= read -r f; do
+              local dur
+              dur="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$f" 2>/dev/null || true)"
+              python - "$dur" <<'PY' || return 1
+          import sys
+          try: d=float(sys.argv[1])
+          except Exception: raise SystemExit(1)
+          raise SystemExit(0 if 299.0 <= d <= 301.0 else 1)
+          PY
+            done < <(find "$dir" -maxdepth 1 -type f -name '*.flac' | sort)
+            return 0
+          }
+
+          update_progress() {
+            local done_count=0
+            for n in $(seq 1 "$TOTAL_SHARDS"); do
+              if valid_shard "$n"; then done_count=$((done_count+1)); fi
+            done
+            local minutes=$((done_count*30))
+            local pct=$((done_count*100/TOTAL_SHARDS))
+            echo "GAMING PROGRESS: $done_count/$TOTAL_SHARDS shards | $minutes/180 min | $pct%"
+            gh release edit "$CHECKPOINT_TAG"               --repo "$GITHUB_REPOSITORY"               --notes "Persistent checkpoint for Gaming 3h. Completed: $done_count/$TOTAL_SHARDS shards ($minutes/180 minutes, $pct%). A failed run resumes from these assets." >/dev/null
+          }
+
+          store_shard() {
+            local shard="$1"
+            shift
+            if [ "$#" -ne 6 ]; then
+              echo "store_shard expected 6 WAV files for shard $shard, got $#"
+              return 1
+            fi
+            rm -rf "checkpoint/shard-$shard"
+            mkdir -p "checkpoint/shard-$shard"
+            local idx=1
+            for src in "$@"; do
+              local base
+              base="$(basename "$src" .wav | tr -cs 'A-Za-z0-9._-' '-')"
+              local out
+              out="checkpoint/shard-$shard/$(printf '%02d' "$idx")-$base.flac"
+              ffmpeg -hide_banner -loglevel error -y -i "$src" -c:a flac -compression_level 5 "$out"
+              idx=$((idx+1))
+            done
+            valid_shard "$shard"
+            local asset="gaming-shard-$shard.tar.gz"
+            tar -C checkpoint -czf "/tmp/$asset" "shard-$shard"
+            gh release upload "$CHECKPOINT_TAG" "/tmp/$asset"               --repo "$GITHUB_REPOSITORY" --clobber
+            echo "Checkpoint persisted: shard $shard/6 (30 minutes)."
+            update_progress
+          }
+
+          echo "Restoring persistent checkpoints..."
+          for SHARD in $(seq 1 "$TOTAL_SHARDS"); do
+            ASSET="gaming-shard-$SHARD.tar.gz"
+            if asset_exists "$ASSET"; then
+              rm -rf "/tmp/checkpoint-download/$SHARD"
+              mkdir -p "/tmp/checkpoint-download/$SHARD"
+              gh release download "$CHECKPOINT_TAG"                 --repo "$GITHUB_REPOSITORY"                 --pattern "$ASSET"                 --dir "/tmp/checkpoint-download/$SHARD"
+              tar -xzf "/tmp/checkpoint-download/$SHARD/$ASSET" -C checkpoint
+              if valid_shard "$SHARD"; then
+                echo "Restored shard $SHARD/6."
+              else
+                echo "Checkpoint shard $SHARD is invalid; it will be regenerated."
+                rm -rf "checkpoint/shard-$SHARD"
+              fi
+            fi
+          done
+          update_progress
+
+          # Recover usable output from the immediately previous V1 run when possible.
+          # Each old half contained 18 x 5-minute WAVs, which maps to three V2 shards.
+          PREV_V1_RUN="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=30" | jq -r '
+            .workflow_runs[]
+            | select(.path == ".github/workflows/generate-gaming-3h-audio.yml")
+            | .id' | head -n 1)"
+          if [ -n "$PREV_V1_RUN" ] && [ "$PREV_V1_RUN" != "null" ]; then
+            echo "Attempting recovery from previous V1 run $PREV_V1_RUN..."
+            for HALF in 1 2; do
+              START_SHARD=$(( (HALF-1)*3 + 1 ))
+              NEED=0
+              for logical in $(seq "$START_SHARD" $((START_SHARD+2))); do
+                if ! valid_shard "$logical"; then NEED=1; fi
+              done
+              [ "$NEED" -eq 1 ] || continue
+
+              LEGACY_REF=""
+              for NAME in                 "peter-lofi-gaming-3h-$PREV_V1_RUN-shard-$HALF"                 "peter-lofi-gaming-3h-$PREV_V1_RUN-s$HALF"; do
+                REF="$KAGGLE_USERNAME/$NAME"
+                STATUS="$(kaggle kernels status "$REF" 2>&1 || true)"
+                echo "[legacy half $HALF] $REF -> $STATUS"
+                if echo "$STATUS" | grep -Eqi 'complete|completed'; then
+                  LEGACY_REF="$REF"
+                  break
+                fi
+              done
+
+              if [ -n "$LEGACY_REF" ]; then
+                DEST="/tmp/legacy-half-$HALF"
+                rm -rf "$DEST"
+                mkdir -p "$DEST"
+                kaggle kernels output "$LEGACY_REF" -p "$DEST" || true
+                mapfile -t LEGACY_WAVS < <(find "$DEST" -type f -name '*.wav' | sort)
+                if [ "${#LEGACY_WAVS[@]}" -eq 18 ]; then
+                  for OFFSET in 0 1 2; do
+                    LOGICAL=$((START_SHARD+OFFSET))
+                    if valid_shard "$LOGICAL"; then continue; fi
+                    BASE=$((OFFSET*6))
+                    store_shard "$LOGICAL"                       "${LEGACY_WAVS[$BASE]}" "${LEGACY_WAVS[$((BASE+1))]}"                       "${LEGACY_WAVS[$((BASE+2))]}" "${LEGACY_WAVS[$((BASE+3))]}"                       "${LEGACY_WAVS[$((BASE+4))]}" "${LEGACY_WAVS[$((BASE+5))]}"
+                  done
+                fi
+              fi
+            done
+          fi
+
+          ROOT_REQUEST_ID="gaming-3h-v2-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+
+          for WAVE_START in 1 3 5; do
+            WAVE_END=$((WAVE_START+1))
+            echo "Preparing shards $WAVE_START-$WAVE_END..."
+
+            SUBMITTED=0
+            for SHARD in "$WAVE_START" "$WAVE_END"; do
+              if valid_shard "$SHARD"; then
+                echo "Shard $SHARD/6 already checkpointed; skipping generation."
+                continue
+              fi
+
+              WORK="$(mktemp -d)"
+              cp kaggle/runner_gaming_3h.py "$WORK/runner.py"
+              REQUEST_ID="$ROOT_REQUEST_ID-s$SHARD"
+              KERNEL_NAME="peter-lofi-gaming-v2-$GITHUB_RUN_ID-shard-$SHARD"
+
+              python - "$WORK/runner.py" "$REQUEST_ID" "$SHARD" <<'PY'
+          import pathlib,re,sys
+          p=pathlib.Path(sys.argv[1]); request_id=sys.argv[2]; shard=int(sys.argv[3])
+          text=p.read_text(encoding='utf-8')
+          text=re.sub(r'REQUEST_ID = "[^"]*"', f'REQUEST_ID = "{request_id}"', text, count=1)
+          text=re.sub(r'SHARD_INDEX = \d+', f'SHARD_INDEX = {shard}', text, count=1)
+          text=re.sub(r'TRACK_COUNT = \d+', 'TRACK_COUNT = 15', text, count=1)
+          text=re.sub(r'FINAL_TRACK_COUNT = \d+', 'FINAL_TRACK_COUNT = 6', text, count=1)
+          p.write_text(text, encoding='utf-8')
+          PY
+
+              python - "$WORK" "$KERNEL_NAME" "$SHARD" <<'PY'
+          import json, os, pathlib, sys
+          p=pathlib.Path(sys.argv[1]); kernel=sys.argv[2]; shard=sys.argv[3]
+          (p/'kernel-metadata.json').write_text(json.dumps({
+            'id':f"{os.environ['KAGGLE_USERNAME']}/{kernel}",
+            'title':f"Peter Lofi Gaming V2 {os.environ['GITHUB_RUN_ID']} Shard {shard}",
+            'code_file':'runner.py',
+            'language':'python',
+            'kernel_type':'script',
+            'is_private':True,
+            'enable_gpu':True,
+            'machine_shape':'NvidiaTeslaT4',
+            'enable_internet':True,
+            'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
+            'competition_sources':[],
+            'kernel_sources':[]
+          }, indent=2))
+          PY
+
+              echo "Submitting gaming shard $SHARD/6..."
+              PUSH_OUTPUT="$(kaggle kernels push -p "$WORK" --timeout 7200 --accelerator NvidiaTeslaT4 2>&1)"
+              printf '%s\n' "$PUSH_OUTPUT"
+              KERNEL_REF="$(printf '%s\n' "$PUSH_OUTPUT" | sed -nE 's#.*https://www\.kaggle\.com/code/([^/[:space:]]+)/([^[:space:]]+).*#\1/\2#p' | tail -n 1)"
+              if [ -z "$KERNEL_REF" ]; then
+                KERNEL_REF="$KAGGLE_USERNAME/$KERNEL_NAME"
+              fi
+              printf '%s' "$KERNEL_REF" > "/tmp/kernel_ref_$SHARD"
+              printf '%s' "$REQUEST_ID" > "/tmp/request_id_$SHARD"
+              rm -f "/tmp/done_$SHARD"
+              SUBMITTED=1
+            done
+
+            [ "$SUBMITTED" -eq 1 ] || continue
+            sleep 10
+
+            WAVE_COMPLETE=0
+            for i in $(seq 1 90); do
+              ALL_DONE=1
+              for SHARD in "$WAVE_START" "$WAVE_END"; do
+                if valid_shard "$SHARD" || [ -f "/tmp/done_$SHARD" ]; then
+                  continue
+                fi
+                if [ ! -f "/tmp/kernel_ref_$SHARD" ]; then
+                  continue
+                fi
+
+                ALL_DONE=0
+                KERNEL_REF="$(cat "/tmp/kernel_ref_$SHARD")"
+                STATUS="$(kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
+                echo "[gaming shard $SHARD/6] $STATUS"
+
+                if echo "$STATUS" | grep -Eqi 'Cannot access kernel|Permission .*kernels\.get.*denied|wrong kernel slug'; then
+                  echo "Shard $SHARD cannot be addressed using the slug returned by Kaggle. Failing immediately; completed checkpoints remain safe."
+                  exit 1
+                fi
+
+                if [ $((i % 2)) -eq 0 ]; then
+                  echo "----- live progress shard $SHARD/6 -----"
+                  kaggle kernels logs "$KERNEL_REF" 2>&1 | tail -n 60 || true
+                  echo "----------------------------------------"
+                fi
+
+                if echo "$STATUS" | grep -Eqi 'complete|completed'; then
+                  DEST="/tmp/generated-shard-$SHARD"
+                  rm -rf "$DEST"
+                  mkdir -p "$DEST"
+                  kaggle kernels output "$KERNEL_REF" -p "$DEST"
+                  mapfile -t WAVS < <(find "$DEST" -type f -name '*.wav' | sort)
+                  if [ "${#WAVS[@]}" -ne 6 ]; then
+                    echo "Expected 6 final WAVs in shard $SHARD; got ${#WAVS[@]}."
+                    exit 1
+                  fi
+                  MARKER="$(find "$DEST" -type f -name request_id.txt -print -quit)"
+                  EXPECTED_REQUEST="$(cat "/tmp/request_id_$SHARD")"
+                  test -n "$MARKER"
+                  test "$(tr -d '\r\n ' < "$MARKER")" = "$EXPECTED_REQUEST"
+                  store_shard "$SHARD" "${WAVS[@]}"
+                  touch "/tmp/done_$SHARD"
+                elif echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then
+                  echo "Gaming shard $SHARD/6 failed. Checkpointed shards remain safe."
+                  kaggle kernels logs "$KERNEL_REF" 2>&1 | tail -n 250 || true
+                  exit 1
+                fi
+              done
+
+              if [ "$ALL_DONE" -eq 1 ]; then
+                WAVE_COMPLETE=1
+                break
+              fi
+              sleep 60
+            done
+
+            if [ "$WAVE_COMPLETE" -ne 1 ]; then
+              echo "Generation wave $WAVE_START-$WAVE_END timed out. Existing checkpoints remain safe."
+              exit 1
+            fi
+          done
+
+          update_progress
+
+          for SHARD in $(seq 1 "$TOTAL_SHARDS"); do
+            valid_shard "$SHARD" || { echo "Missing or invalid final checkpoint shard $SHARD"; exit 1; }
+          done
+
+          rm -rf build
+          mkdir -p build/tracks
+          python - <<'PY'
+          import pathlib,re,subprocess
+          files=[]
+          for shard in range(1,7):
+              part=sorted((pathlib.Path('checkpoint')/f'shard-{shard}').glob('*.flac'))
+              if len(part)!=6:
+                  raise SystemExit(f'Shard {shard}: expected 6 FLACs, got {len(part)}')
+              files.extend(part)
+          if len(files)!=36:
+              raise SystemExit(f'Expected 36 checkpoint tracks, got {len(files)}')
+          with open('build/concat.txt','w',encoding='utf-8') as f:
+              for p in files:
+                  f.write("file '"+str(p.resolve()).replace("'","'\\''")+"'\n")
+          for i,p in enumerate(files,1):
+              stem=re.sub(r'[^a-zA-Z0-9._-]+','-',p.stem).strip('-').lower()
+              out=pathlib.Path('build/tracks')/f'{i:02d}-{stem}.mp3'
+              subprocess.run([
+                  'ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(p),
+                  '-t','300','-vn','-c:a','libmp3lame','-b:a','320k','-ar','48000','-ac','2',str(out)
+              ],check=True)
+          PY
+
+          ffmpeg -hide_banner -loglevel warning -stats -y             -f concat -safe 0 -i build/concat.txt             -t 10800 -vn -c:a libmp3lame -b:a 320k -ar 48000 -ac 2             build/peter-lofi-gaming-3h.mp3
+
+          test -s build/peter-lofi-gaming-3h.mp3
+          DURATION="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 build/peter-lofi-gaming-3h.mp3)"
+          python - "$DURATION" <<'PY'
+          import sys
+          d=float(sys.argv[1])
+          if not 10798 <= d <= 10802:
+              raise SystemExit(f'Unexpected master duration: {d}')
+          print(f'Master duration: {d:.3f}s')
+          PY
+          test "$(find build/tracks -type f -name '*.mp3' | wc -l | tr -d ' ')" -eq 36
+
+          TAG="peter-lofi-gaming-3h-v2-$GITHUB_RUN_ID"
+          gh release create "$TAG"             build/peter-lofi-gaming-3h.mp3 build/tracks/*.mp3             --repo "$GITHUB_REPOSITORY"             --target main             --title "Peter Lofi — Gaming Focus · 3 Hour Audio"             --notes "Resumable V2 output: 36 original 5-minute tracks, 3-hour master, audio only."
+
+          RELEASE_URL="https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"
+          MASTER_URL="https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/peter-lofi-gaming-3h.mp3"
+
+          git fetch origin main
+          git rebase origin/main
+
+          python - "$TAG" "$RELEASE_URL" "$MASTER_URL" <<'PY'
+          import datetime as dt, hashlib, json, os, pathlib, subprocess, sys
+          tag,release_url,master_url=sys.argv[1:4]
+          tracks=[]
+          for pos,p in enumerate(sorted(pathlib.Path('build/tracks').glob('*.mp3')),1):
+              duration=float(subprocess.check_output([
+                  'ffprobe','-v','error','-show_entries','format=duration',
+                  '-of','default=nw=1:nk=1',str(p)
+              ],text=True).strip())
+              tracks.append({
+                  'title':p.stem,
+                  'filename':p.name,
+                  'duration_seconds':round(duration,3),
+                  'position':pos,
+                  'start_seconds':(pos-1)*300,
+                  'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),
+                  'download_url':f'https://github.com/{os.environ["GITHUB_REPOSITORY"]}/releases/download/{tag}/{p.name}'
+              })
+          data={
+              'status':'completed',
+              'progress':100,
+              'phase':'Concluída e disponível para download',
+              'index':11,
+              'key':'gaming-3h',
+              'name':'Gaming Focus',
+              'title':'3 Hours Gaming Lofi 🎮 Beats to Play, Focus & Chill | Peter Lofi',
+              'playlist':'Gaming Focus 🎮 | Peter Lofi',
+              'description':'Three hours of original instrumental Peter Lofi music for gaming, focus and long play sessions.',
+              'duration_minutes':180,
+              'generation_mode':'stable-audio-3-small-music-resumable-v2',
+              'checkpoint_tag':os.environ['CHECKPOINT_TAG'],
+              'release_tag':tag,
+              'release_url':release_url,
+              'master_audio_url':master_url,
+              'master_filename':'peter-lofi-gaming-3h.mp3',
+              'tracks':tracks,
+              'github_run_id':int(os.environ['GITHUB_RUN_ID']),
+              'github_run_url':f'https://github.com/{os.environ["GITHUB_REPOSITORY"]}/actions/runs/{os.environ["GITHUB_RUN_ID"]}',
+              'completed_at':dt.datetime.now(dt.timezone.utc).isoformat()
+          }
+          path=pathlib.Path(os.environ['RESULT_PATH'])
+          path.parent.mkdir(parents=True,exist_ok=True)
+          path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$RESULT_PATH"
+          git commit -m "mediaforge: register resumable 3h gaming audio"
+          for i in $(seq 1 10); do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              break
+            fi
+            git rebase --abort || true
+            if [ "$i" -eq 10 ]; then
+              echo "Could not push final Gaming result metadata."
+              exit 1
+            fi
+            sleep "$i"
+          done
+
+          gh release edit "$CHECKPOINT_TAG"             --repo "$GITHUB_REPOSITORY"             --notes "Gaming 3h completed successfully. Persistent shards: 6/6 (180/180 minutes). Final release: $RELEASE_URL" >/dev/null
+
+          echo "Gaming 3h completed: $MASTER_URL"
