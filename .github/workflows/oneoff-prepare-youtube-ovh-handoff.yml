@@ -1,0 +1,74 @@
+name: One-off — Prepare YouTube OVH Handoff
+
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-prepare-youtube-ovh-handoff.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install YouTube client
+        run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Export non-secret backup ingest addresses
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube'],
+          )
+          creds.refresh(Request())
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+
+          stations={
+            'deep-house':'8cf99db8-3e53-4b74-b9d2-51fb67b54ff8',
+            'rainy':'72fcb955-bbb3-41d1-b8d0-fd90427c57a5',
+          }
+          out={'generated_at':__import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),'stations':{}}
+          for name,session_id in stations.items():
+              res=json.load(open(f'control/live-results/{session_id}.json',encoding='utf-8'))
+              sid=res['youtube_stream_id']
+              item=yt.liveStreams().list(part='cdn,status',id=sid).execute()['items'][0]
+              info=(item.get('cdn') or {}).get('ingestionInfo') or {}
+              out['stations'][name]={
+                'session_id':session_id,
+                'youtube_broadcast_id':res.get('youtube_broadcast_id'),
+                'youtube_stream_id':sid,
+                'youtube_url':res.get('youtube_url'),
+                'stream_status':((item.get('status') or {}).get('streamStatus')),
+                'rtmp_backup_ingestion_address':info.get('backupIngestionAddress'),
+                'rtmps_backup_ingestion_address':info.get('rtmpsBackupIngestionAddress'),
+              }
+          pathlib.Path('control/youtube-ovh-ingest.json').write_text(json.dumps(out,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          PY
+
+      - name: Commit handoff metadata
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/youtube-ovh-ingest.json
+          git commit -m "youtube: prepare OVH backup ingest handoff" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
