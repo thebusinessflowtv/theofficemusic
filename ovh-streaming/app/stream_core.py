@@ -39,6 +39,7 @@ class StreamCore:
         self.encoder = None
         self.feeder = None
         self.fd = None
+        self.ffmpeg_log = None
         self.running = True
         self.restarts = 0
 
@@ -103,6 +104,12 @@ class StreamCore:
                 pass
         self.encoder = self.feeder = None
         self.fd = None
+        if self.ffmpeg_log is not None:
+            try:
+                self.ffmpeg_log.close()
+            except Exception:
+                pass
+            self.ffmpeg_log = None
 
     def start(self, loop):
         self.cleanup()
@@ -138,7 +145,9 @@ class StreamCore:
             "-c:a", "aac", "-b:a", f"{self.abitrate}k", "-ar", "48000", "-ac", "2",
             "-flvflags", "no_duration_filesize", "-f", "flv", self.target()
         ]
-        self.encoder = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        ffmpeg_log_path = self.state / "ffmpeg.log"
+        self.ffmpeg_log = open(ffmpeg_log_path, "ab", buffering=0)
+        self.encoder = subprocess.Popen(cmd, stdout=self.ffmpeg_log, stderr=self.ffmpeg_log)
         atomic_json(self.health_path, {
             "platform": self.platform,
             "status": "starting",
