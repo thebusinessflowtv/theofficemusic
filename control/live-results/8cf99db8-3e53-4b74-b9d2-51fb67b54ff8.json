@@ -16,5 +16,7 @@
   "privacy_status": "public",
   "youtube_category_id": "10",
   "started_at": "2026-10-02T20:36:38.197384+00:00",
-  "session_started_at": "2026-10-01T20:09:56.620909+00:00"
+  "session_started_at": "2026-10-01T20:09:56.620909+00:00",
+  "rtmp_handoff_token": "gAAAAABqwBXfkE_lAP3fb8zniUaX8WaBbbEqZqTt3r3_XwVgCx0VWIhmBoD_zkTYV4rVADZmRhc5wHR0J3Wfa5Ytat4N8uu9MyJyMpebYlHxFQDyE0Hor4zRAbEfjc0JIcUgSZ3tHnLbOz0BUFhzU49faP3ibHi0_Q==",
+  "rtmp_resume_mode": "encrypted_handoff_token_ready"
 }
