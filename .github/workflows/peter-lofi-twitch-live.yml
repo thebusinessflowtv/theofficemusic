@@ -44,7 +44,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GH_STREAM_CONTROL_TOKEN || github.token }}
       TWITCH_STREAM_KEY: ${{ secrets.TWITCH_STREAM_KEY }}
-      TWITCH_INGEST_URL: rtmp://live.twitch.tv/app
+      TWITCH_INGEST_URL: rtmps://live.twitch.tv:443/app
       SESSION_ID: ${{ inputs.session_id }}
       TRACK_URLS_B64: ${{ inputs.track_urls_b64 }}
       DURATION_MINUTES: ${{ inputs.duration_minutes }}
