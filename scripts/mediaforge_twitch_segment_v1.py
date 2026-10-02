@@ -258,15 +258,26 @@ def main():
     loop=prepare_loop()
     if SEGMENT_INDEX>1:
         mark_ready(); wait_takeover()
-    start_encoder(loop)
-    mark("starting",False)
-
-    # Twitch accepts the stream key at ingest. A bad/unauthorized key normally causes
-    # the RTMP publisher to terminate; surviving this window verifies transport/auth
-    # without requiring Twitch API OAuth.
-    for n in range(1,7):
-        time.sleep(5); assert_alive()
-        print(f"Twitch ingest verification {n}/6: encoder healthy.",flush=True)
+    # Initial RTMPS handshakes can fail transiently (for example TLS EOF).
+    # Do not kill a 24/7 station because the first socket attempt failed.
+    startup_error = None
+    for attempt in range(1, 9):
+        start_encoder(loop)
+        mark("starting",False)
+        try:
+            for n in range(1,7):
+                time.sleep(5); assert_alive()
+                print(f"Twitch ingest verification {n}/6: encoder healthy (attempt {attempt}/8).",flush=True)
+            startup_error = None
+            break
+        except Exception as exc:
+            startup_error = exc
+            print(f"Twitch startup handshake attempt {attempt}/8 failed: {exc}", flush=True)
+            stop_processes()
+            if attempt < 8:
+                time.sleep(min(30, attempt * 5))
+    if startup_error is not None:
+        raise startup_error
     mark("live",True)
 
     seconds=300*60 if DURATION_MINUTES==0 else min(300,DURATION_MINUTES)*60
