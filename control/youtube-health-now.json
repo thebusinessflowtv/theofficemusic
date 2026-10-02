@@ -1,25 +1,45 @@
 {
-  "checked_at": "2026-10-02T21:41:02.323530+00:00",
+  "checked_at": "2026-10-02T21:42:11.701274+00:00",
   "stations": {
     "deep-house": {
       "broadcast_id": "WYJuqbEQYZQ",
       "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790973399832628",
       "stream_status": "active",
-      "health_status": "good",
-      "configuration_issues": [],
+      "health_status": "ok",
+      "configuration_issues": [
+        {
+          "type": "framerateMismatch",
+          "severity": "warning",
+          "reason": "Check secondary stream",
+          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
+        },
+        {
+          "type": "framerateMismatch",
+          "severity": "warning",
+          "reason": "Check secondary stream",
+          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
+        },
+        {
+          "type": "framerateMismatch",
+          "severity": "warning",
+          "reason": "Check secondary stream",
+          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
+        },
+        {
+          "type": "framerateMismatch",
+          "severity": "warning",
+          "reason": "Check secondary stream",
+          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
+        }
+      ],
       "broadcast_lifecycle": "live",
       "privacy_status": "public",
       "cdn": {
         "ingestionType": "rtmp",
-        "ingestionInfo": {
-          "ingestionAddress": "rtmp://a.rtmp.youtube.com/live2",
-          "backupIngestionAddress": "rtmp://b.rtmp.youtube.com/live2?backup=1",
-          "rtmpsIngestionAddress": "rtmps://a.rtmps.youtube.com/live2",
-          "rtmpsBackupIngestionAddress": "rtmps://b.rtmps.youtube.com/live2?backup=1"
-        },
         "resolution": "1080p",
         "frameRate": "60fps"
-      }
+      },
+      "backup_ingest_configured": true
     },
     "rainy": {
       "broadcast_id": "C9Et10tejC8",
@@ -32,21 +52,28 @@
           "severity": "error",
           "reason": "Video output low",
           "description": "YouTube is not receiving enough video to maintain smooth streaming. As such, viewers will experience buffering."
+        },
+        {
+          "type": "framerateMismatch",
+          "severity": "warning",
+          "reason": "Check secondary stream",
+          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
+        },
+        {
+          "type": "typeUnspecified",
+          "severity": "warning",
+          "reason": "Bad secondary stream",
+          "description": "Please configure both primary and backup streams correctly. The comparison of the streams failed because one of the streams has an invalid configuration."
         }
       ],
       "broadcast_lifecycle": "live",
       "privacy_status": "public",
       "cdn": {
         "ingestionType": "rtmp",
-        "ingestionInfo": {
-          "ingestionAddress": "rtmp://a.rtmp.youtube.com/live2",
-          "backupIngestionAddress": "rtmp://b.rtmp.youtube.com/live2?backup=1",
-          "rtmpsIngestionAddress": "rtmps://a.rtmps.youtube.com/live2",
-          "rtmpsBackupIngestionAddress": "rtmps://b.rtmps.youtube.com/live2?backup=1"
-        },
         "resolution": "1080p",
         "frameRate": "60fps"
-      }
+      },
+      "backup_ingest_configured": true
     }
   }
 }
