@@ -15,6 +15,7 @@ jobs:
     timeout-minutes: 345
     env:
       GH_TOKEN: ${{ secrets.GH_STREAM_CONTROL_TOKEN || github.token }}
+      GH_ACTIONS_TOKEN: ${{ github.token }}
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
@@ -24,6 +25,12 @@ jobs:
       CORRECT_LOOP_URL: https://mediaforge-api.guilhermeodsgn.workers.dev/media/998ca654-bb42-4c35-99c6-04ac2ebad84c/b6bf0c5819a04630b36f61314ed6de7566e4b48b72df41c59093a5bd7c0f9ab0
 
     steps:
+      - name: Cancel stuck previous Rainy recovery
+        env:
+          GH_TOKEN: ${{ env.GH_ACTIONS_TOKEN }}
+        run: |
+          gh api --method POST repos/${GITHUB_REPOSITORY}/actions/runs/37061622845/cancel || true
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -36,7 +43,16 @@ jobs:
             sudo apt-get update -y
             sudo apt-get install -y ffmpeg file
           fi
-          python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2 cryptography
+          OK=0
+          for N in 1 2 3; do
+            if timeout 180 python -m pip install --quiet --disable-pip-version-check google-api-python-client google-auth google-auth-httplib2 cryptography; then
+              OK=1
+              break
+            fi
+            echo "pip install attempt $N failed/timed out; retrying..."
+            sleep $((N*5))
+          done
+          [ "$OK" -eq 1 ] || { echo "Could not prepare Python dependencies"; exit 1; }
 
       - name: Restore exact Rainy configuration for a new broadcast
         run: |
