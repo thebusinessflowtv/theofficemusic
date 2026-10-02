@@ -2,14 +2,14 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-02T21:18:53.379860+00:00",
+  "generated_at": "2026-10-02T22:18:20.866856+00:00",
   "playlist_count": 5,
   "playlists": [
     {
       "id": "PLK7t_rzb57VA",
       "title": "Late Night Lofi 🌙 | Peter Lofi",
       "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
-      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
+      "thumbnail_url": "https://i.ytimg.com/vi/WYJuqbEQYZQ/mqdefault_live.jpg",
       "item_count": 1,
       "privacy_status": "public",
       "items": [
@@ -28,22 +28,14 @@
       "title": "Lofi Mixes 🎧 | Peter Lofi",
       "description": "Long-form Peter Lofi mixes for uninterrupted focus, study, work, reading and relaxing.",
       "thumbnail_url": "https://i.ytimg.com/vi/tsBeo7eejPI/mqdefault.jpg",
-      "item_count": 9,
+      "item_count": 8,
       "privacy_status": "public",
       "items": [
-        {
-          "playlist_item_id": "UExaRjZyemJSQjBFQS4zMDg5MkQ5MEVDMEM1NTg2",
-          "video_id": "AEvkXXl1rtg",
-          "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-          "position": 0,
-          "thumbnail_url": "https://i.ytimg.com/vi/AEvkXXl1rtg/mqdefault.jpg",
-          "privacy_status": "public"
-        },
         {
           "playlist_item_id": "UExaRjZyemJSQjBFQS5EMEEwRUY5M0RDRTU3NDJC",
           "video_id": "tsBeo7eejPI",
           "title": "3 Hours Gaming Lofi 🎮 Chill Beats for Gaming, Focus & Relax | Peter Lofi 🎧",
-          "position": 1,
+          "position": 0,
           "thumbnail_url": "https://i.ytimg.com/vi/tsBeo7eejPI/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -51,7 +43,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS41MzJCQjBCNDIyRkJDN0VD",
           "video_id": "YTT9UM1M1SY",
           "title": "1 Hour Lofi Lounge Mix 📖 Beats to Study, Focus & Work To | Peter Lofi 🎧",
-          "position": 2,
+          "position": 1,
           "thumbnail_url": "https://i.ytimg.com/vi/YTT9UM1M1SY/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -59,7 +51,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS5DQUNERDQ2NkIzRUQxNTY1",
           "video_id": "OPqTdiiXPY0",
           "title": "1 Hour Lounge House Mix ☕ Stylish Office Music for Work & Focus | Peter Lofi 🎧",
-          "position": 3,
+          "position": 2,
           "thumbnail_url": "https://i.ytimg.com/vi/OPqTdiiXPY0/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -67,7 +59,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS4xMkVGQjNCMUM1N0RFNEUx",
           "video_id": "teQ-pW_20uk",
           "title": "1 Hour Gaming Lofi 🎮 Beats to Play, Focus & Chill | Peter Lofi 🎧",
-          "position": 4,
+          "position": 3,
           "thumbnail_url": "https://i.ytimg.com/vi/teQ-pW_20uk/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -75,7 +67,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS45ODRDNTg0QjA4NkFBNkQy",
           "video_id": "GIOCNRogj0g",
           "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-          "position": 5,
+          "position": 4,
           "thumbnail_url": "https://i.ytimg.com/vi/GIOCNRogj0g/mqdefault_live.jpg",
           "privacy_status": "public"
         },
@@ -83,7 +75,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS4wOTA3OTZBNzVEMTUzOTMy",
           "video_id": "n4R2DcQE3BM",
           "title": "Lofi 1 Hour for Work & Focus ☕ | Chill Beats to Study, Code & Relax | Peter Lofi 🎧",
-          "position": 6,
+          "position": 5,
           "thumbnail_url": "https://i.ytimg.com/vi/n4R2DcQE3BM/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -91,7 +83,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS5GNjNDRDREMDQxOThCMDQ2",
           "video_id": "mLolLsDRctA",
           "title": "Stylish office beats to work to Coffee | 60 min Lounge House Mix | Lofi | Music 🕷️ | Peter Lofi 🎧",
-          "position": 7,
+          "position": 6,
           "thumbnail_url": "https://i.ytimg.com/vi/mLolLsDRctA/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -99,7 +91,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS40NzZCMERDMjVEN0RFRThB",
           "video_id": "nRQG5Z00RxU",
           "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
-          "position": 8,
+          "position": 7,
           "thumbnail_url": "https://i.ytimg.com/vi/nRQG5Z00RxU/mqdefault.jpg",
           "privacy_status": "public"
         }
@@ -118,7 +110,7 @@
           "video_id": "u-Ocp29k1_0",
           "title": "1 hour lofi for work 💻 beats for focus & productivity | Peter Lofi",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CNS9gNYG&rs=AOn4CLCGklKusc1O3F0hksLBpqvJI5tmQg",
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=COTZgNYG&rs=AOn4CLAMT6GD7xB8VDWAACiaQIVeECbbEA",
           "privacy_status": "private"
         }
       ]
@@ -128,7 +120,7 @@
       "title": "Peter Lofi — All Music 🎧",
       "description": "Every public Peter Lofi release in one place — original lofi music, chill beats, focus mixes and late-night sounds for study, work and relaxing.",
       "thumbnail_url": "https://i.ytimg.com/vi/n4R2DcQE3BM/mqdefault.jpg",
-      "item_count": 11,
+      "item_count": 10,
       "privacy_status": "public",
       "items": [
         {
@@ -172,18 +164,10 @@
           "privacy_status": "public"
         },
         {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4zQzFBN0RGNzNFREFCMjBE",
-          "video_id": "AEvkXXl1rtg",
-          "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-          "position": 5,
-          "thumbnail_url": "https://i.ytimg.com/vi/AEvkXXl1rtg/mqdefault.jpg",
-          "privacy_status": "public"
-        },
-        {
           "playlist_item_id": "UExjUlRDWlNYWTIxdy45NkVENTkxRDdCQUFBMDY4",
           "video_id": "mLolLsDRctA",
           "title": "Stylish office beats to work to Coffee | 60 min Lounge House Mix | Lofi | Music 🕷️ | Peter Lofi 🎧",
-          "position": 6,
+          "position": 5,
           "thumbnail_url": "https://i.ytimg.com/vi/mLolLsDRctA/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -191,7 +175,7 @@
           "playlist_item_id": "UExjUlRDWlNYWTIxdy5DNkMwRUI2MkI4QkI4NDFG",
           "video_id": "nRQG5Z00RxU",
           "title": "1 Hour Lofi Lounge House Mix | Beats to work, focus & study to | Peter Lofi 🕷️ 🎧",
-          "position": 7,
+          "position": 6,
           "thumbnail_url": "https://i.ytimg.com/vi/nRQG5Z00RxU/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -199,7 +183,7 @@
           "playlist_item_id": "UExjUlRDWlNYWTIxdy5DRUQwODMxQzUyRTlGRkY3",
           "video_id": "tsBeo7eejPI",
           "title": "3 Hours Gaming Lofi 🎮 Chill Beats for Gaming, Focus & Relax | Peter Lofi 🎧",
-          "position": 8,
+          "position": 7,
           "thumbnail_url": "https://i.ytimg.com/vi/tsBeo7eejPI/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -207,7 +191,7 @@
           "playlist_item_id": "UExjUlRDWlNYWTIxdy41MzY4MzcwOUFFRUU3QzEx",
           "video_id": "C9Et10tejC8",
           "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-          "position": 9,
+          "position": 8,
           "thumbnail_url": "https://i.ytimg.com/vi/C9Et10tejC8/mqdefault_live.jpg",
           "privacy_status": "public"
         },
@@ -215,7 +199,7 @@
           "playlist_item_id": "UExjUlRDWlNYWTIxdy4yQjZFRkExQjFGODk3RUFD",
           "video_id": "WYJuqbEQYZQ",
           "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-          "position": 10,
+          "position": 9,
           "thumbnail_url": "https://i.ytimg.com/vi/WYJuqbEQYZQ/mqdefault_live.jpg",
           "privacy_status": "public"
         }
