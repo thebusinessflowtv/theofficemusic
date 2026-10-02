@@ -131,19 +131,25 @@ for path in sorted(SERIES_RESULTS.glob("*.json")):
     master_track_id = None
     if master_url:
         master_track_id = stable_id("series-master", request_id, master_url)
-        master_seconds = int(data.get("duration_minutes") or 60) * 60
+        master_minutes = int(data.get("duration_minutes") or 60)
+        master_seconds = master_minutes * 60
+        if master_minutes % 60 == 0:
+            hours = master_minutes // 60
+            duration_label = f"{hours} hora" if hours == 1 else f"{hours} horas"
+        else:
+            duration_label = f"{master_minutes} min"
         tracks.append({
             "id": master_track_id,
             "source": "peter_lofi_master",
             "job_id": None,
             "series_key": key,
             "collection_key": f"master:{key}",
-            "collection_name": f"{series_name} · Master 1 hora",
-            "title": f"{series_name} — Master 1 Hour",
+            "collection_name": f"{series_name} · Master {duration_label}",
+            "title": f"{series_name} — Master {duration_label}",
             "filename": "peter-lofi-master.m4a",
             "duration_seconds": master_seconds,
             "position": 1,
-            "style": f"Peter Lofi · {series_name} · 1 Hour Master",
+            "style": f"Peter Lofi · {series_name} · {duration_label} Master",
             "url": master_url,
             "created_at": data.get("completed_at"),
             "metadata": {
@@ -162,7 +168,7 @@ for path in sorted(SERIES_RESULTS.glob("*.json")):
             "job_id": None,
             "series_key": key,
             "kind": "master_audio",
-            "name": f"{series_name} · Master pronto de 1 hora",
+            "name": f"{series_name} · Master pronto de {duration_label}",
             "duration_seconds": master_seconds,
             "track_ids": [master_track_id],
             "master_audio_url": master_url,
