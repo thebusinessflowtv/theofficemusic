@@ -37,6 +37,7 @@ class StreamCore:
         self.vbitrate = int(os.environ.get("VIDEO_BITRATE_KBPS", "8000" if platform == "kick" else "4500"))
         self.bufsize = int(os.environ.get("VIDEO_BUFSIZE_KBPS", str(self.vbitrate * 2)))
         self.abitrate = int(os.environ.get("AUDIO_BITRATE_KBPS", "160"))
+        self.vprofile = os.environ.get("VIDEO_PROFILE", "high").strip() or "high"
         self.encoder = None
         self.feeder = None
         self.fd = None
@@ -150,7 +151,7 @@ class StreamCore:
                    f"pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps={self.fps},format=yuv420p",
             "-r", str(self.fps), "-s:v", "1920x1080", "-pix_fmt", "yuv420p",
             "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency",
-            "-profile:v", "high", "-b:v", f"{self.vbitrate}k",
+            "-profile:v", self.vprofile, "-b:v", f"{self.vbitrate}k",
             "-minrate", f"{self.vbitrate}k", "-maxrate", f"{self.vbitrate}k",
             "-bufsize", f"{self.bufsize}k", "-g", str(gop), "-keyint_min", str(gop),
             "-sc_threshold", "0", "-x264-params", "nal-hrd=cbr:force-cfr=1",
