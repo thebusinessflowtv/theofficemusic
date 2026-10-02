@@ -1,6 +1,10 @@
 name: Peter Lofi — Unified Live Handoff Supervisor
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/peter-lofi-unified-handoff-supervisor.yml'
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
