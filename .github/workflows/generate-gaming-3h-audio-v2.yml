@@ -437,8 +437,10 @@ jobs:
               })
           data={
               'status':'completed',
+              'copyright_status':'pending_private_youtube_check',
+              'distribution_blocked':True,
               'progress':100,
-              'phase':'Concluída e disponível para download',
+              'phase':'Gerada; distribuição bloqueada até verificação de direitos em upload privado',
               'index':11,
               'key':'gaming-3h',
               'name':'Gaming Focus',
