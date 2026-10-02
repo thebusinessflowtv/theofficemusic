@@ -78,7 +78,7 @@ jobs:
             WORK="$(mktemp -d)"
             cp kaggle/runner_gaming_3h.py "$WORK/runner.py"
             REQUEST_ID="${ROOT_REQUEST_ID}-s${SHARD}"
-            KERNEL_NAME="peter-lofi-gaming-${GITHUB_RUN_ID}-s${SHARD}"
+            KERNEL_NAME="peter-lofi-gaming-3h-${GITHUB_RUN_ID}-shard-${SHARD}"
 
             python - "$WORK/runner.py" "$REQUEST_ID" "$SHARD" <<'PY'
           import pathlib,re,sys
@@ -94,7 +94,7 @@ jobs:
           p=pathlib.Path(sys.argv[1]); kernel=sys.argv[2]; shard=sys.argv[3]
           (p/'kernel-metadata.json').write_text(json.dumps({
             'id':f"{os.environ['KAGGLE_USERNAME']}/{kernel}",
-            'title':f"Peter Lofi Gaming 3h {os.environ['GITHUB_RUN_ID']} shard {shard}",
+            'title':f"Peter Lofi Gaming 3h {os.environ['GITHUB_RUN_ID']} Shard {shard}",
             'code_file':'runner.py',
             'language':'python',
             'kernel_type':'script',
@@ -122,6 +122,9 @@ jobs:
             kaggle kernels push -p "$WORK" --timeout 7200 --accelerator NvidiaTeslaT4
           done
 
+          # Give Kaggle a few seconds to register the newly pushed kernels before polling.
+          sleep 10
+
           DONE_1=0
           DONE_2=0
           for i in $(seq 1 150); do
@@ -132,6 +135,11 @@ jobs:
               KERNEL_NAME="$(cat /tmp/kernel_name_$SHARD)"
               STATUS="$(kaggle kernels status "$KAGGLE_USERNAME/$KERNEL_NAME" 2>&1 || true)"
               echo "[gaming shard $SHARD/2] $STATUS"
+
+              if echo "$STATUS" | grep -Eqi 'Cannot access kernel|Permission .*kernels\.get.*denied'; then
+                echo "Gaming shard $SHARD/2 is not addressable with the expected Kaggle slug; aborting immediately instead of waiting for timeout."
+                exit 1
+              fi
 
               if [ $(( i % 3 )) -eq 0 ]; then
                 echo "----- live progress shard $SHARD/2 -----"
