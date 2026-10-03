@@ -106,7 +106,7 @@ services:
       MEDIAFORGE_AGENT_TOKEN: ${MEDIAFORGE_AGENT_TOKEN:-}
       OVH_AGENT_POLL_SECONDS: "5"
       OVH_LOCAL_STATUS_SECONDS: "10"
-      OVH_REMOTE_STATUS_SECONDS: "60"
+      OVH_REMOTE_STATUS_SECONDS: "10"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
