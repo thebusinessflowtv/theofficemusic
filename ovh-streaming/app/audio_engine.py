@@ -76,6 +76,13 @@ def atomic_json(path, payload):
     tmp.replace(path)
 
 
+def read_json(path, default=None):
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return default
+
+
 class Playlist:
     def __init__(self, path):
         self.path = pathlib.Path(path)
@@ -269,7 +276,8 @@ class AudioEngine:
         self.state = pathlib.Path(state_dir) / platform
         self.now_path = self.state / "now-playing.json"
         self.command_path = self.state / "command.json"
-        self.last_command_id = None
+        existing_command = read_json(self.command_path, {}) or {}
+        self.last_command_id = str(existing_command.get("id") or "") or None
         self.history = []
         self.forced_next = None
         self.running = True
@@ -397,6 +405,14 @@ class AudioEngine:
         parsed = urllib.parse.urlparse(track["url"])
         if parsed.scheme == "file":
             local = pathlib.Path(urllib.parse.unquote(parsed.path))
+            if not local.exists():
+                marker = "/ovh-streaming/state/"
+                raw = str(local)
+                if marker in raw:
+                    suffix = raw.split(marker, 1)[1]
+                    candidate = pathlib.Path("/state") / suffix
+                    if candidate.exists():
+                        local = candidate
             if not local.exists() or local.stat().st_size < AUDIO_CACHE_MIN_BYTES:
                 raise RuntimeError(f"local DJ audio missing: {local}")
             self.cache_hits += 1
@@ -486,32 +502,67 @@ class AudioEngine:
         return self.playlist.next()
 
     def start_transition(self, current_track, action):
-        target = self.target_for_action(action)
-        upcoming = PCMDecoder(self, target)
+        attempts = min(12, max(1, len(self.playlist.tracks)))
+        last_error = None
+        for _ in range(attempts):
+            target = self.target_for_action(action)
+            try:
+                upcoming = PCMDecoder(self, target)
+                self.write_audio_health({
+                    "state": "prebuffering_transition",
+                    "track_id": current_track["id"],
+                    "next_track_id": target["id"],
+                    "reason": action,
+                })
+                return {
+                    "decoder": upcoming,
+                    "track": target,
+                    "reason": action,
+                    "started": False,
+                    "fade_index": 0,
+                }
+            except Exception as exc:
+                last_error = str(exc)
+                self.write_audio_health({
+                    "state": "skipping_unplayable_track",
+                    "track_id": current_track["id"],
+                    "bad_track_id": target["id"],
+                    "reason": action,
+                    "error": last_error[:500],
+                })
+                action = "skip"
         self.write_audio_health({
-            "state": "prebuffering_transition",
+            "state": "transition_failed_keep_current",
             "track_id": current_track["id"],
-            "next_track_id": target["id"],
             "reason": action,
+            "error": (last_error or "no playable next track")[:500],
         })
-        return {
-            "decoder": upcoming,
-            "track": target,
-            "reason": action,
-            "started": False,
-            "fade_index": 0,
-        }
+        return None
 
     def run(self):
         dst = sys.stdout.fileno()
         silence = bytes(AUDIO_FRAME_BYTES)
         fade_total = max(1, int(AUDIO_CROSSFADE_SECONDS / AUDIO_FRAME_SECONDS))
 
-        track = self.choose()
+        decoder = None
+        track = None
+        for _ in range(min(20, max(1, len(self.playlist.tracks)))):
+            candidate = self.choose()
+            try:
+                decoder = PCMDecoder(self, candidate)
+                track = candidate
+                break
+            except Exception as exc:
+                self.write_audio_health({
+                    "state": "startup_skipping_unplayable_track",
+                    "bad_track_id": candidate["id"],
+                    "error": str(exc)[:500],
+                })
+        if decoder is None or track is None:
+            raise RuntimeError("no playable audio tracks available")
         self.history.append(track)
         self.history = self.history[-50:]
         self.publish(track)
-        decoder = PCMDecoder(self, track)
         pending = None
         last_audio_at = time.monotonic()
         next_tick = time.monotonic()
