@@ -1,0 +1,62 @@
+name: Peter Lofi — Import Gaming Reference Playlist
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/import_spotify_reference_playlist.py'
+      - '.github/workflows/import-gaming-reference-playlist.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: peter-lofi-import-gaming-reference-playlist
+  cancel-in-progress: false
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Import all 215 Spotify reference tracks
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip requests
+          python scripts/import_spotify_reference_playlist.py
+          jq '{playlist:.playlist,resolved:(.tracks|length),policy:.reference_policy}' control/gaming-reference-production/references.json
+
+      - name: Commit locked reference catalog
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/gaming-reference-production/references.json
+          git commit -m "gaming-ref: import 215 Spotify references" || true
+          PUSHED=0
+          for N in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              PUSHED=1
+              break
+            fi
+            git rebase --abort >/dev/null 2>&1 || true
+            sleep $((N*2))
+          done
+          test "$PUSHED" -eq 1
+
+      - name: Start sequential production at reference 1
+        run: |
+          set -euo pipefail
+          jq -n '{ref:"main",inputs:{index:"1",attempt:"1"}}' \
+            | gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/generate-gaming-reference-track.yml/dispatches" --input -
+          echo "Gaming Reference 215 pipeline dispatched at 1/215."
