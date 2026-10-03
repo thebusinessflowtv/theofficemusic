@@ -101,13 +101,12 @@ services:
     container_name: peter-lofi-ovh-agent
     command: ["python", "/app/ovh_agent.py"]
     restart: unless-stopped
+    network_mode: host
     environment:
-      MEDIAFORGE_API_URL: ${MEDIAFORGE_API_URL:-https://mediaforge-api.guilhermeodsgn.workers.dev}
+      MEDIAFORGE_API_URL: ${MEDIAFORGE_API_URL:-http://127.0.0.1:8790}
       MEDIAFORGE_AGENT_TOKEN: ${MEDIAFORGE_AGENT_TOKEN:-}
       OVH_AGENT_POLL_SECONDS: "5"
       OVH_LOCAL_STATUS_SECONDS: "10"
       OVH_REMOTE_STATUS_SECONDS: "10"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     volumes:
       - ./state:/state
