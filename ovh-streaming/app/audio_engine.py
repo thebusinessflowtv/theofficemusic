@@ -307,8 +307,12 @@ class AudioEngine:
         self.state = pathlib.Path(state_dir) / platform
         self.now_path = self.state / "now-playing.json"
         self.command_path = self.state / "command.json"
+        self.command_dir = self.state / "audio-commands"
+        self.command_dir.mkdir(parents=True, exist_ok=True)
         existing_command = read_json(self.command_path, {}) or {}
         self.last_command_id = str(existing_command.get("id") or "") or None
+        self.seen_command_ids = set([self.last_command_id] if self.last_command_id else [])
+        self.action_queue = []
         self.history = []
         self.forced_next = None
         self.running = True
@@ -346,6 +350,7 @@ class AudioEngine:
             "cache_misses": self.cache_misses,
             "stalls": self.stalls,
             "backpressure_drops": self.backpressure_drops,
+            "queued_actions": len(self.action_queue),
             "updated_at": iso_now(),
         }
         if extra:
@@ -481,19 +486,51 @@ class AudioEngine:
                 continue
         return not view
 
-    def read_command(self):
+    def read_commands(self):
+        actions = []
+        now_ts = time.time()
+
+        # Durable queue: every UI click gets its own file. Read in creation-name
+        # order and delete after ingestion so rapid clicks are never overwritten.
+        try:
+            for path in sorted(self.command_dir.glob("*.json"))[:64]:
+                try:
+                    # Never replay stale controls after an audio feeder restart.
+                    if now_ts - path.stat().st_mtime > 120:
+                        path.unlink(missing_ok=True)
+                        continue
+                    data = read_json(path, {}) or {}
+                    cid = str(data.get("id") or "")
+                    action = str(data.get("action") or "").lower()
+                    path.unlink(missing_ok=True)
+                    if not cid or cid in self.seen_command_ids:
+                        continue
+                    self.seen_command_ids.add(cid)
+                    if action in {"skip", "previous"}:
+                        actions.append(action)
+                except Exception:
+                    continue
+        except Exception:
+            pass
+
+        # Legacy mirror for compatibility while agents roll over. IDs are
+        # de-duplicated against the durable queue.
         try:
             data = json.loads(self.command_path.read_text(encoding="utf-8"))
+            cid = str(data.get("id") or "")
+            action = str(data.get("action") or "").lower()
+            if cid and cid not in self.seen_command_ids:
+                self.seen_command_ids.add(cid)
+                self.last_command_id = cid
+                if action in {"skip", "previous"}:
+                    actions.append(action)
         except Exception:
-            return None
-        cid = str(data.get("id") or "")
-        if not cid or cid == self.last_command_id:
-            return None
-        self.last_command_id = cid
-        action = str(data.get("action") or "").lower()
-        if action not in {"skip", "previous"}:
-            return None
-        return action
+            pass
+
+        # Bound memory without affecting durable files already consumed.
+        if len(self.seen_command_ids) > 4096:
+            self.seen_command_ids = set(list(self.seen_command_ids)[-2048:])
+        return actions
 
     def choose(self):
         if self.forced_next:
@@ -532,7 +569,6 @@ class AudioEngine:
         if action == "previous":
             prev = self.previous_track()
             if prev:
-                self.playlist.last_id = prev["id"]
                 return prev
         return self.playlist.next()
 
@@ -620,9 +656,11 @@ class AudioEngine:
                     next_tick = now
                 next_tick += AUDIO_FRAME_SECONDS
 
-                action = self.read_command()
-                if action and pending is None:
-                    pending = self.start_transition(track, action)
+                for action in self.read_commands():
+                    if len(self.action_queue) < 64:
+                        self.action_queue.append(action)
+                if pending is None and self.action_queue:
+                    pending = self.start_transition(track, self.action_queue.pop(0))
 
                 current_frame = decoder.read_frame()
                 current_eof = current_frame is None
@@ -643,8 +681,6 @@ class AudioEngine:
                         if upcoming.buffered_frames() >= AUDIO_PREBUFFER_FRAMES:
                             pending["started"] = True
                             pending["fade_index"] = 0
-                            self.history.append(pending["track"])
-                            self.history = self.history[-50:]
                             self.publish(pending["track"], state="crossfading")
                         elif upcoming.eof:
                             upcoming.stop()
@@ -670,15 +706,31 @@ class AudioEngine:
                         pending["fade_index"] += 1
                         if pending["fade_index"] >= fade_total:
                             old = decoder
+                            old_track = track
+                            reason = pending["reason"]
                             decoder = upcoming
                             track = pending["track"]
                             pending = None
                             old.stop()
+
+                            if reason == "previous":
+                                if self.history and self.history[-1]["id"] == old_track["id"]:
+                                    self.history.pop()
+                                if not self.history or self.history[-1]["id"] != track["id"]:
+                                    self.history.append(track)
+                            else:
+                                if not self.history or self.history[-1]["id"] != track["id"]:
+                                    self.history.append(track)
+                            self.history = self.history[-50:]
+                            self.playlist.last_id = track["id"]
+
                             self.publish(track, state="playing")
                             self.write_audio_health({
                                 "state": "playing",
                                 "track_id": track["id"],
                                 "transition": "crossfade",
+                                "transition_reason": reason,
+                                "queued_actions": len(self.action_queue),
                                 "crossfade_seconds": AUDIO_CROSSFADE_SECONDS,
                                 "prebuffer_seconds": AUDIO_PREBUFFER_SECONDS,
                                 "clock_frame_ms": int(AUDIO_FRAME_SECONDS * 1000),
