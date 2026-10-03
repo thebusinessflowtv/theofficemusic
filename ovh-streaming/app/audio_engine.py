@@ -321,7 +321,11 @@ class AudioEngine:
 
     def decode(self, track):
         source, cached = self.source_for(track)
-        cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin"]
+        # Pace decode at wall-clock speed. Without -re, local/cached MP3s are
+        # decoded much faster than the persistent encoder can consume PCM,
+        # filling the FIFO and forcing write_pcm() to drop chunks. Those drops
+        # are heard as short stutters on every platform.
+        cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", "-re"]
         if not cached:
             cmd += [
                 "-rw_timeout", str(int(AUDIO_HTTP_RW_TIMEOUT_SECONDS * 1_000_000)),
