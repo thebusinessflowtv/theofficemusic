@@ -289,6 +289,8 @@ class StreamCore:
                 str(self.fps * 2),
                 "-sc_threshold",
                 "0",
+                "-x264-params",
+                "nal-hrd=cbr:force-cfr=1",
                 "-c:a",
                 "aac",
                 "-b:a",
