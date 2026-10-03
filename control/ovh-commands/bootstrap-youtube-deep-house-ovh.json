@@ -1,0 +1,10 @@
+{
+  "id": "bootstrap-youtube-deep-house-ovh",
+  "action": "start",
+  "platform": "youtube",
+  "runtime_slot": "youtube-deep-house",
+  "session_id": "8cf99db8-3e53-4b74-b9d2-51fb67b54ff8",
+  "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
+  "loop_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/a26f2e7f-4203-4788-a3ce-6d6b2052f4dc/c64b196cedad4d05977d887f1be30505023124926b4144dc935c1142fe1b4109",
+  "requested_at": "2026-10-03T01:21:45.065Z"
+}
