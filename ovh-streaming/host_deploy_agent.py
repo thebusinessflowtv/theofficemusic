@@ -97,6 +97,7 @@ def health(slot):
                 "restarts":d.get("restarts",0),
                 "hot_swap":bool(d.get("hot_swap",False)),
                 "encoder_pid":d.get("encoder_pid"),
+                "audio_pid":d.get("audio_pid"),
                 "visual_pid":d.get("visual_pid"),
                 "visual_status":d.get("visual_status"),
                 "generation":desired.get("generation"),
@@ -181,6 +182,56 @@ def deploy_all():
         })
     return results
 
+def hot_patch_streaming(target="all"):
+    targets=list(SLOTS) if target in ("", "all") else [target]
+    for slot in targets:
+        if slot not in SLOTS:
+            raise ValueError("hot patch target not allowed")
+
+    results=[]
+    for slot in targets:
+        name=CONTAINERS[slot]
+        before=health(slot)
+        before_encoder=before.get("encoder_pid")
+        before_audio=before.get("audio_pid")
+        if before.get("status")!="live" or not before_encoder:
+            raise RuntimeError(f"{slot} is not live enough for zero-drop hot patch: {before}")
+
+        # Replace child-process code inside the existing container without
+        # recreating the container or touching the persistent RTMP encoder.
+        run(["docker","cp",str(OVH/"app"/"audio_engine.py"),f"{name}:/app/audio_engine.py"],timeout=30)
+        run(["docker","cp",str(OVH/"app"/"stream_core.py"),f"{name}:/app/stream_core.py"],timeout=30)
+
+        if before_audio:
+            run(["docker","exec",name,"kill","-TERM",str(before_audio)],timeout=20)
+
+        end=time.time()+45
+        after={}
+        while time.time()<end:
+            after=health(slot)
+            if (
+                after.get("status")=="live"
+                and after.get("encoder_pid")==before_encoder
+                and after.get("audio_pid")
+                and after.get("audio_pid")!=before_audio
+            ):
+                break
+            time.sleep(2)
+        else:
+            raise RuntimeError(f"{slot} hot patch did not preserve encoder/restart audio feeder: before={before} after={after}")
+
+        results.append({
+            "service":slot,
+            "encoder_pid_preserved":after.get("encoder_pid")==before_encoder,
+            "encoder_pid":after.get("encoder_pid"),
+            "old_audio_pid":before_audio,
+            "new_audio_pid":after.get("audio_pid"),
+            "status":after.get("status"),
+            "restarts":after.get("restarts"),
+        })
+    return results
+
+
 def rollback_service(service):
     if service not in SERVICES:
         raise ValueError("service not allowed")
@@ -210,6 +261,8 @@ def execute(cmd):
         return rollback_service(target),False
 
     old,new=git_sync()
+    if action=="hot_patch_streaming":
+        return {"old_head":old,"new_head":new,"targets":hot_patch_streaming(target)},False
     st=read_state()
     if old!=new:
         st.update({"previous_head":old,"last_good_head":new,"last_deploy_at":now()})
