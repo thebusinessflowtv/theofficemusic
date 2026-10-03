@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import array
 import base64
 import json
 import os
@@ -13,6 +14,39 @@ import time
 from datetime import datetime, timezone
 
 PCM_CHUNK = 32768
+PCM_RATE = 48000
+PCM_CHANNELS = 2
+FADE_IN_SECONDS = max(0.0, float(os.environ.get("AUDIO_FADE_IN_SECONDS", "1.5")))
+FADE_OUT_SECONDS = max(0.0, float(os.environ.get("AUDIO_FADE_OUT_SECONDS", "1.5")))
+
+
+def pcm_frames(chunk):
+    return len(chunk) // (2 * PCM_CHANNELS)
+
+
+def apply_gain_ramp(chunk, start_gain, end_gain):
+    """Apply a linear gain ramp to signed 16-bit little-endian stereo PCM."""
+    if not chunk or (start_gain >= 0.9999 and end_gain >= 0.9999):
+        return chunk
+    samples = array.array("h")
+    samples.frombytes(chunk)
+    if sys.byteorder != "little":
+        samples.byteswap()
+    frames = max(1, len(samples) // PCM_CHANNELS)
+    denom = max(1, frames - 1)
+    sg = max(0.0, min(1.0, float(start_gain)))
+    eg = max(0.0, min(1.0, float(end_gain)))
+    step = (eg - sg) / denom
+    for frame in range(frames):
+        gain = sg + step * frame
+        base = frame * PCM_CHANNELS
+        for ch in range(PCM_CHANNELS):
+            idx = base + ch
+            value = int(samples[idx] * gain)
+            samples[idx] = max(-32768, min(32767, value))
+    if sys.byteorder != "little":
+        samples.byteswap()
+    return samples.tobytes()
 
 
 def iso_now():
@@ -155,25 +189,64 @@ class AudioEngine:
         src = proc.stdout.fileno()
         dst = sys.stdout.fileno()
         interrupted = None
+
+        fade_in_total = int(FADE_IN_SECONDS * PCM_RATE)
+        fade_out_total = int(FADE_OUT_SECONDS * PCM_RATE)
+        played_frames = 0
+        fading_out = False
+        fade_out_done = 0
+        fade_out_start_gain = 1.0
+
         try:
             while self.running:
-                action = self.read_command()
-                if action:
-                    interrupted = action
-                    proc.terminate()
-                    break
+                if not fading_out:
+                    action = self.read_command()
+                    if action:
+                        interrupted = action
+                        if fade_out_total <= 0:
+                            proc.terminate()
+                            break
+                        fading_out = True
+                        if fade_in_total > 0 and played_frames < fade_in_total:
+                            fade_out_start_gain = max(0.0, min(1.0, played_frames / fade_in_total))
+                        else:
+                            fade_out_start_gain = 1.0
+
                 ready, _, _ = select.select([src], [], [], 0.25)
                 if not ready:
                     if proc.poll() is not None:
                         break
                     continue
+
                 chunk = os.read(src, PCM_CHUNK)
                 if not chunk:
                     break
+
+                frames = pcm_frames(chunk)
+                if frames <= 0:
+                    continue
+
+                if fading_out:
+                    start = fade_out_start_gain * max(0.0, 1.0 - (fade_out_done / max(1, fade_out_total)))
+                    end = fade_out_start_gain * max(0.0, 1.0 - ((fade_out_done + frames) / max(1, fade_out_total)))
+                    chunk = apply_gain_ramp(chunk, start, end)
+                    fade_out_done += frames
+                elif fade_in_total > 0 and played_frames < fade_in_total:
+                    start = max(0.0, min(1.0, played_frames / fade_in_total))
+                    end = max(0.0, min(1.0, (played_frames + frames) / fade_in_total))
+                    chunk = apply_gain_ramp(chunk, start, end)
+
                 view = memoryview(chunk)
                 while view:
                     written = os.write(dst, view)
                     view = view[written:]
+
+                played_frames += frames
+
+                if fading_out and fade_out_done >= fade_out_total:
+                    proc.terminate()
+                    break
+
         except BrokenPipeError:
             self.running = False
         finally:
