@@ -45,9 +45,10 @@ jobs:
           old_bid=str(station.get("youtube_broadcast_id") or "")
           session_id=str(station["current_session_id"])
 
-          queue=json.loads((root/"control/youtube-live-queue/5f54bf8e-d700-4a9c-af69-cee17f10bedc.json").read_text(encoding="utf-8"))
+          existing_result_path=root/f"control/live-results/{session_id}.json"
+          existing_result=json.loads(existing_result_path.read_text(encoding="utf-8")) if existing_result_path.exists() else {}
           title="deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧"
-          description=str(queue.get("description") or "")
+          description=str(existing_result.get("description") or "🎧 Peter Lofi — original deep house and chill house music for work, study, focus and late-night sessions.")
 
           creds=Credentials(
               token=None,
