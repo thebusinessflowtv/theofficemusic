@@ -1,12 +1,8 @@
 name: Peter Lofi — Live Analytics
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
+  # Runtime analytics no longer polls through GitHub Actions.
   workflow_dispatch:
-  push:
-    paths:
-      - '.github/workflows/peter-lofi-live-analytics.yml'
 
 permissions:
   contents: write
