@@ -81,9 +81,27 @@ def git_sync():
 def health(slot):
     if slot in SLOTS:
         p=OVH/"state"/slot/"health.json"
+        desired_path=OVH/"state"/slot/"desired.json"
         try:
             d=json.loads(p.read_text(encoding="utf-8"))
-            return {"service":slot,"status":d.get("status","unknown"),"updated_at":d.get("updated_at"),"fps":d.get("fps"),"video_bitrate_kbps":d.get("video_bitrate_kbps"),"restarts":d.get("restarts",0)}
+            try:
+                desired=json.loads(desired_path.read_text(encoding="utf-8"))
+            except Exception:
+                desired={}
+            return {
+                "service":slot,
+                "status":d.get("status","unknown"),
+                "updated_at":d.get("updated_at"),
+                "fps":d.get("fps"),
+                "video_bitrate_kbps":d.get("video_bitrate_kbps"),
+                "restarts":d.get("restarts",0),
+                "hot_swap":bool(d.get("hot_swap",False)),
+                "encoder_pid":d.get("encoder_pid"),
+                "visual_pid":d.get("visual_pid"),
+                "visual_status":d.get("visual_status"),
+                "generation":desired.get("generation"),
+                "visual_revision":desired.get("visual_revision"),
+            }
         except Exception as e:
             return {"service":slot,"status":"unknown","error":str(e)[:160]}
     if slot=="control-api":
@@ -102,15 +120,19 @@ def health(slot):
             return {"service":slot,"status":"unknown","error":str(e)[:160]}
     return {"service":slot,"status":"unknown"}
 
-def wait_healthy(slot,timeout=180):
+def wait_healthy(slot,timeout=180,after_updated_at=None,require_hot_swap=False):
     end=time.time()+timeout
     last={}
     while time.time()<end:
         last=health(slot)
-        if last.get("status")=="live":
+        fresh=(not after_updated_at) or (last.get("updated_at") and last.get("updated_at")!=after_updated_at)
+        live=last.get("status")=="live" and fresh
+        if require_hot_swap:
+            live=live and last.get("hot_swap") is True and bool(last.get("encoder_pid")) and last.get("visual_status")=="streaming"
+        if live:
             return last
         time.sleep(5)
-    raise RuntimeError(f"{slot} did not become live: {last}")
+    raise RuntimeError(f"{slot} did not become ready: {last}")
 
 def backup_image(service):
     name=f"ovh-streaming-{service}:latest"
@@ -126,10 +148,16 @@ def backup_image(service):
 def deploy_service(service):
     if service not in SERVICES:
         raise ValueError("service not allowed")
+    before=health(service)
     backup=backup_image(service)
     run(["docker","compose","build",service],cwd=OVH,timeout=1800)
     run(["docker","compose","up","-d","--no-deps","--force-recreate",service],cwd=OVH,timeout=300)
-    h=wait_healthy(service,180)
+    h=wait_healthy(
+        service,
+        240,
+        after_updated_at=before.get("updated_at"),
+        require_hot_swap=service in SLOTS,
+    )
     return {"service":service,"health":h,"backup_image":backup}
 
 def deploy_all():
@@ -138,9 +166,19 @@ def deploy_all():
     run(["docker","compose","build"],cwd=OVH,timeout=2400)
     order=("ovh-agent","control-api","twitch","kick","youtube-deep-house","youtube-rainy")
     for service in order:
+        before=health(service)
         backup=backup_image(service)
         run(["docker","compose","up","-d","--no-deps","--force-recreate",service],cwd=OVH,timeout=300)
-        results.append({"service":service,"health":wait_healthy(service,180),"backup_image":backup})
+        results.append({
+            "service":service,
+            "health":wait_healthy(
+                service,
+                240,
+                after_updated_at=before.get("updated_at"),
+                require_hot_swap=service in SLOTS,
+            ),
+            "backup_image":backup,
+        })
     return results
 
 def rollback_service(service):
