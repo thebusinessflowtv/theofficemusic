@@ -189,7 +189,7 @@ def main():
             shutil.rmtree(p, ignore_errors=True)
 
     profile = prepare_profile()
-    run(["bash", str(BUNDLE_DIR / "scripts" / "bootstrap_kaggle.sh")], cwd=BUNDLE_DIR)
+    run(["bash", str(BUNDLE_DIR / "scripts" / "bootstrap_kaggle_ovh.sh")], cwd=BUNDLE_DIR)
     python_bin = SA3_DIR / ".venv" / "bin" / "python"
     if not python_bin.exists():
         raise RuntimeError("Stable Audio runtime not found")
