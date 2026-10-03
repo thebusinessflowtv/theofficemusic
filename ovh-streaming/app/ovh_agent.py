@@ -52,7 +52,14 @@ def apply_command(cmd):
             "source": "mediaforge"
         })
         return
-    if action=="update_playlist":
+    if action in {"update_playlist","set_playlist"}:
+        if action=="set_playlist":
+            atomic_json(st/"command.json",{
+                "id": str(cmd.get("id") or uuid.uuid4()),
+                "action": "skip",
+                "requested_at": iso_now(),
+                "source": "mediaforge-playlist-switch"
+            })
         return
     desired.update({
         "runtime":"ovh","runtime_slot":slot,
