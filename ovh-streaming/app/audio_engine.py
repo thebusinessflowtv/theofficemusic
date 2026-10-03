@@ -89,6 +89,7 @@ class Playlist:
         self.mtime = None
         self.tracks = []
         self.shuffle = True
+        self.playlist_key = ""
         self.bag = []
         self.last_id = None
         self.reload(force=True)
@@ -113,11 +114,15 @@ class Playlist:
                 "id": str(item.get("id") or item["url"]),
                 "title": str(item.get("title") or item.get("id") or "Track"),
                 "url": str(item["url"]),
+                "source": str(item.get("source") or ""),
+                "artists": str(item.get("artists") or ""),
+                "duration_seconds": float(item.get("duration_seconds") or 0),
             })
         if not tracks:
             raise RuntimeError("playlist has no playable tracks")
         self.tracks = tracks
         self.shuffle = bool(data.get("shuffle", True))
+        self.playlist_key = str(data.get("playlist_key") or "")
         self.mtime = st.st_mtime_ns
         self.bag = []
 
@@ -139,10 +144,28 @@ class Playlist:
             return track
 
         if not self.bag:
-            self.bag = [t["id"] for t in self.tracks]
-            random.shuffle(self.bag)
-            if len(self.bag) > 1 and self.bag[0] == self.last_id:
-                self.bag.append(self.bag.pop(0))
+            if self.playlist_key == "twitch-dj-mixed":
+                commercial = [t["id"] for t in self.tracks if t.get("source") == "twitch_dj_catalog_licensed_copy" or (t["id"].startswith("twitch-dj-") and not t["id"].startswith("twitch-dj-original-"))]
+                original = [t["id"] for t in self.tracks if t["id"] not in set(commercial)]
+                random.shuffle(commercial)
+                random.shuffle(original)
+
+                # Balanced Twitch DJ shuffle: random order inside each group,
+                # but no long runs of only original tracks. With 36 originals
+                # and 35 catalog tracks this produces an almost perfect 1:1 mix.
+                self.bag = []
+                pools = [original, commercial] if random.choice((True, False)) else [commercial, original]
+                while pools[0] or pools[1]:
+                    for pool in pools:
+                        if pool:
+                            self.bag.append(pool.pop())
+                if len(self.bag) > 1 and self.bag[0] == self.last_id:
+                    self.bag.append(self.bag.pop(0))
+            else:
+                self.bag = [t["id"] for t in self.tracks]
+                random.shuffle(self.bag)
+                if len(self.bag) > 1 and self.bag[0] == self.last_id:
+                    self.bag.append(self.bag.pop(0))
         track = self.by_id(self.bag.pop(0)) or self.tracks[0]
         self.last_id = track["id"]
         return track
@@ -482,6 +505,8 @@ class AudioEngine:
             "state": state,
             "track_id": track["id"],
             "title": track["title"],
+            "artists": track.get("artists") or "",
+            "source": track.get("source") or "",
             "url": track["url"],
             "started_at": iso_now(),
             "history": [x["id"] for x in self.history[-10:]],
