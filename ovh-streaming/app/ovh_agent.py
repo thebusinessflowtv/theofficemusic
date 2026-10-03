@@ -20,7 +20,8 @@ import zipfile
 from datetime import datetime, timezone
 
 STATE=pathlib.Path("/state")
-API=os.environ.get("MEDIAFORGE_API_URL","https://mediaforge-api.guilhermeodsgn.workers.dev").rstrip("/")
+API=os.environ.get("MEDIAFORGE_API_URL","http://127.0.0.1:8790").rstrip("/")
+REMOTE_CONTROL_API=os.environ.get("MEDIAFORGE_REMOTE_CONTROL_API","https://mediaforge-api.guilhermeodsgn.workers.dev").rstrip("/")
 AGENT_TOKEN=os.environ.get("MEDIAFORGE_AGENT_TOKEN","").strip()
 POLL=max(3,int(os.environ.get("OVH_AGENT_POLL_SECONDS","5")))
 LOCAL_STATUS_SECONDS=max(5,int(os.environ.get("OVH_LOCAL_STATUS_SECONDS","10")))
@@ -481,8 +482,9 @@ def report_remote(payload):
         return False
 
 
-def process_one_command(cmd,processed,transport):
+def process_one_command(cmd,processed,transport,ack_api=None):
     cid=str((cmd or {}).get("id") or "")
+    ack_base=(ack_api or API).rstrip("/")
     if not cid:
         return None
     try:
@@ -498,14 +500,14 @@ def process_one_command(cmd,processed,transport):
             "transport":transport,
         }
         try:
-            post_json(API+"/api/ovh/agent/command-ack",{"id":cid,"status":"completed"})
+            post_json(ack_base+"/api/ovh/agent/command-ack",{"id":cid,"status":"completed"})
         except Exception as ack_exc:
             print("command ack failed:",cid,ack_exc,flush=True)
         print("processed",last_cmd,flush=True)
         return last_cmd
     except Exception as exc:
         try:
-            post_json(API+"/api/ovh/agent/command-ack",{
+            post_json(ack_base+"/api/ovh/agent/command-ack",{
                 "id":cid,
                 "status":"failed",
                 "error":str(exc)[:500],
@@ -563,8 +565,22 @@ def main():
         except Exception as exc:
             print("cloud control poll failed:",exc,flush=True)
 
-        # Poll GitHub on every cycle. Dedupe via PROCESSED makes this safe when
-        # Cloudflare is healthy, while preserving controls during API outages.
+        # The public GitHub-Pages MediaForge currently posts realtime controls
+        # to the remote API. Consume that queue as a secondary inbox while the
+        # local OVH API remains authoritative for runtime/status. This does not
+        # make live playback depend on Cloudflare: if it is unavailable, the
+        # local inbox and live continue normally.
+        if REMOTE_CONTROL_API and REMOTE_CONTROL_API != API:
+            try:
+                remote=fetch_json(REMOTE_CONTROL_API+"/api/ovh/agent/commands?limit=20")
+                for cmd in remote.get("commands") or []:
+                    last=process_one_command(cmd,processed,"remote-ui-control",ack_api=REMOTE_CONTROL_API)
+                    if last:
+                        last_cmd=last
+            except Exception as exc:
+                print("remote UI control poll failed:",exc,flush=True)
+
+        # GitHub remains a fallback only for non-realtime legacy commands.
         fallback_handled=poll_github_fallback(processed)
         if fallback_handled:
             last_cmd=fallback_handled[-1]
