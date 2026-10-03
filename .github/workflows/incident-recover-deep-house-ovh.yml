@@ -99,7 +99,7 @@ jobs:
                   print("category update warning:",exc)
 
               # Preserve current thumbnail when possible.
-              thumb=str(queue.get("thumbnail_url") or "")
+              thumb=str(existing_result.get("thumbnail_url") or "")
               if thumb:
                   try:
                       req=urllib.request.Request(thumb,headers={"User-Agent":"MediaForge-Incident-Recovery"})
