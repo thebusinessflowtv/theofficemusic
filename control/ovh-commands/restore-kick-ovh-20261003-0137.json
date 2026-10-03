@@ -1,0 +1,11 @@
+{
+  "id": "restore-kick-ovh-20261003-0137",
+  "action": "start",
+  "platform": "kick",
+  "runtime": "ovh",
+  "runtime_slot": "kick",
+  "session_id": "2c2b6335-7872-4a9c-af69-cee17f10bedc",
+  "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
+  "requested_at": "2026-10-03T04:37:27.228Z",
+  "source": "kick-stability-recovery-rollback"
+}
