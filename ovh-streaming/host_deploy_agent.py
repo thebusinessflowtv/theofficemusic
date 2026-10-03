@@ -21,7 +21,7 @@ import time
 import urllib.request
 from datetime import datetime, timezone
 
-API=os.environ.get("MEDIAFORGE_API_URL","http://127.0.0.1:8790").rstrip("/")
+API=os.environ.get("MEDIAFORGE_API_URL","https://mediaforge-api.guilhermeodsgn.workers.dev").rstrip("/")
 AGENT_TOKEN=os.environ.get("MEDIAFORGE_AGENT_TOKEN","").strip()
 REPO=pathlib.Path(os.environ.get("MEDIAFORGE_REPO","/home/ubuntu/theofficemusic"))
 OVH=REPO/"ovh-streaming"
