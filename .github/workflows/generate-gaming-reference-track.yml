@@ -1,0 +1,332 @@
+name: Peter Lofi — Gaming Reference 215
+
+on:
+  workflow_dispatch:
+    inputs:
+      index:
+        description: "1-based reference index"
+        required: true
+        default: "1"
+        type: string
+      attempt:
+        description: "Quality regeneration attempt"
+        required: true
+        default: "1"
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: peter-lofi-gaming-reference-215
+  cancel-in-progress: false
+
+env:
+  SECRET_DATASET_SLUG: the-office-music-secrets
+  KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  generate-one:
+    runs-on: ubuntu-latest
+    timeout-minutes: 210
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip kaggle requests
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          test -n "$KAGGLE_USERNAME"
+          test -n "$KAGGLE_API_TOKEN"
+          test -n "$HF_TOKEN"
+
+      - name: Validate reference queue
+        env:
+          INDEX: ${{ inputs.index }}
+          ATTEMPT: ${{ inputs.attempt }}
+        run: |
+          set -euo pipefail
+          test -s control/gaming-reference-production/references.json
+          python - <<'PY'
+          import json, os, pathlib
+          idx=int(os.environ["INDEX"]); attempt=int(os.environ["ATTEMPT"])
+          refs=json.loads(pathlib.Path("control/gaming-reference-production/references.json").read_text())
+          total=len(refs.get("tracks") or [])
+          if total != 215: raise SystemExit(f"Expected 215 references, got {total}")
+          if not 1 <= idx <= total: raise SystemExit(f"Invalid reference index {idx}")
+          if not 1 <= attempt <= 8: raise SystemExit(f"Invalid attempt {attempt}")
+          done=pathlib.Path("control/gaming-reference-production")/f"{idx:03d}.json"
+          if done.exists():
+              d=json.loads(done.read_text())
+              if d.get("status")=="approved_published":
+                  print(f"Reference {idx} is already approved and published.")
+                  with open(os.environ["GITHUB_ENV"],"a") as f: f.write("ALREADY_DONE=1\n")
+          print(f"Reference {idx}/215, attempt {attempt}")
+          PY
+
+      - name: Dispatch next when already completed
+        if: env.ALREADY_DONE == '1'
+        env:
+          INDEX: ${{ inputs.index }}
+        run: |
+          set -euo pipefail
+          NEXT=$((INDEX+1))
+          if [ "$NEXT" -le 215 ]; then
+            jq -n --arg ref main --arg index "$NEXT" '{ref:$ref,inputs:{index:$index,attempt:"1"}}' \
+              | gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/generate-gaming-reference-track.yml/dispatches" --input -
+          fi
+          echo "SKIP_REST=1" >> "$GITHUB_ENV"
+
+      - name: Build abstract reference profile
+        if: env.SKIP_REST != '1'
+        env:
+          INDEX: ${{ inputs.index }}
+          ATTEMPT: ${{ inputs.attempt }}
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          python scripts/build_gaming_reference_profile.py --index "$INDEX" --attempt "$ATTEMPT" --out build/reference_profile.json
+          jq '{reference_index,attempt,reference:{title:.reference.title,artists:.reference.artists,copyright_status:.reference.copyright_status},feature_source,derived_traits}' build/reference_profile.json
+
+      - name: Prepare private Hugging Face credential
+        if: env.SKIP_REST != '1'
+        run: |
+          set -euo pipefail
+          SECRET_DIR="$(mktemp -d)"
+          trap 'rm -rf "$SECRET_DIR"' EXIT
+          printf '%s' "$HF_TOKEN" > "$SECRET_DIR/hf_token.txt"
+          chmod 600 "$SECRET_DIR/hf_token.txt"
+          python - "$SECRET_DIR" <<'PY'
+          import json, os, pathlib, sys
+          p=pathlib.Path(sys.argv[1])
+          (p/"dataset-metadata.json").write_text(json.dumps({
+              "title":"The Office Music Secrets",
+              "id":f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets",
+              "licenses":[{"name":"other"}],
+              "description":"Private CI credential input for Peter Lofi generation."
+          },indent=2))
+          PY
+          DATASET="$KAGGLE_USERNAME/$SECRET_DATASET_SLUG"
+          if kaggle datasets status "$DATASET" >/dev/null 2>&1; then
+            kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token for Gaming Reference 215" -q
+          else
+            kaggle datasets create -p "$SECRET_DIR" --private -q
+          fi
+
+      - name: Prepare one-track Medium kernel
+        if: env.SKIP_REST != '1'
+        env:
+          INDEX: ${{ inputs.index }}
+          ATTEMPT: ${{ inputs.attempt }}
+        run: |
+          set -euo pipefail
+          TMP="$(mktemp -d)"
+          cp kaggle/runner_gaming_reference.py "$TMP/runner.py"
+          REQUEST_ID="gaming-ref-${INDEX}-a${ATTEMPT}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          PROFILE_B64="$(base64 -w0 build/reference_profile.json)"
+
+          python - "$TMP/runner.py" "$REQUEST_ID" "$INDEX" "$ATTEMPT" "$PROFILE_B64" <<'PY'
+          import pathlib,re,sys
+          p=pathlib.Path(sys.argv[1]); req=sys.argv[2]; idx=int(sys.argv[3]); attempt=int(sys.argv[4]); payload=sys.argv[5]
+          t=p.read_text(encoding="utf-8")
+          t=re.sub(r'REQUEST_ID = "[^"]*"', f'REQUEST_ID = "{req}"', t, count=1)
+          t=re.sub(r'REFERENCE_INDEX = \d+', f'REFERENCE_INDEX = {idx}', t, count=1)
+          t=re.sub(r'ATTEMPT = \d+', f'ATTEMPT = {attempt}', t, count=1)
+          t=re.sub(r'REFERENCE_PAYLOAD_B64 = "[^"]*"', f'REFERENCE_PAYLOAD_B64 = "{payload}"', t, count=1)
+          p.write_text(t,encoding="utf-8")
+          PY
+
+          KERNEL_NAME="peter-lofi-gaming-ref-${GITHUB_RUN_ID}"
+          python - "$TMP" "$KERNEL_NAME" <<'PY'
+          import json,os,pathlib,sys
+          d=pathlib.Path(sys.argv[1]); name=sys.argv[2]
+          (d/"kernel-metadata.json").write_text(json.dumps({
+              "id":f"{os.environ['KAGGLE_USERNAME']}/{name}",
+              "title":f"Peter Lofi Gaming Reference {os.environ['GITHUB_RUN_ID']}",
+              "code_file":"runner.py",
+              "language":"python",
+              "kernel_type":"script",
+              "is_private":True,
+              "enable_gpu":True,
+              "machine_shape":"NvidiaL4",
+              "enable_internet":True,
+              "dataset_sources":[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],
+              "competition_sources":[],
+              "kernel_sources":[]
+          },indent=2))
+          PY
+
+          echo "KERNEL_NAME=$KERNEL_NAME" >> "$GITHUB_ENV"
+          echo "REQUEST_ID=$REQUEST_ID" >> "$GITHUB_ENV"
+          echo "KERNEL_DIR=$TMP" >> "$GITHUB_ENV"
+
+      - name: Generate one coherent 5-minute track
+        if: env.SKIP_REST != '1'
+        run: |
+          set -euo pipefail
+          PUSH_OUTPUT="$(kaggle kernels push -p "$KERNEL_DIR" --timeout 7200 --accelerator NvidiaL4 2>&1)"
+          printf '%s\n' "$PUSH_OUTPUT"
+          KERNEL_REF="$KAGGLE_USENAMM/$KERNEL_NAME"
+          echo "KERNEL_REF=$KERNEL_REF" >> "$GITHUB_ENV"
+          sleep 20
+
+          for i in $(seq 1 120); do
+            STATUS="$(kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
+            echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi 'complete|completed'; then
+              break
+            fi
+            if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then
+              kaggle kernels logs "$KERNEL_REF" 2>&1 | tail -n 250 || true
+              exit 1
+            fi
+            if [ "$i" -eq 120 ]; then
+              kaggle kernels logs "$KERNEL_REF" 2>&1 | tail -n 250 || true
+              exit 1
+            fi
+            sleep 60
+          done
+
+          rm -rf generated
+          mkdir -p generated
+          kaggle kernels output "$KERNEL_REF" -p generated
+
+          MARKER="$(find generated -type f -name request_id.txt -print -quit)"
+          test -n "$MARKER"
+          test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID"
+          WAV="$(find generated -maxdepth 1 -type f -name '*.wav' -print -quit)"
+          test -n "$WAV"
+          echo "GENERATED_WAV=$WAV" >> "$GITHUB_ENV"
+
+      - name: Quality Gate
+        id: qc
+        if: env.SKIP_REST != '1'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python scripts/quality_gate_audio.py "$GENERATED_WAV" \
+            --reference-profile build/reference_profile.json \
+            --out build/qc.json \
+            --normalized build/approved.mp3
+
+      - name: Record rejection and regenerate same reference
+        if: env.SKIP_REST != '1' && steps.qc.outcome == 'failure'
+        env:
+          INDEX: ${{ inputs.index }}
+          ATTEMPT: ${{ inputs.attempt }}
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          python - <<'PY'
+          import json,os,pathlib,datetime
+          idx=int(os.environ["INDEX"]); attempt=int(os.environ["ATTEMPT"])
+          qc=json.loads(pathlib.Path("build/qc.json").read_text()) if pathlib.Path("build/qc.json").exists() else {"approved":False,"error":"quality gate did not produce JSON"}
+          ref=json.loads(pathlib.Path("build/reference_profile.json").read_text())
+          out={
+            "status":"rejected_regenerating" if attempt < 8 else "quality_blocked",
+            "reference_index":idx,
+            "attempt":attempt,
+            "checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "reference":{"spotify_id":ref["reference"].get("spotify_id"),"title":ref["reference"].get("title"),"artists":ref["reference"].get("artists"),"copyright_status":ref["reference"].get("copyright_status")},
+            "quality_gate":qc,
+            "published_to_live":False
+          }
+          pathlib.Path("build/rejection.json").write_text(json.dumps(out,ensure_ascii=False,indent=2))
+          PY
+
+          for N in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p control/gaming-reference-production/rejections
+            cp build/rejection.json "control/gaming-reference-production/rejections/$(printf '%03d' "$INDEX")-attempt-$(printf '%02d' "$ATTEMPT").json"
+            git add control/gaming-reference-production/rejections
+            git commit -m "gaming-ref: reject $(printf '%03d' "$INDEX") attempt $ATTEMPT" || true
+            git push origin HEAD:main && break
+            sleep $((N*2))
+          done
+
+          if [ "$ATTEMPT" -lt 8 ]; then
+            NEXT_ATTEMPT=$((ATTEMPT+1))
+            jq -n --arg ref main --arg index "$INDEX" --arg attempt "$NEXT_ATTEMPT" \
+              '{ref:$ref,inputs:{index:$index,attempt:$attempt}}' \
+              | gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/generate-gaming-reference-track.yml/dispatches" --input -
+            echo "Reference $INDEX rejected; dispatched attempt $NEXT_ATTEMPT."
+          else
+            echo "Reference $INDEX failed 8 Quality Gate attempts and is quarantined. Nothing was published to the live."
+          fi
+
+      - name: Publish approved track to GitHub Release
+        if: env.SKIP_REST != '1' && steps.qc.outcome == 'success'
+        env:
+          INDEX: ${{ inputs.index }}
+        run: |
+          set -euo pipefail
+          PAD="$(printf '%03d' "$INDEX")"
+          MP3_NAME="peter-lofi-gaming-ref-${PAD}.mp3"
+          mv build/approved.mp3 "build/$MP3_NAME"
+          TAG="peter-lofi-gaming-ref-${PAD}-${GITHUB_RUN_ID}"
+          gh release create "$TAG" "build/$MP3_NAME" build/qc.json build/reference_profile.json \
+            --repo "$GITHUB_REPOSITORY" --target main \
+            --title "Peter Lofi — Gaming Reference ${PAD}" \
+            --notes "Original 5-minute Peter Lofi Gaming track. Pure text-to-audio; reference audio was not used. Passed automated Quality Gate."
+          echo "RELEASE_TAG=$TAG" >> "$GITHUB_ENV"
+          echo "MP3_NAME=$MP3_NAME" >> "$GITHUB_ENV"
+
+      - name: Add approved track to Gaming and active lives without restart
+        if: env.SKIP_REST != '1' && steps.qc.outcome == 'success'
+        env:
+          INDEX: ${{ inputs.index }}
+          ATTEMPT: ${{ inputs.attempt }}
+        run: |
+          set -euo pipefail
+          PUSHED=0
+          for N in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/publish_gaming_reference.py \
+              --index "$INDEX" \
+              --attempt "$ATTEMPT" \
+              --release-tag "$RELEASE_TAG" \
+              --mp3-name "$MP3_NAME" \
+              --reference-profile build/reference_profile.json \
+              --qc build/qc.json \
+              --generated-dir generated
+            git add \
+              ovh-streaming/stations/gaming.json \
+              control/gaming-reference-production \
+              control/live-playlists \
+              control/ovh-commands
+            git commit -m "gaming-ref: publish $(printf '%03d' "$INDEX") to Gaming" || true
+            if git push origin HEAD:main; then
+              PUSHED=1
+              break
+            fi
+            sleep $((N*2))
+          done
+          test "$PUSHED" -eq 1
+
+      - name: Dispatch next reference
+        if: env.SKIP_REST != '1' && steps.qc.outcome == 'success'
+        env:
+          INDEX: ${{ inputs.index }}
+        run: |
+          set -euo pipefail
+          NEXT=$((INDEX+1))
+          if [ "$NEXT" -le 215 ]; then
+            jq -n --arg ref main --arg index "$NEXT" '{ref:$ref,inputs:{index:$index,attempt:"1"}}' \
+              | gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/generate-gaming-reference-track.yml/dispatches" --input -
+            echo "Dispatched reference $NEXT/215."
+          else
+            echo "Gaming Reference 215 production is complete."
+          fi
