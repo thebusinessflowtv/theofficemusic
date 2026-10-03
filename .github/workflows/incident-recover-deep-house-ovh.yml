@@ -1,0 +1,246 @@
+name: Incident — Recover Deep House on OVH
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/incident-recover-deep-house-ovh.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2 requests
+
+      - name: Create replacement broadcast bound to permanent OVH stream
+        id: create
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime, json, os, pathlib, time, urllib.request
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaIoBaseUpload
+          import io
+
+          root=pathlib.Path(".")
+          cfg_path=root/"control/youtube-stations.json"
+          cfg=json.loads(cfg_path.read_text(encoding="utf-8"))
+          station=next(x for x in cfg["stations"] if x["key"]=="deep-house")
+          stream_id=str(station["youtube_stream_id"])
+          old_bid=str(station.get("youtube_broadcast_id") or "")
+          session_id=str(station["current_session_id"])
+
+          queue=json.loads((root/"control/youtube-live-queue/5f54bf8e-d700-4a9c-af69-cee17f10bedc.json").read_text(encoding="utf-8"))
+          title="deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧"
+          description=str(queue.get("description") or "")
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"],
+          )
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+
+          # Idempotency: if station was already repaired by a concurrent run, reuse it.
+          current_bid=str(station.get("youtube_broadcast_id") or "")
+          if current_bid and current_bid != old_bid:
+              bid=current_bid
+          else:
+              scheduled=(datetime.datetime.now(datetime.timezone.utc)+datetime.timedelta(seconds=30)).isoformat().replace("+00:00","Z")
+              body={
+                  "snippet":{
+                      "title":title,
+                      "description":description,
+                      "scheduledStartTime":scheduled,
+                  },
+                  "status":{
+                      "privacyStatus":"public",
+                      "selfDeclaredMadeForKids":False,
+                  },
+                  "contentDetails":{
+                      "enableAutoStart":True,
+                      "enableAutoStop":False,
+                      "enableDvr":True,
+                      "recordFromStart":True,
+                      "latencyPreference":"normal",
+                  },
+              }
+              created=yt.liveBroadcasts().insert(part="snippet,status,contentDetails",body=body).execute()
+              bid=str(created["id"])
+              yt.liveBroadcasts().bind(part="id,contentDetails",id=bid,streamId=stream_id).execute()
+
+              # Preserve Music category.
+              try:
+                  v=(yt.videos().list(part="snippet",id=bid).execute().get("items") or [None])[0]
+                  if v:
+                      sn=dict(v.get("snippet") or {})
+                      sn["categoryId"]="10"
+                      yt.videos().update(part="snippet",body={"id":bid,"snippet":sn}).execute()
+              except Exception as exc:
+                  print("category update warning:",exc)
+
+              # Preserve current thumbnail when possible.
+              thumb=str(queue.get("thumbnail_url") or "")
+              if thumb:
+                  try:
+                      req=urllib.request.Request(thumb,headers={"User-Agent":"MediaForge-Incident-Recovery"})
+                      with urllib.request.urlopen(req,timeout=30) as r:
+                          blob=r.read()
+                          ctype=r.headers.get_content_type() or "image/jpeg"
+                      media=MediaIoBaseUpload(io.BytesIO(blob),mimetype=ctype,resumable=False)
+                      yt.thumbnails().set(videoId=bid,media_body=media).execute()
+                  except Exception as exc:
+                      print("thumbnail warning:",exc)
+
+          now=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          station["youtube_broadcast_id"]=bid
+          station["status"]="starting"
+          station["updated_at"]=now
+          cfg["updated_at"]=now
+          cfg_path.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+
+          res_path=root/f"control/live-results/{session_id}.json"
+          result=json.loads(res_path.read_text(encoding="utf-8")) if res_path.exists() else {}
+          result.update({
+              "platform":"youtube",
+              "status":"starting",
+              "runtime":"ovh",
+              "runtime_slot":"youtube-deep-house",
+              "title":title,
+              "youtube_broadcast_id":bid,
+              "youtube_stream_id":stream_id,
+              "youtube_url":f"https://www.youtube.com/watch?v={bid}",
+              "privacy_status":"public",
+              "recovered_from_broadcast_id":old_bid,
+              "recovery_requested_at":now,
+              "enable_auto_start":True,
+              "enable_auto_stop":False,
+          })
+          res_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          pathlib.Path("/tmp/new_bid").write_text(bid)
+          pathlib.Path("/tmp/stream_id").write_text(stream_id)
+          print(json.dumps({"old_broadcast_id":old_bid,"new_broadcast_id":bid,"stream_id":stream_id},indent=2))
+          PY
+
+      - name: Persist new YouTube binding before reconnect
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/youtube-stations.json control/live-results/8cf99db8-3e53-4b74-b9d2-51fb67b54ff8.json
+          git commit -m "youtube: bind replacement Deep House broadcast to OVH" || true
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && break
+            git rebase --abort >/dev/null 2>&1 || true
+            sleep $((N*2))
+          done
+
+      - name: Reconnect only Deep House OVH slot
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          curl -fsS -X POST "$BASE/api/ops/20261003-live-stability/restart-deep-house" | tee /tmp/restart.json
+          echo "Only youtube-deep-house was asked to reconnect."
+
+      - name: Wait for YouTube to become live and healthy
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, time, datetime
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          bid=pathlib.Path("/tmp/new_bid").read_text().strip()
+          sid=pathlib.Path("/tmp/stream_id").read_text().strip()
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"],
+          )
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+          last={}
+          for attempt in range(1,61):
+              b=(yt.liveBroadcasts().list(part="snippet,status,contentDetails",id=bid).execute().get("items") or [None])[0]
+              s=(yt.liveStreams().list(part="status,cdn",id=sid).execute().get("items") or [None])[0]
+              bs=(b or {}).get("status") or {}
+              cd=(b or {}).get("contentDetails") or {}
+              ss=(s or {}).get("status") or {}
+              hs=ss.get("healthStatus") or {}
+              last={
+                  "broadcast_id":bid,
+                  "stream_id":sid,
+                  "lifecycle":bs.get("lifeCycleStatus"),
+                  "privacy":bs.get("privacyStatus"),
+                  "stream_status":ss.get("streamStatus"),
+                  "health_status":hs.get("status") if isinstance(hs,dict) else hs,
+                  "configuration_issues":hs.get("configurationIssues",[]) if isinstance(hs,dict) else [],
+                  "enable_auto_start":cd.get("enableAutoStart"),
+                  "enable_auto_stop":cd.get("enableAutoStop"),
+                  "checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              }
+              print("probe",attempt,json.dumps(last,ensure_ascii=False))
+              if last["lifecycle"]=="live" and last["stream_status"]=="active" and last["privacy"]=="public" and last["health_status"] in ("good","ok"):
+                  break
+              time.sleep(5)
+          else:
+              raise SystemExit("Deep House did not recover: "+json.dumps(last))
+
+          pathlib.Path("/tmp/youtube_recovered.json").write_text(json.dumps(last,ensure_ascii=False,indent=2)+"\n")
+          PY
+
+      - name: Mark station recovered
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          python - <<'PY'
+          import json,pathlib,datetime
+          proof=json.loads(pathlib.Path("/tmp/youtube_recovered.json").read_text())
+          now=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          cp=pathlib.Path("control/youtube-stations.json")
+          cfg=json.loads(cp.read_text())
+          st=next(x for x in cfg["stations"] if x["key"]=="deep-house")
+          st["status"]="live";st["updated_at"]=now;cfg["updated_at"]=now
+          cp.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+"\n")
+          sid=st["current_session_id"]
+          rp=pathlib.Path(f"control/live-results/{sid}.json")
+          r=json.loads(rp.read_text())
+          r["status"]="live";r["live_at"]=now;r["youtube_api_verification_uncertain"]=False
+          r["last_verified_lifecycle"]="live";r["health_status"]=proof["health_status"]
+          rp.write_text(json.dumps(r,ensure_ascii=False,indent=2)+"\n")
+          pathlib.Path("control/diagnostics/deep-house-recovery-20261003.json").write_text(json.dumps(proof,ensure_ascii=False,indent=2)+"\n")
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+gitHub-actions[bot]@users.noreply.github.com
+          git add control/youtube-stations.json control/live-results/8cf99db8-3e53-4b74-b9d2-51fb67b54ff8.json control/diagnostics/deep-house-recovery-20261003.json
+          git commit -m "youtube: confirm Deep House OVH recovery"
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort >/dev/null 2>&1 || true
+            sleep $((N*2))
+          done
+          exit 1
