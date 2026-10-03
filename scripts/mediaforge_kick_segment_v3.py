@@ -84,7 +84,7 @@ def mark_result_v3(status, verified=False):
         "description": core.DESCRIPTION, "session_id": core.SESSION_ID,
         "segment_index": core.SEGMENT_INDEX, "github_run_id": core.RUN_ID,
         "github_run_url": core.RUN_URL, "encoder_resolution": "1920x1080",
-        "encoder_fps": 60, "encoder_bitrate_kbps": 8000,
+        "encoder_fps": 30, "encoder_bitrate_kbps": 5000,
         "encoder_connected": status in {"starting", "live"},
         "kick_verified": verified, "updated_at": core.iso_now(),
     })
