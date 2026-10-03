@@ -1,0 +1,37 @@
+name: OVH Streaming Runtime Validation
+
+on:
+  push:
+    paths:
+      - 'ovh-streaming/**'
+      - '.github/workflows/ovh-streaming-validate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Python and shell
+        run: |
+          set -euo pipefail
+          python -m py_compile ovh-streaming/app/*.py
+          bash -n ovh-streaming/connect-mediaforge.sh
+          bash -n ovh-streaming/bootstrap.sh
+          bash -n ovh-streaming/setup-interactive.sh
+
+      - name: Validate Docker Compose
+        working-directory: ovh-streaming
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          docker compose config >/tmp/ovh-compose.yml
+          grep -q 'peter-lofi-ovh-agent' /tmp/ovh-compose.yml
+          grep -q 'youtube-deep-house' /tmp/ovh-compose.yml
+          grep -q 'youtube-rainy' /tmp/ovh-compose.yml
+          grep -q 'peter-lofi-twitch' /tmp/ovh-compose.yml
+          grep -q 'peter-lofi-kick' /tmp/ovh-compose.yml
