@@ -1,13 +1,7 @@
 name: Peter Lofi — YouTube 24x7 Watchdog
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/peter-lofi-youtube-watchdog.yml'
-      - 'control/youtube-watchdog-trigger.json'
-  schedule:
-    - cron: '*/5 * * * *'
+  # OVH owns YouTube lifecycle and health. Manual fallback only.
   workflow_dispatch:
 
 permissions:
