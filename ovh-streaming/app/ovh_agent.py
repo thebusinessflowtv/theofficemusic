@@ -128,11 +128,14 @@ def import_twitch_dj_archive(cmd):
     if slot_for(cmd)!="twitch":
         raise ValueError("DJ archive import is Twitch-only")
     archive_url=str(cmd.get("archive_url") or "").strip()
+    manifest=cmd.get("manifest") if isinstance(cmd.get("manifest"),dict) else None
     manifest_url=str(cmd.get("manifest_url") or "").strip()
-    if not archive_url or not manifest_url:
-        raise ValueError("archive_url and manifest_url are required")
-
-    manifest=fetch_json(manifest_url)
+    if not archive_url:
+        raise ValueError("archive_url is required")
+    if manifest is None:
+        if not manifest_url:
+            raise ValueError("manifest or manifest_url is required")
+        manifest=fetch_json(manifest_url)
     expected={}
     for row in manifest.get("tracks") or []:
         h=str(row.get("sha256") or "").lower().strip()
