@@ -1,10 +1,7 @@
 name: Peter Lofi — Twitch Queue Bridge
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'control/twitch-live-queue/*.json'
+  workflow_dispatch:
 
 permissions:
   contents: read
