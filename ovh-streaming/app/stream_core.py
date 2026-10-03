@@ -264,10 +264,29 @@ class StreamCore:
             "2",
             "-max_interleave_delta",
             "1000000",
-            "-flvflags",
-            "no_duration_filesize",
+            # Decouple the encoder from RTMP socket stalls. The FIFO muxer keeps
+            # consuming A/V, drops queued packets instead of blocking the whole
+            # pipeline, and reconnects the underlying FLV/RTMP publisher.
             "-f",
+            "fifo",
+            "-fifo_format",
             "flv",
+            "-queue_size",
+            "1200",
+            "-attempt_recovery",
+            "1",
+            "-recover_any_error",
+            "1",
+            "-recovery_wait_time",
+            "1",
+            "-drop_pkts_on_overflow",
+            "1",
+            "-restart_with_keyframe",
+            "1",
+            "-max_recovery_attempts",
+            "1000000",
+            "-format_opts",
+            "flvflags=no_duration_filesize",
             self.target(),
         ]
         self.ffmpeg_log = open(self.state / "ffmpeg.log", "ab", buffering=0)
@@ -276,6 +295,7 @@ class StreamCore:
 
     def write_health(self, status, desired, extra=None):
         visual_health = read_json(self.state / "visual-health.json", {}) or {}
+        audio_health = read_json(self.state / "audio-health.json", {}) or {}
         payload = {
             "platform": self.platform,
             "runtime": "ovh",
@@ -290,6 +310,10 @@ class StreamCore:
             "loop_url": desired.get("loop_url") or self.base_loop_url,
             "visual_revision": desired.get("visual_revision") or 1,
             "visual_status": visual_health.get("status") or "unknown",
+            "audio_status": audio_health.get("state") or audio_health.get("status") or "unknown",
+            "audio_stalls": int(audio_health.get("stalls") or 0),
+            "audio_cache_hits": int(audio_health.get("cache_hits") or 0),
+            "audio_cache_misses": int(audio_health.get("cache_misses") or 0),
             "hot_swap": True,
         }
         if self.encoder and self.encoder.poll() is None:
