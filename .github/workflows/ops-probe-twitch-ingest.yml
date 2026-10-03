@@ -16,6 +16,11 @@ jobs:
     steps:
       - name: Verify secret
         run: test -n "$TWITCH_STREAM_KEY"
+      - name: Install ffmpeg
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+
       - name: Probe RTMPS without going live
         id: rtmps
         continue-on-error: true
