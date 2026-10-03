@@ -1,0 +1,13 @@
+{
+  "action": "set_visual",
+  "runtime_slot": "youtube-rainy",
+  "platform": "youtube",
+  "session_id": "72fcb955-bbb3-41d1-b8d0-fd90427c57a5",
+  "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+  "loop_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/998ca654-bb42-4c35-99c6-04ac2ebad84c/b6bf0c5819a04630b36f61314ed6de7566e4b48b72df41c59093a5bd7c0f9ab0",
+  "asset_id": null,
+  "source": "mediaforge-visual-switch",
+  "id": "6ca077f4-80f6-4e70-8cbb-d6fd7763bf28",
+  "runtime": "ovh",
+  "requested_at": "2026-10-03T05:31:24.662Z"
+}
