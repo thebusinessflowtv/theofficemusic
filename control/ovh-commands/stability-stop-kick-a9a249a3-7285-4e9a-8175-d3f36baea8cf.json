@@ -1,0 +1,10 @@
+{
+  "id": "stability-stop-kick-a9a249a3-7285-4e9a-8175-d3f36baea8cf",
+  "action": "stop",
+  "platform": "kick",
+  "runtime": "ovh",
+  "runtime_slot": "kick",
+  "session_id": "2c2b6335-7872-4a9c-af69-cee17f10bedc",
+  "requested_at": "2026-10-03T04:40:51.877375+00:00",
+  "source": "kick-stability-recovery-v2"
+}
