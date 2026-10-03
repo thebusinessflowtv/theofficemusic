@@ -23,6 +23,7 @@ POLL=max(10,int(os.environ.get("MEDIAFORGE_MUSIC_POLL_SECONDS","15")))
 KAGGLE_USERNAME=os.environ.get("KAGGLE_USERNAME","").strip()
 KAGGLE_API_TOKEN=os.environ.get("KAGGLE_API_TOKEN","").strip()
 HF_TOKEN=os.environ.get("HF_TOKEN","").strip()
+STABLE_AUDIO_VENDOR=pathlib.Path(os.environ.get("MEDIAFORGE_STABLE_AUDIO_VENDOR","/opt/mediaforge-vendor/stable-audio-3"))
 SMALL_KERNEL_SLUG="the-office-music-generator-small"
 SECRET_DATASET_SLUG="the-office-music-secrets"
 
@@ -97,9 +98,12 @@ def copy_bundle(temp:pathlib.Path):
     (bundle/"scripts").mkdir(parents=True)
     (bundle/"src").mkdir(parents=True)
     shutil.copy2(REPO/"config"/"peter_lofi_series.json",bundle/"config"/"peter_lofi_series.json")
-    shutil.copy2(REPO/"scripts"/"bootstrap_kaggle.sh",bundle/"scripts"/"bootstrap_kaggle.sh")
+    shutil.copy2(REPO/"scripts"/"bootstrap_kaggle_ovh.sh",bundle/"scripts"/"bootstrap_kaggle_ovh.sh")
     shutil.copy2(REPO/"src"/"generate_tracks.py",bundle/"src"/"generate_tracks.py")
     shutil.copy2(REPO/"src"/"prompt_engine.py",bundle/"src"/"prompt_engine.py")
+    if not (STABLE_AUDIO_VENDOR/"pyproject.toml").is_file():
+        raise RuntimeError(f"Stable Audio vendor cache missing: {STABLE_AUDIO_VENDOR}")
+    shutil.copytree(STABLE_AUDIO_VENDOR,bundle/"vendor"/"stable-audio-3",dirs_exist_ok=True,ignore=shutil.ignore_patterns(".git",".venv","__pycache__"))
 
 
 def prepare_kernel(temp:pathlib.Path,job:dict):
