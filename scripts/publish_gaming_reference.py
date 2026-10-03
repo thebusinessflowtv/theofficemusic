@@ -27,7 +27,7 @@ def write(path, data):
 
 
 def manifest_title(generated_dir):
-    files = list(pathlib.Path(generated_dir).glob("*_manifest.json"))
+    files = list(pathlib.Path(generated_dir).rglob("*_manifest.json"))
     if not files:
         return None, None
     d = read(files[0], {})
