@@ -27,7 +27,7 @@ STATE_DIR=pathlib.Path("/var/lib/mediaforge-deploy-agent")
 STATE_FILE=STATE_DIR/"state.json"
 WATCHDOG_FILE=STATE_DIR/"watchdog.json"
 DOCKER_CONFIG_DIR=STATE_DIR/"docker"
-POLL=max(3,int(os.environ.get("MEDIAFORGE_DEPLOY_POLL_SECONDS","5")))\nDEPLOY_INDEX_URL=os.environ.get("MEDIAFORGE_DEPLOY_INDEX_URL","https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/control/ovh-deploy-commands/index.json")\nDEPLOY_RAW_BASE=os.environ.get("MEDIAFORGE_DEPLOY_RAW_BASE","https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/")
+POLL=max(3,int(os.environ.get("MEDIAFORGE_DEPLOY_POLL_SECONDS","5")))
 WATCHDOG_INTERVAL=max(2,int(os.environ.get("MEDIAFORGE_WATCHDOG_SECONDS","5")))
 WATCHDOG_WINDOW=max(20,int(os.environ.get("MEDIAFORGE_WATCHDOG_WINDOW_SECONDS","60")))
 WATCHDOG_THRESHOLD=max(3,int(os.environ.get("MEDIAFORGE_WATCHDOG_ERROR_THRESHOLD","5")))
@@ -468,37 +468,6 @@ def execute(cmd):
     raise ValueError("action not allowed")
 
 
-
-def read_github_processed():
-    try:
-        return set(json.loads(GITHUB_PROCESSED_FILE.read_text(encoding="utf-8")) or [])
-    except Exception:
-        return set()
-
-
-def write_github_processed(items):
-    atomic_json(GITHUB_PROCESSED_FILE,sorted(items)[-500:])
-
-
-def process_github_deploy_queue(processed):
-    """Deploy-only GitHub fallback; never part of the live A/V path."""
-    idx=fetch_json(DEPLOY_INDEX_URL)
-    for item in idx.get("commands") or []:
-        cid=str(item.get("id") or "")
-        if not cid or cid in processed:
-            continue
-        path=str(item.get("path") or f"control/ovh-deploy-commands/{cid}.json")
-        cmd=fetch_json(DEPLOY_RAW_BASE+path)
-        action=str(cmd.get("action") or "")
-        if action not in {"health_check","deploy_service","deploy_all","deploy_host_agent","hot_patch_streaming","rollback_service"}:
-            raise ValueError(f"github deploy action not allowed: {action}")
-        result,reload_self=execute(cmd)
-        processed.add(cid)
-        write_github_processed(processed)
-        print("github deploy completed",cid,action,cmd.get("target"),result,flush=True)
-        if reload_self:
-            return True
-    return False
 
 def main():
     # The watchdog is fully local and keeps running even when Cloudflare/D1 is
