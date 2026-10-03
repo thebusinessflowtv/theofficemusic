@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-03T16:50:00Z",
+  "updated_at": "2026-10-03T18:11:27.338Z",
   "commands": [
     {
       "id": "bootstrap-kick-ovh",
@@ -126,6 +126,11 @@
       "id": "ops-20261003-restart-youtube-deep-house-v2",
       "path": "control/ovh-commands/ops-20261003-restart-youtube-deep-house-v2.json",
       "created_at": "2026-10-03T16:50:00Z"
+    },
+    {
+      "id": "6f065bdf-b249-4ca1-90bf-aec87fcaa963",
+      "path": "control/ovh-commands/6f065bdf-b249-4ca1-90bf-aec87fcaa963.json",
+      "created_at": "2026-10-03T18:11:27.338Z"
     }
   ]
 }
