@@ -2,10 +2,14 @@
   "platform": "twitch",
   "session_id": "b43d8f63-6e1a-4c47-a4c5-10fd2e4a5c8f",
   "status": "live",
-  "segment_index": 1,
-  "run_id": 37056016453,
-  "github_run_url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/37056016453",
+  "runtime": "ovh",
+  "runtime_slot": "twitch",
   "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
-  "live_at": "2026-10-02T19:45:09.811586+00:00",
-  "updated_at": "2026-10-02T19:45:09.811570+00:00"
+  "migrated_at": "2026-10-02T20:29:00Z",
+  "updated_at": "2026-10-03T01:21:45.065Z",
+  "previous_github_run": {
+    "id": 37056016453,
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/37056016453",
+    "status": "completed"
+  }
 }
