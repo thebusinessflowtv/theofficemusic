@@ -97,7 +97,7 @@ with zipfile.ZipFile(archive) as zf:
             "id":"twitch-dj-"+digest[:12],
             "title":str(meta.get("title") or pathlib.PurePosixPath(info.filename).stem),
             "artists":str(meta.get("artists") or ""),
-            "url":"file://"+str(target),
+            "url":"file:///state/twitch-dj-audio/"+target.name,
             "duration_seconds":float(meta.get("duration_seconds") or 0),
             "source":"twitch_dj_catalog_licensed_copy",
             "sha256":digest,
