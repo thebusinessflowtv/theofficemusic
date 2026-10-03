@@ -1,0 +1,651 @@
+{
+  "action": "import_twitch_dj_archive",
+  "runtime_slot": "twitch",
+  "platform": "twitch",
+  "session_id": "b43d8f63-6e1a-4c47-a4c5-10fd2e4a5c8f",
+  "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
+  "playlist_key": "twitch-dj-mixed",
+  "archive_asset_id": "c9c2c38a-9150-4f4b-b1d1-953a0dfd69a4",
+  "archive_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/c9c2c38a-9150-4f4b-b1d1-953a0dfd69a4/7e0bf332a77f4824b57b5c168392d05a877ad3480d0742e7971a59aad9a08552",
+  "manifest": {
+    "version": 1,
+    "generated_at": "2026-10-03T22:04:48.155032Z",
+    "source": "uploaded-101-audit",
+    "unique_audio_files": 62,
+    "new_allowed_tracks": 28,
+    "tracks": [
+      {
+        "sha256": "a94e607a4a3f6d075bd22b6b6c2025f3369f3dedbdfe7cd5ad5b113e7ca51b76",
+        "title": "Truth or Dare",
+        "artists": "R3HAB, Little Daylight",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "241f1817ab29a619d701269f2014dee5dcb4b3184dcd16a46a708bfef2f67187",
+        "title": "Salvage (Up All Night) (feat. Poo Bear)",
+        "artists": "Galantis, Poo Bear",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "1c66f81b7818a1651fc8b944b124f9c293489de1c2836928ecd4d1f9df11d345",
+        "title": "Stranded",
+        "artists": "WRLD, smle, Kiddo A.I.",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "45b0d4bddcbec79df2068cb4de529de32c4a2f73601bbb65e1aa594ad150f8ba",
+        "title": "Ghost Town",
+        "artists": "Adam Lambert",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "bc2b615890272d375aea3f20af3e2e9504e4d3285895f121f55f1e2f833f9a21",
+        "title": "Run",
+        "artists": "Veorra",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "edbaf6501d84b63524207eed97b594a1c2c3cd45e88d9c604cfce0d3df105ec3",
+        "title": "Perfect Places",
+        "artists": "Lorde",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "264ca44d8ef45b5abcb956b60eb4fcf3d9b9342709fda9d71c8435515f9489cc",
+        "title": "Ain't My Fault - R3hab Remix",
+        "artists": "Zara Larsson, R3HAB",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "01811e9cdb33f37a0af26c7b70b086fca8744a373d20d4fb2adfb5debc13fc3f",
+        "title": "Two Minds",
+        "artists": "NERO",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "6fce5d8af7ca46123df62719ef744e84dd2426658abae0cb22d3ec7a7650a0d2",
+        "title": "Dazzle",
+        "artists": "Oh Wonder",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "0313ad4af3f6705f45005ccc86d43070e6c81eb95376862b98b889a0fda89419",
+        "title": "Body Gold",
+        "artists": "Oh Wonder",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "3bcaa6c7d80dfb04a854aeb03301f3e1bb6f05bcfeb60e00376feba7a2b2b215",
+        "title": "Medicine",
+        "artists": "Daughter",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "eda026bb91322118b1b1193a0451a50a82522f7b6da8db6991e2f1c619c069a1",
+        "title": "Lay Here",
+        "artists": "Veorra",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "237078d31135f4c40bb49a37e5ca1816b0e0dd81df49b240e012d41d5cf3f4b1",
+        "title": "Runaway (U & I)",
+        "artists": "Galantis",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "2560a2c7d8f87babb3f39da86b0041ce900f25fddba6500f7f77130e54242917",
+        "title": "To Say Goodbye",
+        "artists": "Slushii",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "08c2125e398d93db3d2d50d4041b7f44959c79f7f9923b69c11b6dce65fd710c",
+        "title": "Drive",
+        "artists": "Oh Wonder",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "07fd7b245ac6da57b897c95408272285cd3af416ae454b3eb523fb9b10b09262",
+        "title": "Love On My Mind",
+        "artists": "Lucas & Steve",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "902913f2f3907dfce939104efcedd36a80305b962cdd420ede9043b3fc7f5ab6",
+        "title": "Memories That You Call",
+        "artists": "ODESZA, Monsoonsiren",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "dd7a5bca730e805bbe37a9c0a0569e24cc98e652e23c7e36d9be5f1efffe4eeb",
+        "title": "Nobody Compares To You",
+        "artists": "Gryffin, Katie Pearlman",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "45cc77f018eb6395fe6f9d97ce0311b10b6859050f996fddb7f8656493b9e686",
+        "title": "Lose It",
+        "artists": "Oh Wonder",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "a1529117a1700cd0dd8df366aadc803dbccc01f3ae33fe03a8cc1f53d9f57440",
+        "title": "Mine",
+        "artists": "Phoebe Ryan",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "8611f36cad89f4ddb42cfa466473df424121a0503298dc3addcb99deb6197345",
+        "title": "Electric (R3hab Remix)",
+        "artists": "Alina Baraz, Khalid, R3HAB",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "c155aa7a258201edeed7387786fc2ccf7f3215fea1332ec8a14ab146f2012b65",
+        "title": "Moments",
+        "artists": "MitiS, Adara",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "37daddb329f6856172b75655041cf7b9501e9a8e7ae43247a71fe0547990eed6",
+        "title": "Keep Me from You (feat. ODA)",
+        "artists": "MORTEN, ODA",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "4212e9119d531d97b968b41c837d7aa483a2dc1adedca2e5ed11fadea6cb3da5",
+        "title": "Don't Let Me Down - Illenium Remix",
+        "artists": "The Chainsmokers, Daya, ILLENIUM",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "62b38879e7fb0093b25e5294141ecc0418765ec4d9f43565f90fe0b133f66e19",
+        "title": "Never Be Like You",
+        "artists": "Flume, kai",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "7d2227bd28042628b2a3b1ce9033ec6a905e396aa8c8c4c58f8716c8bf2210d3",
+        "title": "Sad Machine",
+        "artists": "Porter Robinson",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "20fd5f684dd7bfc1b95eca71d77a06f753eb376aed4ec15ec1425642bf122ad6",
+        "title": "Youth - Adventure Club Remix",
+        "artists": "Foxes, Adventure Club",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "243ee2ac03be40b047c8da3fd86123985aa513c7c952be28916b729dc319fb4c",
+        "title": "Say It - Illenium Remix",
+        "artists": "Flume, Tove Lo, ILLENIUM",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "1d5cac26d42f72494d6fac1299b23931b6f3122008ba9a455e95dc671a2d1e22",
+        "title": "Feel Good (feat. Daya)",
+        "artists": "Gryffin, ILLENIUM, Daya",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "61c1e6c232a4ecc86e1aece4542feb344859d1411367a2a7df4af8beadff60dd",
+        "title": "One Thing",
+        "artists": "San Holo",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "be635c678cf45a85019db947efdda85acd937d8a051235ab47dbc8f47823c373",
+        "title": "Now Or Never - R3hab Remix",
+        "artists": "Halsey, R3HAB",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "0d0c8ceb82aa547338744e620e0973a94c6ecec11675703e3ecc51727180758d",
+        "title": "Roses (feat. ROZES) - Zaxx Remix",
+        "artists": "The Chainsmokers, ROZES, Zaxx",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "a5bdcc255899e289fefca28d019d7e420ce3011bf3b1f3721235d5749e34b0fd",
+        "title": "Reflections (Milkman Remix)",
+        "artists": "Milkman, MisterWives",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "10b07a82c409bd0163ca6f49595cb57245486f6617a74b5224fb6551f84cbb16",
+        "title": "Light",
+        "artists": "San Holo",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "c6fb632fb4636b1c2758abad131d2ee6c18d3f3f3e57ece23c9bb01a4b2b53eb",
+        "title": "Last To Leave (feat. Caroline Ailin)",
+        "artists": "Louis The Child, Caroline Ailin",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "8a8b4f10aab24473e6fa55626ac263f881f077f41235f865b73f9194c5c2f976",
+        "title": "Afterglow",
+        "artists": "Phaeleh, Soundmouse",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "56f62f51b54f092132e808576f38d5a00f6a3e5ad3d8d781826ec14e6668d6a9",
+        "title": "Something About You - ODESZA Remix",
+        "artists": "Hayden James, ODESZA",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "a8be1e7d98e5ccb0ac37cd0161a0f6ef0b431126779900c789ec9d424ed03c48",
+        "title": "Lush Life",
+        "artists": "Zara Larsson",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "a647f21df708698c978e5a3134d5529560bad2d61f1d49fa2609aa37855a38e2",
+        "title": "Undercover - Devault Remix",
+        "artists": "Kehlani, Devault",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "448ba113a36f9d21ba3ca048cf86895d4877a1a629a4a8247f3581e0303083a1",
+        "title": "Without You",
+        "artists": "Oh Wonder",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "22c3506bd3232b11ca15500379015742a8d3d2215746d9bde53c8d2738d6c917",
+        "title": "Temporary",
+        "artists": "CHOCO, Angel Taylor",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "33993f72bf318ba30c723632acae5ca4774e1f05f9415470dc66f78e2cf45769",
+        "title": "Alone - R3hab Remix",
+        "artists": "Jessie Ware, R3HAB",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "f8f810113b88b3af6b33e4b55dcb8cb1c23ded9083823564a763ae438b9d948b",
+        "title": "Everything",
+        "artists": "ROZES",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "115a699d0d144e28376aa49db1d63f070d89eb85c8f96da5f6011dd580e85b33",
+        "title": "I Wanna Know",
+        "artists": "RL Grime, Daya",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "9c9efe7df42ad782e4d376fc78af7913d0e70b53dc0e3e0a3b4e377e8428e4be",
+        "title": "Cracked Wall",
+        "artists": "Florian Picasso, VASSY",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "8dd36c47d9b1ea85e8fb92744e47e16cebfcb269bff39d0a10d171f48b91bbf7",
+        "title": "Smoke Signals",
+        "artists": "Hotel Garuda",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "65e9cbfc881f1181aa55f33c7b2f0a202dca243c51a2687463868b58092f7b37",
+        "title": "Symphony (feat. Zara Larsson) - R3hab Remix",
+        "artists": "Clean Bandit, Zara Larsson, R3HAB",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "2f9c78cfe33e0d9d7b7841bc7b4136ac12a7fbe3177d297cdfd6cd06bb679409",
+        "title": "Frontlines - Crankdat Remix",
+        "artists": "Zeds Dead, NGHTMRE, GG Magree, Crankdat",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "74e04aa99e26a3a34d6653ae52094229448aa62fc6a7f2e1a7f0f6fc57bf1302",
+        "title": "Livewire",
+        "artists": "Oh Wonder",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "284050b1988e89d1d384bef21b373f6ee3011fe7caeb66428307350ed15bbd12",
+        "title": "Never Forget You - Mark Ralph Club Mix",
+        "artists": "Zara Larsson, MNEK",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "73166f3a78174930283d0219072e34aa2bab43cf89ba1b7c2bf27e36ce0877e5",
+        "title": "BWU",
+        "artists": "San Holo",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "858c6194f8ef0b14e7826d14b3aeb807eabb08352ef88a456839748e6afeaeec",
+        "title": "Here",
+        "artists": "Alessia Cara",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "1195019037cc2e05eef3c8454b584b2ecc93bc3545ad0aa7658d1e5891ce1ea0",
+        "title": "Infinity",
+        "artists": "Niykee Heaton",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "3724da16f823bbfc93471ca4459d64cf791ccca0e69111330e71f91e596762f0",
+        "title": "Lately",
+        "artists": "Dead Robot, tribes.",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "138739321f8d6d254712f776918358642a25c7e407caea1c7ef00fcee122a91e",
+        "title": "All We Do",
+        "artists": "Oh Wonder",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "074c7a2ccf4865316d5d54ae5f5ad266681b832bc5d123949beb5698fab04e67",
+        "title": "Technicolour Beat",
+        "artists": "Oh Wonder",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "eede3cd23ee913e7882ec7a4237ee5ec3a533c0a048f40ba4860983c4b1b67be",
+        "title": "Trndsttr (feat. M. Maggie) - Lucian Remix",
+        "artists": "Black Coast, M. Maggie, Lucian",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "1621e516aed13ef7a5624b8d0efdef05d8c65a3dc3ed1ec1cb19a37760115103",
+        "title": "Feels - Jai Wolf Remix",
+        "artists": "Kiiara, Jai Wolf",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "2899c704a30d7acb1da78fc7ca63c8f61b9e96ecd018b78284623522c11a5798",
+        "title": "Sleepy Eyes",
+        "artists": "Elohim, Whethan",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "c6a6b01a6fc2354e5f1ce7ad3ce099b887dd238f4e82ecbfc511d89276b526ce",
+        "title": "Make Me (Cry) - Marshmello Remix",
+        "artists": "Noah Cyrus, Labrinth, Marshmello",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "0187b7af7bf09b79e3aae089be4666bccd5655745f87c67b7a4ad7711ae880ca",
+        "title": "I Would Like - R3hab Remix",
+        "artists": "Zara Larsson, R3HAB",
+        "duration_seconds": 0
+      },
+      {
+        "sha256": "149bd7a6d65ea21e758c06d1118c9a7a5128b3c435611dc6db8a567ce3bfc9fb",
+        "title": "It's Strange (feat. K.Flay)",
+        "artists": "Louis The Child, K.Flay",
+        "duration_seconds": 0
+      }
+    ]
+  },
+  "base_tracks": [
+    {
+      "id": "twitch-dj-original-01",
+      "title": "Respawn Grid",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/01-01-s1-01-respawn-grid.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-02",
+      "title": "Velocity Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/02-02-s1-02-velocity-lobby.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-03",
+      "title": "Midnight Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/03-03-s1-03-midnight-lobby.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-04",
+      "title": "Checkpoint Flow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/04-04-s1-04-checkpoint-flow.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-05",
+      "title": "Cyber Circuit",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/05-05-s1-05-cyber-circuit.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-06",
+      "title": "Level Session",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/06-06-s1-06-level-session.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-07",
+      "title": "Cyber Run",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/07-01-s1-07-cyber-run.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-08",
+      "title": "Pixel Grid 18",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/08-02-s1-08-pixel-grid-18.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-09",
+      "title": "Loading Match",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/09-03-s1-09-loading-match.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-10",
+      "title": "Neon Arena",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/10-04-s1-10-neon-arena.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-11",
+      "title": "Velocity Session",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/11-05-s1-11-velocity-session.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-12",
+      "title": "Night Flow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/12-06-s1-12-night-flow.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-13",
+      "title": "Level Zone",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/13-01-s1-13-level-zone.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-14",
+      "title": "Velocity Session 33",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/14-02-s1-14-velocity-session-33.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-15",
+      "title": "Pixel Match 36",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/15-03-s1-15-pixel-match-36.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-16",
+      "title": "Cyber Mode",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/16-04-s1-16-cyber-mode.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-17",
+      "title": "Night Circuit",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/17-05-s1-17-night-circuit.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-18",
+      "title": "Loading Session",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/18-06-s1-18-loading-session.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-19",
+      "title": "Arcade Mode",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/19-01-s2-01-arcade-mode.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-20",
+      "title": "Respawn Grid",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/20-02-s2-02-respawn-grid.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-21",
+      "title": "Neon Session",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/21-03-s2-03-neon-session.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-22",
+      "title": "Cyber Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/22-04-s2-04-cyber-lobby.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-23",
+      "title": "Cyber Lobby 11",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/23-05-s2-05-cyber-lobby-11.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-24",
+      "title": "Velocity Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/24-06-s2-06-velocity-lobby.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-25",
+      "title": "Checkpoint Drive",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/25-01-s2-07-checkpoint-drive.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-26",
+      "title": "Cyber Run 18",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/26-02-s2-08-cyber-run-18.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-27",
+      "title": "Checkpoint Match",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/27-03-s2-09-checkpoint-match.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-28",
+      "title": "Respawn Run",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/28-04-s2-10-respawn-run.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-29",
+      "title": "Level Quest",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/29-05-s2-11-level-quest.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-30",
+      "title": "Checkpoint Flow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/30-06-s2-12-checkpoint-flow.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-31",
+      "title": "Level Zone",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/31-01-s2-13-level-zone.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-32",
+      "title": "Velocity Mode",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/32-02-s2-14-velocity-mode.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-33",
+      "title": "Digital Mode",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/33-03-s2-15-digital-mode.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-34",
+      "title": "Arcade Zone",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/34-04-s2-16-arcade-zone.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-35",
+      "title": "Velocity Zone",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/35-05-s2-17-velocity-zone.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "twitch-dj-original-36",
+      "title": "Checkpoint Run",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/36-06-s2-18-checkpoint-run.mp3",
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    }
+  ],
+  "shuffle": true,
+  "repeat": true,
+  "source": "mediaforge-twitch-dj-add-28",
+  "id": "07e90fc8-05d6-4988-a78b-95a3c89942dc",
+  "runtime": "ovh",
+  "requested_at": "2026-10-03T22:04:48.155563Z"
+}

@@ -1,0 +1,151 @@
+{
+  "queued_at": "2026-10-03T22:04:48.155563Z",
+  "command_id": "07e90fc8-05d6-4988-a78b-95a3c89942dc",
+  "uploaded_real_mp3s": 101,
+  "allowed_in_uploaded_zip": 62,
+  "new_allowed_added": 28,
+  "original_tracks": 36,
+  "expected_final_playlist_count": 98,
+  "new_tracks": [
+    {
+      "title": "Truth or Dare",
+      "artists": "R3HAB, Little Daylight",
+      "sha256": "a94e607a4a3f6d075bd22b6b6c2025f3369f3dedbdfe7cd5ad5b113e7ca51b76"
+    },
+    {
+      "title": "Salvage (Up All Night) (feat. Poo Bear)",
+      "artists": "Galantis, Poo Bear",
+      "sha256": "241f1817ab29a619d701269f2014dee5dcb4b3184dcd16a46a708bfef2f67187"
+    },
+    {
+      "title": "Run",
+      "artists": "Veorra",
+      "sha256": "bc2b615890272d375aea3f20af3e2e9504e4d3285895f121f55f1e2f833f9a21"
+    },
+    {
+      "title": "Ain't My Fault - R3hab Remix",
+      "artists": "Zara Larsson, R3HAB",
+      "sha256": "264ca44d8ef45b5abcb956b60eb4fcf3d9b9342709fda9d71c8435515f9489cc"
+    },
+    {
+      "title": "To Say Goodbye",
+      "artists": "Slushii",
+      "sha256": "2560a2c7d8f87babb3f39da86b0041ce900f25fddba6500f7f77130e54242917"
+    },
+    {
+      "title": "Drive",
+      "artists": "Oh Wonder",
+      "sha256": "08c2125e398d93db3d2d50d4041b7f44959c79f7f9923b69c11b6dce65fd710c"
+    },
+    {
+      "title": "Love On My Mind",
+      "artists": "Lucas & Steve",
+      "sha256": "07fd7b245ac6da57b897c95408272285cd3af416ae454b3eb523fb9b10b09262"
+    },
+    {
+      "title": "Nobody Compares To You",
+      "artists": "Gryffin, Katie Pearlman",
+      "sha256": "dd7a5bca730e805bbe37a9c0a0569e24cc98e652e23c7e36d9be5f1efffe4eeb"
+    },
+    {
+      "title": "Electric (R3hab Remix)",
+      "artists": "Alina Baraz, Khalid, R3HAB",
+      "sha256": "8611f36cad89f4ddb42cfa466473df424121a0503298dc3addcb99deb6197345"
+    },
+    {
+      "title": "Moments",
+      "artists": "MitiS, Adara",
+      "sha256": "c155aa7a258201edeed7387786fc2ccf7f3215fea1332ec8a14ab146f2012b65"
+    },
+    {
+      "title": "Don't Let Me Down - Illenium Remix",
+      "artists": "The Chainsmokers, Daya, ILLENIUM",
+      "sha256": "4212e9119d531d97b968b41c837d7aa483a2dc1adedca2e5ed11fadea6cb3da5"
+    },
+    {
+      "title": "Never Be Like You",
+      "artists": "Flume, kai",
+      "sha256": "62b38879e7fb0093b25e5294141ecc0418765ec4d9f43565f90fe0b133f66e19"
+    },
+    {
+      "title": "Youth - Adventure Club Remix",
+      "artists": "Foxes, Adventure Club",
+      "sha256": "20fd5f684dd7bfc1b95eca71d77a06f753eb376aed4ec15ec1425642bf122ad6"
+    },
+    {
+      "title": "Feel Good (feat. Daya)",
+      "artists": "Gryffin, ILLENIUM, Daya",
+      "sha256": "1d5cac26d42f72494d6fac1299b23931b6f3122008ba9a455e95dc671a2d1e22"
+    },
+    {
+      "title": "One Thing",
+      "artists": "San Holo",
+      "sha256": "61c1e6c232a4ecc86e1aece4542feb344859d1411367a2a7df4af8beadff60dd"
+    },
+    {
+      "title": "Last To Leave (feat. Caroline Ailin)",
+      "artists": "Louis The Child, Caroline Ailin",
+      "sha256": "c6fb632fb4636b1c2758abad131d2ee6c18d3f3f3e57ece23c9bb01a4b2b53eb"
+    },
+    {
+      "title": "Something About You - ODESZA Remix",
+      "artists": "Hayden James, ODESZA",
+      "sha256": "56f62f51b54f092132e808576f38d5a00f6a3e5ad3d8d781826ec14e6668d6a9"
+    },
+    {
+      "title": "Undercover - Devault Remix",
+      "artists": "Kehlani, Devault",
+      "sha256": "a647f21df708698c978e5a3134d5529560bad2d61f1d49fa2609aa37855a38e2"
+    },
+    {
+      "title": "Temporary",
+      "artists": "CHOCO, Angel Taylor",
+      "sha256": "22c3506bd3232b11ca15500379015742a8d3d2215746d9bde53c8d2738d6c917"
+    },
+    {
+      "title": "Alone - R3hab Remix",
+      "artists": "Jessie Ware, R3HAB",
+      "sha256": "33993f72bf318ba30c723632acae5ca4774e1f05f9415470dc66f78e2cf45769"
+    },
+    {
+      "title": "Everything",
+      "artists": "ROZES",
+      "sha256": "f8f810113b88b3af6b33e4b55dcb8cb1c23ded9083823564a763ae438b9d948b"
+    },
+    {
+      "title": "I Wanna Know",
+      "artists": "RL Grime, Daya",
+      "sha256": "115a699d0d144e28376aa49db1d63f070d89eb85c8f96da5f6011dd580e85b33"
+    },
+    {
+      "title": "Frontlines - Crankdat Remix",
+      "artists": "Zeds Dead, NGHTMRE, GG Magree, Crankdat",
+      "sha256": "2f9c78cfe33e0d9d7b7841bc7b4136ac12a7fbe3177d297cdfd6cd06bb679409"
+    },
+    {
+      "title": "BWU",
+      "artists": "San Holo",
+      "sha256": "73166f3a78174930283d0219072e34aa2bab43cf89ba1b7c2bf27e36ce0877e5"
+    },
+    {
+      "title": "Lately",
+      "artists": "Dead Robot, tribes.",
+      "sha256": "3724da16f823bbfc93471ca4459d64cf791ccca0e69111330e71f91e596762f0"
+    },
+    {
+      "title": "Sleepy Eyes",
+      "artists": "Elohim, Whethan",
+      "sha256": "2899c704a30d7acb1da78fc7ca63c8f61b9e96ecd018b78284623522c11a5798"
+    },
+    {
+      "title": "Make Me (Cry) - Marshmello Remix",
+      "artists": "Noah Cyrus, Labrinth, Marshmello",
+      "sha256": "c6a6b01a6fc2354e5f1ce7ad3ce099b887dd238f4e82ecbfc511d89276b526ce"
+    },
+    {
+      "title": "I Would Like - R3hab Remix",
+      "artists": "Zara Larsson, R3HAB",
+      "sha256": "0187b7af7bf09b79e3aae089be4666bccd5655745f87c67b7a4ad7711ae880ca"
+    }
+  ]
+}
