@@ -144,6 +144,20 @@ class AudioEngine:
         self.history = []
         self.forced_next = None
         self.running = True
+        # Restore recent track history after an audio-feeder restart so the
+        # MediaForge "Anterior" control keeps working across hot patches.
+        try:
+            saved = read_json(self.now_path, {}) or {}
+            for track_id in saved.get("history") or []:
+                track = self.playlist.by_id(str(track_id))
+                if track:
+                    self.history.append(track)
+            current = self.playlist.by_id(str(saved.get("track_id") or ""))
+            if current and (not self.history or self.history[-1]["id"] != current["id"]):
+                self.history.append(current)
+            self.history = self.history[-50:]
+        except Exception:
+            self.history = []
         self.cache_dir = pathlib.Path(state_dir) / "audio-cache"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.audio_health_path = self.state / "audio-health.json"
