@@ -298,10 +298,10 @@ def start_encoder(loop):
     encoder = subprocess.Popen(["ffmpeg","-hide_banner","-loglevel","warning","-re","-stream_loop","-1","-i",str(loop),
         "-thread_queue_size","512","-f","s16le","-ar","48000","-ac","2","-i",str(fifo),
         "-map","0:v:0","-map","1:a:0",
-        "-vf","scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=60,format=yuv420p",
-        "-r","60","-s:v","1920x1080","-pix_fmt","yuv420p","-c:v","libx264","-preset","veryfast","-tune","zerolatency",
-        "-profile:v","high","-level:v","4.2","-b:v","8000k","-minrate","8000k","-maxrate","8000k","-bufsize","16000k",
-        "-g","120","-keyint_min","120","-sc_threshold","0","-x264-params","nal-hrd=cbr:force-cfr=1",
+        "-vf","scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p",
+        "-r","30","-s:v","1920x1080","-pix_fmt","yuv420p","-c:v","libx264","-preset","veryfast","-tune","zerolatency",
+        "-profile:v","main","-level:v","4.1","-b:v","5000k","-minrate","5000k","-maxrate","5000k","-bufsize","10000k",
+        "-g","60","-keyint_min","60","-sc_threshold","0","-x264-params","nal-hrd=cbr:force-cfr=1",
         "-c:a","aac","-b:a","160k","-ar","48000","-ac","2","-flvflags","no_duration_filesize","-f","flv",target()],
         stdout=encoder_log, stderr=encoder_log)
     os.close(fifo_fd)
