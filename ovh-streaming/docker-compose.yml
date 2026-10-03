@@ -47,7 +47,7 @@ services:
     environment:
       STREAM_URL: ${YOUTUBE_DEEP_HOUSE_STREAM_URL}
       STREAM_KEY: ${YOUTUBE_DEEP_HOUSE_STREAM_KEY}
-      LOOP_URL: "https://mediaforge-api.guilhermeodsgn.workers.dev/media/a26f2e7f-4203-4788-a3ce-6d6b2052f4dc/c64b196cedad4d05977d887f1be30505023124926b4144dc935c1142fe1b4109"
+      LOOP_URL: ${YOUTUBE_DEEP_HOUSE_LOOP_URL:-http://host.docker.internal:8790/media/a26f2e7f-4203-4788-a3ce-6d6b2052f4dc/c64b196cedad4d05977d887f1be30505023124926b4144dc935c1142fe1b4109}
       PLAYLIST_FILE: /config/youtube-deep-house.json
       VIDEO_FPS: "60"
       VIDEO_BITRATE_KBPS: "8000"
@@ -69,7 +69,7 @@ services:
     environment:
       STREAM_URL: ${YOUTUBE_RAINY_STREAM_URL}
       STREAM_KEY: ${YOUTUBE_RAINY_STREAM_KEY}
-      LOOP_URL: "https://mediaforge-api.guilhermeodsgn.workers.dev/media/998ca654-bb42-4c35-99c6-04ac2ebad84c/b6bf0c5819a04630b36f61314ed6de7566e4b48b72df41c59093a5bd7c0f9ab0"
+      LOOP_URL: ${YOUTUBE_RAINY_LOOP_URL:-http://host.docker.internal:8790/media/998ca654-bb42-4c35-99c6-04ac2ebad84c/b6bf0c5819a04630b36f61314ed6de7566e4b48b72df41c59093a5bd7c0f9ab0}
       PLAYLIST_FILE: /config/youtube-rainy.json
       VIDEO_FPS: "60"
       VIDEO_BITRATE_KBPS: "8000"
