@@ -1,0 +1,140 @@
+{
+  "checked_at": "2026-10-03T15:18:12.738272+00:00",
+  "ovh": {
+    "runtime": "ovh",
+    "reported_at": "2026-10-03T15:18:11.598374Z",
+    "stored_at": "2026-10-03T15:18:11.636Z",
+    "host": {
+      "load_1m": 0.67,
+      "memory_percent": 22.4,
+      "disk_percent": 5.6,
+      "uptime_seconds": 115145.1
+    },
+    "services": {
+      "kick": {
+        "status": "live",
+        "updated_at": "2026-10-03T15:18:10.837935Z",
+        "fps": 30,
+        "video_bitrate_kbps": 5000,
+        "restarts": 1,
+        "hot_swap": true,
+        "visual_revision": 5,
+        "now_playing": {
+          "state": "playing",
+          "track_id": "gaming-radio-36",
+          "title": "Checkpoint Run",
+          "started_at": "2026-10-03T15:13:41.716129Z"
+        }
+      },
+      "twitch": {
+        "status": "live",
+        "updated_at": "2026-10-03T15:18:10.834345Z",
+        "fps": 30,
+        "video_bitrate_kbps": 4500,
+        "restarts": 0,
+        "hot_swap": true,
+        "visual_revision": 4,
+        "now_playing": {
+          "state": "playing",
+          "track_id": "gaming-radio-23",
+          "title": "Cyber Lobby 11",
+          "started_at": "2026-10-03T15:14:35.681725Z"
+        }
+      },
+      "youtube-deep-house": {
+        "status": "live",
+        "updated_at": "2026-10-03T15:18:09.950930Z",
+        "fps": 60,
+        "video_bitrate_kbps": 8000,
+        "restarts": 0,
+        "hot_swap": true,
+        "visual_revision": 3,
+        "now_playing": {
+          "state": "playing",
+          "track_id": "deep-house-radio-66",
+          "title": "Sunday Windows",
+          "started_at": "2026-10-03T06:39:26.807858Z"
+        }
+      },
+      "youtube-rainy": {
+        "status": "live",
+        "updated_at": "2026-10-03T15:18:09.841590Z",
+        "fps": 60,
+        "video_bitrate_kbps": 8000,
+        "restarts": 2,
+        "hot_swap": true,
+        "visual_revision": 3,
+        "now_playing": {
+          "state": "playing",
+          "track_id": "rainy-radio-10",
+          "title": "Quiet Desk 23",
+          "started_at": "2026-10-03T15:13:40.922217Z"
+        }
+      }
+    }
+  },
+  "youtube": {
+    "deep-house": {
+      "broadcast_id": "WYJuqbEQYZQ",
+      "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790973399832628",
+      "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
+      "actual_start_time": "2026-10-02T20:36:55Z",
+      "actual_end_time": "2026-10-03T06:41:38Z",
+      "lifecycle": "complete",
+      "privacy": "public",
+      "enable_auto_start": true,
+      "enable_auto_stop": false,
+      "bound_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790973399832628",
+      "stream_status": "inactive",
+      "health_status": "noData",
+      "configuration_issues": [],
+      "cdn": {
+        "ingestionType": "rtmp",
+        "resolution": "1080p",
+        "frameRate": "60fps"
+      },
+      "ingestion_info": {
+        "streamName": "6yw3-s6dj-ct30-kq4t-12ar",
+        "ingestionAddress": "rtmp://a.rtmp.youtube.com/live2",
+        "backupIngestionAddress": "rtmp://b.rtmp.youtube.com/live2?backup=1",
+        "rtmpsIngestionAddress": "rtmps://a.rtmps.youtube.com/live2",
+        "rtmpsBackupIngestionAddress": "rtmps://b.rtmps.youtube.com/live2?backup=1"
+      }
+    },
+    "rainy": {
+      "broadcast_id": "C9Et10tejC8",
+      "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790974075552944",
+      "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+      "actual_start_time": "2026-10-02T20:48:07Z",
+      "actual_end_time": null,
+      "lifecycle": "live",
+      "privacy": "public",
+      "enable_auto_start": true,
+      "enable_auto_stop": false,
+      "bound_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790974075552944",
+      "stream_status": "active",
+      "health_status": "good",
+      "configuration_issues": [],
+      "cdn": {
+        "ingestionType": "rtmp",
+        "resolution": "1080p",
+        "frameRate": "60fps"
+      },
+      "ingestion_info": {
+        "streamName": "byx8-cfpa-ju09-pv4m-ah8y",
+        "ingestionAddress": "rtmp://a.rtmp.youtube.com/live2",
+        "backupIngestionAddress": "rtmp://b.rtmp.youtube.com/live2?backup=1",
+        "rtmpsIngestionAddress": "rtmps://a.rtmps.youtube.com/live2",
+        "rtmpsBackupIngestionAddress": "rtmps://b.rtmps.youtube.com/live2?backup=1"
+      }
+    }
+  },
+  "kick": {
+    "reachable": true,
+    "is_live": true,
+    "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
+    "created_at": "2026-10-03 14:23:58",
+    "id": 130393853,
+    "viewer_count": 2
+  }
+}
