@@ -2,6 +2,7 @@
 import argparse
 import array
 import base64
+import hashlib
 import json
 import os
 import pathlib
@@ -10,7 +11,10 @@ import select
 import signal
 import subprocess
 import sys
+import threading
 import time
+import urllib.parse
+import urllib.request
 from datetime import datetime, timezone
 
 PCM_CHUNK = 32768
@@ -18,6 +22,10 @@ PCM_RATE = 48000
 PCM_CHANNELS = 2
 FADE_IN_SECONDS = max(0.0, float(os.environ.get("AUDIO_FADE_IN_SECONDS", "1.5")))
 FADE_OUT_SECONDS = max(0.0, float(os.environ.get("AUDIO_FADE_OUT_SECONDS", "1.5")))
+AUDIO_STALL_TIMEOUT_SECONDS = max(3.0, float(os.environ.get("AUDIO_STALL_TIMEOUT_SECONDS", "8")))
+AUDIO_HTTP_RW_TIMEOUT_SECONDS = max(5.0, float(os.environ.get("AUDIO_HTTP_RW_TIMEOUT_SECONDS", "15")))
+AUDIO_SILENCE_INTERVAL_SECONDS = 0.25
+AUDIO_CACHE_MIN_BYTES = 4096
 
 
 def pcm_frames(chunk):
@@ -136,6 +144,131 @@ class AudioEngine:
         self.history = []
         self.forced_next = None
         self.running = True
+        self.cache_dir = pathlib.Path(state_dir) / "audio-cache"
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self.audio_health_path = self.state / "audio-health.json"
+        self.cache_hits = 0
+        self.cache_misses = 0
+        self.stalls = 0
+        self.backpressure_drops = 0
+        self.cache_thread = threading.Thread(target=self.warm_cache, name=f"audio-cache-{platform}", daemon=True)
+        self.cache_thread.start()
+
+    def write_audio_health(self, extra=None):
+        payload = {
+            "platform": self.platform,
+            "status": "running" if self.running else "stopped",
+            "cache_hits": self.cache_hits,
+            "cache_misses": self.cache_misses,
+            "stalls": self.stalls,
+            "backpressure_drops": self.backpressure_drops,
+            "updated_at": iso_now(),
+        }
+        if extra:
+            payload.update(extra)
+        atomic_json(self.audio_health_path, payload)
+
+    def cache_path(self, track):
+        parsed = urllib.parse.urlparse(track["url"])
+        suffix = pathlib.Path(parsed.path).suffix.lower()
+        if not suffix or len(suffix) > 10:
+            suffix = ".media"
+        token = hashlib.sha256(track["url"].encode("utf-8")).hexdigest()[:32]
+        return self.cache_dir / f"{token}{suffix}"
+
+    def cache_ready(self, path):
+        try:
+            return path.exists() and path.stat().st_size >= AUDIO_CACHE_MIN_BYTES
+        except Exception:
+            return False
+
+    def download_to_cache(self, track):
+        target = self.cache_path(track)
+        if self.cache_ready(target):
+            return target
+        lock = target.with_suffix(target.suffix + ".lock")
+        try:
+            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.close(fd)
+        except FileExistsError:
+            try:
+                if time.time() - lock.stat().st_mtime > 300:
+                    lock.unlink(missing_ok=True)
+            except Exception:
+                pass
+            return target if self.cache_ready(target) else None
+
+        temp = target.with_suffix(target.suffix + f".{self.platform}.part")
+        temp.unlink(missing_ok=True)
+        try:
+            req = urllib.request.Request(track["url"], headers={"User-Agent": f"MediaForge-AudioCache-{self.platform}"})
+            with urllib.request.urlopen(req, timeout=AUDIO_HTTP_RW_TIMEOUT_SECONDS) as response, open(temp, "wb") as fh:
+                while self.running:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    fh.write(chunk)
+            if not self.running:
+                return None
+            if not temp.exists() or temp.stat().st_size < AUDIO_CACHE_MIN_BYTES:
+                raise RuntimeError("downloaded audio is empty")
+            probe = subprocess.run(
+                ["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries", "stream=codec_type", "-of", "default=nw=1:nk=1", str(temp)],
+                stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, timeout=20,
+            )
+            if probe.returncode != 0 or "audio" not in probe.stdout:
+                raise RuntimeError("downloaded file has no audio stream")
+            if self.cache_ready(target):
+                temp.unlink(missing_ok=True)
+            else:
+                temp.replace(target)
+            return target
+        except Exception:
+            temp.unlink(missing_ok=True)
+            return None
+        finally:
+            lock.unlink(missing_ok=True)
+
+    def warm_cache(self):
+        while self.running:
+            try:
+                self.playlist.reload()
+                for track in list(self.playlist.tracks):
+                    if not self.running:
+                        break
+                    if self.cache_ready(self.cache_path(track)):
+                        continue
+                    self.download_to_cache(track)
+            except Exception:
+                pass
+            self.write_audio_health({"cache_warm": True})
+            for _ in range(60):
+                if not self.running:
+                    return
+                time.sleep(1)
+
+    def source_for(self, track):
+        cached = self.cache_path(track)
+        if self.cache_ready(cached):
+            self.cache_hits += 1
+            return str(cached), True
+        self.cache_misses += 1
+        return track["url"], False
+
+    def write_pcm(self, dst, chunk, deadline_seconds=1.0):
+        view = memoryview(chunk)
+        deadline = time.monotonic() + deadline_seconds
+        while view and self.running:
+            try:
+                written = os.write(dst, view)
+                view = view[written:]
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    self.backpressure_drops += 1
+                    self.write_audio_health({"state": "encoder_backpressure"})
+                    return False
+                time.sleep(0.01)
+        return not view
 
     def read_command(self):
         try:
@@ -177,10 +310,19 @@ class AudioEngine:
         })
 
     def decode(self, track):
-        cmd = [
-            "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin",
-            "-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "5",
-            "-i", track["url"],
+        source, cached = self.source_for(track)
+        cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin"]
+        if not cached:
+            cmd += [
+                "-rw_timeout", str(int(AUDIO_HTTP_RW_TIMEOUT_SECONDS * 1_000_000)),
+                "-reconnect", "1",
+                "-reconnect_streamed", "1",
+                "-reconnect_on_network_error", "1",
+                "-reconnect_on_http_error", "4xx,5xx",
+                "-reconnect_delay_max", "5",
+            ]
+        cmd += [
+            "-i", source,
             "-vn", "-sn", "-dn",
             "-af", "aresample=48000:async=1:first_pts=0",
             "-ac", "2", "-ar", "48000", "-c:a", "pcm_s16le", "-f", "s16le", "pipe:1",
@@ -188,7 +330,15 @@ class AudioEngine:
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=0)
         src = proc.stdout.fileno()
         dst = sys.stdout.fileno()
+        try:
+            os.set_blocking(dst, False)
+        except Exception:
+            pass
         interrupted = None
+        last_audio_at = time.monotonic()
+        silence_frames = max(1, int(AUDIO_SILENCE_INTERVAL_SECONDS * PCM_RATE))
+        silence_chunk = bytes(silence_frames * PCM_CHANNELS * 2)
+        self.write_audio_health({"state": "playing", "track_id": track["id"], "cached": cached})
 
         fade_in_total = int(FADE_IN_SECONDS * PCM_RATE)
         fade_out_total = int(FADE_OUT_SECONDS * PCM_RATE)
@@ -212,15 +362,31 @@ class AudioEngine:
                         else:
                             fade_out_start_gain = 1.0
 
-                ready, _, _ = select.select([src], [], [], 0.25)
+                ready, _, _ = select.select([src], [], [], AUDIO_SILENCE_INTERVAL_SECONDS)
                 if not ready:
                     if proc.poll() is not None:
+                        break
+                    # Never let a slow CDN/HTTP connection starve the persistent encoder.
+                    self.write_pcm(dst, silence_chunk, deadline_seconds=AUDIO_SILENCE_INTERVAL_SECONDS)
+                    if time.monotonic() - last_audio_at >= AUDIO_STALL_TIMEOUT_SECONDS:
+                        self.stalls += 1
+                        self.write_audio_health({
+                            "state": "source_stalled",
+                            "track_id": track["id"],
+                            "stall_seconds": round(time.monotonic() - last_audio_at, 2),
+                            "cached": cached,
+                        })
+                        try:
+                            proc.terminate()
+                        except Exception:
+                            pass
                         break
                     continue
 
                 chunk = os.read(src, PCM_CHUNK)
                 if not chunk:
                     break
+                last_audio_at = time.monotonic()
 
                 frames = pcm_frames(chunk)
                 if frames <= 0:
@@ -236,11 +402,7 @@ class AudioEngine:
                     end = max(0.0, min(1.0, (played_frames + frames) / fade_in_total))
                     chunk = apply_gain_ramp(chunk, start, end)
 
-                view = memoryview(chunk)
-                while view:
-                    written = os.write(dst, view)
-                    view = view[written:]
-
+                self.write_pcm(dst, chunk)
                 played_frames += frames
 
                 if fading_out and fade_out_done >= fade_out_total:
@@ -255,6 +417,7 @@ class AudioEngine:
             except subprocess.TimeoutExpired:
                 proc.kill()
                 proc.wait()
+            self.write_audio_health({"state": "track_finished", "track_id": track["id"], "cached": cached})
         return interrupted
 
     def run(self):
