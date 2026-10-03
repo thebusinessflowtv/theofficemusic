@@ -1,15 +1,7 @@
 {
-  "platform": "kick",
   "session_id": "2c2b6335-7872-4a9c-af69-cee17f10bedc",
-  "status": "live",
-  "runtime": "ovh",
-  "runtime_slot": "kick",
-  "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
-  "migrated_at": "2026-10-02T20:29:00Z",
-  "updated_at": "2026-10-03T01:21:45.065Z",
-  "previous_github_run": {
-    "id": 37055444579,
-    "url": "https://github.com/thebusinessflowtv/theofficemusic/actions/runs/37055444579",
-    "status": "cancelled"
-  }
+  "status": "starting",
+  "segment_index": 1,
+  "run_id": 37097077616,
+  "updated_at": "2026-10-03T04:36:38.497517+00:00"
 }
