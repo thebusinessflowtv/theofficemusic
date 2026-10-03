@@ -1,10 +1,7 @@
 name: Peter Lofi — Kick Queue Bridge
 
 on:
-  push:
-    paths:
-      - 'control/kick-live-queue/*.json'
-      - 'control/kick-live-retry/*.json'
+  workflow_dispatch:
 
 permissions:
   contents: read
