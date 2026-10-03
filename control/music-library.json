@@ -1,0 +1,2610 @@
+{
+  "version": 1,
+  "brand": "Peter Lofi",
+  "updated_at": "2026-10-03T02:42:12.444Z",
+  "rules": {
+    "live_playback": "individual_tracks_only",
+    "masters_for": "long_form_video_exports_only",
+    "repeat": "continuous",
+    "shuffle_default": true,
+    "platform_state": "independent_per_runtime_slot"
+  },
+  "categories": [
+    {
+      "key": "live-radio",
+      "name": "Live Radio"
+    },
+    {
+      "key": "series",
+      "name": "Series"
+    }
+  ],
+  "playlists": [
+    {
+      "key": "gaming-radio",
+      "name": "Gaming Radio",
+      "category": "Live Radio",
+      "series": "Gaming",
+      "genre": "Gaming Lofi / Focus",
+      "moods": [
+        "gaming",
+        "focused",
+        "neon",
+        "energetic"
+      ],
+      "source": "gaming-3h-individual-tracks",
+      "release_tag": "peter-lofi-gaming-3h-v2-36956897081",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/peter-lofi-gaming-3h.mp3",
+      "track_count": 36,
+      "total_duration_seconds": 10801,
+      "tracks": [
+        {
+          "id": "gaming-3h-01",
+          "title": "Respawn Grid",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/01-01-s1-01-respawn-grid.mp3",
+          "duration_seconds": 300.024,
+          "position": 1
+        },
+        {
+          "id": "gaming-3h-02",
+          "title": "Velocity Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/02-02-s1-02-velocity-lobby.mp3",
+          "duration_seconds": 300.024,
+          "position": 2
+        },
+        {
+          "id": "gaming-3h-03",
+          "title": "Midnight Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/03-03-s1-03-midnight-lobby.mp3",
+          "duration_seconds": 300.024,
+          "position": 3
+        },
+        {
+          "id": "gaming-3h-04",
+          "title": "Checkpoint Flow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/04-04-s1-04-checkpoint-flow.mp3",
+          "duration_seconds": 300.024,
+          "position": 4
+        },
+        {
+          "id": "gaming-3h-05",
+          "title": "Cyber Circuit",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/05-05-s1-05-cyber-circuit.mp3",
+          "duration_seconds": 300.024,
+          "position": 5
+        },
+        {
+          "id": "gaming-3h-06",
+          "title": "Level Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/06-06-s1-06-level-session.mp3",
+          "duration_seconds": 300.024,
+          "position": 6
+        },
+        {
+          "id": "gaming-3h-07",
+          "title": "Cyber Run",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/07-01-s1-07-cyber-run.mp3",
+          "duration_seconds": 300.024,
+          "position": 7
+        },
+        {
+          "id": "gaming-3h-08",
+          "title": "Pixel Grid 18",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/08-02-s1-08-pixel-grid-18.mp3",
+          "duration_seconds": 300.024,
+          "position": 8
+        },
+        {
+          "id": "gaming-3h-09",
+          "title": "Loading Match",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/09-03-s1-09-loading-match.mp3",
+          "duration_seconds": 300.024,
+          "position": 9
+        },
+        {
+          "id": "gaming-3h-10",
+          "title": "Neon Arena",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/10-04-s1-10-neon-arena.mp3",
+          "duration_seconds": 300.024,
+          "position": 10
+        },
+        {
+          "id": "gaming-3h-11",
+          "title": "Velocity Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/11-05-s1-11-velocity-session.mp3",
+          "duration_seconds": 300.024,
+          "position": 11
+        },
+        {
+          "id": "gaming-3h-12",
+          "title": "Night Flow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/12-06-s1-12-night-flow.mp3",
+          "duration_seconds": 300.024,
+          "position": 12
+        },
+        {
+          "id": "gaming-3h-13",
+          "title": "Level Zone",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/13-01-s1-13-level-zone.mp3",
+          "duration_seconds": 300.024,
+          "position": 13
+        },
+        {
+          "id": "gaming-3h-14",
+          "title": "Velocity Session 33",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/14-02-s1-14-velocity-session-33.mp3",
+          "duration_seconds": 300.024,
+          "position": 14
+        },
+        {
+          "id": "gaming-3h-15",
+          "title": "Pixel Match 36",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/15-03-s1-15-pixel-match-36.mp3",
+          "duration_seconds": 300.024,
+          "position": 15
+        },
+        {
+          "id": "gaming-3h-16",
+          "title": "Cyber Mode",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/16-04-s1-16-cyber-mode.mp3",
+          "duration_seconds": 300.024,
+          "position": 16
+        },
+        {
+          "id": "gaming-3h-17",
+          "title": "Night Circuit",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/17-05-s1-17-night-circuit.mp3",
+          "duration_seconds": 300.024,
+          "position": 17
+        },
+        {
+          "id": "gaming-3h-18",
+          "title": "Loading Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/18-06-s1-18-loading-session.mp3",
+          "duration_seconds": 300.024,
+          "position": 18
+        },
+        {
+          "id": "gaming-3h-19",
+          "title": "Arcade Mode",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/19-01-s2-01-arcade-mode.mp3",
+          "duration_seconds": 300.024,
+          "position": 19
+        },
+        {
+          "id": "gaming-3h-20",
+          "title": "Respawn Grid",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/20-02-s2-02-respawn-grid.mp3",
+          "duration_seconds": 300.024,
+          "position": 20
+        },
+        {
+          "id": "gaming-3h-21",
+          "title": "Neon Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/21-03-s2-03-neon-session.mp3",
+          "duration_seconds": 300.024,
+          "position": 21
+        },
+        {
+          "id": "gaming-3h-22",
+          "title": "Cyber Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/22-04-s2-04-cyber-lobby.mp3",
+          "duration_seconds": 300.024,
+          "position": 22
+        },
+        {
+          "id": "gaming-3h-23",
+          "title": "Cyber Lobby 11",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/23-05-s2-05-cyber-lobby-11.mp3",
+          "duration_seconds": 300.024,
+          "position": 23
+        },
+        {
+          "id": "gaming-3h-24",
+          "title": "Velocity Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/24-06-s2-06-velocity-lobby.mp3",
+          "duration_seconds": 300.024,
+          "position": 24
+        },
+        {
+          "id": "gaming-3h-25",
+          "title": "Checkpoint Drive",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/25-01-s2-07-checkpoint-drive.mp3",
+          "duration_seconds": 300.024,
+          "position": 25
+        },
+        {
+          "id": "gaming-3h-26",
+          "title": "Cyber Run 18",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/26-02-s2-08-cyber-run-18.mp3",
+          "duration_seconds": 300.024,
+          "position": 26
+        },
+        {
+          "id": "gaming-3h-27",
+          "title": "Checkpoint Match",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/27-03-s2-09-checkpoint-match.mp3",
+          "duration_seconds": 300.024,
+          "position": 27
+        },
+        {
+          "id": "gaming-3h-28",
+          "title": "Respawn Run",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/28-04-s2-10-respawn-run.mp3",
+          "duration_seconds": 300.024,
+          "position": 28
+        },
+        {
+          "id": "gaming-3h-29",
+          "title": "Level Quest",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/29-05-s2-11-level-quest.mp3",
+          "duration_seconds": 300.024,
+          "position": 29
+        },
+        {
+          "id": "gaming-3h-30",
+          "title": "Checkpoint Flow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/30-06-s2-12-checkpoint-flow.mp3",
+          "duration_seconds": 300.024,
+          "position": 30
+        },
+        {
+          "id": "gaming-3h-31",
+          "title": "Level Zone",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/31-01-s2-13-level-zone.mp3",
+          "duration_seconds": 300.024,
+          "position": 31
+        },
+        {
+          "id": "gaming-3h-32",
+          "title": "Velocity Mode",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/32-02-s2-14-velocity-mode.mp3",
+          "duration_seconds": 300.024,
+          "position": 32
+        },
+        {
+          "id": "gaming-3h-33",
+          "title": "Digital Mode",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/33-03-s2-15-digital-mode.mp3",
+          "duration_seconds": 300.024,
+          "position": 33
+        },
+        {
+          "id": "gaming-3h-34",
+          "title": "Arcade Zone",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/34-04-s2-16-arcade-zone.mp3",
+          "duration_seconds": 300.024,
+          "position": 34
+        },
+        {
+          "id": "gaming-3h-35",
+          "title": "Velocity Zone",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/35-05-s2-17-velocity-zone.mp3",
+          "duration_seconds": 300.024,
+          "position": 35
+        },
+        {
+          "id": "gaming-3h-36",
+          "title": "Checkpoint Run",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/36-06-s2-18-checkpoint-run.mp3",
+          "duration_seconds": 300.024,
+          "position": 36
+        }
+      ]
+    },
+    {
+      "key": "rainy-radio",
+      "name": "Rainy Lofi Radio",
+      "category": "Live Radio",
+      "series": "Rainy + Late Night Office",
+      "genre": "Rainy Lofi / Late Night Lofi",
+      "moods": [
+        "rainy",
+        "cozy",
+        "nocturnal",
+        "focused",
+        "peaceful"
+      ],
+      "source": "expanded-current-live-playlist",
+      "track_count": 24,
+      "total_duration_seconds": 7200,
+      "tracks": [
+        {
+          "id": "rainy-radio-01",
+          "title": "Neon Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/01-neon-lobby.wav",
+          "duration_seconds": 300,
+          "position": 1,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-02",
+          "title": "After Hours Elevator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/02-after-hours-elevator.wav",
+          "duration_seconds": 300,
+          "position": 2,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-03",
+          "title": "Blue Hour Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/03-blue-hour-desk.wav",
+          "duration_seconds": 300,
+          "position": 3,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-04",
+          "title": "Neon Deadline",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/04-neon-deadline.wav",
+          "duration_seconds": 300,
+          "position": 4,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-05",
+          "title": "Night Elevator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/05-night-elevator.wav",
+          "duration_seconds": 300,
+          "position": 5,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-06",
+          "title": "Blue Hour Deadline",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/06-blue-hour-deadline.wav",
+          "duration_seconds": 300,
+          "position": 6,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-07",
+          "title": "Midnight Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/07-midnight-desk.wav",
+          "duration_seconds": 300,
+          "position": 7,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-08",
+          "title": "Night Windows",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/08-night-windows.wav",
+          "duration_seconds": 300,
+          "position": 8,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-09",
+          "title": "Neon Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/09-neon-desk.wav",
+          "duration_seconds": 300,
+          "position": 9,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-10",
+          "title": "Quiet Desk 23",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/10-quiet-desk-23.wav",
+          "duration_seconds": 300,
+          "position": 10,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-11",
+          "title": "Night Elevator 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/11-night-elevator-26.wav",
+          "duration_seconds": 300,
+          "position": 11,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-12",
+          "title": "Night Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/12-night-desk.wav",
+          "duration_seconds": 300,
+          "position": 12,
+          "source_series": "late-night-office"
+        },
+        {
+          "id": "rainy-radio-13",
+          "title": "Soft Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/01-soft-desk.wav",
+          "duration_seconds": 300,
+          "position": 13,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-14",
+          "title": "Soft Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/02-soft-hours.wav",
+          "duration_seconds": 300,
+          "position": 14,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-15",
+          "title": "Grey Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/03-grey-desk.wav",
+          "duration_seconds": 300,
+          "position": 15,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-16",
+          "title": "Quiet Glass",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/04-quiet-glass.wav",
+          "duration_seconds": 300,
+          "position": 16,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-17",
+          "title": "Quiet Street",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/05-quiet-street.wav",
+          "duration_seconds": 300,
+          "position": 17,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-18",
+          "title": "Quiet Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/06-quiet-desk.wav",
+          "duration_seconds": 300,
+          "position": 18,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-19",
+          "title": "Grey Desk 16",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/07-grey-desk-16.wav",
+          "duration_seconds": 300,
+          "position": 19,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-20",
+          "title": "Rainy Glass",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/08-rainy-glass.wav",
+          "duration_seconds": 300,
+          "position": 20,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-21",
+          "title": "Rainy Notes",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/09-rainy-notes.wav",
+          "duration_seconds": 300,
+          "position": 21,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-22",
+          "title": "Quiet Desk 23",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/10-quiet-desk-23.wav",
+          "duration_seconds": 300,
+          "position": 22,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-23",
+          "title": "Rainy Glass 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/11-rainy-glass-26.wav",
+          "duration_seconds": 300,
+          "position": 23,
+          "source_series": "rainy-office"
+        },
+        {
+          "id": "rainy-radio-24",
+          "title": "Cloudy Street 28",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/12-cloudy-street-28.wav",
+          "duration_seconds": 300,
+          "position": 24,
+          "source_series": "rainy-office"
+        }
+      ]
+    },
+    {
+      "key": "deep-house-radio",
+      "name": "Deep House Radio",
+      "category": "Live Radio",
+      "series": "Deep House",
+      "genre": "Deep House / Lounge / Focus",
+      "moods": [
+        "focused",
+        "polished",
+        "late-night",
+        "lounge"
+      ],
+      "source": "current-live-playlist",
+      "track_count": 73,
+      "total_duration_seconds": 21900,
+      "tracks": [
+        {
+          "id": "deep-house-radio-01",
+          "title": "Reference Test 20260929 024504 Track 01",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-847d72af-3a44-4526-92a7-19de170f7b3d/reference-test-20260929-024504_track_01.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "deep-house-radio-02",
+          "title": "Sunday Afterglow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/01-sunday-afterglow.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "deep-house-radio-03",
+          "title": "Midnight Boulevard",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/02-midnight-boulevard.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "deep-house-radio-04",
+          "title": "Glass Afterglow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/03-glass-afterglow.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "deep-house-radio-05",
+          "title": "Studio Boulevard",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/04-studio-boulevard.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "deep-house-radio-06",
+          "title": "Northbound Hallway",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/05-northbound-hallway.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "deep-house-radio-07",
+          "title": "Window Seat Avenue",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/06-window-seat-avenue.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "deep-house-radio-08",
+          "title": "Late Check In Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/07-late-check-in-workspace.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "deep-house-radio-09",
+          "title": "Midnight Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/08-midnight-hours.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "deep-house-radio-10",
+          "title": "Studio Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/09-studio-lobby.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "deep-house-radio-11",
+          "title": "Midnight Meeting",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/10-midnight-meeting.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "deep-house-radio-12",
+          "title": "Downtown Coffee",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/11-downtown-coffee.wav",
+          "duration_seconds": 300,
+          "position": 12
+        },
+        {
+          "id": "deep-house-radio-13",
+          "title": "Late Check In District",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/12-late-check-in-district.wav",
+          "duration_seconds": 300,
+          "position": 13
+        },
+        {
+          "id": "deep-house-radio-14",
+          "title": "Downtown Transit",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/13-downtown-transit.wav",
+          "duration_seconds": 300,
+          "position": 14
+        },
+        {
+          "id": "deep-house-radio-15",
+          "title": "Lobby District",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/14-lobby-district.wav",
+          "duration_seconds": 300,
+          "position": 15
+        },
+        {
+          "id": "deep-house-radio-16",
+          "title": "Sunday Floor",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/15-sunday-floor.wav",
+          "duration_seconds": 300,
+          "position": 16
+        },
+        {
+          "id": "deep-house-radio-17",
+          "title": "City Escalator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/16-city-escalator.wav",
+          "duration_seconds": 300,
+          "position": 17
+        },
+        {
+          "id": "deep-house-radio-18",
+          "title": "Sunday Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/17-sunday-hours.wav",
+          "duration_seconds": 300,
+          "position": 18
+        },
+        {
+          "id": "deep-house-radio-19",
+          "title": "Silver Avenue",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/18-silver-avenue.wav",
+          "duration_seconds": 300,
+          "position": 19
+        },
+        {
+          "id": "deep-house-radio-20",
+          "title": "Golden Meeting",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/19-golden-meeting.wav",
+          "duration_seconds": 300,
+          "position": 20
+        },
+        {
+          "id": "deep-house-radio-21",
+          "title": "Window Seat Transit",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/20-window-seat-transit.wav",
+          "duration_seconds": 300,
+          "position": 21
+        },
+        {
+          "id": "deep-house-radio-22",
+          "title": "Downtown Elevator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/21-downtown-elevator.wav",
+          "duration_seconds": 300,
+          "position": 22
+        },
+        {
+          "id": "deep-house-radio-23",
+          "title": "Northbound Coffee",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/22-northbound-coffee.wav",
+          "duration_seconds": 300,
+          "position": 23
+        },
+        {
+          "id": "deep-house-radio-24",
+          "title": "Velvet Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/23-velvet-lobby.wav",
+          "duration_seconds": 300,
+          "position": 24
+        },
+        {
+          "id": "deep-house-radio-25",
+          "title": "Sunday Suite",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/24-sunday-suite.wav",
+          "duration_seconds": 300,
+          "position": 25
+        },
+        {
+          "id": "deep-house-radio-26",
+          "title": "Neon Transit",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/25-neon-transit.wav",
+          "duration_seconds": 300,
+          "position": 26
+        },
+        {
+          "id": "deep-house-radio-27",
+          "title": "Neon Meeting",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/26-neon-meeting.wav",
+          "duration_seconds": 300,
+          "position": 27
+        },
+        {
+          "id": "deep-house-radio-28",
+          "title": "After Hours Skyline",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/27-after-hours-skyline.wav",
+          "duration_seconds": 300,
+          "position": 28
+        },
+        {
+          "id": "deep-house-radio-29",
+          "title": "Blue Hour Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/28-blue-hour-workspace.wav",
+          "duration_seconds": 300,
+          "position": 29
+        },
+        {
+          "id": "deep-house-radio-30",
+          "title": "Blue Hour Avenue",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/29-blue-hour-avenue.wav",
+          "duration_seconds": 300,
+          "position": 30
+        },
+        {
+          "id": "deep-house-radio-31",
+          "title": "Studio Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/30-studio-desk.wav",
+          "duration_seconds": 300,
+          "position": 31
+        },
+        {
+          "id": "deep-house-radio-32",
+          "title": "Neon Windows",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/01-neon-windows.wav",
+          "duration_seconds": 300,
+          "position": 32
+        },
+        {
+          "id": "deep-house-radio-33",
+          "title": "Soft Focus Elevator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/02-soft-focus-elevator.wav",
+          "duration_seconds": 300,
+          "position": 33
+        },
+        {
+          "id": "deep-house-radio-34",
+          "title": "Late Check In Hallway",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/03-late-check-in-hallway.wav",
+          "duration_seconds": 300,
+          "position": 34
+        },
+        {
+          "id": "deep-house-radio-35",
+          "title": "Late Check In Avenue",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/04-late-check-in-avenue.wav",
+          "duration_seconds": 300,
+          "position": 35
+        },
+        {
+          "id": "deep-house-radio-36",
+          "title": "Silver Escalator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/05-silver-escalator.wav",
+          "duration_seconds": 300,
+          "position": 36
+        },
+        {
+          "id": "deep-house-radio-37",
+          "title": "Quiet Coffee",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/06-quiet-coffee.wav",
+          "duration_seconds": 300,
+          "position": 37
+        },
+        {
+          "id": "deep-house-radio-38",
+          "title": "Northbound Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/07-northbound-workspace.wav",
+          "duration_seconds": 300,
+          "position": 38
+        },
+        {
+          "id": "deep-house-radio-39",
+          "title": "City Windows",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/08-city-windows.wav",
+          "duration_seconds": 300,
+          "position": 39
+        },
+        {
+          "id": "deep-house-radio-40",
+          "title": "Lobby Windows",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/09-lobby-windows.wav",
+          "duration_seconds": 300,
+          "position": 40
+        },
+        {
+          "id": "deep-house-radio-41",
+          "title": "Midnight Windows",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/10-midnight-windows.wav",
+          "duration_seconds": 300,
+          "position": 41
+        },
+        {
+          "id": "deep-house-radio-42",
+          "title": "Soft Focus Notes",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/11-soft-focus-notes.wav",
+          "duration_seconds": 300,
+          "position": 42
+        },
+        {
+          "id": "deep-house-radio-43",
+          "title": "Golden Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/12-golden-workspace.wav",
+          "duration_seconds": 300,
+          "position": 43
+        },
+        {
+          "id": "deep-house-radio-44",
+          "title": "Midnight Elevator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/13-midnight-elevator.wav",
+          "duration_seconds": 300,
+          "position": 44
+        },
+        {
+          "id": "deep-house-radio-45",
+          "title": "Executive Afterglow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/14-executive-afterglow.wav",
+          "duration_seconds": 300,
+          "position": 45
+        },
+        {
+          "id": "deep-house-radio-46",
+          "title": "Glass Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/15-glass-lobby.wav",
+          "duration_seconds": 300,
+          "position": 46
+        },
+        {
+          "id": "deep-house-radio-47",
+          "title": "Executive Hallway",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/16-executive-hallway.wav",
+          "duration_seconds": 300,
+          "position": 47
+        },
+        {
+          "id": "deep-house-radio-48",
+          "title": "Golden Avenue",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/17-golden-avenue.wav",
+          "duration_seconds": 300,
+          "position": 48
+        },
+        {
+          "id": "deep-house-radio-49",
+          "title": "Sunday District",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/18-sunday-district.wav",
+          "duration_seconds": 300,
+          "position": 49
+        },
+        {
+          "id": "deep-house-radio-50",
+          "title": "Quiet Elevator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/19-quiet-elevator.wav",
+          "duration_seconds": 300,
+          "position": 50
+        },
+        {
+          "id": "deep-house-radio-51",
+          "title": "Soft Focus Notes 20",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/20-soft-focus-notes-20.wav",
+          "duration_seconds": 300,
+          "position": 51
+        },
+        {
+          "id": "deep-house-radio-52",
+          "title": "Northbound Notes",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/21-northbound-notes.wav",
+          "duration_seconds": 300,
+          "position": 52
+        },
+        {
+          "id": "deep-house-radio-53",
+          "title": "Silver Escalator 22",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/22-silver-escalator-22.wav",
+          "duration_seconds": 300,
+          "position": 53
+        },
+        {
+          "id": "deep-house-radio-54",
+          "title": "City Routine",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/23-city-routine.wav",
+          "duration_seconds": 300,
+          "position": 54
+        },
+        {
+          "id": "deep-house-radio-55",
+          "title": "Soft Focus Skyline",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/24-soft-focus-skyline.wav",
+          "duration_seconds": 300,
+          "position": 55
+        },
+        {
+          "id": "deep-house-radio-56",
+          "title": "Velvet Avenue",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/25-velvet-avenue.wav",
+          "duration_seconds": 300,
+          "position": 56
+        },
+        {
+          "id": "deep-house-radio-57",
+          "title": "Golden Meeting",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/26-golden-meeting.wav",
+          "duration_seconds": 300,
+          "position": 57
+        },
+        {
+          "id": "deep-house-radio-58",
+          "title": "Downtown Notes",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/27-downtown-notes.wav",
+          "duration_seconds": 300,
+          "position": 58
+        },
+        {
+          "id": "deep-house-radio-59",
+          "title": "Lobby Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/28-lobby-hours.wav",
+          "duration_seconds": 300,
+          "position": 59
+        },
+        {
+          "id": "deep-house-radio-60",
+          "title": "Neon Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/29-neon-desk.wav",
+          "duration_seconds": 300,
+          "position": 60
+        },
+        {
+          "id": "deep-house-radio-61",
+          "title": "Lobby Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/30-lobby-desk.wav",
+          "duration_seconds": 300,
+          "position": 61
+        },
+        {
+          "id": "deep-house-radio-62",
+          "title": "Neon Avenue",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/01-neon-avenue.wav",
+          "duration_seconds": 300,
+          "position": 62
+        },
+        {
+          "id": "deep-house-radio-63",
+          "title": "Downtown Suite",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/02-downtown-suite.wav",
+          "duration_seconds": 300,
+          "position": 63
+        },
+        {
+          "id": "deep-house-radio-64",
+          "title": "Glass Notes",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/03-glass-notes.wav",
+          "duration_seconds": 300,
+          "position": 64
+        },
+        {
+          "id": "deep-house-radio-65",
+          "title": "Window Seat Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/04-window-seat-workspace.wav",
+          "duration_seconds": 300,
+          "position": 65
+        },
+        {
+          "id": "deep-house-radio-66",
+          "title": "Sunday Windows",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/05-sunday-windows.wav",
+          "duration_seconds": 300,
+          "position": 66
+        },
+        {
+          "id": "deep-house-radio-67",
+          "title": "Blue Hour Routine",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/06-blue-hour-routine.wav",
+          "duration_seconds": 300,
+          "position": 67
+        },
+        {
+          "id": "deep-house-radio-68",
+          "title": "Neon Escalator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/07-neon-escalator.wav",
+          "duration_seconds": 300,
+          "position": 68
+        },
+        {
+          "id": "deep-house-radio-69",
+          "title": "Northbound Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/08-northbound-hours.wav",
+          "duration_seconds": 300,
+          "position": 69
+        },
+        {
+          "id": "deep-house-radio-70",
+          "title": "Executive Boulevard",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/09-executive-boulevard.wav",
+          "duration_seconds": 300,
+          "position": 70
+        },
+        {
+          "id": "deep-house-radio-71",
+          "title": "Golden Boulevard",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/10-golden-boulevard.wav",
+          "duration_seconds": 300,
+          "position": 71
+        },
+        {
+          "id": "deep-house-radio-72",
+          "title": "Golden Afterglow 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/11-golden-afterglow-26.wav",
+          "duration_seconds": 300,
+          "position": 72
+        },
+        {
+          "id": "deep-house-radio-73",
+          "title": "Studio Skyline 28",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/12-studio-skyline-28.wav",
+          "duration_seconds": 300,
+          "position": 73
+        }
+      ]
+    },
+    {
+      "key": "office-productivity",
+      "name": "Office / Productivity",
+      "category": "Series",
+      "series": "Office / Productivity",
+      "genre": "modern productivity lofi with clean lounge production",
+      "moods": [
+        "focused",
+        "clean",
+        "steady",
+        "optimistic"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-01-office-productivity-c7a83f5c",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "office-productivity-01",
+          "title": "Quiet Workflow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/01-quiet-workflow.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "office-productivity-02",
+          "title": "Soft Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/02-soft-desk.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "office-productivity-03",
+          "title": "Focus Desk 06",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/03-focus-desk-06.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "office-productivity-04",
+          "title": "Focus Notes",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/04-focus-notes.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "office-productivity-05",
+          "title": "Daily Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/05-daily-workspace.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "office-productivity-06",
+          "title": "Soft Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/06-soft-workspace.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "office-productivity-07",
+          "title": "Daily Notes",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/07-daily-notes.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "office-productivity-08",
+          "title": "Focus Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/08-focus-workspace.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "office-productivity-09",
+          "title": "Focus Notes 21",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/09-focus-notes-21.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "office-productivity-10",
+          "title": "Clean Workflow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/10-clean-workflow.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "office-productivity-11",
+          "title": "Daily Workflow 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/11-daily-workflow-26.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "office-productivity-12",
+          "title": "Focus Desk 28",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-01-office-productivity-c7a83f5c/12-focus-desk-28.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "late-night-office",
+      "name": "Late Night Office",
+      "category": "Series",
+      "series": "Late Night Office",
+      "genre": "late-night lofi with moody electric keys and deep ambient layers",
+      "moods": [
+        "nocturnal",
+        "calm",
+        "introspective",
+        "focused"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-02-late-night-office-8a2398c1",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "late-night-office-01",
+          "title": "Neon Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/01-neon-lobby.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "late-night-office-02",
+          "title": "After Hours Elevator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/02-after-hours-elevator.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "late-night-office-03",
+          "title": "Blue Hour Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/03-blue-hour-desk.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "late-night-office-04",
+          "title": "Neon Deadline",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/04-neon-deadline.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "late-night-office-05",
+          "title": "Night Elevator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/05-night-elevator.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "late-night-office-06",
+          "title": "Blue Hour Deadline",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/06-blue-hour-deadline.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "late-night-office-07",
+          "title": "Midnight Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/07-midnight-desk.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "late-night-office-08",
+          "title": "Night Windows",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/08-night-windows.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "late-night-office-09",
+          "title": "Neon Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/09-neon-desk.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "late-night-office-10",
+          "title": "Quiet Desk 23",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/10-quiet-desk-23.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "late-night-office-11",
+          "title": "Night Elevator 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/11-night-elevator-26.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "late-night-office-12",
+          "title": "Night Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/12-night-desk.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "coffee-shop",
+      "name": "Coffee Shop",
+      "category": "Series",
+      "series": "Coffee Shop",
+      "genre": "cozy coffee-shop lofi with warm jazz-influenced electric keys",
+      "moods": [
+        "cozy",
+        "warm",
+        "gentle",
+        "creative"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-03-coffee-shop-93ad899a",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "coffee-shop-01",
+          "title": "Sunday Morning",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/01-sunday-morning.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "coffee-shop-02",
+          "title": "Window Table",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/02-window-table.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "coffee-shop-03",
+          "title": "Corner Cafe",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/03-corner-cafe.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "coffee-shop-04",
+          "title": "Roasted Cafe 08",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/04-roasted-cafe-08.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "coffee-shop-05",
+          "title": "Corner Table",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/05-corner-table.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "coffee-shop-06",
+          "title": "Corner Table 13",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/06-corner-table-13.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "coffee-shop-07",
+          "title": "Quiet Coffee",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/07-quiet-coffee.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "coffee-shop-08",
+          "title": "Warm Coffee",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/08-warm-coffee.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "coffee-shop-09",
+          "title": "Window Coffee 21",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/09-window-coffee-21.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "coffee-shop-10",
+          "title": "Sunday Morning 23",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/10-sunday-morning-23.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "coffee-shop-11",
+          "title": "Sunday Cup 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/11-sunday-cup-26.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "coffee-shop-12",
+          "title": "Window Notebook",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-03-coffee-shop-93ad899a/12-window-notebook.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "rooftop-office",
+      "name": "Rooftop Office",
+      "category": "Series",
+      "series": "Rooftop Office",
+      "genre": "skyline chill-house lofi with airy synths and polished urban groove",
+      "moods": [
+        "airy",
+        "urban",
+        "uplifting",
+        "focused"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-04-rooftop-office-c0a54074",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "rooftop-office-01",
+          "title": "Golden Terrace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/01-golden-terrace.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "rooftop-office-02",
+          "title": "Golden Avenue",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/02-golden-avenue.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "rooftop-office-03",
+          "title": "Blue View",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/03-blue-view.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "rooftop-office-04",
+          "title": "City Sunset",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/04-city-sunset.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "rooftop-office-05",
+          "title": "Skyline Terrace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/05-skyline-terrace.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "rooftop-office-06",
+          "title": "City Air",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/06-city-air.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "rooftop-office-07",
+          "title": "Golden Terrace 16",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/07-golden-terrace-16.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "rooftop-office-08",
+          "title": "Blue Air",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/08-blue-air.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "rooftop-office-09",
+          "title": "Blue View 21",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/09-blue-view-21.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "rooftop-office-10",
+          "title": "City Air 23",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/10-city-air-23.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "rooftop-office-11",
+          "title": "Golden Sunset 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/11-golden-sunset-26.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "rooftop-office-12",
+          "title": "Blue Terrace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-04-rooftop-office-c0a54074/12-blue-terrace.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "rainy-office",
+      "name": "Rainy Office",
+      "category": "Series",
+      "series": "Rainy Office",
+      "genre": "rainy-day lofi with muted keys and spacious ambient warmth",
+      "moods": [
+        "rainy",
+        "cozy",
+        "introspective",
+        "peaceful"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-05-rainy-office-8723845d",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "rainy-office-01",
+          "title": "Soft Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/01-soft-desk.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "rainy-office-02",
+          "title": "Soft Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/02-soft-hours.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "rainy-office-03",
+          "title": "Grey Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/03-grey-desk.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "rainy-office-04",
+          "title": "Quiet Glass",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/04-quiet-glass.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "rainy-office-05",
+          "title": "Quiet Street",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/05-quiet-street.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "rainy-office-06",
+          "title": "Quiet Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/06-quiet-desk.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "rainy-office-07",
+          "title": "Grey Desk 16",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/07-grey-desk-16.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "rainy-office-08",
+          "title": "Rainy Glass",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/08-rainy-glass.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "rainy-office-09",
+          "title": "Rainy Notes",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/09-rainy-notes.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "rainy-office-10",
+          "title": "Quiet Desk 23",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/10-quiet-desk-23.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "rainy-office-11",
+          "title": "Rainy Glass 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/11-rainy-glass-26.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "rainy-office-12",
+          "title": "Cloudy Street 28",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/12-cloudy-street-28.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "sunday-morning-work",
+      "name": "Sunday Morning Work",
+      "category": "Series",
+      "series": "Sunday Morning Work",
+      "genre": "sunny Sunday lofi with warm keys and light organic-feeling percussion",
+      "moods": [
+        "bright",
+        "gentle",
+        "hopeful",
+        "relaxed"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-06-sunday-morning-work-afe75cfb",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "sunday-morning-work-01",
+          "title": "Easy Light",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/01-easy-light.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "sunday-morning-work-02",
+          "title": "Morning Coffee",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/02-morning-coffee.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "sunday-morning-work-03",
+          "title": "Sunlit Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/03-sunlit-desk.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "sunday-morning-work-04",
+          "title": "Morning Routine 08",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/04-morning-routine-08.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "sunday-morning-work-05",
+          "title": "Morning Window",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/05-morning-window.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "sunday-morning-work-06",
+          "title": "Easy Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/06-easy-desk.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "sunday-morning-work-07",
+          "title": "Morning Window 16",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/07-morning-window-16.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "sunday-morning-work-08",
+          "title": "Warm Coffee 18",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/08-warm-coffee-18.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "sunday-morning-work-09",
+          "title": "Easy Routine 21",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/09-easy-routine-21.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "sunday-morning-work-10",
+          "title": "Warm Routine",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/10-warm-routine.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "sunday-morning-work-11",
+          "title": "Easy Desk 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/11-easy-desk-26.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "sunday-morning-work-12",
+          "title": "Sunday Window",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-06-sunday-morning-work-afe75cfb/12-sunday-window.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "deep-focus-coding",
+      "name": "Deep Focus / Coding",
+      "category": "Series",
+      "series": "Deep Focus / Coding",
+      "genre": "minimal coding lofi with hypnotic electronic repetition",
+      "moods": [
+        "minimal",
+        "hypnotic",
+        "precise",
+        "focused"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-07-deep-focus-coding-ab805b59",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "deep-focus-coding-01",
+          "title": "Syntax Terminal",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/01-syntax-terminal.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "deep-focus-coding-02",
+          "title": "Quiet Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/02-quiet-session.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "deep-focus-coding-03",
+          "title": "Loop Compile",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/03-loop-compile.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "deep-focus-coding-04",
+          "title": "Quiet Session 08",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/04-quiet-session-08.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "deep-focus-coding-05",
+          "title": "Night Mode",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/05-night-mode.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "deep-focus-coding-06",
+          "title": "Quiet Stack",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/06-quiet-stack.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "deep-focus-coding-07",
+          "title": "Soft Stack",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/07-soft-stack.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "deep-focus-coding-08",
+          "title": "Loop Flow 18",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/08-loop-flow-18.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "deep-focus-coding-09",
+          "title": "Soft Flow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/09-soft-flow.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "deep-focus-coding-10",
+          "title": "Night Terminal",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/10-night-terminal.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "deep-focus-coding-11",
+          "title": "Loop Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/11-loop-session.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "deep-focus-coding-12",
+          "title": "Syntax Stack",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-07-deep-focus-coding-ab805b59/12-syntax-stack.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "luxury-office",
+      "name": "Luxury Office / Zara-style ambience",
+      "category": "Series",
+      "series": "Luxury Office / Zara-style ambience",
+      "genre": "premium fashion-retail deep house blended with polished lounge house",
+      "moods": [
+        "premium",
+        "stylish",
+        "confident",
+        "modern"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-08-luxury-office-125803e4",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "luxury-office-01",
+          "title": "Silver Floor",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/01-silver-floor.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "luxury-office-02",
+          "title": "Executive Suite",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/02-executive-suite.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "luxury-office-03",
+          "title": "Marble Elevator",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/03-marble-elevator.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "luxury-office-04",
+          "title": "Executive Floor",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/04-executive-floor.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "luxury-office-05",
+          "title": "Executive Avenue 11",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/05-executive-avenue-11.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "luxury-office-06",
+          "title": "Private Suite",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/06-private-suite.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "luxury-office-07",
+          "title": "Private Showroom",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/07-private-showroom.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "luxury-office-08",
+          "title": "Marble Elevator 18",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/08-marble-elevator-18.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "luxury-office-09",
+          "title": "Silver Floor 21",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/09-silver-floor-21.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "luxury-office-10",
+          "title": "Marble Elevator 23",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/10-marble-elevator-23.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "luxury-office-11",
+          "title": "Gallery Lobby 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/11-gallery-lobby-26.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "luxury-office-12",
+          "title": "Gallery Suite",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-08-luxury-office-125803e4/12-gallery-suite.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "work-from-home",
+      "name": "Work From Home",
+      "category": "Series",
+      "series": "Work From Home",
+      "genre": "cozy home-office lofi with warm modern production",
+      "moods": [
+        "comfortable",
+        "warm",
+        "steady",
+        "relaxed"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-09-work-from-home-bea516fa",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "work-from-home-01",
+          "title": "Home Routine",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/01-home-routine.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "work-from-home-02",
+          "title": "Window Morning",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/02-window-morning.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "work-from-home-03",
+          "title": "Home Room 06",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/03-home-room-06.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "work-from-home-04",
+          "title": "Quiet Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/04-quiet-workspace.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "work-from-home-05",
+          "title": "Home Break",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/05-home-break.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "work-from-home-06",
+          "title": "Cozy Break",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/06-cozy-break.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "work-from-home-07",
+          "title": "Soft Desk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/07-soft-desk.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "work-from-home-08",
+          "title": "Remote Room 18",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/08-remote-room-18.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "work-from-home-09",
+          "title": "Soft Workspace",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/09-soft-workspace.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "work-from-home-10",
+          "title": "Quiet Morning 23",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/10-quiet-morning-23.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "work-from-home-11",
+          "title": "Home Routine 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/11-home-routine-26.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "work-from-home-12",
+          "title": "Window Workspace 28",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-09-work-from-home-bea516fa/12-window-workspace-28.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "night-shift",
+      "name": "Night Shift",
+      "category": "Series",
+      "series": "Night Shift",
+      "genre": "dark urban lofi with subtle neon electronics",
+      "moods": [
+        "dark",
+        "steady",
+        "urban",
+        "focused"
+      ],
+      "source": "series-result",
+      "release_tag": "peter-lofi-series-10-night-shift-e1e17eaf",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/peter-lofi-master.m4a",
+      "track_count": 12,
+      "total_duration_seconds": 3600,
+      "tracks": [
+        {
+          "id": "night-shift-01",
+          "title": "Neon Train",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/01-neon-train.wav",
+          "duration_seconds": 300,
+          "position": 1
+        },
+        {
+          "id": "night-shift-02",
+          "title": "Dark Monitor",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/02-dark-monitor.wav",
+          "duration_seconds": 300,
+          "position": 2
+        },
+        {
+          "id": "night-shift-03",
+          "title": "Dark Street",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/03-dark-street.wav",
+          "duration_seconds": 300,
+          "position": 3
+        },
+        {
+          "id": "night-shift-04",
+          "title": "Night Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/04-night-hours.wav",
+          "duration_seconds": 300,
+          "position": 4
+        },
+        {
+          "id": "night-shift-05",
+          "title": "Neon Monitor",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/05-neon-monitor.wav",
+          "duration_seconds": 300,
+          "position": 5
+        },
+        {
+          "id": "night-shift-06",
+          "title": "Dark Street 13",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/06-dark-street-13.wav",
+          "duration_seconds": 300,
+          "position": 6
+        },
+        {
+          "id": "night-shift-07",
+          "title": "Night Train",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/07-night-train.wav",
+          "duration_seconds": 300,
+          "position": 7
+        },
+        {
+          "id": "night-shift-08",
+          "title": "Last Street",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/08-last-street.wav",
+          "duration_seconds": 300,
+          "position": 8
+        },
+        {
+          "id": "night-shift-09",
+          "title": "Night Shift 21",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/09-night-shift-21.wav",
+          "duration_seconds": 300,
+          "position": 9
+        },
+        {
+          "id": "night-shift-10",
+          "title": "After Floor 23",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/10-after-floor-23.wav",
+          "duration_seconds": 300,
+          "position": 10
+        },
+        {
+          "id": "night-shift-11",
+          "title": "Night Train 26",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/11-night-train-26.wav",
+          "duration_seconds": 300,
+          "position": 11
+        },
+        {
+          "id": "night-shift-12",
+          "title": "After Street 28",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-10-night-shift-e1e17eaf/12-after-street-28.wav",
+          "duration_seconds": 300,
+          "position": 12
+        }
+      ]
+    },
+    {
+      "key": "gaming-3h",
+      "name": "Gaming Focus",
+      "category": "Series",
+      "series": "Gaming Focus",
+      "genre": "Gaming Lofi",
+      "moods": [],
+      "source": "series-result",
+      "release_tag": "peter-lofi-gaming-3h-v2-36956897081",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/peter-lofi-gaming-3h.mp3",
+      "track_count": 36,
+      "total_duration_seconds": 10801,
+      "tracks": [
+        {
+          "id": "gaming-3h-01",
+          "title": "Respawn Grid",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/01-01-s1-01-respawn-grid.mp3",
+          "duration_seconds": 300.024,
+          "position": 1
+        },
+        {
+          "id": "gaming-3h-02",
+          "title": "Velocity Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/02-02-s1-02-velocity-lobby.mp3",
+          "duration_seconds": 300.024,
+          "position": 2
+        },
+        {
+          "id": "gaming-3h-03",
+          "title": "Midnight Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/03-03-s1-03-midnight-lobby.mp3",
+          "duration_seconds": 300.024,
+          "position": 3
+        },
+        {
+          "id": "gaming-3h-04",
+          "title": "Checkpoint Flow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/04-04-s1-04-checkpoint-flow.mp3",
+          "duration_seconds": 300.024,
+          "position": 4
+        },
+        {
+          "id": "gaming-3h-05",
+          "title": "Cyber Circuit",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/05-05-s1-05-cyber-circuit.mp3",
+          "duration_seconds": 300.024,
+          "position": 5
+        },
+        {
+          "id": "gaming-3h-06",
+          "title": "Level Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/06-06-s1-06-level-session.mp3",
+          "duration_seconds": 300.024,
+          "position": 6
+        },
+        {
+          "id": "gaming-3h-07",
+          "title": "Cyber Run",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/07-01-s1-07-cyber-run.mp3",
+          "duration_seconds": 300.024,
+          "position": 7
+        },
+        {
+          "id": "gaming-3h-08",
+          "title": "Pixel Grid 18",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/08-02-s1-08-pixel-grid-18.mp3",
+          "duration_seconds": 300.024,
+          "position": 8
+        },
+        {
+          "id": "gaming-3h-09",
+          "title": "Loading Match",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/09-03-s1-09-loading-match.mp3",
+          "duration_seconds": 300.024,
+          "position": 9
+        },
+        {
+          "id": "gaming-3h-10",
+          "title": "Neon Arena",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/10-04-s1-10-neon-arena.mp3",
+          "duration_seconds": 300.024,
+          "position": 10
+        },
+        {
+          "id": "gaming-3h-11",
+          "title": "Velocity Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/11-05-s1-11-velocity-session.mp3",
+          "duration_seconds": 300.024,
+          "position": 11
+        },
+        {
+          "id": "gaming-3h-12",
+          "title": "Night Flow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/12-06-s1-12-night-flow.mp3",
+          "duration_seconds": 300.024,
+          "position": 12
+        },
+        {
+          "id": "gaming-3h-13",
+          "title": "Level Zone",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/13-01-s1-13-level-zone.mp3",
+          "duration_seconds": 300.024,
+          "position": 13
+        },
+        {
+          "id": "gaming-3h-14",
+          "title": "Velocity Session 33",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/14-02-s1-14-velocity-session-33.mp3",
+          "duration_seconds": 300.024,
+          "position": 14
+        },
+        {
+          "id": "gaming-3h-15",
+          "title": "Pixel Match 36",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/15-03-s1-15-pixel-match-36.mp3",
+          "duration_seconds": 300.024,
+          "position": 15
+        },
+        {
+          "id": "gaming-3h-16",
+          "title": "Cyber Mode",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/16-04-s1-16-cyber-mode.mp3",
+          "duration_seconds": 300.024,
+          "position": 16
+        },
+        {
+          "id": "gaming-3h-17",
+          "title": "Night Circuit",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/17-05-s1-17-night-circuit.mp3",
+          "duration_seconds": 300.024,
+          "position": 17
+        },
+        {
+          "id": "gaming-3h-18",
+          "title": "Loading Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/18-06-s1-18-loading-session.mp3",
+          "duration_seconds": 300.024,
+          "position": 18
+        },
+        {
+          "id": "gaming-3h-19",
+          "title": "Arcade Mode",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/19-01-s2-01-arcade-mode.mp3",
+          "duration_seconds": 300.024,
+          "position": 19
+        },
+        {
+          "id": "gaming-3h-20",
+          "title": "Respawn Grid",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/20-02-s2-02-respawn-grid.mp3",
+          "duration_seconds": 300.024,
+          "position": 20
+        },
+        {
+          "id": "gaming-3h-21",
+          "title": "Neon Session",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/21-03-s2-03-neon-session.mp3",
+          "duration_seconds": 300.024,
+          "position": 21
+        },
+        {
+          "id": "gaming-3h-22",
+          "title": "Cyber Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/22-04-s2-04-cyber-lobby.mp3",
+          "duration_seconds": 300.024,
+          "position": 22
+        },
+        {
+          "id": "gaming-3h-23",
+          "title": "Cyber Lobby 11",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/23-05-s2-05-cyber-lobby-11.mp3",
+          "duration_seconds": 300.024,
+          "position": 23
+        },
+        {
+          "id": "gaming-3h-24",
+          "title": "Velocity Lobby",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/24-06-s2-06-velocity-lobby.mp3",
+          "duration_seconds": 300.024,
+          "position": 24
+        },
+        {
+          "id": "gaming-3h-25",
+          "title": "Checkpoint Drive",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/25-01-s2-07-checkpoint-drive.mp3",
+          "duration_seconds": 300.024,
+          "position": 25
+        },
+        {
+          "id": "gaming-3h-26",
+          "title": "Cyber Run 18",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/26-02-s2-08-cyber-run-18.mp3",
+          "duration_seconds": 300.024,
+          "position": 26
+        },
+        {
+          "id": "gaming-3h-27",
+          "title": "Checkpoint Match",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/27-03-s2-09-checkpoint-match.mp3",
+          "duration_seconds": 300.024,
+          "position": 27
+        },
+        {
+          "id": "gaming-3h-28",
+          "title": "Respawn Run",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/28-04-s2-10-respawn-run.mp3",
+          "duration_seconds": 300.024,
+          "position": 28
+        },
+        {
+          "id": "gaming-3h-29",
+          "title": "Level Quest",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/29-05-s2-11-level-quest.mp3",
+          "duration_seconds": 300.024,
+          "position": 29
+        },
+        {
+          "id": "gaming-3h-30",
+          "title": "Checkpoint Flow",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/30-06-s2-12-checkpoint-flow.mp3",
+          "duration_seconds": 300.024,
+          "position": 30
+        },
+        {
+          "id": "gaming-3h-31",
+          "title": "Level Zone",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/31-01-s2-13-level-zone.mp3",
+          "duration_seconds": 300.024,
+          "position": 31
+        },
+        {
+          "id": "gaming-3h-32",
+          "title": "Velocity Mode",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/32-02-s2-14-velocity-mode.mp3",
+          "duration_seconds": 300.024,
+          "position": 32
+        },
+        {
+          "id": "gaming-3h-33",
+          "title": "Digital Mode",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/33-03-s2-15-digital-mode.mp3",
+          "duration_seconds": 300.024,
+          "position": 33
+        },
+        {
+          "id": "gaming-3h-34",
+          "title": "Arcade Zone",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/34-04-s2-16-arcade-zone.mp3",
+          "duration_seconds": 300.024,
+          "position": 34
+        },
+        {
+          "id": "gaming-3h-35",
+          "title": "Velocity Zone",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/35-05-s2-17-velocity-zone.mp3",
+          "duration_seconds": 300.024,
+          "position": 35
+        },
+        {
+          "id": "gaming-3h-36",
+          "title": "Checkpoint Run",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/36-06-s2-18-checkpoint-run.mp3",
+          "duration_seconds": 300.024,
+          "position": 36
+        }
+      ]
+    },
+    {
+      "key": "coffee-shop-3h",
+      "name": "Coffee Shop 3H",
+      "category": "Series",
+      "series": "Coffee Shop 3H",
+      "genre": "Coffee Shop Lofi",
+      "moods": [],
+      "source": "series-result",
+      "release_tag": "peter-lofi-coffee-shop-3h-v2-36968197906",
+      "master_audio_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/peter-lofi-coffee-shop-3h.mp3",
+      "track_count": 36,
+      "total_duration_seconds": 10801,
+      "tracks": [
+        {
+          "id": "coffee-shop-3h-01",
+          "title": "Cozy Break",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/01-01-s1-01-cozy-break.mp3",
+          "duration_seconds": 300.024,
+          "position": 1
+        },
+        {
+          "id": "coffee-shop-3h-02",
+          "title": "Warm Window",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/02-02-s1-02-warm-window.mp3",
+          "duration_seconds": 300.024,
+          "position": 2
+        },
+        {
+          "id": "coffee-shop-3h-03",
+          "title": "Soft Window",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/03-03-s1-03-soft-window.mp3",
+          "duration_seconds": 300.024,
+          "position": 3
+        },
+        {
+          "id": "coffee-shop-3h-04",
+          "title": "Roasted Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/04-04-s1-04-roasted-hours.mp3",
+          "duration_seconds": 300.024,
+          "position": 4
+        },
+        {
+          "id": "coffee-shop-3h-05",
+          "title": "Sunday Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/05-05-s1-05-sunday-hours.mp3",
+          "duration_seconds": 300.024,
+          "position": 5
+        },
+        {
+          "id": "coffee-shop-3h-06",
+          "title": "Cozy Table",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/06-06-s1-06-cozy-table.mp3",
+          "duration_seconds": 300.024,
+          "position": 6
+        },
+        {
+          "id": "coffee-shop-3h-07",
+          "title": "City Cup",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/07-01-s2-01-city-cup.mp3",
+          "duration_seconds": 300.024,
+          "position": 7
+        },
+        {
+          "id": "coffee-shop-3h-08",
+          "title": "Cafe Pages",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/08-02-s2-02-cafe-pages.mp3",
+          "duration_seconds": 300.024,
+          "position": 8
+        },
+        {
+          "id": "coffee-shop-3h-09",
+          "title": "City Coffee",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/09-03-s2-03-city-coffee.mp3",
+          "duration_seconds": 300.024,
+          "position": 9
+        },
+        {
+          "id": "coffee-shop-3h-10",
+          "title": "Window Cup",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/10-04-s2-04-window-cup.mp3",
+          "duration_seconds": 300.024,
+          "position": 10
+        },
+        {
+          "id": "coffee-shop-3h-11",
+          "title": "Corner Pages",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/11-05-s2-05-corner-pages.mp3",
+          "duration_seconds": 300.024,
+          "position": 11
+        },
+        {
+          "id": "coffee-shop-3h-12",
+          "title": "Roasted Table",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/12-06-s2-06-roasted-table.mp3",
+          "duration_seconds": 300.024,
+          "position": 12
+        },
+        {
+          "id": "coffee-shop-3h-13",
+          "title": "Cafe Pages",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/13-01-s3-01-cafe-pages.mp3",
+          "duration_seconds": 300.024,
+          "position": 13
+        },
+        {
+          "id": "coffee-shop-3h-14",
+          "title": "Warm Cafe",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/14-02-s3-02-warm-cafe.mp3",
+          "duration_seconds": 300.024,
+          "position": 14
+        },
+        {
+          "id": "coffee-shop-3h-15",
+          "title": "Sunday Morning",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/15-03-s3-03-sunday-morning.mp3",
+          "duration_seconds": 300.024,
+          "position": 15
+        },
+        {
+          "id": "coffee-shop-3h-16",
+          "title": "Warm Window",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/16-04-s3-04-warm-window.mp3",
+          "duration_seconds": 300.024,
+          "position": 16
+        },
+        {
+          "id": "coffee-shop-3h-17",
+          "title": "Golden Blend",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/17-05-s3-05-golden-blend.mp3",
+          "duration_seconds": 300.024,
+          "position": 17
+        },
+        {
+          "id": "coffee-shop-3h-18",
+          "title": "Roasted Break",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/18-06-s3-06-roasted-break.mp3",
+          "duration_seconds": 300.024,
+          "position": 18
+        },
+        {
+          "id": "coffee-shop-3h-19",
+          "title": "Soft Break",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/19-01-s4-01-soft-break.mp3",
+          "duration_seconds": 300.024,
+          "position": 19
+        },
+        {
+          "id": "coffee-shop-3h-20",
+          "title": "Corner Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/20-02-s4-02-corner-hours.mp3",
+          "duration_seconds": 300.024,
+          "position": 20
+        },
+        {
+          "id": "coffee-shop-3h-21",
+          "title": "Golden Corner",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/21-03-s4-03-golden-corner.mp3",
+          "duration_seconds": 300.024,
+          "position": 21
+        },
+        {
+          "id": "coffee-shop-3h-22",
+          "title": "Sunday Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/22-04-s4-04-sunday-hours.mp3",
+          "duration_seconds": 300.024,
+          "position": 22
+        },
+        {
+          "id": "coffee-shop-3h-23",
+          "title": "City Hours 11",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/23-05-s4-05-city-hours-11.mp3",
+          "duration_seconds": 300.024,
+          "position": 23
+        },
+        {
+          "id": "coffee-shop-3h-24",
+          "title": "Warm Cafe",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/24-06-s4-06-warm-cafe.mp3",
+          "duration_seconds": 300.024,
+          "position": 24
+        },
+        {
+          "id": "coffee-shop-3h-25",
+          "title": "Cafe Cafe",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/25-01-s5-01-cafe-cafe.mp3",
+          "duration_seconds": 300.024,
+          "position": 25
+        },
+        {
+          "id": "coffee-shop-3h-26",
+          "title": "Roasted Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/26-02-s5-02-roasted-hours.mp3",
+          "duration_seconds": 300.024,
+          "position": 26
+        },
+        {
+          "id": "coffee-shop-3h-27",
+          "title": "Cozy Coffee",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/27-03-s5-03-cozy-coffee.mp3",
+          "duration_seconds": 300.024,
+          "position": 27
+        },
+        {
+          "id": "coffee-shop-3h-28",
+          "title": "Quiet Blend",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/28-04-s5-04-quiet-blend.mp3",
+          "duration_seconds": 300.024,
+          "position": 28
+        },
+        {
+          "id": "coffee-shop-3h-29",
+          "title": "Morning Table",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/29-05-s5-05-morning-table.mp3",
+          "duration_seconds": 300.024,
+          "position": 29
+        },
+        {
+          "id": "coffee-shop-3h-30",
+          "title": "Cozy Pages",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/30-06-s5-06-cozy-pages.mp3",
+          "duration_seconds": 300.024,
+          "position": 30
+        },
+        {
+          "id": "coffee-shop-3h-31",
+          "title": "City Pages",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/31-01-s6-01-city-pages.mp3",
+          "duration_seconds": 300.024,
+          "position": 31
+        },
+        {
+          "id": "coffee-shop-3h-32",
+          "title": "Sunday Cafe",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/32-02-s6-02-sunday-cafe.mp3",
+          "duration_seconds": 300.024,
+          "position": 32
+        },
+        {
+          "id": "coffee-shop-3h-33",
+          "title": "City Hours",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/33-03-s6-03-city-hours.mp3",
+          "duration_seconds": 300.024,
+          "position": 33
+        },
+        {
+          "id": "coffee-shop-3h-34",
+          "title": "Corner Notebook",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/34-04-s6-04-corner-notebook.mp3",
+          "duration_seconds": 300.024,
+          "position": 34
+        },
+        {
+          "id": "coffee-shop-3h-35",
+          "title": "City Window",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/35-05-s6-05-city-window.mp3",
+          "duration_seconds": 300.024,
+          "position": 35
+        },
+        {
+          "id": "coffee-shop-3h-36",
+          "title": "Morning Coffee",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-coffee-shop-3h-v2-36968197906/36-06-s6-06-morning-coffee.mp3",
+          "duration_seconds": 300.024,
+          "position": 36
+        }
+      ]
+    }
+  ]
+}
