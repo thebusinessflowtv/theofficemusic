@@ -1,0 +1,122 @@
+name: One-off — Move Live Runtime to OVH Local
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/oneoff-ovh-local-runtime-migration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reload host deploy agent with local watchdog
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          curl -fsS -X POST "$BASE/api/ops/20261003-live-stability/host-agent" | tee /tmp/host-agent.json
+
+          for I in $(seq 1 80); do
+            curl -fsS "$BASE/api/ops/20261003-live-stability/status" > /tmp/status.json
+            STATUS="$(jq -r '[.commands[]? | select(.action=="deploy_host_agent")] | sort_by(.created_at) | last | .status // empty' /tmp/status.json)"
+            echo "host-agent status=$STATUS"
+            [ "$STATUS" = "completed" ] && exit 0
+            [ "$STATUS" = "failed" ] && { cat /tmp/status.json; exit 1; }
+            sleep 3
+          done
+          echo "Host deploy agent did not confirm reload in time."
+          cat /tmp/status.json || true
+          exit 1
+
+      - name: Deploy only the OVH control agent
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          BODY='{"action":"deploy_service","target":"ovh-agent"}'
+          if ! curl -fsS -X POST "$BASE/api/ovh/deploy-agent/commands" -H "content-type: application/json" --data "$BODY" | tee /tmp/deploy-ovh-agent.json; then
+            curl -fsS -X POST "$BASE/api/ovh/deploy-agent/command" -H "content-type: application/json" --data "$BODY" | tee /tmp/deploy-ovh-agent.json
+          fi
+          sleep 35
+          curl -fsS "$BASE/api/ovh/public-health" | tee /tmp/health-after-agent.json
+
+      - name: Reconnect only Twitch to the official Twitch ingest
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          BODY='{"action":"deploy_service","target":"twitch"}'
+          if ! curl -fsS -X POST "$BASE/api/ovh/deploy-agent/commands" -H "content-type: application/json" --data "$BODY" | tee /tmp/deploy-twitch.json; then
+            curl -fsS -X POST "$BASE/api/ovh/deploy-agent/command" -H "content-type: application/json" --data "$BODY" | tee /tmp/deploy-twitch.json
+          fi
+
+          for I in $(seq 1 90); do
+            sleep 3
+            if curl -fsS "$BASE/api/ovh/public-health" > /tmp/health.json; then
+              STATUS="$(jq -r '.services.twitch.status // empty' /tmp/health.json)"
+              HOT="$(jq -r '.services.twitch.hot_swap // false' /tmp/health.json)"
+              echo "twitch status=$STATUS hot_swap=$HOT"
+              [ "$STATUS" = "live" ] && [ "$HOT" = "true" ] && break
+            fi
+          done
+          [ "$(jq -r '.services.twitch.status // empty' /tmp/health.json)" = "live" ]
+          cat /tmp/health.json
+
+      - name: Confirm Kick and YouTube were not redeployed
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          curl -fsS "$BASE/api/ovh/public-health" > /tmp/final-health.json
+          jq '{
+            runtime,
+            reported_at,
+            host,
+            services: {
+              kick: .services.kick,
+              twitch: .services.twitch,
+              "youtube-deep-house": .services["youtube-deep-house"],
+              "youtube-rainy": .services["youtube-rainy"]
+            }
+          }' /tmp/final-health.json
+
+      - name: Persist migration proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p control/diagnostics
+          jq -n             --slurpfile health /tmp/final-health.json             --slurpfile host /tmp/host-agent.json             --slurpfile agent /tmp/deploy-ovh-agent.json             --slurpfile twitch /tmp/deploy-twitch.json             '{
+              checked_at:(now|todateiso8601),
+              migration:"ovh-local-runtime-v1",
+              policy:{
+                live_state_authority:"ovh",
+                cloudflare_role:"control-and-ui-only",
+                github_runtime_polling:false,
+                local_heartbeat_seconds:10,
+                remote_status_seconds:60,
+                ordinary_visual_changes_restart_rtmp:false,
+                watchdog:"host-local-publisher-watchdog"
+              },
+              host_agent:$host[0],
+              ovh_agent_deploy:$agent[0],
+              twitch_deploy:$twitch[0],
+              health:$health[0]
+            }' > control/diagnostics/ovh-local-runtime-migration.json
+          cat control/diagnostics/ovh-local-runtime-migration.json
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/ovh-local-runtime-migration.json
+          git commit -m "ops: record OVH local-runtime migration" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
