@@ -15,6 +15,8 @@ services:
       AUDIO_BITRATE_KBPS: "160"
       VIDEO_PROFILE: "main"
       VIDEO_PRESET: "superfast"
+      BOOTSTRAP_SESSION_ID: "2c2b6335-7872-4a9c-af69-cee17f10bedc"
+      BOOTSTRAP_TITLE: "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE"
     volumes:
       - ./state:/state
 
@@ -32,6 +34,8 @@ services:
       VIDEO_BITRATE_KBPS: "4500"
       VIDEO_BUFSIZE_KBPS: "9000"
       AUDIO_BITRATE_KBPS: "160"
+      BOOTSTRAP_SESSION_ID: "b43d8f63-6e1a-4c47-a4c5-10fd2e4a5c8f"
+      BOOTSTRAP_TITLE: "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE"
     volumes:
       - ./state:/state
 
@@ -52,6 +56,8 @@ services:
       VIDEO_PROFILE: "main"
       VIDEO_PRESET: "superfast"
       VIDEO_COPY_MODE: "1"
+      BOOTSTRAP_SESSION_ID: "8cf99db8-3e53-4b74-b9d2-51fb67b54ff8"
+      BOOTSTRAP_TITLE: "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧"
     volumes:
       - ./state:/state
 
@@ -72,6 +78,8 @@ services:
       VIDEO_PROFILE: "main"
       VIDEO_PRESET: "superfast"
       VIDEO_COPY_MODE: "1"
+      BOOTSTRAP_SESSION_ID: "72fcb955-bbb3-41d1-b8d0-fd90427c57a5"
+      BOOTSTRAP_TITLE: "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧"
     volumes:
       - ./state:/state
 
@@ -85,5 +93,18 @@ services:
       CONTROL_PORT: "8787"
     ports:
       - "127.0.0.1:8787:8787"
+    volumes:
+      - ./state:/state
+
+  ovh-agent:
+    build: .
+    container_name: peter-lofi-ovh-agent
+    command: ["python", "/app/ovh_agent.py"]
+    restart: unless-stopped
+    environment:
+      MEDIAFORGE_API_URL: "https://mediaforge-api.guilhermeodsgn.workers.dev"
+      OVH_COMMAND_INDEX_URL: "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/control/ovh-commands/index.json"
+      OVH_COMMAND_RAW_BASE: "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/"
+      OVH_AGENT_POLL_SECONDS: "5"
     volumes:
       - ./state:/state
