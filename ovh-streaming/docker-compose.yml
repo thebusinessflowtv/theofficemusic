@@ -26,7 +26,7 @@ services:
     command: ["python", "/app/stream_core.py", "--platform", "twitch"]
     restart: unless-stopped
     environment:
-      STREAM_URL: "rtmps://live.twitch.tv:443/app"
+      STREAM_URL: "rtmps://ingest.global-contribute.live-video.net/app"
       STREAM_KEY: ${TWITCH_STREAM_KEY}
       LOOP_URL: ${LOOP_URL}
       PLAYLIST_FILE: /config/gaming.json
