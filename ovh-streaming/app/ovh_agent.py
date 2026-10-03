@@ -78,6 +78,23 @@ def apply_command(cmd):
                 "source": "mediaforge-playlist-switch"
             })
         return
+    if action=="set_visual":
+        loop_url=str(cmd.get("loop_url") or "").strip()
+        if not loop_url:
+            raise ValueError("loop_url is required for set_visual")
+        desired=read_json(st/"desired.json",{}) or {}
+        desired.update({
+            "runtime":"ovh",
+            "runtime_slot":slot,
+            "session_id":str(cmd.get("session_id") or desired.get("session_id") or ""),
+            "title":str(cmd.get("title") or desired.get("title") or ""),
+            "loop_url":loop_url,
+            "desired":"live",
+            "generation":next_generation(desired),
+            "updated_at":iso_now(),
+        })
+        atomic_json(st/"desired.json",desired)
+        return
     desired.update({
         "runtime":"ovh","runtime_slot":slot,
         "session_id":str(cmd.get("session_id") or desired.get("session_id") or ""),
@@ -124,6 +141,7 @@ def service_payload(slot):
         "status":h.get("status") or ("live" if d.get("desired")=="live" else "unknown"),
         "fps":h.get("fps"),"video_bitrate_kbps":h.get("video_bitrate_kbps"),
         "restarts":h.get("restarts",0),"updated_at":h.get("updated_at"),
+        "loop_url":h.get("loop_url") or d.get("loop_url") or "",
         "now_playing":n,
     }
 
