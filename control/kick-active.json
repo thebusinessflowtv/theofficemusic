@@ -1,7 +1,9 @@
 {
   "session_id": "2c2b6335-7872-4a9c-af69-cee17f10bedc",
-  "status": "starting",
-  "segment_index": 1,
-  "run_id": 37097382340,
-  "updated_at": "2026-10-03T04:42:01.748298+00:00"
+  "status": "live",
+  "updated_at": "2026-10-03T15:32:19.103Z",
+  "platform": "kick",
+  "runtime": "ovh",
+  "runtime_slot": "kick",
+  "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE"
 }
