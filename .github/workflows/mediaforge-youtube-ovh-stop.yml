@@ -1,0 +1,114 @@
+name: MediaForge — Stop YouTube Live on OVH
+
+on:
+  workflow_dispatch:
+    inputs:
+      session_id:
+        description: MediaForge session UUID
+        required: true
+        type: string
+      runtime_slot:
+        description: OVH YouTube slot
+        required: true
+        type: choice
+        options:
+          - youtube-deep-house
+          - youtube-rainy
+
+permissions:
+  contents: write
+
+jobs:
+  stop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      SESSION_ID: ${{ inputs.session_id }}
+      RUNTIME_SLOT: ${{ inputs.runtime_slot }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Complete broadcast and stop OVH slot
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          import json, os, pathlib
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          root=pathlib.Path('.')
+          sid=os.environ['SESSION_ID'];slot=os.environ['RUNTIME_SLOT']
+          result_path=root/f'control/live-results/{sid}.json'
+          result=json.loads(result_path.read_text(encoding='utf-8')) if result_path.exists() else {}
+          bid=str(result.get('youtube_broadcast_id') or '')
+
+          if bid:
+              creds=Credentials(
+                  token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+                  token_uri='https://oauth2.googleapis.com/token',
+                  client_id=os.environ['YOUTUBE_CLIENT_ID'],
+                  client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+                  scopes=['https://www.googleapis.com/auth/youtube'],
+              )
+              creds.refresh(Request())
+              yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+              items=yt.liveBroadcasts().list(part='status',id=bid).execute().get('items') or []
+              lifecycle=((items[0].get('status') or {}).get('lifeCycleStatus')) if items else None
+              if lifecycle=='live':
+                  yt.liveBroadcasts().transition(part='status',id=bid,broadcastStatus='complete').execute()
+              elif lifecycle not in {'complete','revoked'}:
+                  print(f'::warning::Broadcast lifecycle={lifecycle}; encoder stop will release the ingest.')
+
+          now=dt.datetime.now(dt.timezone.utc)
+          cmd_id=f'stop-{sid}-{int(now.timestamp())}'
+          cmd_path=root/f'control/ovh-commands/{cmd_id}.json'
+          cmd_path.parent.mkdir(parents=True,exist_ok=True)
+          cmd={
+              'id':cmd_id,'action':'stop','platform':'youtube','runtime':'ovh','runtime_slot':slot,
+              'session_id':sid,'title':str(result.get('title') or ''),'requested_at':now.isoformat(),
+              'source':'mediaforge-youtube-stop',
+          }
+          cmd_path.write_text(json.dumps(cmd,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+
+          index_path=root/'control/ovh-commands/index.json'
+          index=json.loads(index_path.read_text(encoding='utf-8')) if index_path.exists() else {'version':1,'commands':[]}
+          commands=[x for x in index.get('commands',[]) if str(x.get('id'))!=cmd_id]
+          commands.append({'id':cmd_id,'path':str(cmd_path).replace('\\','/'),'created_at':now.isoformat()})
+          index.update({'version':1,'updated_at':now.isoformat(),'commands':commands[-500:]})
+          index_path.write_text(json.dumps(index,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+
+          stations_path=root/'control/youtube-stations.json'
+          cfg=json.loads(stations_path.read_text(encoding='utf-8'))
+          station=next((x for x in cfg.get('stations',[]) if x.get('ovh_slot')==slot),None)
+          if station and str(station.get('current_session_id') or '')==sid:
+              station.update({'status':'stopped','current_session_id':None,'youtube_broadcast_id':None,'last_stopped_at':now.isoformat()})
+          cfg['updated_at']=now.isoformat()
+          stations_path.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+
+          result.update({'status':'completed','runtime':'ovh','runtime_slot':slot,'completed_at':now.isoformat(),'updated_at':now.isoformat()})
+          result_path.parent.mkdir(parents=True,exist_ok=True)
+          result_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+
+      - name: Publish stop
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/live-results control/youtube-stations.json control/ovh-commands
+          git commit -m "mediaforge: stop YouTube OVH live ${SESSION_ID}"
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((N*2))
+          done
+          exit 1
