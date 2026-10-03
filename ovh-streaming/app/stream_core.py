@@ -264,31 +264,42 @@ class StreamCore:
             "2",
             "-max_interleave_delta",
             "1000000",
-            # Decouple the encoder from RTMP socket stalls. The FIFO muxer keeps
-            # consuming A/V, drops queued packets instead of blocking the whole
-            # pipeline, and reconnects the underlying FLV/RTMP publisher.
-            "-f",
-            "fifo",
-            "-fifo_format",
-            "flv",
-            "-queue_size",
-            "1200",
-            "-attempt_recovery",
-            "1",
-            "-recover_any_error",
-            "1",
-            "-recovery_wait_time",
-            "1",
-            "-drop_pkts_on_overflow",
-            "1",
-            "-restart_with_keyframe",
-            "1",
-            "-max_recovery_attempts",
-            "1000000",
-            "-format_opts",
-            "flvflags=no_duration_filesize",
-            self.target(),
         ]
+
+        if self.platform == "twitch":
+            # Twitch: write FLV directly. Wrapping FLV inside FFmpeg's fifo muxer
+            # preserves the MPEG-TS codec_tag (0x1b) and the FLV slave rejects
+            # the H.264 header as tag 27 instead of FLV H.264 tag 7. A direct
+            # FLV muxer normalizes the tag correctly. StreamCore already
+            # supervises this process and reconnects it if the RTMP socket exits.
+            cmd += [
+                "-f",
+                "flv",
+                self.target(),
+            ]
+        else:
+            # Other platforms keep the existing buffered publisher behavior.
+            cmd += [
+                "-f",
+                "fifo",
+                "-fifo_format",
+                "flv",
+                "-queue_size",
+                "1200",
+                "-attempt_recovery",
+                "1",
+                "-recover_any_error",
+                "1",
+                "-recovery_wait_time",
+                "1",
+                "-drop_pkts_on_overflow",
+                "1",
+                "-restart_with_keyframe",
+                "1",
+                "-max_recovery_attempts",
+                "1000000",
+                self.target(),
+            ]
         self.ffmpeg_log = open(self.state / "ffmpeg.log", "ab", buffering=0)
         self.encoder = subprocess.Popen(cmd, stdout=self.ffmpeg_log, stderr=self.ffmpeg_log)
         self.connected_since = time.time()
