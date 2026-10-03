@@ -3,12 +3,19 @@
 
 Runs on the OVH host via systemd. It intentionally exposes NO shell surface:
 only a fixed allow-list of deploy/health/rollback operations is accepted.
+
+The process also owns a local, Cloudflare-independent publisher watchdog.
+The watchdog never recreates streaming containers. When it sees a burst of
+fresh RTMP/network errors it terminates only the FFmpeg publisher child so
+stream_core can reconnect immediately using the existing local state.
 """
 import json
 import os
 import pathlib
+import signal
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 from datetime import datetime, timezone
@@ -18,8 +25,13 @@ REPO=pathlib.Path(os.environ.get("MEDIAFORGE_REPO","/home/ubuntu/theofficemusic"
 OVH=REPO/"ovh-streaming"
 STATE_DIR=pathlib.Path("/var/lib/mediaforge-deploy-agent")
 STATE_FILE=STATE_DIR/"state.json"
+WATCHDOG_FILE=STATE_DIR/"watchdog.json"
 DOCKER_CONFIG_DIR=STATE_DIR/"docker"
 POLL=max(3,int(os.environ.get("MEDIAFORGE_DEPLOY_POLL_SECONDS","5")))
+WATCHDOG_INTERVAL=max(2,int(os.environ.get("MEDIAFORGE_WATCHDOG_SECONDS","5")))
+WATCHDOG_WINDOW=max(20,int(os.environ.get("MEDIAFORGE_WATCHDOG_WINDOW_SECONDS","60")))
+WATCHDOG_THRESHOLD=max(3,int(os.environ.get("MEDIAFORGE_WATCHDOG_ERROR_THRESHOLD","5")))
+WATCHDOG_COOLDOWN=max(30,int(os.environ.get("MEDIAFORGE_WATCHDOG_COOLDOWN_SECONDS","120")))
 SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy")
 SERVICES=("ovh-agent","control-api")+SLOTS
 CONTAINERS={
@@ -30,46 +42,92 @@ CONTAINERS={
     "youtube-deep-house":"peter-lofi-youtube-deep-house",
     "youtube-rainy":"peter-lofi-youtube-rainy",
 }
+NETWORK_ERROR_PATTERNS=(
+    "broken pipe",
+    "connection reset",
+    "connection timed out",
+    "connection refused",
+    "error writing",
+    "failed to update header",
+    "server returned",
+    "i/o error",
+    "input/output error",
+    "fifo queue full",
+    "recovery failed",
+    "cannot open connection",
+)
 
 STATE_DIR.mkdir(parents=True,exist_ok=True)
 DOCKER_CONFIG_DIR.mkdir(parents=True,exist_ok=True)
+_WATCH={}
+
 
 def now():
     return datetime.now(timezone.utc).isoformat().replace("+00:00","Z")
 
+
 def fetch_json(url):
-    req=urllib.request.Request(url+("&" if "?" in url else "?")+"ts="+str(int(time.time()*1000)),headers={"User-Agent":"MediaForge-Host-Deploy-Agent"})
+    req=urllib.request.Request(
+        url+("&" if "?" in url else "?")+"ts="+str(int(time.time()*1000)),
+        headers={"User-Agent":"MediaForge-Host-Deploy-Agent"},
+    )
     with urllib.request.urlopen(req,timeout=30) as r:
         return json.loads(r.read().decode("utf-8"))
 
+
 def post_json(url,payload):
     data=json.dumps(payload).encode("utf-8")
-    req=urllib.request.Request(url,data=data,method="POST",headers={"content-type":"application/json","user-agent":"MediaForge-Host-Deploy-Agent"})
+    req=urllib.request.Request(
+        url,
+        data=data,
+        method="POST",
+        headers={"content-type":"application/json","user-agent":"MediaForge-Host-Deploy-Agent"},
+    )
     with urllib.request.urlopen(req,timeout=30) as r:
         return json.loads(r.read().decode("utf-8") or "{}")
+
 
 def run(args,cwd=None,timeout=1200):
     env=os.environ.copy()
     # systemd hardening can make /root read-only. Keep all Docker/Buildx
     # state in the agent's writable state directory instead.
     env.setdefault("DOCKER_CONFIG",str(DOCKER_CONFIG_DIR))
-    p=subprocess.run(args,cwd=str(cwd) if cwd else None,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout,check=False,env=env)
+    p=subprocess.run(
+        args,
+        cwd=str(cwd) if cwd else None,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=timeout,
+        check=False,
+        env=env,
+    )
     out=(p.stdout or "")[-12000:]
     if p.returncode!=0:
         raise RuntimeError(f"command failed ({p.returncode}): {' '.join(args[:4])}\n{out[-2500:]}")
     return out
 
+
 def read_state():
     try:return json.loads(STATE_FILE.read_text(encoding="utf-8"))
     except Exception:return {}
+
 
 def write_state(data):
     tmp=STATE_FILE.with_suffix(".tmp")
     tmp.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     tmp.replace(STATE_FILE)
 
+
+def atomic_json(path,data):
+    tmp=path.with_suffix(path.suffix+".tmp")
+    tmp.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    tmp.replace(path)
+
+
 def git_head():
     return run(["runuser","-u","ubuntu","--","git","-C",str(REPO),"rev-parse","HEAD"],timeout=30).strip().splitlines()[-1]
+
 
 def git_sync():
     old=git_head()
@@ -77,6 +135,7 @@ def git_sync():
     run(["runuser","-u","ubuntu","--","git","-C",str(REPO),"reset","--hard","origin/main"],timeout=60)
     new=git_head()
     return old,new
+
 
 def health(slot):
     if slot in SLOTS:
@@ -100,6 +159,8 @@ def health(slot):
                 "audio_pid":d.get("audio_pid"),
                 "visual_pid":d.get("visual_pid"),
                 "visual_status":d.get("visual_status"),
+                "audio_status":d.get("audio_status"),
+                "audio_stalls":d.get("audio_stalls",0),
                 "generation":desired.get("generation"),
                 "visual_revision":desired.get("visual_revision"),
             }
@@ -121,6 +182,7 @@ def health(slot):
             return {"service":slot,"status":"unknown","error":str(e)[:160]}
     return {"service":slot,"status":"unknown"}
 
+
 def wait_healthy(slot,timeout=180,after_updated_at=None,require_hot_swap=False):
     end=time.time()+timeout
     last={}
@@ -135,6 +197,7 @@ def wait_healthy(slot,timeout=180,after_updated_at=None,require_hot_swap=False):
         time.sleep(5)
     raise RuntimeError(f"{slot} did not become ready: {last}")
 
+
 def backup_image(service):
     name=f"ovh-streaming-{service}:latest"
     stamp=datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
@@ -145,6 +208,7 @@ def backup_image(service):
         return backup
     except Exception:
         return ""
+
 
 def deploy_service(service):
     if service not in SERVICES:
@@ -161,9 +225,11 @@ def deploy_service(service):
     )
     return {"service":service,"health":h,"backup_image":backup}
 
+
 def deploy_all():
     results=[]
-    # Build first, then replace one service at a time.
+    # Explicit maintenance operation only. Normal media/playlist changes never
+    # call this path.
     run(["docker","compose","build"],cwd=OVH,timeout=2400)
     order=("ovh-agent","control-api","twitch","kick","youtube-deep-house","youtube-rainy")
     for service in order:
@@ -181,6 +247,7 @@ def deploy_all():
             "backup_image":backup,
         })
     return results
+
 
 def hot_patch_streaming(target="all"):
     targets=list(SLOTS) if target in ("", "all") else [target]
@@ -201,6 +268,7 @@ def hot_patch_streaming(target="all"):
         # recreating the container or touching the persistent RTMP encoder.
         run(["docker","cp",str(OVH/"app"/"audio_engine.py"),f"{name}:/app/audio_engine.py"],timeout=30)
         run(["docker","cp",str(OVH/"app"/"stream_core.py"),f"{name}:/app/stream_core.py"],timeout=30)
+        run(["docker","cp",str(OVH/"app"/"visual_engine.py"),f"{name}:/app/visual_engine.py"],timeout=30)
 
         if before_audio:
             run([
@@ -251,8 +319,127 @@ def rollback_service(service):
     write_state(st)
     return {"rolled_back_to":previous,**result}
 
+
 def health_all():
     return {"git_head":git_head(),"services":{s:health(s) for s in SERVICES}}
+
+
+def parse_iso(value):
+    try:
+        return datetime.fromisoformat(str(value).replace("Z","+00:00")).timestamp()
+    except Exception:
+        return None
+
+
+def recover_publisher(slot,pid,reason):
+    name=CONTAINERS.get(slot)
+    if not name or not pid:
+        return False
+    run([
+        "docker","exec",name,"python","-c",
+        f"import os,signal; os.kill({int(pid)}, signal.SIGTERM)"
+    ],timeout=20)
+    print("watchdog publisher recovery",slot,pid,reason,flush=True)
+    return True
+
+
+def watchdog_tick():
+    now_ts=time.time()
+    snapshot={
+        "updated_at":now(),
+        "mode":"local-ovh",
+        "cloudflare_required":False,
+        "container_restarts_allowed":False,
+        "services":{},
+    }
+    for slot in SLOTS:
+        st=_WATCH.setdefault(slot,{"offset":None,"events":[],"last_recovery":0.0})
+        h=health(slot)
+        log=OVH/"state"/slot/"ffmpeg.log"
+        new_text=""
+        try:
+            size=log.stat().st_size
+            if st["offset"] is None:
+                # Ignore historical log errors when the watchdog first starts.
+                st["offset"]=size
+            else:
+                if size < st["offset"]:
+                    st["offset"]=0
+                if size > st["offset"]:
+                    with open(log,"rb") as fh:
+                        fh.seek(st["offset"])
+                        new_text=fh.read(min(size-st["offset"],256*1024)).decode("utf-8","ignore")
+                    st["offset"]=size
+        except Exception:
+            pass
+
+        if new_text:
+            lowered=new_text.lower()
+            hits=sum(lowered.count(p) for p in NETWORK_ERROR_PATTERNS)
+            if hits:
+                st["events"].extend([now_ts]*min(hits,50))
+        st["events"]=[x for x in st["events"] if now_ts-x<=WATCHDOG_WINDOW]
+
+        updated_ts=parse_iso(h.get("updated_at"))
+        stale_seconds=round(now_ts-updated_ts,1) if updated_ts else None
+        recent_errors=len(st["events"])
+        action="observe"
+        recovered=False
+
+        # Never recreate a container automatically. Recover only the publisher
+        # child after a sustained burst of NEW network errors.
+        if (
+            recent_errors>=WATCHDOG_THRESHOLD
+            and h.get("encoder_pid")
+            and h.get("status") in {"live","starting","restarting"}
+            and now_ts-st["last_recovery"]>=WATCHDOG_COOLDOWN
+        ):
+            try:
+                recovered=recover_publisher(
+                    slot,
+                    h.get("encoder_pid"),
+                    f"{recent_errors} network errors/{WATCHDOG_WINDOW}s",
+                )
+                if recovered:
+                    st["last_recovery"]=now_ts
+                    st["events"]=[]
+                    action="publisher_recovery"
+            except Exception as exc:
+                action="recovery_failed:"+str(exc)[:160]
+
+        snapshot["services"][slot]={
+            "status":h.get("status"),
+            "encoder_pid":h.get("encoder_pid"),
+            "restarts":h.get("restarts",0),
+            "stale_seconds":stale_seconds,
+            "network_errors_window":recent_errors,
+            "last_recovery_at":(
+                datetime.fromtimestamp(st["last_recovery"],timezone.utc).isoformat().replace("+00:00","Z")
+                if st["last_recovery"] else None
+            ),
+            "action":action,
+            "recovered":recovered,
+        }
+
+    atomic_json(WATCHDOG_FILE,snapshot)
+
+
+def watchdog_loop():
+    while True:
+        try:
+            watchdog_tick()
+        except Exception as exc:
+            try:
+                atomic_json(WATCHDOG_FILE,{
+                    "updated_at":now(),
+                    "mode":"local-ovh",
+                    "status":"error",
+                    "error":str(exc)[:500],
+                })
+            except Exception:
+                pass
+        time.sleep(WATCHDOG_INTERVAL)
+
 
 def execute(cmd):
     action=str(cmd.get("action") or "")
@@ -280,7 +467,12 @@ def execute(cmd):
         return {"old_head":old,"new_head":new,"host_agent":"reloading"},True
     raise ValueError("action not allowed")
 
+
 def main():
+    # The watchdog is fully local and keeps running even when Cloudflare/D1 is
+    # unavailable or rate-limited.
+    threading.Thread(target=watchdog_loop,name="mediaforge-watchdog",daemon=True).start()
+
     while True:
         try:
             batch=fetch_json(API+"/api/ovh/deploy-agent/commands?limit=3")
@@ -304,8 +496,11 @@ def main():
                 if reload_self:
                     os.execv(sys.executable,[sys.executable,str(pathlib.Path(__file__).resolve())])
         except Exception as exc:
+            # Cloudflare is only a deploy/control channel. A failure here does
+            # not touch local publishers or the watchdog.
             print("deploy poll failed:",str(exc)[:800],flush=True)
         time.sleep(POLL)
+
 
 if __name__=="__main__":
     main()
