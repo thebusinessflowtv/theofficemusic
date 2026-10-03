@@ -522,6 +522,7 @@ def diagnose_stream_service(slot):
         raise ValueError("diagnose target not allowed")
     h=health(slot)
     log=OVH/"state"/slot/"ffmpeg.log"
+    visual_log=OVH/"state"/slot/"visual-ffmpeg.log"
     tail=""
     try:
         with open(log,"rb") as fh:
@@ -531,15 +532,32 @@ def diagnose_stream_service(slot):
             tail=fh.read().decode("utf-8","ignore")
     except Exception as exc:
         tail="log_read_error:"+str(exc)[:180]
+    visual_tail=""
+    try:
+        with open(visual_log,"rb") as fh:
+            fh.seek(0,2)
+            size=fh.tell()
+            fh.seek(max(0,size-16000))
+            visual_tail=fh.read().decode("utf-8","ignore")
+    except Exception as exc:
+        visual_tail="visual_log_read_error:"+str(exc)[:180]
     desired={}
     now_playing={}
     audio_health={}
+    visual_health={}
+    docker_stats=""
     try: desired=json.loads((OVH/"state"/slot/"desired.json").read_text(encoding="utf-8"))
     except Exception: pass
     try: now_playing=json.loads((OVH/"state"/slot/"now-playing.json").read_text(encoding="utf-8"))
     except Exception: pass
     try: audio_health=json.loads((OVH/"state"/slot/"audio-health.json").read_text(encoding="utf-8"))
     except Exception: pass
+    try: visual_health=json.loads((OVH/"state"/slot/"visual-health.json").read_text(encoding="utf-8"))
+    except Exception: pass
+    try:
+        docker_stats=run(["docker","stats","--no-stream","--format","{{.CPUPerc}}|{{.MemUsage}}|{{.NetIO}}|{{.BlockIO}}",CONTAINERS[slot]],timeout=20).strip()
+    except Exception as exc:
+        docker_stats="stats_error:"+str(exc)[:180]
     return {
         "service":slot,
         "health":h,
@@ -551,7 +569,10 @@ def diagnose_stream_service(slot):
         },
         "now_playing":now_playing,
         "audio_health":audio_health,
+        "visual_health":visual_health,
+        "docker_stats":docker_stats,
         "ffmpeg_log_tail":_redact_stream_log(tail),
+        "visual_ffmpeg_log_tail":_redact_stream_log(visual_tail),
     }
 
 
