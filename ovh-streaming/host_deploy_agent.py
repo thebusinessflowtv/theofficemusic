@@ -18,6 +18,7 @@ REPO=pathlib.Path(os.environ.get("MEDIAFORGE_REPO","/home/ubuntu/theofficemusic"
 OVH=REPO/"ovh-streaming"
 STATE_DIR=pathlib.Path("/var/lib/mediaforge-deploy-agent")
 STATE_FILE=STATE_DIR/"state.json"
+DOCKER_CONFIG_DIR=STATE_DIR/"docker"
 POLL=max(3,int(os.environ.get("MEDIAFORGE_DEPLOY_POLL_SECONDS","5")))
 SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy")
 SERVICES=("ovh-agent","control-api")+SLOTS
@@ -31,6 +32,7 @@ CONTAINERS={
 }
 
 STATE_DIR.mkdir(parents=True,exist_ok=True)
+DOCKER_CONFIG_DIR.mkdir(parents=True,exist_ok=True)
 
 def now():
     return datetime.now(timezone.utc).isoformat().replace("+00:00","Z")
@@ -47,7 +49,11 @@ def post_json(url,payload):
         return json.loads(r.read().decode("utf-8") or "{}")
 
 def run(args,cwd=None,timeout=1200):
-    p=subprocess.run(args,cwd=str(cwd) if cwd else None,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout,check=False)
+    env=os.environ.copy()
+    # systemd hardening can make /root read-only. Keep all Docker/Buildx
+    # state in the agent's writable state directory instead.
+    env.setdefault("DOCKER_CONFIG",str(DOCKER_CONFIG_DIR))
+    p=subprocess.run(args,cwd=str(cwd) if cwd else None,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=timeout,check=False,env=env)
     out=(p.stdout or "")[-12000:]
     if p.returncode!=0:
         raise RuntimeError(f"command failed ({p.returncode}): {' '.join(args[:4])}\n{out[-2500:]}")
