@@ -118,6 +118,8 @@ def main() -> None:
     ap.add_argument("--agent-token", required=True)
     ap.add_argument("--map", default="/opt/mediaforge-control/music-url-map.json")
     ap.add_argument("--cache-dir", default="/opt/mediaforge-control/library-migration-cache")
+    ap.add_argument("--stream-state", default="/home/ubuntu/theofficemusic/ovh-streaming/state")
+    ap.add_argument("--stations-dir", default="/home/ubuntu/theofficemusic/ovh-streaming/stations")
     args = ap.parse_args()
 
     api = args.api.rstrip("/")
@@ -181,6 +183,30 @@ def main() -> None:
         api_json(api, token, "/api/ovh/agent/runtime-config", "POST", {"path": path, "payload": localized}, timeout=180)
         print(f"{path}: localized and stored on OVH.", flush=True)
 
+    # Rewrite the active OVH runtime playlists in place. AudioEngine watches
+    # playlist.json mtime, so this changes the source for the next track without
+    # restarting the persistent RTMP encoder.
+    localized_files = 0
+    local_roots = [pathlib.Path(args.stream_state), pathlib.Path(args.stations_dir)]
+    for root in local_roots:
+        if not root.exists():
+            continue
+        candidates = list(root.glob("*/playlist.json")) if root.name == "state" else list(root.glob("*.json"))
+        for path in candidates:
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            localized = replace_urls(payload, mapping)
+            if count_github(localized):
+                raise RuntimeError(f"{path} still contains GitHub Release audio URLs")
+            if localized != payload:
+                temp = path.with_suffix(path.suffix + ".tmp")
+                temp.write_text(json.dumps(localized, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                temp.replace(path)
+                localized_files += 1
+                print(f"{path}: active runtime playlist localized without encoder restart.", flush=True)
+
     total_bytes = sum(int(mapping[u].get("size_bytes") or 0) for u in urls)
     print(json.dumps({
         "status": "MEDIAFORGE_LIBRARY_OVH_LOCAL",
@@ -188,6 +214,7 @@ def main() -> None:
         "bytes_localized": total_bytes,
         "gib_localized": round(total_bytes / (1024**3), 3),
         "github_release_urls_remaining": 0,
+        "active_playlist_files_rewritten": localized_files,
         "map_path": str(map_path),
     }, ensure_ascii=False, indent=2))
 
