@@ -43,7 +43,14 @@ def apply_command(cmd):
     action=str(cmd.get("action") or "start").lower()
     tracks=cmd.get("tracks")
     if isinstance(tracks,list) and tracks:
-        atomic_json(st/"playlist.json",{"station":slot,"shuffle":bool(cmd.get("shuffle",True)),"updated_at":iso_now(),"tracks":tracks})
+        atomic_json(st/"playlist.json",{
+            "station":slot,
+            "playlist_key":str(cmd.get("playlist_key") or ""),
+            "shuffle":bool(cmd.get("shuffle",True)),
+            "repeat":bool(cmd.get("repeat",True)),
+            "updated_at":iso_now(),
+            "tracks":tracks
+        })
     if action in {"skip","previous"}:
         atomic_json(st/"command.json",{
             "id": str(cmd.get("id") or uuid.uuid4()),
@@ -53,6 +60,16 @@ def apply_command(cmd):
         })
         return
     if action in {"update_playlist","set_playlist"}:
+        desired=read_json(st/"desired.json",{}) or {}
+        desired.update({
+            "runtime":"ovh",
+            "runtime_slot":slot,
+            "session_id":str(cmd.get("session_id") or desired.get("session_id") or ""),
+            "title":str(cmd.get("title") or desired.get("title") or ""),
+            "playlist_key":str(cmd.get("playlist_key") or desired.get("playlist_key") or ""),
+            "updated_at":iso_now(),
+        })
+        atomic_json(st/"desired.json",desired)
         if action=="set_playlist":
             atomic_json(st/"command.json",{
                 "id": str(cmd.get("id") or uuid.uuid4()),
@@ -103,6 +120,7 @@ def service_payload(slot):
         "runtime_slot":slot,"platform":h.get("platform") or slot,
         "session_id":h.get("session_id") or d.get("session_id") or "",
         "title":h.get("title") or d.get("title") or "",
+        "playlist_key":d.get("playlist_key") or "",
         "status":h.get("status") or ("live" if d.get("desired")=="live" else "unknown"),
         "fps":h.get("fps"),"video_bitrate_kbps":h.get("video_bitrate_kbps"),
         "restarts":h.get("restarts",0),"updated_at":h.get("updated_at"),
