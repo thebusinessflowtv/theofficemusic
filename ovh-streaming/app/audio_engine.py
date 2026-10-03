@@ -28,6 +28,11 @@ AUDIO_HTTP_RW_TIMEOUT_SECONDS = max(5.0, float(os.environ.get("AUDIO_HTTP_RW_TIM
 AUDIO_SILENCE_INTERVAL_SECONDS = 0.25
 AUDIO_CACHE_MIN_BYTES = 4096
 AUDIO_CROSSFADE_SECONDS = max(0.25, float(os.environ.get("AUDIO_CROSSFADE_SECONDS", "1.5")))
+AUDIO_FRAME_SECONDS = 0.020
+AUDIO_FRAME_FRAMES = int(PCM_RATE * AUDIO_FRAME_SECONDS)
+AUDIO_FRAME_BYTES = AUDIO_FRAME_FRAMES * PCM_CHANNELS * 2
+AUDIO_PREBUFFER_SECONDS = max(0.25, float(os.environ.get("AUDIO_PREBUFFER_SECONDS", "0.75")))
+AUDIO_PREBUFFER_FRAMES = max(4, int(AUDIO_PREBUFFER_SECONDS / AUDIO_FRAME_SECONDS))
 READ_TIMEOUT = object()
 
 
@@ -138,15 +143,20 @@ class Playlist:
 
 
 class PCMDecoder:
-    """One paced FFmpeg decoder with a small PCM prebuffer."""
+    """Decode ahead into exact 20 ms PCM frames.
+
+    The persistent encoder is the only clock. Decoders may run ahead, but the
+    AudioEngine emits exactly one fixed-size PCM frame per clock tick.
+    """
 
     def __init__(self, engine, track):
         self.engine = engine
         self.track = track
         self.cached = False
         self.proc = None
-        self.q = queue.Queue(maxsize=24)
+        self.q = queue.Queue(maxsize=400)
         self.stop_event = threading.Event()
+        self.eof = False
         source, self.cached = engine.source_for(track)
         cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin"]
         if not self.cached:
@@ -165,32 +175,56 @@ class PCMDecoder:
             "-ac", "2", "-ar", "48000", "-c:a", "pcm_s16le", "-f", "s16le", "pipe:1",
         ]
         self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=0)
-        self.thread = threading.Thread(target=self._reader, name=f"pcm-{engine.platform}-{track['id']}", daemon=True)
+        self.thread = threading.Thread(
+            target=self._reader,
+            name=f"pcm-{engine.platform}-{track['id']}",
+            daemon=True,
+        )
         self.thread.start()
 
     def _put(self, item):
         while not self.stop_event.is_set():
             try:
-                self.q.put(item, timeout=0.2)
-                return
+                self.q.put(item, timeout=0.1)
+                return True
             except queue.Full:
                 continue
+        return False
 
     def _reader(self):
+        buf = bytearray()
         try:
             while not self.stop_event.is_set():
-                chunk = self.proc.stdout.read(PCM_CHUNK)
+                chunk = self.proc.stdout.read(65536)
                 if not chunk:
                     break
-                self._put(chunk)
+                buf.extend(chunk)
+                while len(buf) >= AUDIO_FRAME_BYTES and not self.stop_event.is_set():
+                    frame = bytes(buf[:AUDIO_FRAME_BYTES])
+                    del buf[:AUDIO_FRAME_BYTES]
+                    if not self._put(frame):
+                        return
+            if buf and not self.stop_event.is_set():
+                frame = bytes(buf[:AUDIO_FRAME_BYTES]).ljust(AUDIO_FRAME_BYTES, b"\x00")
+                self._put(frame)
         finally:
-            self._put(None)
+            if not self.stop_event.is_set():
+                self._put(None)
 
-    def read(self, timeout=0.25):
+    def buffered_frames(self):
+        return self.q.qsize()
+
+    def read_frame(self):
+        if self.eof:
+            return None
         try:
-            return self.q.get(timeout=timeout)
+            item = self.q.get_nowait()
         except queue.Empty:
             return READ_TIMEOUT
+        if item is None:
+            self.eof = True
+            return None
+        return item
 
     def stop(self):
         self.stop_event.set()
@@ -210,32 +244,23 @@ class PCMDecoder:
             pass
 
 
-def mix_crossfade_pcm(current_chunk, next_chunk, fade_frame, fade_total_frames):
-    frame_bytes = PCM_CHANNELS * 2
-    size = max(len(current_chunk or b""), len(next_chunk or b""))
-    size -= size % frame_bytes
-    if size <= 0:
-        size = max(frame_bytes, int(0.10 * PCM_RATE) * frame_bytes)
-    a = (current_chunk or b"")[:size].ljust(size, b"\x00")
-    b = (next_chunk or b"")[:size].ljust(size, b"\x00")
-    aa = array.array("h"); aa.frombytes(a)
-    bb = array.array("h"); bb.frombytes(b)
+def mix_crossfade_frame(current_frame, next_frame, fade_index, fade_total):
+    a = array.array("h")
+    b = array.array("h")
+    a.frombytes((current_frame or b"").ljust(AUDIO_FRAME_BYTES, b"\x00")[:AUDIO_FRAME_BYTES])
+    b.frombytes((next_frame or b"").ljust(AUDIO_FRAME_BYTES, b"\x00")[:AUDIO_FRAME_BYTES])
     if sys.byteorder != "little":
-        aa.byteswap(); bb.byteswap()
-    frames = max(1, size // frame_bytes)
-    total = max(1, fade_total_frames)
-    for frame in range(frames):
-        p = max(0.0, min(1.0, (fade_frame + frame) / total))
-        ga = 1.0 - p
-        gb = p
-        base = frame * PCM_CHANNELS
-        for ch in range(PCM_CHANNELS):
-            idx = base + ch
-            value = int(aa[idx] * ga + bb[idx] * gb)
-            aa[idx] = max(-32768, min(32767, value))
+        a.byteswap()
+        b.byteswap()
+    p = max(0.0, min(1.0, fade_index / max(1, fade_total - 1)))
+    ga = 1.0 - p
+    gb = p
+    for idx in range(len(a)):
+        value = int(a[idx] * ga + b[idx] * gb)
+        a[idx] = max(-32768, min(32767, value))
     if sys.byteorder != "little":
-        aa.byteswap()
-    return aa.tobytes(), frames
+        a.byteswap()
+    return a.tobytes()
 
 class AudioEngine:
     def __init__(self, platform, playlist_file, state_dir):
@@ -446,7 +471,9 @@ class AudioEngine:
             "history": [x["id"] for x in self.history[-10:]],
         })
 
-    def silence_chunk(self, seconds=AUDIO_SILENCE_INTERVAL_SECONDS):
+    def silence_chunk(self, seconds=AUDIO_FRAME_SECONDS):
+        if abs(seconds - AUDIO_FRAME_SECONDS) < 0.0001:
+            return bytes(AUDIO_FRAME_BYTES)
         frames = max(1, int(seconds * PCM_RATE))
         return bytes(frames * PCM_CHANNELS * 2)
 
@@ -458,140 +485,143 @@ class AudioEngine:
                 return prev
         return self.playlist.next()
 
-    def wait_decoder_ready(self, current, upcoming, dst, timeout=12.0):
-        """Fill enough of the next track for the entire fade before switching.
-
-        The current decoder keeps feeding PCM while the new decoder fills its
-        queue. FFmpeg decoding is intentionally not paced with -re here: the
-        persistent publisher/FIFO is the master clock, so pre-decoding removes
-        transition starvation without making the stream run faster.
-        """
-        deadline = time.monotonic() + timeout
-        silence = self.silence_chunk(0.05)
-        chunk_frames = max(1, PCM_CHUNK // (2 * PCM_CHANNELS))
-        need_chunks = min(
-            max(3, int((AUDIO_CROSSFADE_SECONDS * PCM_RATE) / chunk_frames) + 2),
-            max(3, upcoming.q.maxsize - 2),
-        )
-        while self.running and time.monotonic() < deadline:
-            if upcoming.q.qsize() >= need_chunks:
-                first = upcoming.read(timeout=0.01)
-                if first is not READ_TIMEOUT and first is not None:
-                    return first
-
-            cur = current.read(timeout=0.05)
-            if cur is READ_TIMEOUT:
-                cur = silence
-            elif cur is None:
-                cur = silence
-            self.write_pcm(dst, cur)
-        return None
-
-    def transition(self, current, current_track, next_track, dst, reason):
-        """Crossfade to a prebuffered decoder without starving the persistent encoder."""
-        upcoming = PCMDecoder(self, next_track)
+    def start_transition(self, current_track, action):
+        target = self.target_for_action(action)
+        upcoming = PCMDecoder(self, target)
         self.write_audio_health({
             "state": "prebuffering_transition",
             "track_id": current_track["id"],
-            "next_track_id": next_track["id"],
-            "reason": reason,
+            "next_track_id": target["id"],
+            "reason": action,
         })
-
-        first_next = self.wait_decoder_ready(current, upcoming, dst)
-        if first_next is None:
-            upcoming.stop()
-            self.write_audio_health({
-                "state": "transition_prebuffer_failed",
-                "track_id": current_track["id"],
-                "next_track_id": next_track["id"],
-            })
-            return current, current_track
-
-        self.history.append(next_track)
-        self.history = self.history[-50:]
-        self.publish(next_track, state="crossfading")
-
-        fade_total = max(1, int(AUDIO_CROSSFADE_SECONDS * PCM_RATE))
-        fade_done = 0
-        next_pending = first_next
-        while self.running and fade_done < fade_total:
-            cur = current.read(timeout=0.02)
-            if cur is READ_TIMEOUT or cur is None:
-                cur = b""
-
-            if next_pending is not None:
-                nxt = next_pending
-                next_pending = None
-            else:
-                nxt = upcoming.read(timeout=0.02)
-                if nxt is READ_TIMEOUT or nxt is None:
-                    nxt = b""
-
-            mixed, frames = mix_crossfade_pcm(cur, nxt, fade_done, fade_total)
-            self.write_pcm(dst, mixed)
-            fade_done += frames
-
-        current.stop()
-        self.publish(next_track, state="playing")
-        self.write_audio_health({
-            "state": "playing",
-            "track_id": next_track["id"],
-            "transition": "crossfade",
-            "crossfade_seconds": AUDIO_CROSSFADE_SECONDS,
-            "cached": upcoming.cached,
-        })
-        return upcoming, next_track
+        return {
+            "decoder": upcoming,
+            "track": target,
+            "reason": action,
+            "started": False,
+            "fade_index": 0,
+        }
 
     def run(self):
         dst = sys.stdout.fileno()
-        silence = self.silence_chunk()
+        silence = bytes(AUDIO_FRAME_BYTES)
+        fade_total = max(1, int(AUDIO_CROSSFADE_SECONDS / AUDIO_FRAME_SECONDS))
 
         track = self.choose()
         self.history.append(track)
         self.history = self.history[-50:]
         self.publish(track)
         decoder = PCMDecoder(self, track)
+        pending = None
         last_audio_at = time.monotonic()
-        self.write_audio_health({"state": "playing", "track_id": track["id"], "cached": decoder.cached})
+        next_tick = time.monotonic()
+
+        self.write_audio_health({
+            "state": "playing",
+            "track_id": track["id"],
+            "cached": decoder.cached,
+            "clock_frame_ms": int(AUDIO_FRAME_SECONDS * 1000),
+        })
 
         try:
             while self.running:
+                # Fixed wall-clock audio cadence: one 20 ms PCM frame every
+                # 20 ms, regardless of decoder startup/track changes.
+                now = time.monotonic()
+                if now < next_tick:
+                    time.sleep(next_tick - now)
+                elif now - next_tick > 0.5:
+                    next_tick = now
+                next_tick += AUDIO_FRAME_SECONDS
+
                 action = self.read_command()
-                if action:
-                    target = self.target_for_action(action)
-                    decoder, track = self.transition(decoder, track, target, dst, action)
+                if action and pending is None:
+                    pending = self.start_transition(track, action)
+
+                current_frame = decoder.read_frame()
+                current_eof = current_frame is None
+                if current_frame is READ_TIMEOUT or current_eof:
+                    current_frame = silence
+                else:
                     last_audio_at = time.monotonic()
-                    continue
 
-                chunk = decoder.read(timeout=AUDIO_SILENCE_INTERVAL_SECONDS)
-                if chunk is READ_TIMEOUT:
-                    self.write_pcm(dst, silence)
-                    if time.monotonic() - last_audio_at >= AUDIO_STALL_TIMEOUT_SECONDS:
-                        self.stalls += 1
-                        self.write_audio_health({
-                            "state": "source_stalled",
-                            "track_id": track["id"],
-                            "stall_seconds": round(time.monotonic() - last_audio_at, 2),
-                            "cached": decoder.cached,
-                        })
-                        target = self.playlist.next()
-                        decoder, track = self.transition(decoder, track, target, dst, "source_stall")
-                        last_audio_at = time.monotonic()
-                    continue
+                if current_eof and pending is None:
+                    pending = self.start_transition(track, "natural_end")
 
-                if chunk is None:
-                    target = self.playlist.next()
-                    decoder, track = self.transition(decoder, track, target, dst, "natural_end")
+                if pending is not None:
+                    upcoming = pending["decoder"]
+
+                    # Never start the fade until the next decoder has a healthy
+                    # buffer. Current audio continues while it fills.
+                    if not pending["started"]:
+                        if upcoming.buffered_frames() >= AUDIO_PREBUFFER_FRAMES:
+                            pending["started"] = True
+                            pending["fade_index"] = 0
+                            self.history.append(pending["track"])
+                            self.history = self.history[-50:]
+                            self.publish(pending["track"], state="crossfading")
+                        elif upcoming.eof:
+                            upcoming.stop()
+                            self.write_audio_health({
+                                "state": "transition_prebuffer_failed",
+                                "track_id": track["id"],
+                                "next_track_id": pending["track"]["id"],
+                            })
+                            pending = None
+
+                    if pending is not None and pending["started"]:
+                        next_frame = upcoming.read_frame()
+                        if next_frame is READ_TIMEOUT or next_frame is None:
+                            # The prebuffer target makes this exceptional, but
+                            # silence still preserves the continuous PCM clock.
+                            next_frame = silence
+                        out = mix_crossfade_frame(
+                            current_frame,
+                            next_frame,
+                            pending["fade_index"],
+                            fade_total,
+                        )
+                        pending["fade_index"] += 1
+                        if pending["fade_index"] >= fade_total:
+                            old = decoder
+                            decoder = upcoming
+                            track = pending["track"]
+                            pending = None
+                            old.stop()
+                            self.publish(track, state="playing")
+                            self.write_audio_health({
+                                "state": "playing",
+                                "track_id": track["id"],
+                                "transition": "crossfade",
+                                "crossfade_seconds": AUDIO_CROSSFADE_SECONDS,
+                                "prebuffer_seconds": AUDIO_PREBUFFER_SECONDS,
+                                "clock_frame_ms": int(AUDIO_FRAME_SECONDS * 1000),
+                                "cached": decoder.cached,
+                            })
+                    else:
+                        out = current_frame
+                else:
+                    out = current_frame
+
+                self.write_pcm(dst, out)
+
+                if time.monotonic() - last_audio_at >= AUDIO_STALL_TIMEOUT_SECONDS:
+                    self.stalls += 1
+                    self.write_audio_health({
+                        "state": "source_stalled_pcm_clock_preserved",
+                        "track_id": track["id"],
+                        "stall_seconds": round(time.monotonic() - last_audio_at, 2),
+                    })
+                    if pending is None:
+                        pending = self.start_transition(track, "source_stall")
                     last_audio_at = time.monotonic()
-                    continue
-
-                last_audio_at = time.monotonic()
-                self.write_pcm(dst, chunk)
 
         except BrokenPipeError:
             self.running = False
         finally:
             decoder.stop()
+            if pending is not None:
+                pending["decoder"].stop()
             self.write_audio_health({"state": "stopped", "track_id": track["id"]})
 
 
