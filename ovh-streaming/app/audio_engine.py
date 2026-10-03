@@ -154,7 +154,15 @@ class Playlist:
                 # but no long runs of only original tracks. With 36 originals
                 # and 35 catalog tracks this produces an almost perfect 1:1 mix.
                 self.bag = []
-                pools = [original, commercial] if random.choice((True, False)) else [commercial, original]
+                last = self.by_id(self.last_id) if self.last_id else None
+                last_is_commercial = bool(last and (last.get("source") == "twitch_dj_catalog_licensed_copy" or (last["id"].startswith("twitch-dj-") and not last["id"].startswith("twitch-dj-original-"))))
+                last_is_original = bool(last and not last_is_commercial)
+                if last_is_original and commercial:
+                    pools = [commercial, original]
+                elif last_is_commercial and original:
+                    pools = [original, commercial]
+                else:
+                    pools = [original, commercial] if random.choice((True, False)) else [commercial, original]
                 while pools[0] or pools[1]:
                     for pool in pools:
                         if pool:
@@ -313,8 +321,10 @@ class AudioEngine:
                 if track:
                     self.history.append(track)
             current = self.playlist.by_id(str(saved.get("track_id") or ""))
-            if current and (not self.history or self.history[-1]["id"] != current["id"]):
-                self.history.append(current)
+            if current:
+                self.playlist.last_id = current["id"]
+                if not self.history or self.history[-1]["id"] != current["id"]:
+                    self.history.append(current)
             self.history = self.history[-50:]
         except Exception:
             self.history = []
