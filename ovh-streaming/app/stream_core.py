@@ -239,7 +239,7 @@ class StreamCore:
             "-i",
             video_input,
             "-thread_queue_size",
-            "1024",
+            "8192",
             "-f",
             "s16le",
             "-ar",
