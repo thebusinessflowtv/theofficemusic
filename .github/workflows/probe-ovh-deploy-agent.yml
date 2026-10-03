@@ -1,0 +1,28 @@
+name: Probe OVH Deploy Agent API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/probe-ovh-deploy-agent.yml"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe deploy-agent API
+        shell: bash
+        run: |
+          set -u
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          echo "=== GET commands ==="
+          curl -sS -i "$BASE/api/ovh/deploy-agent/commands?limit=1" || true
+          echo
+          echo "=== OPTIONS commands ==="
+          curl -sS -i -X OPTIONS "$BASE/api/ovh/deploy-agent/commands" || true
+          echo
+          echo "=== POST safe health_check ==="
+          curl -sS -i -X POST "$BASE/api/ovh/deploy-agent/commands"             -H "content-type: application/json"             --data '{"action":"health_check","target":""}' || true
+          echo
+          echo "=== POST singular safe health_check ==="
+          curl -sS -i -X POST "$BASE/api/ovh/deploy-agent/command"             -H "content-type: application/json"             --data '{"action":"health_check","target":""}' || true
