@@ -1,0 +1,47 @@
+name: Ops — Probe Twitch Ingest
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ops-probe-twitch-ingest.yml'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TWITCH_STREAM_KEY: ${{ secrets.TWITCH_STREAM_KEY }}
+    steps:
+      - name: Verify secret
+        run: test -n "$TWITCH_STREAM_KEY"
+      - name: Probe RTMPS without going live
+        id: rtmps
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          timeout 25 ffmpeg -hide_banner -loglevel warning             -f lavfi -re -i "color=c=black:s=1280x720:r=30"             -f lavfi -re -i "anullsrc=r=48000:cl=stereo"             -t 12 -c:v libx264 -preset veryfast -tune zerolatency             -pix_fmt yuv420p -profile:v main -b:v 1200k -maxrate 1200k -bufsize 2400k             -g 60 -keyint_min 60 -sc_threshold 0             -c:a aac -b:a 128k -ar 48000 -ac 2             -f flv "rtmps://live.twitch.tv:443/app/${TWITCH_STREAM_KEY}?bandwidthtest=true"             > /tmp/rtmps.log 2>&1
+          RC=$?
+          sed -E 's/live_[A-Za-z0-9_=-]+/[REDACTED_STREAM_KEY]/g' /tmp/rtmps.log | tail -60
+          echo "RTMPS_EXIT=$RC"
+          exit $RC
+      - name: Probe RTMP without going live
+        id: rtmp
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          timeout 25 ffmpeg -hide_banner -loglevel warning             -f lavfi -re -i "color=c=black:s=1280x720:r=30"             -f lavfi -re -i "anullsrc=r=48000:cl=stereo"             -t 12 -c:v libx264 -preset veryfast -tune zerolatency             -pix_fmt yuv420p -profile:v main -b:v 1200k -maxrate 1200k -bufsize 2400k             -g 60 -keyint_min 60 -sc_threshold 0             -c:a aac -b:a 128k -ar 48000 -ac 2             -f flv "rtmp://live.twitch.tv/app/${TWITCH_STREAM_KEY}?bandwidthtest=true"             > /tmp/rtmp.log 2>&1
+          RC=$?
+          sed -E 's/live_[A-Za-z0-9_=-]+/[REDACTED_STREAM_KEY]/g' /tmp/rtmp.log | tail -60
+          echo "RTMP_EXIT=$RC"
+          exit $RC
+      - name: Result
+        run: |
+          echo "RTMPS_OUTCOME=${{ steps.rtmps.outcome }}"
+          echo "RTMP_OUTCOME=${{ steps.rtmp.outcome }}"
+          if [ "${{ steps.rtmps.outcome }}" != "success" ] && [ "${{ steps.rtmp.outcome }}" != "success" ]; then
+            exit 1
+          fi
