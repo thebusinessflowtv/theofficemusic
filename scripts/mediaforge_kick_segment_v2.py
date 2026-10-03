@@ -298,9 +298,9 @@ def start_encoder(loop):
     encoder = subprocess.Popen(["ffmpeg","-hide_banner","-loglevel","warning","-re","-stream_loop","-1","-i",str(loop),
         "-thread_queue_size","512","-f","s16le","-ar","48000","-ac","2","-i",str(fifo),
         "-map","0:v:0","-map","1:a:0",
-        "-vf","scale=1920:1080:force_original_aspect_ratio=decrease:flags=lanczos,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p",
-        "-r","30","-s:v","1920x1080","-pix_fmt","yuv420p","-c:v","libx264","-preset","veryfast","-tune","zerolatency",
-        "-profile:v","main","-level:v","4.1","-b:v","5000k","-minrate","5000k","-maxrate","5000k","-bufsize","10000k",
+        "-vf","scale=1280:720:force_original_aspect_ratio=decrease:flags=lanczos,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p",
+        "-r","30","-s:v","1280x720","-pix_fmt","yuv420p","-c:v","libx264","-preset","superfast","-tune","zerolatency",
+        "-profile:v","main","-level:v","3.1","-b:v","3500k","-minrate","3500k","-maxrate","3500k","-bufsize","7000k",
         "-g","60","-keyint_min","60","-sc_threshold","0","-x264-params","nal-hrd=cbr:force-cfr=1",
         "-c:a","aac","-b:a","160k","-ar","48000","-ac","2","-flvflags","no_duration_filesize","-f","flv",target()],
         stdout=encoder_log, stderr=encoder_log)
@@ -308,8 +308,22 @@ def start_encoder(loop):
     print(f"Kick encoder started pid={encoder.pid}.", flush=True)
 
 def assert_processes():
-    if not encoder or encoder.poll() is not None: raise RuntimeError("Kick FFmpeg encoder stopped")
-    if not feeder or feeder.poll() is not None: raise RuntimeError("Kick audio feeder stopped")
+    if not encoder or encoder.poll() is not None:
+        tail = ""
+        try:
+            p = BUILD / "ffmpeg.log"
+            if p.exists():
+                raw = p.read_text(encoding="utf-8", errors="replace")
+                tail = "\n".join(raw.splitlines()[-80:])
+        except Exception:
+            pass
+        if tail:
+            print("=== KICK FFMPEG LOG TAIL ===", file=sys.stderr, flush=True)
+            print(tail, file=sys.stderr, flush=True)
+            print("=== END KICK FFMPEG LOG TAIL ===", file=sys.stderr, flush=True)
+        raise RuntimeError("Kick FFmpeg encoder stopped")
+    if not feeder or feeder.poll() is not None:
+        raise RuntimeError("Kick audio feeder stopped")
 
 def verify_encoder():
     time.sleep(15)
