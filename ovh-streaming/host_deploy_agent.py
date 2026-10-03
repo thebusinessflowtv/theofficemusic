@@ -378,6 +378,18 @@ def hot_patch_av(target="all"):
     return results
 
 
+def reload_control_agent():
+    # Control-plane only: this container does not carry audio/video/RTMP.
+    name=CONTAINERS.get("ovh-agent","peter-lofi-ovh-agent")
+    run(["docker","cp",str(OVH/"app"/"ovh_agent.py"),f"{name}:/app/ovh_agent.py"],timeout=30)
+    run(["docker","restart",name],timeout=60)
+    time.sleep(3)
+    out=run(["docker","inspect","-f","{{.State.Running}}",name],timeout=20).strip().lower()
+    if out!="true":
+        raise RuntimeError("ovh-agent did not return running")
+    return {"service":"ovh-agent","status":"live","media_publishers_touched":False}
+
+
 def hot_patch_audio_controls(target="twitch-kick"):
     if target in ("","twitch-kick"):
         targets=["twitch","kick"]
@@ -677,6 +689,8 @@ def execute(cmd):
     old,new=git_sync()
     if action=="hot_patch_streaming":
         return {"old_head":old,"new_head":new,"targets":hot_patch_streaming(target)},False
+    if action=="reload_control_agent":
+        return {"old_head":old,"new_head":new,**reload_control_agent()},False
     if action=="hot_patch_av":
         return {"old_head":old,"new_head":new,"targets":hot_patch_av(target)},False
     if action=="hot_patch_audio_controls":
