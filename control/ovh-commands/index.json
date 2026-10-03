@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-03T02:31:05.648Z",
+  "updated_at": "2026-10-03T02:44:44.268Z",
   "commands": [
     {
       "id": "bootstrap-kick-ovh",
@@ -36,6 +36,26 @@
       "id": "gaming-playlist-36-twitch-1790994668882",
       "path": "control/ovh-commands/gaming-playlist-36-twitch-1790994668882.json",
       "created_at": "2026-10-03T02:31:05.648Z"
+    },
+    {
+      "id": "library-sync-kick-1790995484269-0",
+      "path": "control/ovh-commands/library-sync-kick-1790995484269-0.json",
+      "created_at": "2026-10-03T02:44:44.268Z"
+    },
+    {
+      "id": "library-sync-twitch-1790995487574-1",
+      "path": "control/ovh-commands/library-sync-twitch-1790995487574-1.json",
+      "created_at": "2026-10-03T02:44:44.268Z"
+    },
+    {
+      "id": "library-sync-youtube-deep-house-1790995490414-2",
+      "path": "control/ovh-commands/library-sync-youtube-deep-house-1790995490414-2.json",
+      "created_at": "2026-10-03T02:44:44.268Z"
+    },
+    {
+      "id": "library-sync-youtube-rainy-1790995493001-3",
+      "path": "control/ovh-commands/library-sync-youtube-rainy-1790995493001-3.json",
+      "created_at": "2026-10-03T02:44:44.268Z"
     }
   ]
 }
