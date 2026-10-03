@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'control/series-results/**'
+      - 'control/generated-playlists/**'
       - 'ovh-streaming/stations/**'
       - 'config/peter_lofi_series.json'
       - 'scripts/sync_music_library.py'
