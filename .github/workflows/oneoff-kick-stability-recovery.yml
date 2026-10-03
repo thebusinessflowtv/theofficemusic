@@ -1,0 +1,90 @@
+name: One-off — Kick Stability Recovery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/oneoff-kick-stability-recovery.yml"
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Stop only the OVH Kick publisher
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt, json, pathlib, uuid
+          root=pathlib.Path(".")
+          active=json.loads((root/"control/kick-active.json").read_text())
+          sid=str(active["session_id"])
+          cid=f"stability-stop-kick-{uuid.uuid4()}"
+          now=dt.datetime.now(dt.timezone.utc).isoformat()
+          cmd={
+            "id":cid,
+            "action":"stop",
+            "platform":"kick",
+            "runtime":"ovh",
+            "runtime_slot":"kick",
+            "session_id":sid,
+            "requested_at":now,
+            "source":"kick-stability-recovery"
+          }
+          p=root/f"control/ovh-commands/{cid}.json"
+          p.write_text(json.dumps(cmd,ensure_ascii=False,indent=2)+"\n")
+          idxp=root/"control/ovh-commands/index.json"
+          idx=json.loads(idxp.read_text()) if idxp.exists() else {"version":1,"commands":[]}
+          commands=[x for x in idx.get("commands",[]) if str(x.get("id"))!=cid]
+          commands.append({"id":cid,"path":str(p).replace("\\","/"),"created_at":now})
+          idx.update({"version":1,"updated_at":now,"commands":commands[-500:]})
+          idxp.write_text(json.dumps(idx,ensure_ascii=False,indent=2)+"\n")
+          print(cid)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/ovh-commands
+          git commit -m "kick: stop OVH publisher for stability recovery"
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((N*2))
+          done
+          exit 1
+
+      - name: Allow stream key to release
+        run: sleep 25
+
+      - name: Dispatch stability-first Kick encoder
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          ACTIVE="control/kick-active.json"
+          SID="$(jq -r '.session_id' "$ACTIVE")"
+          QUEUE="control/kick-live-queue/$SID.json"
+          test -s "$QUEUE"
+          jq '{ref:"main",inputs:{
+            session_id:(.session_id|tostring),
+            track_urls_b64:(.track_urls_b64|tostring),
+            duration_minutes:"0",
+            title:(.title|tostring),
+            description:(.description//""|tostring),
+            thumbnail_url:(.thumbnail_url//""|tostring),
+            loop_url:(.loop_url|tostring),
+            segment_index:"1"
+          }}' "$QUEUE" > /tmp/kick-dispatch.json
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-kick-live.yml/dispatches" --input /tmp/kick-dispatch.json
+          echo "KICK_STABILITY_RECOVERY_DISPATCHED session=$SID"
