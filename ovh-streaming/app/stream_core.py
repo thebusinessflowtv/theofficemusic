@@ -220,7 +220,7 @@ class StreamCore:
             f"udp://127.0.0.1:{self.video_udp_port}"
             "?fifo_size=1000000&overrun_nonfatal=1"
         )
-        cmd = [
+        common = [
             "ffmpeg",
             "-hide_banner",
             "-loglevel",
@@ -228,14 +228,12 @@ class StreamCore:
             "-nostdin",
             "-fflags",
             "+genpts+discardcorrupt",
-            "-use_wallclock_as_timestamps",
-            "1",
             "-thread_queue_size",
-            "4096",
+            "8192",
             "-analyzeduration",
-            "2000000",
+            "3000000",
             "-probesize",
-            "5000000",
+            "8000000",
             "-i",
             video_input,
             "-thread_queue_size",
@@ -248,38 +246,80 @@ class StreamCore:
             "2",
             "-i",
             str(fifo),
-            "-map",
-            "0:v:0",
-            "-map",
-            "1:a:0",
-            "-c:v",
-            "copy",
-            "-c:a",
-            "aac",
-            "-b:a",
-            f"{self.abitrate}k",
-            "-ar",
-            "48000",
-            "-ac",
-            "2",
-            "-max_interleave_delta",
-            "1000000",
         ]
 
-        if self.platform == "twitch":
-            # Twitch: write FLV directly. Wrapping FLV inside FFmpeg's fifo muxer
-            # preserves the MPEG-TS codec_tag (0x1b) and the FLV slave rejects
-            # the H.264 header as tag 27 instead of FLV H.264 tag 7. A direct
-            # FLV muxer normalizes the tag correctly. StreamCore already
-            # supervises this process and reconnects it if the RTMP socket exits.
-            cmd += [
+        if self.platform in {"twitch", "kick"}:
+            # Twitch/Kick use a fresh CFR A/V clock inside the publisher.
+            # Re-encoding the local H.264 transport avoids carrying MPEG-TS
+            # codec tags/timestamps into FLV and prevents frozen/slow video,
+            # non-monotonic timestamps and audio stalls after feeder changes.
+            cmd = common + [
+                "-filter_complex",
+                f"[0:v]setpts=PTS-STARTPTS,fps={self.fps},format=yuv420p[v];"
+                "[1:a]asetpts=PTS-STARTPTS,aresample=async=1:first_pts=0[a]",
+                "-map",
+                "[v]",
+                "-map",
+                "[a]",
+                "-c:v",
+                "libx264",
+                "-preset",
+                "veryfast",
+                "-tune",
+                "zerolatency",
+                "-profile:v",
+                "main",
+                "-bf",
+                "0",
+                "-b:v",
+                f"{self.vbitrate}k",
+                "-minrate",
+                f"{self.vbitrate}k",
+                "-maxrate",
+                f"{self.vbitrate}k",
+                "-bufsize",
+                f"{self.vbitrate * 2}k",
+                "-g",
+                str(self.fps * 2),
+                "-keyint_min",
+                str(self.fps * 2),
+                "-sc_threshold",
+                "0",
+                "-c:a",
+                "aac",
+                "-b:a",
+                f"{self.abitrate}k",
+                "-ar",
+                "48000",
+                "-ac",
+                "2",
+                "-max_interleave_delta",
+                "0",
+                "-flvflags",
+                "no_duration_filesize",
                 "-f",
                 "flv",
                 self.target(),
             ]
         else:
-            # Other platforms keep the existing buffered publisher behavior.
-            cmd += [
+            # Keep the current YouTube path untouched for this incident.
+            cmd = common + [
+                "-map",
+                "0:v:0",
+                "-map",
+                "1:a:0",
+                "-c:v",
+                "copy",
+                "-c:a",
+                "aac",
+                "-b:a",
+                f"{self.abitrate}k",
+                "-ar",
+                "48000",
+                "-ac",
+                "2",
+                "-max_interleave_delta",
+                "1000000",
                 "-f",
                 "fifo",
                 "-fifo_format",
