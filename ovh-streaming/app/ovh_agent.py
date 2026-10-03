@@ -25,6 +25,8 @@ AGENT_TOKEN=os.environ.get("MEDIAFORGE_AGENT_TOKEN","").strip()
 POLL=max(3,int(os.environ.get("OVH_AGENT_POLL_SECONDS","5")))
 LOCAL_STATUS_SECONDS=max(5,int(os.environ.get("OVH_LOCAL_STATUS_SECONDS","10")))
 REMOTE_STATUS_SECONDS=max(5,int(os.environ.get("OVH_REMOTE_STATUS_SECONDS","10")))
+GITHUB_RAW_BASE=os.environ.get("MEDIAFORGE_GITHUB_RAW_BASE","https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main").rstrip("/")
+GITHUB_FALLBACK_MAX_AGE_SECONDS=max(30,int(os.environ.get("OVH_GITHUB_FALLBACK_MAX_AGE_SECONDS","900")))
 SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy")
 AGENT_DIR=STATE/"agent"
 PROCESSED=AGENT_DIR/"processed.json"
@@ -83,6 +85,25 @@ def post_json(url,payload):
     )
     with urllib.request.urlopen(req,timeout=20) as r:
         return r.read()
+
+
+def github_fetch_json(path):
+    url=GITHUB_RAW_BASE+"/"+str(path).lstrip("/")+"?ts="+str(int(time.time()*1000))
+    req=urllib.request.Request(url,headers={"User-Agent":"MediaForge-OVH-Agent-GitHub-Fallback","Cache-Control":"no-cache"})
+    with urllib.request.urlopen(req,timeout=20) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
+def command_is_recent(cmd,entry=None):
+    raw=str((cmd or {}).get("requested_at") or (entry or {}).get("created_at") or "")
+    if not raw:
+        return False
+    try:
+        dt=datetime.fromisoformat(raw.replace("Z","+00:00"))
+        age=(datetime.now(timezone.utc)-dt.astimezone(timezone.utc)).total_seconds()
+        return -60 <= age <= GITHUB_FALLBACK_MAX_AGE_SECONDS
+    except Exception:
+        return False
 
 
 def slot_for(cmd):
@@ -450,6 +471,68 @@ def report_remote(payload):
         return False
 
 
+def process_one_command(cmd,processed,transport):
+    cid=str((cmd or {}).get("id") or "")
+    if not cid:
+        return None
+    try:
+        if cid not in processed:
+            apply_command(cmd)
+            processed.add(cid)
+            atomic_json(PROCESSED,sorted(processed)[-500:])
+        last_cmd={
+            "id":cid,
+            "action":cmd.get("action"),
+            "runtime_slot":slot_for(cmd),
+            "processed_at":iso_now(),
+            "transport":transport,
+        }
+        try:
+            post_json(API+"/api/ovh/agent/command-ack",{"id":cid,"status":"completed"})
+        except Exception as ack_exc:
+            print("command ack failed:",cid,ack_exc,flush=True)
+        print("processed",last_cmd,flush=True)
+        return last_cmd
+    except Exception as exc:
+        try:
+            post_json(API+"/api/ovh/agent/command-ack",{
+                "id":cid,
+                "status":"failed",
+                "error":str(exc)[:500],
+            })
+        except Exception:
+            pass
+        print("command apply failed",cid,exc,flush=True)
+        return None
+
+
+def poll_github_fallback(processed):
+    handled=[]
+    try:
+        idx=github_fetch_json("control/ovh-commands/index.json") or {}
+        entries=list(idx.get("commands") or [])[-50:]
+        for entry in entries:
+            cid=str((entry or {}).get("id") or "")
+            path=str((entry or {}).get("path") or "")
+            if not cid or not path or cid in processed:
+                continue
+            try:
+                cmd=github_fetch_json(path)
+            except Exception as exc:
+                print("github fallback command fetch failed:",cid,exc,flush=True)
+                continue
+            if not isinstance(cmd,dict) or str(cmd.get("id") or "")!=cid:
+                continue
+            if not command_is_recent(cmd,entry):
+                continue
+            last=process_one_command(cmd,processed,"github-fallback")
+            if last:
+                handled.append(last)
+    except Exception as exc:
+        print("github fallback poll failed:",exc,flush=True)
+    return handled
+
+
 def main():
     processed=set(read_json(PROCESSED,[]) or [])
     last_local=0.0
@@ -457,40 +540,24 @@ def main():
     last_cmd=None
 
     while True:
-        # Cloudflare is only an optional command inbox. A D1 outage cannot stop
-        # or restart any local publisher.
+        cloud_ok=False
+        # Cloudflare is the primary inbox, but GitHub is an independent fallback
+        # because every MediaForge command is already mirrored there.
         try:
             batch=fetch_json(API+"/api/ovh/agent/commands?limit=20")
+            cloud_ok=True
             for cmd in batch.get("commands") or []:
-                cid=str(cmd.get("id") or "")
-                if not cid:
-                    continue
-                try:
-                    if cid not in processed:
-                        apply_command(cmd)
-                        processed.add(cid)
-                        atomic_json(PROCESSED,sorted(processed)[-500:])
-                    last_cmd={
-                        "id":cid,
-                        "action":cmd.get("action"),
-                        "runtime_slot":slot_for(cmd),
-                        "processed_at":iso_now(),
-                        "transport":"cloudflare-control",
-                    }
-                    post_json(API+"/api/ovh/agent/command-ack",{"id":cid,"status":"completed"})
-                    print("processed",last_cmd,flush=True)
-                except Exception as exc:
-                    try:
-                        post_json(API+"/api/ovh/agent/command-ack",{
-                            "id":cid,
-                            "status":"failed",
-                            "error":str(exc)[:500],
-                        })
-                    except Exception:
-                        pass
-                    print("command apply failed",cid,exc,flush=True)
+                last=process_one_command(cmd,processed,"cloudflare-control")
+                if last:
+                    last_cmd=last
         except Exception as exc:
             print("cloud control poll failed:",exc,flush=True)
+
+        # Poll GitHub on every cycle. Dedupe via PROCESSED makes this safe when
+        # Cloudflare is healthy, while preserving controls during API outages.
+        fallback_handled=poll_github_fallback(processed)
+        if fallback_handled:
+            last_cmd=fallback_handled[-1]
 
         ts=time.time()
         payload=None
