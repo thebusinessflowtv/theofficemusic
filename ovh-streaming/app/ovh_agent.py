@@ -139,6 +139,32 @@ def main():
     last_report=0
     while True:
         last_cmd=None
+        api_ok=False
+
+        # Primary path: reliable Cloudflare D1 command queue.
+        try:
+            batch=fetch_json(API+"/api/ovh/agent/commands?limit=20")
+            api_ok=True
+            for cmd in batch.get("commands") or []:
+                cid=str(cmd.get("id") or "")
+                if not cid:
+                    continue
+                try:
+                    if cid not in processed:
+                        apply_command(cmd)
+                        processed.add(cid)
+                        atomic_json(PROCESSED,sorted(processed)[-500:])
+                    last_cmd={"id":cid,"action":cmd.get("action"),"runtime_slot":slot_for(cmd),"processed_at":iso_now(),"transport":"d1"}
+                    post_json(API+"/api/ovh/agent/command-ack",{"id":cid,"status":"completed"})
+                    print("processed",last_cmd,flush=True)
+                except Exception as exc:
+                    try:post_json(API+"/api/ovh/agent/command-ack",{"id":cid,"status":"failed","error":str(exc)[:500]})
+                    except Exception:pass
+                    print("command apply failed",cid,exc,flush=True)
+        except Exception as exc:
+            print("d1 command poll failed:",exc,flush=True)
+
+        # Fallback/audit path: public GitHub queue.
         try:
             idx=fetch_json(INDEX_URL)
             for item in idx.get("commands") or []:
@@ -147,11 +173,14 @@ def main():
                 path=str(item.get("path") or f"control/ovh-commands/{cid}.json")
                 cmd=fetch_json(RAW_BASE+path)
                 apply_command(cmd)
-                processed.add(cid);last_cmd={"id":cid,"action":cmd.get("action"),"runtime_slot":slot_for(cmd),"processed_at":iso_now()}
+                processed.add(cid)
+                last_cmd={"id":cid,"action":cmd.get("action"),"runtime_slot":slot_for(cmd),"processed_at":iso_now(),"transport":"github-fallback"}
                 atomic_json(PROCESSED,sorted(processed)[-500:])
                 print("processed",last_cmd,flush=True)
         except Exception as exc:
-            print("command poll failed:",exc,flush=True)
+            if not api_ok:
+                print("github command poll failed:",exc,flush=True)
+
         now=time.time()
         if now-last_report>=10:
             report(len(processed),last_cmd);last_report=now
