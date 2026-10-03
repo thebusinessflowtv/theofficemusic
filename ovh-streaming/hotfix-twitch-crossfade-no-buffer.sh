@@ -53,12 +53,32 @@ docker compose build twitch >/tmp/mediaforge-build-twitch.log 2>&1 || {
 echo "[3/6] Copiando engine novo para o container ATUAL sem tocar no encoder..."
 docker cp "$REPO/ovh-streaming/app/audio_engine.py" "$CONTAINER:/app/audio_engine.py"
 
-OLD_AUDIO_PID="$(docker exec "$CONTAINER" sh -lc "pgrep -f '/app/audio_engine.py' | head -1 || true")"
+audio_pid() {
+  docker exec "$CONTAINER" python -c '
+import glob,os
+me=os.getpid()
+hits=[]
+for p in glob.glob("/proc/[0-9]*/cmdline"):
+    try:
+        pid=int(p.split("/")[2])
+        if pid==me:
+            continue
+        raw=open(p,"rb").read()
+        cmd=raw.replace(b"\\x00",b" ").decode("utf-8","ignore")
+        if "/app/audio_engine.py" in cmd and "--platform twitch" in cmd:
+            hits.append(pid)
+    except Exception:
+        pass
+print(min(hits) if hits else "")
+' 2>/dev/null
+}
+
+OLD_AUDIO_PID="$(audio_pid)"
 echo "Audio PID antigo: ${OLD_AUDIO_PID:-não encontrado}"
 
 echo "[4/6] Reiniciando SOMENTE o feeder de áudio com guarda de silêncio..."
 if [ -n "${OLD_AUDIO_PID:-}" ]; then
-  docker exec "$CONTAINER" sh -lc "kill -TERM '$OLD_AUDIO_PID' || true"
+  docker exec "$CONTAINER" python -c "import os,signal; os.kill(int('$OLD_AUDIO_PID'), signal.SIGTERM)" || true
 fi
 
 # Guard: keep PCM flowing while StreamCore notices the old feeder exited and
@@ -68,11 +88,15 @@ import glob,os,time
 fifo="/state/twitch/audio.pcm"
 def audio_pids():
     out=[]
+    me=os.getpid()
     for p in glob.glob("/proc/[0-9]*/cmdline"):
         try:
+            pid=int(p.split("/")[2])
+            if pid==me:
+                continue
             cmd=open(p,"rb").read().replace(b"\x00",b" ").decode("utf-8","ignore")
-            if "/app/audio_engine.py" in cmd:
-                out.append(int(p.split("/")[2]))
+            if "/app/audio_engine.py" in cmd and "--platform twitch" in cmd:
+                out.append(pid)
         except Exception:
             pass
     return out
@@ -88,8 +112,8 @@ os.close(fd)
 '
 
 NEW_AUDIO_PID=""
-for i in $(seq 1 50); do
-  NEW_AUDIO_PID="$(docker exec "$CONTAINER" sh -lc "pgrep -f '/app/audio_engine.py' | head -1 || true")"
+for i in $(seq 1 80); do
+  NEW_AUDIO_PID="$(audio_pid)"
   if [ -n "$NEW_AUDIO_PID" ] && [ "$NEW_AUDIO_PID" != "${OLD_AUDIO_PID:-}" ]; then
     break
   fi
