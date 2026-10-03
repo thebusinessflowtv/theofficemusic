@@ -26,13 +26,13 @@ jobs:
           curl -fsS -X POST "$BASE/api/ops/20261003-live-stability/host-agent" | tee /tmp/host-agent.json
           for I in $(seq 1 60); do
             curl -fsS "$BASE/api/ops/20261003-live-stability/status" > /tmp/status.json
-            STATUS="$(jq -r '.commands[]? | select(.id=="ops-20261003-host-agent-v1") | .status' /tmp/status.json)"
+            STATUS="$(jq -r '.commands[]? | select(.id=="ops-20261003-host-agent-v2") | .status' /tmp/status.json)"
             echo "host-agent status=$STATUS"
             [ "$STATUS" = "completed" ] && break
             [ "$STATUS" = "failed" ] && { cat /tmp/status.json; exit 1; }
             sleep 3
           done
-          [ "$(jq -r '.commands[]? | select(.id=="ops-20261003-host-agent-v1") | .status' /tmp/status.json)" = "completed" ]
+          [ "$(jq -r '.commands[]? | select(.id=="ops-20261003-host-agent-v2") | .status' /tmp/status.json)" = "completed" ]
 
       - name: Hot patch child audio engines while preserving RTMP encoder PIDs
         run: |
@@ -41,13 +41,13 @@ jobs:
           curl -fsS -X POST "$BASE/api/ops/20261003-live-stability/hot-patch" | tee /tmp/hot-patch.json
           for I in $(seq 1 80); do
             curl -fsS "$BASE/api/ops/20261003-live-stability/status" > /tmp/status.json
-            STATUS="$(jq -r '.commands[]? | select(.id=="ops-20261003-hot-patch-v1") | .status' /tmp/status.json)"
+            STATUS="$(jq -r '.commands[]? | select(.id=="ops-20261003-hot-patch-v2") | .status' /tmp/status.json)"
             echo "hot-patch status=$STATUS"
             [ "$STATUS" = "completed" ] && break
             [ "$STATUS" = "failed" ] && { cat /tmp/status.json; exit 1; }
             sleep 3
           done
-          [ "$(jq -r '.commands[]? | select(.id=="ops-20261003-hot-patch-v1") | .status' /tmp/status.json)" = "completed" ]
+          [ "$(jq -r '.commands[]? | select(.id=="ops-20261003-hot-patch-v2") | .status' /tmp/status.json)" = "completed" ]
 
       - name: Capture proof
         run: |
