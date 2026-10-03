@@ -313,6 +313,64 @@ def hot_patch_streaming(target="all"):
     return results
 
 
+def hot_patch_av(target="all"):
+    targets=list(SLOTS) if target in ("","all") else [target]
+    for slot in targets:
+        if slot not in SLOTS:
+            raise ValueError("hot patch target not allowed")
+
+    results=[]
+    for slot in targets:
+        name=CONTAINERS[slot]
+        before=health(slot)
+        before_encoder=before.get("encoder_pid")
+        before_audio=before.get("audio_pid")
+        before_visual=before.get("visual_pid")
+        if before.get("status") not in {"live","starting"} or not before_encoder:
+            raise RuntimeError(f"{slot} is not live enough for AV hot patch: {before}")
+
+        run(["docker","cp",str(OVH/"app"/"audio_engine.py"),f"{name}:/app/audio_engine.py"],timeout=30)
+        run(["docker","cp",str(OVH/"app"/"visual_engine.py"),f"{name}:/app/visual_engine.py"],timeout=30)
+        run(["docker","cp",str(OVH/"app"/"stream_core.py"),f"{name}:/app/stream_core.py"],timeout=30)
+
+        # Restart only the child feeders. The RTMP publisher PID must stay alive.
+        if before_audio:
+            run(["docker","exec",name,"python","-c",f"import os,signal; os.kill({int(before_audio)}, signal.SIGTERM)"],timeout=20)
+        if before_visual:
+            run(["docker","exec",name,"python","-c",f"import os,signal; os.kill({int(before_visual)}, signal.SIGTERM)"],timeout=20)
+
+        end=time.time()+60
+        after={}
+        while time.time()<end:
+            after=health(slot)
+            encoder_ok=after.get("encoder_pid")==before_encoder
+            audio_ok=bool(after.get("audio_pid")) and after.get("audio_pid")!=before_audio
+            visual_ok=bool(after.get("visual_pid")) and after.get("visual_pid")!=before_visual and after.get("visual_status")=="streaming"
+            state_ok=after.get("status") in {"live","starting"}
+            if encoder_ok and audio_ok and visual_ok and state_ok:
+                break
+            if after.get("encoder_pid") and after.get("encoder_pid")!=before_encoder:
+                raise RuntimeError(f"{slot} encoder PID changed during zero-drop AV patch: {before_encoder} -> {after.get('encoder_pid')}")
+            time.sleep(1)
+        else:
+            raise RuntimeError(f"{slot} AV feeders did not recover without publisher restart: before={before} after={after}")
+
+        results.append({
+            "service":slot,
+            "encoder_pid_preserved":after.get("encoder_pid")==before_encoder,
+            "encoder_pid":after.get("encoder_pid"),
+            "old_audio_pid":before_audio,
+            "new_audio_pid":after.get("audio_pid"),
+            "old_visual_pid":before_visual,
+            "new_visual_pid":after.get("visual_pid"),
+            "visual_status":after.get("visual_status"),
+            "audio_status":after.get("audio_status"),
+            "status":after.get("status"),
+            "restarts":after.get("restarts"),
+        })
+    return results
+
+
 def rollback_service(service):
     if service not in SERVICES:
         raise ValueError("service not allowed")
@@ -538,6 +596,8 @@ def execute(cmd):
     old,new=git_sync()
     if action=="hot_patch_streaming":
         return {"old_head":old,"new_head":new,"targets":hot_patch_streaming(target)},False
+    if action=="hot_patch_av":
+        return {"old_head":old,"new_head":new,"targets":hot_patch_av(target)},False
     st=read_state()
     if old!=new:
         st.update({"previous_head":old,"last_good_head":new,"last_deploy_at":now()})
