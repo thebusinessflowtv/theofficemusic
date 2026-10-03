@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-03T05:31:02.407Z",
+  "updated_at": "2026-10-03T05:31:04.846Z",
   "commands": [
     {
       "id": "bootstrap-kick-ovh",
@@ -103,9 +103,9 @@
       "created_at": "2026-10-03T04:48:30Z"
     },
     {
-      "id": "703c7ce6-22e7-4e84-91fd-5a358f1c31ee",
-      "path": "control/ovh-commands/703c7ce6-22e7-4e84-91fd-5a358f1c31ee.json",
-      "created_at": "2026-10-03T05:31:02.407Z"
+      "id": "c5fec2d1-bce9-4d1f-b7d6-4189671ea805",
+      "path": "control/ovh-commands/c5fec2d1-bce9-4d1f-b7d6-4189671ea805.json",
+      "created_at": "2026-10-03T05:31:04.846Z"
     }
   ]
 }
