@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-03T02:45:39.484957Z",
+  "updated_at": "2026-10-03T03:58:36.341617Z",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -21,6 +21,10 @@
     {
       "key": "long-series",
       "name": "Long Series"
+    },
+    {
+      "key": "generated",
+      "name": "Generated"
     }
   ],
   "playlists": [
