@@ -1,0 +1,42 @@
+name: Probe OVH Local Runtime After Migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/probe-ovh-local-runtime-after-migration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Probe current OVH state
+        shell: bash
+        run: |
+          set +e
+          mkdir -p control/diagnostics
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          curl -sS -w '\nHTTP_STATUS:%{http_code}\n' "$BASE/api/ops/20261003-live-stability/status" > /tmp/deploy-status.txt
+          curl -sS -w '\nHTTP_STATUS:%{http_code}\n' "$BASE/api/ovh/public-health" > /tmp/public-health.txt
+          jq -n             --rawfile deploy /tmp/deploy-status.txt             --rawfile health /tmp/public-health.txt             '{checked_at:(now|todateiso8601),deploy_status_raw:$deploy,public_health_raw:$health}'             > control/diagnostics/ovh-local-runtime-probe.json
+          cat control/diagnostics/ovh-local-runtime-probe.json
+
+      - name: Persist probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/ovh-local-runtime-probe.json
+          git commit -m "ops: record OVH local-runtime probe" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
