@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 RESULTS=ROOT/"control"/"series-results"
+GENERATED=ROOT/"control"/"generated-playlists"
 CONFIG=ROOT/"config"/"peter_lofi_series.json"
 OUT=ROOT/"control"/"music-library.json"
 STATIONS={
@@ -108,6 +109,36 @@ for path in sorted(RESULTS.glob("*.json")):
         "tracks":tracks,
     })
 
+# Ad-hoc playlists generated from the MediaForge generator.
+for path in sorted(GENERATED.glob("*.json")) if GENERATED.exists() else []:
+    try:
+        d=json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        continue
+    if d.get("status")!="completed":
+        continue
+    key=str(d.get("library_key") or path.stem)
+    tracks=normalize_tracks(key,d.get("tracks"))
+    if not tracks:
+        continue
+    meta=meta_by_key.get(d.get("series_key")) or {}
+    dna=meta.get("music_dna") or {}
+    genre=(dna.get("style_pool") or [None])[0] or "Lofi"
+    playlists.append({
+        "key":key,
+        "name":str(d.get("playlist_name") or d.get("name") or key),
+        "category":"Generated",
+        "series":str(meta.get("name") or d.get("series_key") or "Custom"),
+        "genre":genre,
+        "moods":dna.get("mood") or [],
+        "source":"mediaforge-generator",
+        "release_tag":d.get("release_tag"),
+        "master_audio_url":d.get("master_audio_url"),
+        "track_count":len(tracks),
+        "total_duration_seconds":round(sum(x["duration_seconds"] for x in tracks)),
+        "tracks":tracks,
+    })
+
 payload={
     "version":1,
     "brand":"Peter Lofi",
@@ -123,6 +154,7 @@ payload={
         {"key":"live-radio","name":"Live Radio"},
         {"key":"series","name":"Series"},
         {"key":"long-series","name":"Long Series"},
+        {"key":"generated","name":"Generated"},
     ],
     "playlists":playlists,
 }
