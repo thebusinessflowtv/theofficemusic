@@ -53,27 +53,11 @@ docker compose build twitch >/tmp/mediaforge-build-twitch.log 2>&1 || {
 echo "[3/6] Copiando engine novo para o container ATUAL sem tocar no encoder..."
 docker cp "$REPO/ovh-streaming/app/audio_engine.py" "$CONTAINER:/app/audio_engine.py"
 
-audio_pid() {
-  docker exec "$CONTAINER" python -c '
-import glob,os
-me=os.getpid()
-hits=[]
-for p in glob.glob("/proc/[0-9]*/cmdline"):
-    try:
-        pid=int(p.split("/")[2])
-        if pid==me:
-            continue
-        raw=open(p,"rb").read()
-        cmd=raw.replace(b"\\x00",b" ").decode("utf-8","ignore")
-        if "/app/audio_engine.py" in cmd and "--platform twitch" in cmd:
-            hits.append(pid)
-    except Exception:
-        pass
-print(min(hits) if hits else "")
-' 2>/dev/null
-}
-
-OLD_AUDIO_PID="$(audio_pid)"
+OLD_AUDIO_PID="$(python3 - "$STATE/health.json" <<'PY'
+import json,sys
+print(json.load(open(sys.argv[1])).get("audio_pid",""))
+PY
+)"
 echo "Audio PID antigo: ${OLD_AUDIO_PID:-não encontrado}"
 
 echo "[4/6] Reiniciando SOMENTE o feeder de áudio com guarda de silêncio..."
@@ -112,8 +96,15 @@ os.close(fd)
 '
 
 NEW_AUDIO_PID=""
-for i in $(seq 1 80); do
-  NEW_AUDIO_PID="$(audio_pid)"
+for i in $(seq 1 100); do
+  NEW_AUDIO_PID="$(python3 - "$STATE/health.json" <<'PY'
+import json,sys
+try:
+    print(json.load(open(sys.argv[1])).get("audio_pid",""))
+except Exception:
+    print("")
+PY
+)"
   if [ -n "$NEW_AUDIO_PID" ] && [ "$NEW_AUDIO_PID" != "${OLD_AUDIO_PID:-}" ]; then
     break
   fi
