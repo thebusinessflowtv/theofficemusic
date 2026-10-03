@@ -1,0 +1,53 @@
+name: Verify Twitch DJ 98 Tracks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-twitch-dj-98.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Wait for OVH agent and verify playlist
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://146.59.156.224:8443/api/ovh/public-health"
+          for i in $(seq 1 30); do
+            if curl -kfsS --max-time 10 "$URL" -o /tmp/health.json; then
+              python3 - <<'PY' && exit 0 || true
+          import json
+          d=json.load(open("/tmp/health.json"))
+          t=(d.get("services") or {}).get("twitch") or {}
+          dj=t.get("dj_import") or {}
+          print("reported_at =",d.get("reported_at"))
+          print("twitch_status =",t.get("status"))
+          print("playlist_key =",t.get("playlist_key"))
+          print("playlist_track_count =",t.get("playlist_track_count"))
+          print("dj_status =",dj.get("status"))
+          print("original_tracks =",dj.get("original_tracks"))
+          print("commercial_tracks =",dj.get("commercial_tracks"))
+          print("dj_track_count =",dj.get("track_count"))
+          if t.get("playlist_key")!="twitch-dj-mixed":
+              raise SystemExit(1)
+          if int(t.get("playlist_track_count") or 0) != 98:
+              raise SystemExit(1)
+          if int(dj.get("commercial_tracks") or 0) != 62:
+              raise SystemExit(1)
+          if int(dj.get("track_count") or 0) != 98:
+              raise SystemExit(1)
+          PY
+            fi
+            echo "Aguardando importação OVH... tentativa $i/30"
+            sleep 4
+          done
+          echo "OVH não confirmou 98 faixas a tempo."
+          cat /tmp/health.json 2>/dev/null || true
+          exit 1
