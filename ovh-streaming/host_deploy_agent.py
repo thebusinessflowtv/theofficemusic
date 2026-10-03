@@ -12,6 +12,7 @@ stream_core can reconnect immediately using the existing local state.
 import json
 import os
 import pathlib
+import re
 import signal
 import subprocess
 import sys
@@ -450,12 +451,87 @@ def watchdog_loop():
         time.sleep(WATCHDOG_INTERVAL)
 
 
+
+def _redact_stream_log(text):
+    text=str(text or "")
+    text=re.sub(r'(rtmps?://[^/\s]+(?:/\S*?/)?)[A-Za-z0-9_=-]{12,}', r'\1[REDACTED]', text)
+    text=re.sub(r'(live_[A-Za-z0-9]{8,})', '[REDACTED_STREAM_KEY]', text)
+    return text[-12000:]
+
+
+def diagnose_stream_service(slot):
+    if slot not in SLOTS:
+        raise ValueError("diagnose target not allowed")
+    h=health(slot)
+    log=OVH/"state"/slot/"ffmpeg.log"
+    tail=""
+    try:
+        with open(log,"rb") as fh:
+            fh.seek(0,2)
+            size=fh.tell()
+            fh.seek(max(0,size-24000))
+            tail=fh.read().decode("utf-8","ignore")
+    except Exception as exc:
+        tail="log_read_error:"+str(exc)[:180]
+    desired={}
+    now_playing={}
+    audio_health={}
+    try: desired=json.loads((OVH/"state"/slot/"desired.json").read_text(encoding="utf-8"))
+    except Exception: pass
+    try: now_playing=json.loads((OVH/"state"/slot/"now-playing.json").read_text(encoding="utf-8"))
+    except Exception: pass
+    try: audio_health=json.loads((OVH/"state"/slot/"audio-health.json").read_text(encoding="utf-8"))
+    except Exception: pass
+    return {
+        "service":slot,
+        "health":h,
+        "desired":{
+            "desired":desired.get("desired"),
+            "generation":desired.get("generation"),
+            "playlist_key":desired.get("playlist_key"),
+            "updated_at":desired.get("updated_at"),
+        },
+        "now_playing":now_playing,
+        "audio_health":audio_health,
+        "ffmpeg_log_tail":_redact_stream_log(tail),
+    }
+
+
+def recover_stream_publisher(slot):
+    if slot not in SLOTS:
+        raise ValueError("recover target not allowed")
+    before=health(slot)
+    pid=before.get("encoder_pid")
+    if not pid:
+        raise RuntimeError(f"{slot} has no encoder pid: {before}")
+    recover_publisher(slot,pid,"manual publisher recovery")
+    end=time.time()+60
+    after={}
+    while time.time()<end:
+        after=health(slot)
+        if after.get("encoder_pid") and after.get("encoder_pid")!=pid and after.get("status")=="live":
+            return {
+                "service":slot,
+                "old_encoder_pid":pid,
+                "new_encoder_pid":after.get("encoder_pid"),
+                "status":after.get("status"),
+                "hot_swap":after.get("hot_swap"),
+                "restarts":after.get("restarts",0),
+            }
+        time.sleep(2)
+    raise RuntimeError(f"{slot} publisher did not recover: before={before} after={after}")
+
+
 def execute(cmd):
     action=str(cmd.get("action") or "")
     target=str(cmd.get("target") or "")
     reload_self=False
     if action=="health_check":
         return health_all(),False
+    if action=="diagnose_service":
+        return diagnose_stream_service(target),False
+    if action=="recover_publisher":
+        return recover_stream_publisher(target),False
     if action=="rollback_service":
         return rollback_service(target),False
 
