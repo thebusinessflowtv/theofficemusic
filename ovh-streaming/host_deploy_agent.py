@@ -371,6 +371,59 @@ def hot_patch_av(target="all"):
     return results
 
 
+def hot_patch_audio_controls(target="twitch-kick"):
+    if target in ("","twitch-kick"):
+        targets=["twitch","kick"]
+    elif target=="all":
+        targets=list(SLOTS)
+    elif target in SLOTS:
+        targets=[target]
+    else:
+        raise ValueError("audio controls hot patch target not allowed")
+
+    # Update the lightweight control agent first. Restarting ovh-agent does not
+    # carry media and cannot interrupt any RTMP publisher.
+    agent_name=CONTAINERS.get("ovh-agent","peter-lofi-ovh-agent")
+    run(["docker","cp",str(OVH/"app"/"ovh_agent.py"),f"{agent_name}:/app/ovh_agent.py"],timeout=30)
+    run(["docker","restart",agent_name],timeout=60)
+
+    results=[]
+    for slot in targets:
+        name=CONTAINERS[slot]
+        before=health(slot)
+        encoder=before.get("encoder_pid")
+        audio=before.get("audio_pid")
+        if not encoder or not audio:
+            raise RuntimeError(f"{slot} missing encoder/audio pid: {before}")
+
+        run(["docker","cp",str(OVH/"app"/"audio_engine.py"),f"{name}:/app/audio_engine.py"],timeout=30)
+        run(["docker","exec",name,"python","-c",f"import os,signal; os.kill({int(audio)}, signal.SIGTERM)"],timeout=20)
+
+        end=time.time()+60
+        after={}
+        while time.time()<end:
+            after=health(slot)
+            if after.get("encoder_pid") and after.get("encoder_pid")!=encoder:
+                raise RuntimeError(f"{slot} encoder changed during audio-control hot patch: {encoder} -> {after.get('encoder_pid')}")
+            if after.get("encoder_pid")==encoder and after.get("audio_pid") and after.get("audio_pid")!=audio:
+                break
+            time.sleep(1)
+        else:
+            raise RuntimeError(f"{slot} audio feeder did not recover: before={before} after={after}")
+
+        results.append({
+            "service":slot,
+            "encoder_pid":encoder,
+            "encoder_pid_preserved":after.get("encoder_pid")==encoder,
+            "old_audio_pid":audio,
+            "new_audio_pid":after.get("audio_pid"),
+            "status":after.get("status"),
+            "visual_status":after.get("visual_status"),
+            "audio_status":after.get("audio_status"),
+        })
+    return results
+
+
 def rollback_service(service):
     if service not in SERVICES:
         raise ValueError("service not allowed")
@@ -619,6 +672,8 @@ def execute(cmd):
         return {"old_head":old,"new_head":new,"targets":hot_patch_streaming(target)},False
     if action=="hot_patch_av":
         return {"old_head":old,"new_head":new,"targets":hot_patch_av(target)},False
+    if action=="hot_patch_audio_controls":
+        return {"old_head":old,"new_head":new,"targets":hot_patch_audio_controls(target)},False
     st=read_state()
     if old!=new:
         st.update({"previous_head":old,"last_good_head":new,"last_deploy_at":now()})
