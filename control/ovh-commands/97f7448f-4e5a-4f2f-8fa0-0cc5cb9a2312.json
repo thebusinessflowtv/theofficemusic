@@ -1,0 +1,13 @@
+{
+  "action": "set_visual",
+  "runtime_slot": "kick",
+  "platform": "kick",
+  "session_id": "2c2b6335-7872-4a9c-af69-cee17f10bedc",
+  "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
+  "loop_url": "https://mediaforge-api.guilhermeodsgn.workers.dev/media/9d74fec2-eabc-4ac8-83d8-e4982aece491/5938f94a4406430b9d437db64d69a548831de123fb184c04854f6811254dd8b2",
+  "asset_id": "9d74fec2-eabc-4ac8-83d8-e4982aece491",
+  "source": "mediaforge-visual-switch",
+  "id": "97f7448f-4e5a-4f2f-8fa0-0cc5cb9a2312",
+  "runtime": "ovh",
+  "requested_at": "2026-10-03T06:18:20.122Z"
+}
