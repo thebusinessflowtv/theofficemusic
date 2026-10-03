@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-03T16:54:32.406996+00:00",
+  "broadcast_id": "2nyGIYs7ixA",
+  "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790973399832628",
+  "lifecycle": "ready",
+  "privacy": "public",
+  "stream_status": "active",
+  "health_status": "good",
+  "configuration_issues": [],
+  "enable_auto_start": true,
+  "enable_auto_stop": false
+}
