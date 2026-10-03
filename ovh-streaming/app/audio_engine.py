@@ -145,10 +145,10 @@ class PCMDecoder:
         self.track = track
         self.cached = False
         self.proc = None
-        self.q = queue.Queue(maxsize=16)
+        self.q = queue.Queue(maxsize=24)
         self.stop_event = threading.Event()
         source, self.cached = engine.source_for(track)
-        cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin", "-re"]
+        cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin"]
         if not self.cached:
             cmd += [
                 "-rw_timeout", str(int(AUDIO_HTTP_RW_TIMEOUT_SECONDS * 1_000_000)),
@@ -459,18 +459,30 @@ class AudioEngine:
         return self.playlist.next()
 
     def wait_decoder_ready(self, current, upcoming, dst, timeout=12.0):
-        """Prebuffer the next track while keeping the current PCM flowing."""
-        deadline = time.monotonic() + timeout
-        silence = self.silence_chunk()
-        while self.running and time.monotonic() < deadline:
-            nxt = upcoming.read(timeout=0.01)
-            if nxt is None:
-                return None
-            if nxt is not READ_TIMEOUT:
-                return nxt
+        """Fill enough of the next track for the entire fade before switching.
 
-            cur = current.read(timeout=AUDIO_SILENCE_INTERVAL_SECONDS)
-            if cur is READ_TIMEOUT or cur is None:
+        The current decoder keeps feeding PCM while the new decoder fills its
+        queue. FFmpeg decoding is intentionally not paced with -re here: the
+        persistent publisher/FIFO is the master clock, so pre-decoding removes
+        transition starvation without making the stream run faster.
+        """
+        deadline = time.monotonic() + timeout
+        silence = self.silence_chunk(0.05)
+        chunk_frames = max(1, PCM_CHUNK // (2 * PCM_CHANNELS))
+        need_chunks = min(
+            max(3, int((AUDIO_CROSSFADE_SECONDS * PCM_RATE) / chunk_frames) + 2),
+            max(3, upcoming.q.maxsize - 2),
+        )
+        while self.running and time.monotonic() < deadline:
+            if upcoming.q.qsize() >= need_chunks:
+                first = upcoming.read(timeout=0.01)
+                if first is not READ_TIMEOUT and first is not None:
+                    return first
+
+            cur = current.read(timeout=0.05)
+            if cur is READ_TIMEOUT:
+                cur = silence
+            elif cur is None:
                 cur = silence
             self.write_pcm(dst, cur)
         return None
@@ -503,7 +515,7 @@ class AudioEngine:
         fade_done = 0
         next_pending = first_next
         while self.running and fade_done < fade_total:
-            cur = current.read(timeout=AUDIO_SILENCE_INTERVAL_SECONDS)
+            cur = current.read(timeout=0.02)
             if cur is READ_TIMEOUT or cur is None:
                 cur = b""
 
@@ -511,7 +523,7 @@ class AudioEngine:
                 nxt = next_pending
                 next_pending = None
             else:
-                nxt = upcoming.read(timeout=AUDIO_SILENCE_INTERVAL_SECONDS)
+                nxt = upcoming.read(timeout=0.02)
                 if nxt is READ_TIMEOUT or nxt is None:
                     nxt = b""
 
