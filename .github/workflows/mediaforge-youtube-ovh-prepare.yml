@@ -1,0 +1,212 @@
+name: MediaForge — Prepare YouTube Live on OVH
+
+on:
+  workflow_dispatch:
+    inputs:
+      session_id:
+        description: MediaForge session UUID
+        required: true
+        type: string
+      runtime_slot:
+        description: OVH YouTube slot
+        required: true
+        type: choice
+        options:
+          - youtube-deep-house
+          - youtube-rainy
+      title:
+        description: Live title
+        required: true
+        type: string
+      description:
+        description: Live description
+        required: false
+        default: ''
+        type: string
+      thumbnail_url:
+        description: Optional MediaForge thumbnail URL
+        required: false
+        default: ''
+        type: string
+      duration_minutes:
+        description: Optional duration
+        required: false
+        default: '0'
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      SESSION_ID: ${{ inputs.session_id }}
+      RUNTIME_SLOT: ${{ inputs.runtime_slot }}
+      LIVE_TITLE: ${{ inputs.title }}
+      LIVE_DESCRIPTION: ${{ inputs.description }}
+      THUMBNAIL_URL: ${{ inputs.thumbnail_url }}
+      DURATION_MINUTES: ${{ inputs.duration_minutes }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Create broadcast and bind reusable OVH stream
+        run: |
+          python - <<'PY'
+          import datetime as dt
+          import json, os, pathlib, urllib.request
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+          from googleapiclient.errors import HttpError
+
+          root=pathlib.Path('.')
+          sid=os.environ['SESSION_ID']
+          slot=os.environ['RUNTIME_SLOT']
+          stations_path=root/'control/youtube-stations.json'
+          cfg=json.loads(stations_path.read_text(encoding='utf-8'))
+          station=next((x for x in cfg.get('stations',[]) if x.get('ovh_slot')==slot),None)
+          if not station:
+              raise SystemExit(f'Unknown OVH YouTube slot: {slot}')
+          if not station.get('youtube_stream_id'):
+              raise SystemExit(f'YouTube stream is not provisioned for {slot}')
+          if station.get('current_session_id') and str(station.get('status') or '').lower() in {'live','starting'}:
+              raise SystemExit(f'YouTube slot busy: {slot} is still assigned to {station.get("current_session_id")}')
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube'],
+          )
+          creds.refresh(Request())
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          now=dt.datetime.now(dt.timezone.utc)
+
+          broadcast=yt.liveBroadcasts().insert(
+              part='snippet,status,contentDetails',
+              body={
+                  'snippet':{
+                      'title':os.environ['LIVE_TITLE'][:100],
+                      'description':os.environ.get('LIVE_DESCRIPTION','')[:5000],
+                      'categoryId':'10',
+                      'scheduledStartTime':(now+dt.timedelta(seconds=20)).isoformat(),
+                  },
+                  'status':{'privacyStatus':'public','selfDeclaredMadeForKids':False},
+                  'contentDetails':{
+                      'enableAutoStart':True,
+                      'enableAutoStop':False,
+                      'monitorStream':{'enableMonitorStream':False},
+                  },
+              },
+          ).execute()
+          bid=broadcast['id']
+          stream_id=str(station['youtube_stream_id'])
+          yt.liveBroadcasts().bind(part='id,contentDetails',id=bid,streamId=stream_id).execute()
+
+          thumb_ok=False
+          thumb_url=os.environ.get('THUMBNAIL_URL','').strip()
+          if thumb_url:
+              try:
+                  req=urllib.request.Request(thumb_url,headers={'User-Agent':'MediaForge-OVH-YouTube'})
+                  data=urllib.request.urlopen(req,timeout=90).read()
+                  path=pathlib.Path('/tmp/mediaforge-thumb')
+                  path.write_bytes(data)
+                  yt.thumbnails().set(videoId=bid,media_body=MediaFileUpload(str(path),resumable=False)).execute()
+                  thumb_ok=True
+              except Exception as exc:
+                  print(f'::warning::Thumbnail upload skipped: {exc}')
+
+          queue_path=root/f'control/youtube-ovh-queue/{sid}.json'
+          if not queue_path.exists():
+              raise SystemExit(f'Missing queue: {queue_path}')
+          queue=json.loads(queue_path.read_text(encoding='utf-8'))
+
+          result={
+              'platform':'youtube',
+              'runtime':'ovh',
+              'runtime_slot':slot,
+              'status':'starting',
+              'title':os.environ['LIVE_TITLE'],
+              'description':os.environ.get('LIVE_DESCRIPTION',''),
+              'youtube_broadcast_id':bid,
+              'youtube_stream_id':stream_id,
+              'youtube_url':f'https://www.youtube.com/watch?v={bid}',
+              'privacy_status':'public',
+              'encoder_resolution':'1920x1080',
+              'encoder_fps':60,
+              'encoder_bitrate_kbps':8000,
+              'custom_thumbnail_applied':thumb_ok,
+              'created_at':now.isoformat(),
+              'updated_at':now.isoformat(),
+          }
+          result_path=root/f'control/live-results/{sid}.json'
+          result_path.parent.mkdir(parents=True,exist_ok=True)
+          result_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+
+          cmd_id=f'start-{sid}'
+          cmd_path=root/f'control/ovh-commands/{cmd_id}.json'
+          cmd_path.parent.mkdir(parents=True,exist_ok=True)
+          cmd={
+              'id':cmd_id,
+              'action':'start',
+              'platform':'youtube',
+              'runtime':'ovh',
+              'runtime_slot':slot,
+              'session_id':sid,
+              'title':os.environ['LIVE_TITLE'],
+              'description':os.environ.get('LIVE_DESCRIPTION',''),
+              'duration_minutes':int(os.environ.get('DURATION_MINUTES') or 0),
+              'loop_url':str(queue.get('loop_url') or ''),
+              'tracks':queue.get('tracks') or [],
+              'shuffle':True,
+              'requested_at':now.isoformat(),
+              'source':'mediaforge-youtube-prepare',
+          }
+          cmd_path.write_text(json.dumps(cmd,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+
+          index_path=root/'control/ovh-commands/index.json'
+          index=json.loads(index_path.read_text(encoding='utf-8')) if index_path.exists() else {'version':1,'commands':[]}
+          rel=str(cmd_path).replace('\\','/')
+          commands=[x for x in index.get('commands',[]) if str(x.get('id'))!=cmd_id]
+          commands.append({'id':cmd_id,'path':rel,'created_at':now.isoformat()})
+          index.update({'version':1,'updated_at':now.isoformat(),'commands':commands[-500:]})
+          index_path.write_text(json.dumps(index,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+
+          station.update({
+              'runtime':'ovh',
+              'status':'starting',
+              'current_session_id':sid,
+              'youtube_broadcast_id':bid,
+              'last_started_at':now.isoformat(),
+          })
+          cfg['updated_at']=now.isoformat()
+          stations_path.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(f'Prepared {sid} on {slot}: https://www.youtube.com/watch?v={bid}')
+          PY
+
+      - name: Publish control state
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/live-results control/youtube-stations.json control/ovh-commands
+          git commit -m "mediaforge: prepare YouTube OVH live ${SESSION_ID}"
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((N*2))
+          done
+          exit 1
