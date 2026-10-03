@@ -77,3 +77,39 @@ The runtime is ready for separate platform adapters:
 - On-screen chat and now-playing overlay.
 - Paid-message event queue.
 - Peter Lofi character reactions driven by events.
+
+
+## Remote deploy agent
+
+The VPS also runs a host-level systemd service named `mediaforge-deploy-agent`. It is separate from the streaming `ovh-agent`.
+
+Purpose:
+- pull the authoritative `main` branch;
+- build and recreate one allow-listed Docker Compose service;
+- perform rolling full-runtime deploys;
+- report health;
+- perform a service rollback to the previously recorded Git revision.
+
+Security model:
+- no arbitrary shell commands are accepted;
+- deploy actions and targets are allow-listed both by Cloudflare and by the host agent;
+- the agent polls Cloudflare D1 outbound, so no public SSH/admin port is added;
+- GitHub remains the source of truth;
+- deployment results are acknowledged back to MediaForge.
+
+Allowed actions:
+- `deploy_service`: one of `ovh-agent`, `control-api`, `kick`, `twitch`, `youtube-deep-house`, `youtube-rainy`;
+- `deploy_all`: rolling update, one service at a time;
+- `deploy_host_agent`: update/reload only the host deployment agent;
+- `health_check`: sanitized health for all services;
+- `rollback_service`: rebuild one service from the previous recorded Git revision.
+
+One-time installation:
+
+```bash
+cd ~/theofficemusic/ovh-streaming
+git pull --ff-only
+sudo bash install-host-deploy-agent.sh
+```
+
+After `MEDIAFORGE_REMOTE_DEPLOY_READY`, normal code deployments no longer require an interactive SSH session.
