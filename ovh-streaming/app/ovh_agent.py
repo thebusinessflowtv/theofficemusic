@@ -8,6 +8,7 @@ Live state belongs to OVH. Cloudflare is only a control/UI transport:
 - GitHub is not polled at runtime;
 - visual/playlist/skip/previous changes never restart the RTMP session.
 """
+import hashlib
 import json
 import os
 import pathlib
@@ -15,6 +16,7 @@ import shutil
 import time
 import urllib.request
 import uuid
+import zipfile
 from datetime import datetime, timezone
 
 STATE=pathlib.Path("/state")
@@ -105,6 +107,147 @@ def source_is_non_interrupting(cmd):
     return any(source.startswith(prefix) for prefix in NON_INTERRUPT_SOURCES)
 
 
+def download_file(url,target):
+    target.parent.mkdir(parents=True,exist_ok=True)
+    temp=target.with_suffix(target.suffix+".part")
+    temp.unlink(missing_ok=True)
+    req=urllib.request.Request(str(url),headers={"User-Agent":"MediaForge-Twitch-DJ-Importer"})
+    with urllib.request.urlopen(req,timeout=60) as r, open(temp,"wb") as fh:
+        while True:
+            chunk=r.read(1024*1024)
+            if not chunk:
+                break
+            fh.write(chunk)
+    if not temp.exists() or temp.stat().st_size<1024:
+        raise RuntimeError("DJ archive download is empty")
+    temp.replace(target)
+    return target
+
+
+def import_twitch_dj_archive(cmd):
+    if slot_for(cmd)!="twitch":
+        raise ValueError("DJ archive import is Twitch-only")
+    archive_url=str(cmd.get("archive_url") or "").strip()
+    manifest_url=str(cmd.get("manifest_url") or "").strip()
+    if not archive_url or not manifest_url:
+        raise ValueError("archive_url and manifest_url are required")
+
+    manifest=fetch_json(manifest_url)
+    expected={}
+    for row in manifest.get("tracks") or []:
+        h=str(row.get("sha256") or "").lower().strip()
+        if len(h)==64:
+            expected[h]=row
+    if not expected:
+        raise RuntimeError("DJ manifest has no hashes")
+
+    dj_dir=STATE/"twitch-dj-audio"
+    dj_dir.mkdir(parents=True,exist_ok=True)
+    archive=STATE/"twitch-dj-import.zip"
+    status_path=STATE/"twitch"/"dj-import.json"
+    atomic_json(status_path,{"status":"downloading","updated_at":iso_now(),"expected":len(expected)})
+    download_file(archive_url,archive)
+
+    found={}
+    rejected=[]
+    duplicates=0
+    atomic_json(status_path,{"status":"validating","updated_at":iso_now(),"expected":len(expected)})
+    with zipfile.ZipFile(archive,"r") as zf:
+        for info in zf.infolist():
+            if info.is_dir() or not str(info.filename).lower().endswith(".mp3"):
+                continue
+            h=hashlib.sha256()
+            with zf.open(info,"r") as src:
+                while True:
+                    chunk=src.read(1024*1024)
+                    if not chunk:
+                        break
+                    h.update(chunk)
+            digest=h.hexdigest()
+            meta=expected.get(digest)
+            if not meta:
+                rejected.append({"filename":pathlib.PurePosixPath(info.filename).name,"sha256":digest})
+                continue
+            if digest in found:
+                duplicates+=1
+                continue
+            target=dj_dir/(digest+".mp3")
+            temp=target.with_suffix(".mp3.part")
+            with zf.open(info,"r") as src, open(temp,"wb") as dst:
+                shutil.copyfileobj(src,dst,1024*1024)
+            temp.replace(target)
+            found[digest]={
+                "id":"twitch-dj-"+digest[:12],
+                "title":str(meta.get("title") or pathlib.PurePosixPath(info.filename).stem),
+                "artists":str(meta.get("artists") or ""),
+                "url":"file://"+str(target),
+                "duration_seconds":float(meta.get("duration_seconds") or 0),
+                "source":"twitch_dj_catalog_licensed_copy",
+                "sha256":digest,
+            }
+
+    missing=sorted(set(expected)-set(found))
+    if not found:
+        raise RuntimeError("No validated Twitch DJ MP3 found in archive")
+
+    base=[x for x in (cmd.get("base_tracks") or []) if isinstance(x,dict) and x.get("url")]
+    mixed=[]
+    for i,t in enumerate(base):
+        mixed.append({
+            "id":str(t.get("id") or f"twitch-dj-original-{i+1:02d}"),
+            "title":str(t.get("title") or "Peter Lofi"),
+            "url":str(t["url"]),
+            "duration_seconds":float(t.get("duration_seconds") or 0),
+            "source":"peter_lofi_original",
+        })
+    mixed.extend(found.values())
+
+    st=STATE/"twitch"
+    atomic_json(st/"playlist.json",{
+        "station":"twitch",
+        "playlist_key":"twitch-dj-mixed",
+        "platform_lock":["twitch"],
+        "shuffle":True,
+        "repeat":True,
+        "updated_at":iso_now(),
+        "tracks":mixed,
+    })
+    desired=read_json(st/"desired.json",{}) or {}
+    desired.update({
+        "runtime":"ovh",
+        "runtime_slot":"twitch",
+        "playlist_key":"twitch-dj-mixed",
+        "updated_at":iso_now(),
+    })
+    atomic_json(st/"desired.json",desired)
+    # Only interrupt the current audio track with a fade; generation remains untouched,
+    # so the persistent Twitch RTMP encoder stays connected.
+    atomic_json(st/"command.json",{
+        "id":str(cmd.get("id") or uuid.uuid4()),
+        "action":"skip",
+        "requested_at":iso_now(),
+        "source":"mediaforge-twitch-dj-import",
+    })
+    result={
+        "status":"ready",
+        "updated_at":iso_now(),
+        "playlist_key":"twitch-dj-mixed",
+        "original_tracks":len(base),
+        "commercial_tracks":len(found),
+        "track_count":len(mixed),
+        "duplicates_ignored":duplicates,
+        "missing_hashes":missing,
+        "rejected_files":rejected,
+        "rtmp_restart":False,
+    }
+    atomic_json(status_path,result)
+    try:
+        archive.unlink(missing_ok=True)
+    except Exception:
+        pass
+    return result
+
+
 def apply_command(cmd):
     slot=slot_for(cmd)
     if not slot:
@@ -115,6 +258,10 @@ def apply_command(cmd):
     desired_path=st/"desired.json"
     desired=read_json(desired_path,{}) or {}
     action=str(cmd.get("action") or "start").lower()
+
+    if action=="import_twitch_dj_archive":
+        import_twitch_dj_archive(cmd)
+        return
 
     # Playlist payloads are persisted locally on OVH. AudioEngine keeps a
     # persistent local cache under /state/audio-cache.
@@ -241,6 +388,8 @@ def service_payload(slot):
     d=read_json(st/"desired.json",{}) or {}
     ah=read_json(st/"audio-health.json",{}) or {}
     vh=read_json(st/"visual-health.json",{}) or {}
+    dj=read_json(st/"dj-import.json",{}) or {}
+    playlist=read_json(st/"playlist.json",{}) or {}
     return {
         "runtime_slot":slot,
         "platform":h.get("platform") or slot,
@@ -259,6 +408,8 @@ def service_payload(slot):
         "audio_stalls":ah.get("stalls",0),
         "visual_status":vh.get("status"),
         "now_playing":n,
+        "playlist_track_count":len(playlist.get("tracks") or []),
+        "dj_import":dj,
     }
 
 
