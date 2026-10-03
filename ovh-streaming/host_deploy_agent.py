@@ -265,6 +265,13 @@ def hot_patch_streaming(target="all"):
         if slot not in SLOTS:
             raise ValueError("hot patch target not allowed")
 
+    # Refresh the command agent first. It carries no media/RTMP, so restarting
+    # it cannot interrupt any live. This keeps realtime skip/previous protocol
+    # in sync with the audio engine.
+    agent_name=CONTAINERS.get("ovh-agent","peter-lofi-ovh-agent")
+    run(["docker","cp",str(OVH/"app"/"ovh_agent.py"),f"{agent_name}:/app/ovh_agent.py"],timeout=30)
+    run(["docker","restart",agent_name],timeout=60)
+
     results=[]
     for slot in targets:
         name=CONTAINERS[slot]
