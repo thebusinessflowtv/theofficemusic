@@ -34,6 +34,9 @@ def slot_for(cmd):
 def next_generation(desired):
     try:return int(desired.get("generation") or 0)+1
     except Exception:return int(time.time())
+def next_visual_revision(desired):
+    try:return int(desired.get("visual_revision") or 0)+1
+    except Exception:return int(time.time())
 def apply_command(cmd):
     slot=slot_for(cmd)
     if not slot:return
@@ -90,7 +93,9 @@ def apply_command(cmd):
             "title":str(cmd.get("title") or desired.get("title") or ""),
             "loop_url":loop_url,
             "desired":"live",
-            "generation":next_generation(desired),
+            # Visual changes are isolated from the RTMP session. Only the visual
+            # feeder sees this revision; generation remains unchanged.
+            "visual_revision":next_visual_revision(desired),
             "updated_at":iso_now(),
         })
         atomic_json(st/"desired.json",desired)
@@ -142,6 +147,8 @@ def service_payload(slot):
         "fps":h.get("fps"),"video_bitrate_kbps":h.get("video_bitrate_kbps"),
         "restarts":h.get("restarts",0),"updated_at":h.get("updated_at"),
         "loop_url":h.get("loop_url") or d.get("loop_url") or "",
+        "visual_revision":d.get("visual_revision") or 0,
+        "hot_swap":bool(h.get("hot_swap",False)),
         "now_playing":n,
     }
 
