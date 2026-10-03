@@ -1,0 +1,175 @@
+name: Import 28 New Twitch DJ Tracks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/import-28-new-twitch-dj.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-and-queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build validated 98-track Twitch DJ import
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          OLD_CMD="control/ovh-commands/8c115531-4648-4394-b928-c82ab353d1a4.json"
+          test -s "$OLD_CMD"
+          ARCHIVE_URL="$(python3 - "$OLD_CMD" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          print(d["archive_url"])
+          PY
+          )"
+
+          curl -fL --retry 5 --retry-delay 2 "$ARCHIVE_URL" -o /tmp/new101.zip
+          curl -fL --retry 5 --retry-delay 2             "https://raw.githubusercontent.com/thebusinessflowtv/thebusinessflow/main/control-center/data/latest-dj-scan.json"             -o /tmp/latest-dj-scan.json
+
+          python3 - "$OLD_CMD" /tmp/new101.zip /tmp/latest-dj-scan.json <<'PY'
+          import collections, datetime, hashlib, json, pathlib, re, sys, unicodedata, uuid, zipfile
+
+          old_cmd_path=pathlib.Path(sys.argv[1])
+          zip_path=pathlib.Path(sys.argv[2])
+          scan_path=pathlib.Path(sys.argv[3])
+          old_manifest_path=pathlib.Path("control/twitch-dj-supplied-2026-10-03.json")
+
+          def norm(s):
+              s=unicodedata.normalize("NFKD",str(s or ""))
+              s="".join(c for c in s if not unicodedata.combining(c)).lower()
+              s=s.replace("’","'").replace("–","-").replace("—","-")
+              s=re.sub(r"[^a-z0-9]+"," ",s)
+              return re.sub(r"\s+"," ",s).strip()
+
+          def clean_title(name):
+              stem=pathlib.PurePosixPath(name).name
+              if stem.lower().endswith(".mp3"):
+                  stem=stem[:-4]
+              stem=re.sub(r"_spotdown\.org$","",stem,flags=re.I)
+              stem=re.sub(r"\s*\(SPOTISAVER\)(?:\s*\(\d+\))?$","",stem,flags=re.I)
+              return stem.strip()
+
+          old_cmd=json.loads(old_cmd_path.read_text())
+          scan=json.loads(scan_path.read_text())
+          old_manifest=json.loads(old_manifest_path.read_text())
+
+          allowed_by_title=collections.defaultdict(list)
+          for row in scan.get("allowed") or []:
+              allowed_by_title[norm(row.get("title",""))].append(row)
+
+          old_titles={norm(row.get("title","")) for row in old_manifest.get("tracks") or []}
+
+          rows=[]
+          seen_hashes=set()
+          with zipfile.ZipFile(zip_path) as zf:
+              for info in zf.infolist():
+                  if info.is_dir() or not info.filename.lower().endswith(".mp3"):
+                      continue
+                  base=pathlib.PurePosixPath(info.filename).name
+                  if base.startswith("._") or "/__MACOSX/" in ("/"+info.filename):
+                      continue
+                  data=zf.read(info)
+                  sha=hashlib.sha256(data).hexdigest()
+                  if sha in seen_hashes:
+                      continue
+                  seen_hashes.add(sha)
+                  title=clean_title(base)
+                  matches=allowed_by_title.get(norm(title),[])
+                  if not matches:
+                      continue
+                  match=matches[0]
+                  rows.append({
+                      "sha256":sha,
+                      "title":title,
+                      "artists":str(match.get("artists") or ""),
+                      "duration_seconds":0,
+                  })
+
+          new_rows=[r for r in rows if norm(r["title"]) not in old_titles]
+
+          if len(seen_hashes) != 101:
+              raise SystemExit(f"Expected 101 unique real MP3s, got {len(seen_hashes)}")
+          if len(rows) != 62:
+              raise SystemExit(f"Expected 62 allowed tracks in uploaded ZIP, got {len(rows)}")
+          if len(new_rows) != 28:
+              raise SystemExit(f"Expected exactly 28 new allowed tracks, got {len(new_rows)}")
+
+          manifest={
+              "version":1,
+              "generated_at":datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00","Z"),
+              "source":"uploaded-101-audit",
+              "unique_audio_files":len(rows),
+              "new_allowed_tracks":len(new_rows),
+              "tracks":rows,
+          }
+          pathlib.Path("control/twitch-dj-upload101-allowed62.json").write_text(
+              json.dumps(manifest,ensure_ascii=False,indent=2)+"\n"
+          )
+
+          now=datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00","Z")
+          cid=str(uuid.uuid4())
+          cmd={
+              "action":"import_twitch_dj_archive",
+              "runtime_slot":"twitch",
+              "platform":"twitch",
+              "session_id":old_cmd.get("session_id",""),
+              "title":old_cmd.get("title",""),
+              "playlist_key":"twitch-dj-mixed",
+              "archive_asset_id":old_cmd.get("archive_asset_id",""),
+              "archive_url":old_cmd["archive_url"],
+              "manifest":manifest,
+              "base_tracks":old_cmd.get("base_tracks") or [],
+              "shuffle":True,
+              "repeat":True,
+              "source":"mediaforge-twitch-dj-add-28",
+              "id":cid,
+              "runtime":"ovh",
+              "requested_at":now,
+          }
+          cmd_path=pathlib.Path("control/ovh-commands")/(cid+".json")
+          cmd_path.write_text(json.dumps(cmd,ensure_ascii=False,indent=2)+"\n")
+
+          idx_path=pathlib.Path("control/ovh-commands/index.json")
+          idx=json.loads(idx_path.read_text())
+          commands=[x for x in (idx.get("commands") or []) if str(x.get("id"))!=cid]
+          commands.append({"id":cid,"path":str(cmd_path),"created_at":now})
+          idx["version"]=1
+          idx["updated_at"]=now
+          idx["commands"]=commands[-500:]
+          idx_path.write_text(json.dumps(idx,ensure_ascii=False,indent=2)+"\n")
+
+          result={
+              "queued_at":now,
+              "command_id":cid,
+              "uploaded_real_mp3s":len(seen_hashes),
+              "allowed_in_uploaded_zip":len(rows),
+              "new_allowed_added":len(new_rows),
+              "original_tracks":len(old_cmd.get("base_tracks") or []),
+              "expected_final_playlist_count":len(old_cmd.get("base_tracks") or [])+len(rows),
+              "new_tracks":[{"title":r["title"],"artists":r["artists"],"sha256":r["sha256"]} for r in new_rows],
+          }
+          pathlib.Path("control/twitch-dj-add28-result.json").write_text(
+              json.dumps(result,ensure_ascii=False,indent=2)+"\n"
+          )
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Queue command for OVH agent
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "mediaforge-ops"
+          git config user.email "mediaforge-ops@users.noreply.github.com"
+          git add control/twitch-dj-upload101-allowed62.json control/twitch-dj-add28-result.json control/ovh-commands/
+          git commit -m "ops: queue 28 new allowed Twitch DJ tracks"
+          git push origin HEAD:main
