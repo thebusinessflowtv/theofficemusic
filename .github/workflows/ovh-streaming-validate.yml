@@ -19,10 +19,11 @@ jobs:
       - name: Validate Python and shell
         run: |
           set -euo pipefail
-          python -m py_compile ovh-streaming/app/*.py
+          python -m py_compile ovh-streaming/app/*.py ovh-streaming/host_deploy_agent.py
           bash -n ovh-streaming/connect-mediaforge.sh
           bash -n ovh-streaming/bootstrap.sh
           bash -n ovh-streaming/setup-interactive.sh
+          bash -n ovh-streaming/install-host-deploy-agent.sh
 
       - name: Validate Docker Compose
         working-directory: ovh-streaming
