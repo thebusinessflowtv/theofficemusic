@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-03T02:23:02.782Z",
+  "updated_at": "2026-10-03T02:31:05.648Z",
   "commands": [
     {
       "id": "bootstrap-kick-ovh",
@@ -26,6 +26,16 @@
       "id": "efa67120-6a83-4691-bd27-63ab80df6dcd",
       "path": "control/ovh-commands/efa67120-6a83-4691-bd27-63ab80df6dcd.json",
       "created_at": "2026-10-03T02:23:02.782Z"
+    },
+    {
+      "id": "gaming-playlist-36-kick-1790994666038",
+      "path": "control/ovh-commands/gaming-playlist-36-kick-1790994666038.json",
+      "created_at": "2026-10-03T02:31:05.648Z"
+    },
+    {
+      "id": "gaming-playlist-36-twitch-1790994668882",
+      "path": "control/ovh-commands/gaming-playlist-36-twitch-1790994668882.json",
+      "created_at": "2026-10-03T02:31:05.648Z"
     }
   ]
 }
