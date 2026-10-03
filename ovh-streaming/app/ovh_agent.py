@@ -20,7 +20,7 @@ import zipfile
 from datetime import datetime, timezone
 
 STATE=pathlib.Path("/state")
-API=os.environ.get("MEDIAFORGE_API_URL","http://host.docker.internal:8790").rstrip("/")
+API=os.environ.get("MEDIAFORGE_API_URL","https://mediaforge-api.guilhermeodsgn.workers.dev").rstrip("/")
 AGENT_TOKEN=os.environ.get("MEDIAFORGE_AGENT_TOKEN","").strip()
 POLL=max(3,int(os.environ.get("OVH_AGENT_POLL_SECONDS","5")))
 LOCAL_STATUS_SECONDS=max(5,int(os.environ.get("OVH_LOCAL_STATUS_SECONDS","10")))
