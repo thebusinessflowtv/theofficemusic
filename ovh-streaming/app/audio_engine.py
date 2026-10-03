@@ -236,6 +236,9 @@ class AudioEngine:
                 for track in list(self.playlist.tracks):
                     if not self.running:
                         break
+                    parsed = urllib.parse.urlparse(track["url"])
+                    if parsed.scheme == "file":
+                        continue
                     if self.cache_ready(self.cache_path(track)):
                         continue
                     self.download_to_cache(track)
@@ -248,6 +251,13 @@ class AudioEngine:
                 time.sleep(1)
 
     def source_for(self, track):
+        parsed = urllib.parse.urlparse(track["url"])
+        if parsed.scheme == "file":
+            local = pathlib.Path(urllib.parse.unquote(parsed.path))
+            if not local.exists() or local.stat().st_size < AUDIO_CACHE_MIN_BYTES:
+                raise RuntimeError(f"local DJ audio missing: {local}")
+            self.cache_hits += 1
+            return str(local), True
         cached = self.cache_path(track)
         if self.cache_ready(cached):
             self.cache_hits += 1
