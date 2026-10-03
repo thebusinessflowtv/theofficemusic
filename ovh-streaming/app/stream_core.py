@@ -254,13 +254,13 @@ class StreamCore:
 
         if self.platform in {"twitch", "kick"}:
             # Twitch/Kick use a fresh CFR A/V clock inside the publisher.
-            # Re-encoding the local H.264 transport avoids carrying MPEG-TS
-            # codec tags/timestamps into FLV and prevents frozen/slow video,
-            # non-monotonic timestamps and audio stalls after feeder changes.
-            cmd = common + [
+            # Audio timestamps are rebuilt from sample count so a track change
+            # cannot reset the mux clock. Keep the muxer from waiting forever
+            # for audio if one decoder is briefly late.
+            av_cmd = common + [
                 "-filter_complex",
                 f"[0:v]setpts=PTS-STARTPTS,fps={self.fps},format=yuv420p[v];"
-                "[1:a]asetpts=PTS-STARTPTS,aresample=async=1:first_pts=0[a]",
+                "[1:a]asetpts=N/SR/TB,aresample=async=1000:min_hard_comp=0.100:first_pts=0[a]",
                 "-map",
                 "[v]",
                 "-map",
@@ -298,13 +298,45 @@ class StreamCore:
                 "-ac",
                 "2",
                 "-max_interleave_delta",
-                "0",
-                "-flvflags",
-                "no_duration_filesize",
-                "-f",
-                "flv",
-                self.target(),
+                "250000",
+                "-flush_packets",
+                "1",
             ]
+            if self.platform == "twitch":
+                # Keep the encoder alive through short ingest/network hiccups.
+                # The fifo muxer reconnects the FLV publisher instead of making
+                # StreamCore tear down the whole A/V pipeline.
+                cmd = av_cmd + [
+                    "-f",
+                    "fifo",
+                    "-fifo_format",
+                    "flv",
+                    "-queue_size",
+                    "1200",
+                    "-attempt_recovery",
+                    "1",
+                    "-recover_any_error",
+                    "1",
+                    "-recovery_wait_time",
+                    "1",
+                    "-drop_pkts_on_overflow",
+                    "1",
+                    "-restart_with_keyframe",
+                    "1",
+                    "-max_recovery_attempts",
+                    "1000000",
+                    self.target(),
+                ]
+            else:
+                # Leave the known-good Kick transport unchanged apart from the
+                # safer A/V timestamp handling above.
+                cmd = av_cmd + [
+                    "-flvflags",
+                    "no_duration_filesize",
+                    "-f",
+                    "flv",
+                    self.target(),
+                ]
         else:
             # Keep the current YouTube path untouched for this incident.
             cmd = common + [
