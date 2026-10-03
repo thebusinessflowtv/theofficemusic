@@ -157,18 +157,23 @@ PY
 echo "Comando de teste criado: $CMD_ID"
 
 STATUS=""
-for i in $(seq 1 20); do
+STATUS_JSON=""
+for i in $(seq 1 25); do
   sleep 1
-  STATUS_JSON="$(curl -fsS "$LOCAL_API/api/ovh/control/$CMD_ID" -H "authorization: Bearer $USER_TOKEN")"
-  STATUS="$(python3 - "$STATUS_JSON" <<'PY'
+  STATUS_JSON="$(curl -fsS "$LOCAL_API/api/ovh/status" -H "authorization: Bearer $USER_TOKEN")"
+  STATUS="$(python3 - "$STATUS_JSON" "$CMD_ID" <<'PY'
 import json,sys
-print((json.loads(sys.argv[1]).get("command") or {}).get("status",""))
+d=json.loads(sys.argv[1]); cid=sys.argv[2]
+for row in d.get("recent_commands") or []:
+    if str(row.get("id"))==cid:
+        print(row.get("status",""))
+        break
 PY
 )"
   [ "$STATUS" = "completed" ] && break
   [ "$STATUS" = "failed" ] && { echo "$STATUS_JSON"; exit 5; }
 done
-[ "$STATUS" = "completed" ] || { echo "ERRO: comando não foi consumido pelo agente (status=$STATUS)"; docker logs --tail 120 peter-lofi-ovh-agent 2>&1; exit 6; }
+[ "$STATUS" = "completed" ] || { echo "ERRO: comando não foi consumido pelo agente (status=$STATUS)"; echo "$STATUS_JSON"; docker logs --tail 120 peter-lofi-ovh-agent 2>&1; exit 6; }
 
 sleep 3
 AFTER_TITLE="$(python3 - "$LIVE_STATE" <<'PY'
