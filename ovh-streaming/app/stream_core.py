@@ -228,6 +228,10 @@ class StreamCore:
             "-nostdin",
             "-fflags",
             "+genpts+discardcorrupt",
+        ]
+        if self.platform.startswith("youtube"):
+            common += ["-use_wallclock_as_timestamps", "1"]
+        common += [
             "-thread_queue_size",
             "8192",
             "-analyzeduration",
@@ -264,7 +268,7 @@ class StreamCore:
                 "-c:v",
                 "libx264",
                 "-preset",
-                "veryfast",
+                "superfast",
                 "-tune",
                 "zerolatency",
                 "-profile:v",
