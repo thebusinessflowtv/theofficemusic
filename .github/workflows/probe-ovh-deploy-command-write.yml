@@ -1,0 +1,51 @@
+name: Probe OVH Deploy Command Write API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/probe-ovh-deploy-command-write.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Probe safe health-check command write
+        shell: bash
+        run: |
+          set +e
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          BODY='{"action":"health_check","target":""}'
+          curl -sS -X POST "$BASE/api/ovh/deploy-agent/commands"             -H "content-type: application/json"             --data "$BODY" -w '\nHTTP_STATUS:%{http_code}\n' > /tmp/plural.txt
+          PLURAL_CODE="$(tail -n1 /tmp/plural.txt | sed 's/HTTP_STATUS://')"
+          if [ "$PLURAL_CODE" -lt 200 ] || [ "$PLURAL_CODE" -ge 300 ]; then
+            curl -sS -X POST "$BASE/api/ovh/deploy-agent/command"               -H "content-type: application/json"               --data "$BODY" -w '\nHTTP_STATUS:%{http_code}\n' > /tmp/singular.txt
+          else
+            printf 'SKIPPED\nHTTP_STATUS:000\n' > /tmp/singular.txt
+          fi
+          sleep 12
+          curl -sS -w '\nHTTP_STATUS:%{http_code}\n' "$BASE/api/ops/20261003-live-stability/status" > /tmp/status.txt
+
+          mkdir -p control/diagnostics
+          jq -n             --rawfile plural /tmp/plural.txt             --rawfile singular /tmp/singular.txt             --rawfile status /tmp/status.txt             '{checked_at:(now|todateiso8601),plural:$plural,singular:$singular,status:$status}'             > control/diagnostics/ovh-deploy-command-write-probe.json
+          cat control/diagnostics/ovh-deploy-command-write-probe.json
+
+      - name: Persist probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/ovh-deploy-command-write-probe.json
+          git commit -m "ops: record OVH deploy command write probe" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
