@@ -1,0 +1,173 @@
+name: Audit Latest Twitch DJ Upload
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/audit-latest-twitch-dj-upload.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Resolve latest Twitch DJ archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' > /tmp/archive.env
+          import json, pathlib, shlex
+          idx=json.loads(pathlib.Path("control/ovh-commands/index.json").read_text())
+          for row in reversed(idx.get("commands",[])):
+              p=pathlib.Path(row.get("path",""))
+              if not p.is_file():
+                  continue
+              try: cmd=json.loads(p.read_text())
+              except Exception: continue
+              if cmd.get("action")=="import_twitch_dj_archive" and cmd.get("archive_url"):
+                  print("COMMAND_ID="+shlex.quote(str(cmd.get("id",""))))
+                  print("ARCHIVE_URL="+shlex.quote(str(cmd["archive_url"])))
+                  print("ASSET_ID="+shlex.quote(str(cmd.get("archive_asset_id",""))))
+                  break
+          else:
+              raise SystemExit("No Twitch DJ import command found")
+          PY
+          cat /tmp/archive.env | sed 's#ARCHIVE_URL=.*#ARCHIVE_URL=[redacted]#'
+          source /tmp/archive.env
+          echo "COMMAND_ID=$COMMAND_ID" >> "$GITHUB_ENV"
+          echo "ARCHIVE_URL=$ARCHIVE_URL" >> "$GITHUB_ENV"
+          echo "ASSET_ID=$ASSET_ID" >> "$GITHUB_ENV"
+
+      - name: Download archive and reference data
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 4 --retry-delay 2 "$ARCHIVE_URL" -o /tmp/twitch-dj-upload.zip
+          curl -fL --retry 4 --retry-delay 2             "https://raw.githubusercontent.com/thebusinessflowtv/thebusinessflow/main/control-center/data/latest-dj-scan.json"             -o /tmp/latest-dj-scan.json
+          test -s /tmp/twitch-dj-upload.zip
+          test -s /tmp/latest-dj-scan.json
+          echo "Archive bytes: $(wc -c </tmp/twitch-dj-upload.zip)"
+
+      - name: Audit duplicates and Twitch allowed matches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, zipfile, hashlib, pathlib, tempfile, subprocess, re, unicodedata, os
+          from difflib import SequenceMatcher
+
+          ZIP="/tmp/twitch-dj-upload.zip"
+          SCAN="/tmp/latest-dj-scan.json"
+          OLD="control/twitch-dj-supplied-2026-10-03.json"
+
+          def norm(s):
+              s=unicodedata.normalize("NFKD",str(s or ""))
+              s="".join(c for c in s if not unicodedata.combining(c)).lower()
+              s=re.sub(r"\b(feat|ft|featuring)\.?\b"," ",s)
+              s=re.sub(r"[^a-z0-9]+"," ",s)
+              return re.sub(r"\s+"," ",s).strip()
+
+          def toks(s): return set(norm(s).split())
+          def dice(a,b):
+              A,B=toks(a),toks(b)
+              return (2*len(A&B)/(len(A)+len(B))) if A and B else 0.0
+
+          scan=json.load(open(SCAN))
+          allowed=scan.get("allowed") or []
+          old_hashes=set()
+          if pathlib.Path(OLD).is_file():
+              try:
+                  old=json.load(open(OLD))
+                  old_hashes={str(x.get("sha256","")).lower() for x in old.get("tracks",[]) if len(str(x.get("sha256","")))==64}
+              except Exception: pass
+
+          rows=[]
+          seen={}
+          with zipfile.ZipFile(ZIP) as z:
+              infos=[i for i in z.infolist() if not i.is_dir() and i.filename.lower().endswith(".mp3")]
+              for n,info in enumerate(infos,1):
+                  data=z.read(info)
+                  sha=hashlib.sha256(data).hexdigest()
+                  name=pathlib.PurePosixPath(info.filename).name
+                  title=pathlib.Path(name).stem
+                  artist=""
+                  duration=None
+                  with tempfile.NamedTemporaryFile(suffix=".mp3",delete=False) as f:
+                      f.write(data); tmp=f.name
+                  try:
+                      p=subprocess.run(
+                          ["ffprobe","-v","error","-show_entries","format=duration:format_tags=title,artist",
+                           "-of","json",tmp],capture_output=True,text=True,timeout=20)
+                      meta=json.loads(p.stdout or "{}").get("format",{})
+                      tags=meta.get("tags") or {}
+                      title=tags.get("title") or tags.get("TITLE") or title
+                      artist=tags.get("artist") or tags.get("ARTIST") or ""
+                      try: duration=float(meta.get("duration"))
+                      except Exception: duration=None
+                  except Exception:
+                      pass
+                  finally:
+                      try: os.unlink(tmp)
+                      except Exception: pass
+
+                  best=None
+                  for a in allowed:
+                      ts=dice(title,a.get("title",""))
+                      ar=dice(artist,a.get("artists","")) if artist else 0
+                      score=ts*0.78+ar*0.22
+                      # Exact normalized title gets a strong floor, but artist mismatch stays visible.
+                      if norm(title)==norm(a.get("title","")):
+                          score=max(score,0.86+(0.14*ar if artist else 0))
+                      cand=(score,ts,ar,a)
+                      if best is None or cand[0]>best[0]: best=cand
+                  status="needs_review"; match=None; score=0
+                  if best:
+                      score,ts,ar,a=best
+                      if norm(title)==norm(a.get("title","")) and (not artist or ar>=0.25):
+                          status="allowed_match"
+                      elif score>=0.90 and ts>=0.90:
+                          status="allowed_match"
+                      elif score>=0.76 and ts>=0.78:
+                          status="likely_allowed"
+                      match={"title":a.get("title"),"artists":a.get("artists"),"score":round(score,4)}
+                  dup_in_upload=sha in seen
+                  if not dup_in_upload: seen[sha]=name
+                  rows.append({
+                      "file":name,"sha256":sha,"title":title,"artist":artist,
+                      "duration_seconds":round(duration,2) if duration else None,
+                      "duplicate_in_upload":dup_in_upload,
+                      "duplicate_of":seen.get(sha) if dup_in_upload else None,
+                      "already_in_previous_35":sha in old_hashes,
+                      "catalog_status":status,"catalog_match":match
+                  })
+
+          unique={r["sha256"] for r in rows}
+          dup=sum(1 for r in rows if r["duplicate_in_upload"])
+          prev=sum(1 for r in rows if r["already_in_previous_35"])
+          allowed_n=sum(1 for r in rows if r["catalog_status"]=="allowed_match")
+          likely=sum(1 for r in rows if r["catalog_status"]=="likely_allowed")
+          review=sum(1 for r in rows if r["catalog_status"]=="needs_review")
+
+          print("=== TWITCH DJ UPLOAD AUDIT ===")
+          print("command_id:",os.environ.get("COMMAND_ID"))
+          print("asset_id:",os.environ.get("ASSET_ID"))
+          print("mp3_files:",len(rows))
+          print("unique_sha256:",len(unique))
+          print("duplicates_inside_upload:",dup)
+          print("already_in_previous_35:",prev)
+          print("allowed_match:",allowed_n)
+          print("likely_allowed:",likely)
+          print("needs_review:",review)
+          print()
+          for i,r in enumerate(rows,1):
+              m=r["catalog_match"] or {}
+              print(f'{i:03d} | {r["catalog_status"]:14} | old35={str(r["already_in_previous_35"]).lower():5} | dup={str(r["duplicate_in_upload"]).lower():5} | {r["artist"]} - {r["title"]} | match={m.get("artists","")} - {m.get("title","")} | score={m.get("score","")}')
+          PY
