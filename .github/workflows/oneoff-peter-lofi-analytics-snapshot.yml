@@ -1,0 +1,121 @@
+name: One-off — Peter Lofi Analytics Snapshot
+
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-peter-lofi-analytics-snapshot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Capture YouTube snapshot
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, datetime
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          from googleapiclient.errors import HttpError
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube'],
+          )
+          creds.refresh(Request())
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+
+          ch=(yt.channels().list(part='snippet,statistics,contentDetails',mine=True).execute().get('items') or [None])[0]
+          if not ch:
+              raise SystemExit('No authorized YouTube channel')
+          channel_id=ch['id']
+          uploads=ch['contentDetails']['relatedPlaylists']['uploads']
+          items=yt.playlistItems().list(part='contentDetails',playlistId=uploads,maxResults=50).execute().get('items') or []
+          ids=[x['contentDetails']['videoId'] for x in items]
+          videos=[]
+          for i in range(0,len(ids),50):
+              videos += yt.videos().list(part='snippet,statistics,contentDetails,liveStreamingDetails,status',id=','.join(ids[i:i+50])).execute().get('items') or []
+
+          rows=[]
+          for v in videos:
+              live=v.get('liveStreamingDetails') or {}
+              rows.append({
+                  'video_id':v['id'],
+                  'title':(v.get('snippet') or {}).get('title'),
+                  'published_at':(v.get('snippet') or {}).get('publishedAt'),
+                  'privacy':(v.get('status') or {}).get('privacyStatus'),
+                  'duration':(v.get('contentDetails') or {}).get('duration'),
+                  'views':int((v.get('statistics') or {}).get('viewCount') or 0),
+                  'likes':int((v.get('statistics') or {}).get('likeCount') or 0),
+                  'comments':int((v.get('statistics') or {}).get('commentCount') or 0),
+                  'scheduled_start':live.get('scheduledStartTime'),
+                  'actual_start':live.get('actualStartTime'),
+                  'actual_end':live.get('actualEndTime'),
+                  'concurrent_viewers':int(live.get('concurrentViewers') or 0) if live.get('concurrentViewers') is not None else None,
+              })
+
+          today=datetime.datetime.now(datetime.timezone.utc).date()
+          analytics={'available':False,'error':None,'rows':[],'columns':[]}
+          try:
+              ya=build('youtubeAnalytics','v2',credentials=creds,cache_discovery=False)
+              start=(today-datetime.timedelta(days=3)).isoformat()
+              end=today.isoformat()
+              rep=ya.reports().query(
+                  ids='channel==MINE',
+                  startDate=start,
+                  endDate=end,
+                  metrics='views,estimatedMinutesWatched,averageViewDuration,subscribersGained,likes,comments',
+                  dimensions='video',
+                  sort='-views',
+                  maxResults=50,
+              ).execute()
+              analytics={
+                  'available':True,
+                  'start_date':start,
+                  'end_date':end,
+                  'columns':[h['name'] for h in rep.get('columnHeaders') or []],
+                  'rows':rep.get('rows') or [],
+              }
+          except Exception as e:
+              analytics={'available':False,'error':str(e)[:500],'rows':[],'columns':[]}
+
+          out={
+              'captured_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'channel':{
+                  'id':channel_id,
+                  'title':(ch.get('snippet') or {}).get('title'),
+                  'subscribers':int((ch.get('statistics') or {}).get('subscriberCount') or 0),
+                  'views':int((ch.get('statistics') or {}).get('viewCount') or 0),
+                  'videos':int((ch.get('statistics') or {}).get('videoCount') or 0),
+              },
+              'recent_videos':rows,
+              'analytics':analytics,
+          }
+          pathlib.Path('control/peter-lofi-analytics-now.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+
+      - name: Commit snapshot
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/peter-lofi-analytics-now.json
+          git commit -m "analytics: snapshot Peter Lofi performance" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
