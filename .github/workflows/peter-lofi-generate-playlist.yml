@@ -1,0 +1,226 @@
+name: Peter Lofi — Generate Playlist
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_id:
+        required: true
+        type: string
+      series_key:
+        required: true
+        type: string
+      playlist_name:
+        required: true
+        type: string
+      duration_minutes:
+        required: true
+        default: "60"
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: peter-lofi-generate-playlist
+  cancel-in-progress: false
+
+env:
+  SMALL_KERNEL_SLUG: the-office-music-generator-small
+  SECRET_DATASET_SLUG: the-office-music-secrets
+  KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip kaggle
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Validate request and initialize result
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+          SERIES_KEY: ${{ inputs.series_key }}
+          PLAYLIST_NAME: ${{ inputs.playlist_name }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+        run: |
+          set -euo pipefail
+          mkdir -p build control/generated-playlists
+          python - <<'PY'
+          import json,os,pathlib,re,math,datetime
+          req=os.environ['REQUEST_ID']
+          if not re.fullmatch(r'[0-9a-fA-F-]{36}',req): raise SystemExit('Invalid request_id')
+          duration=int(os.environ['DURATION_MINUTES'])
+          if not 30 <= duration <= 180: raise SystemExit('duration_minutes must be 30..180')
+          plan=json.loads(pathlib.Path('config/peter_lofi_series.json').read_text(encoding='utf-8'))
+          item=next((x for x in plan.get('series',[]) if x.get('key')==os.environ['SERIES_KEY']),None)
+          if not item: raise SystemExit('Unknown series_key')
+          raw_count=math.ceil(duration*60/120)
+          data={'status':'generating','progress':8,'phase':'Preparando geração de áudio original','request_id':req,'series_key':item['key'],'playlist_name':os.environ['PLAYLIST_NAME'],'duration_minutes':duration,'raw_track_count':raw_count,'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          pathlib.Path('build/request.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
+          pathlib.Path('control/generated-playlists',req+'.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+            f.write(f"RAW_TRACK_COUNT={raw_count}\n")
+          PY
+          git add "control/generated-playlists/$REQUEST_ID.json"
+          git commit -m "peter-lofi: start generated playlist $REQUEST_ID"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Prepare private HF token dataset
+        run: |
+          set -euo pipefail
+          test -n "$KAGGLE_USERNAME" && test -n "$KAGGLE_API_TOKEN" && test -n "$HF_TOKEN"
+          SECRET_DIR="$(mktemp -d)"; trap 'rm -rf "$SECRET_DIR"' EXIT
+          printf '%s' "$HF_TOKEN" > "$SECRET_DIR/hf_token.txt"
+          chmod 600 "$SECRET_DIR/hf_token.txt"
+          python - "$SECRET_DIR" <<'PY'
+          import json,os,pathlib,sys
+          d=pathlib.Path(sys.argv[1])
+          (d/'dataset-metadata.json').write_text(json.dumps({'title':'The Office Music Secrets','id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets",'licenses':[{'name':'other'}],'description':'Private CI credential input.'},indent=2),encoding='utf-8')
+          PY
+          DATASET="$KAGGLE_USERNAME/$SECRET_DATASET_SLUG"
+          if kaggle datasets status "$DATASET" >/dev/null 2>&1; then
+            kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token" -q
+          else
+            kaggle datasets create -p "$SECRET_DIR" --private -q
+          fi
+
+      - name: Generate fresh audio with Stable Audio Small-Music
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+          SERIES_KEY: ${{ inputs.series_key }}
+        run: |
+          set -euo pipefail
+          TMP="$(mktemp -d)"
+          cp kaggle/runner_small.py "$TMP/runner.py"
+          python - "$TMP/runner.py" <<'PY'
+          import os,pathlib,re,sys
+          p=pathlib.Path(sys.argv[1]);t=p.read_text(encoding='utf-8')
+          t=re.sub(r'TRACK_COUNT = \d+',f'TRACK_COUNT = {int(os.environ["RAW_TRACK_COUNT"])}',t,count=1)
+          t=re.sub(r'REQUEST_ID = "[^"]*"',f'REQUEST_ID = "{os.environ["REQUEST_ID"]}"',t,count=1)
+          t=re.sub(r'SERIES_KEY = "[^"]*"',f'SERIES_KEY = "{os.environ["SERIES_KEY"]}"',t,count=1)
+          p.write_text(t,encoding='utf-8')
+          PY
+          python - "$TMP" <<'PY'
+          import json,os,pathlib,sys
+          d=pathlib.Path(sys.argv[1])
+          (d/'kernel-metadata.json').write_text(json.dumps({'id':f"{os.environ['KAGGLE_USERNAME']}/the-office-music-generator-small",'title':'The Office Music Generator Small','code_file':'runner.py','language':'python','kernel_type':'script','is_private':True,'enable_gpu':True,'enable_internet':True,'dataset_sources':[f"{os.environ['KAGGLE_USERNAME']}/the-office-music-secrets"],'competition_sources':[],'kernel_sources':[]},indent=2),encoding='utf-8')
+          PY
+          kaggle kernels push -p "$TMP" --timeout 7200
+          sleep 45
+          KERNEL="$KAGGLE_USERNAME/$SMALL_KERNEL_SLUG"
+          for i in $(seq 1 150); do
+            STATUS="$(kaggle kernels status "$KERNEL" 2>&1 || true)"
+            echo "$STATUS"
+            if echo "$STATUS" | grep -Eqi 'complete|completed'; then break; fi
+            if echo "$STATUS" | grep -Eqi 'error|failed|cancel'; then kaggle kernels logs "$KERNEL" || true; exit 1; fi
+            test "$i" != "150" || { kaggle kernels logs "$KERNEL" || true; exit 1; }
+            sleep 60
+          done
+          rm -rf generated
+          mkdir -p generated
+          kaggle kernels output "$KERNEL" -p generated
+          MARKER="$(find generated -type f -name request_id.txt -print -quit)"
+          test -n "$MARKER"
+          test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID"
+          test -n "$(find generated -type f -name '*.wav' -print -quit)"
+
+      - name: Validate tracks and build exact-duration master
+        env:
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          TARGET_SECONDS=$((DURATION_MINUTES*60))
+          python scripts/validate_fresh_audio.py --generated-dir generated --target-seconds "$TARGET_SECONDS" --concat-file build/concat.txt --manifest-file build/tracks.json
+          ffmpeg -hide_banner -loglevel warning -stats -y -f concat -safe 0 -i build/concat.txt -t "$TARGET_SECONDS" -vn -c:a aac -b:a 320k -ar 48000 build/peter-lofi-master.m4a
+          test -s build/peter-lofi-master.m4a
+
+      - name: Save individual tracks and master in GitHub Release
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+          SERIES_KEY: ${{ inputs.series_key }}
+          PLAYLIST_NAME: ${{ inputs.playlist_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          SAFE_KEY="$(printf '%s' "$SERIES_KEY" | tr -cd 'a-zA-Z0-9._-' | cut -c1-48)"
+          TAG="peter-lofi-generated-${SAFE_KEY}-${REQUEST_ID:0:8}"
+          gh release create "$TAG" --title "Peter Lofi — $PLAYLIST_NAME" --notes "Fresh original Peter Lofi playlist generated by MediaForge. Individual tracks plus master audio."
+          while IFS= read -r -d '' f; do gh release upload "$TAG" "$f"; done < <(find generated -type f -name '*.wav' -print0)
+          gh release upload "$TAG" build/peter-lofi-master.m4a
+          echo "$TAG" > build/release-tag.txt
+
+      - name: Complete result
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+          SERIES_KEY: ${{ inputs.series_key }}
+          PLAYLIST_NAME: ${{ inputs.playlist_name }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,pathlib,urllib.parse,datetime,re
+          req=os.environ['REQUEST_ID']; tag=pathlib.Path('build/release-tag.txt').read_text().strip()
+          tracks=json.loads(pathlib.Path('build/tracks.json').read_text(encoding='utf-8'))
+          base=f'https://github.com/thebusinessflowtv/theofficemusic/releases/download/{tag}/'
+          for i,t in enumerate(tracks,1):
+              t['id']=f"generated-{req[:8]}-{i:02d}"
+              t['position']=i
+              t['download_url']=base+urllib.parse.quote(t['filename'])
+          slug=re.sub(r'[^a-z0-9]+','-',os.environ['PLAYLIST_NAME'].lower()).strip('-')[:48] or os.environ['SERIES_KEY']
+          out={'status':'completed','progress':100,'phase':'Concluída e catalogada','request_id':req,'library_key':f"generated-{slug}-{req[:8]}",'series_key':os.environ['SERIES_KEY'],'playlist_name':os.environ['PLAYLIST_NAME'],'duration_minutes':int(os.environ['DURATION_MINUTES']),'release_tag':tag,'release_url':f'https://github.com/thebusinessflowtv/theofficemusic/releases/tag/{tag}','master_audio_url':base+'peter-lofi-master.m4a','tracks':tracks,'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          pathlib.Path('build/result.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          for attempt in 1 2 3 4 5; do
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch origin main
+            git reset --hard origin/main
+            cp build/result.json "control/generated-playlists/$REQUEST_ID.json"
+            git add "control/generated-playlists/$REQUEST_ID.json"
+            git commit -m "peter-lofi: complete generated playlist $REQUEST_ID" || true
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
+
+      - name: Fail result
+        if: failure()
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+          SERIES_KEY: ${{ inputs.series_key }}
+          PLAYLIST_NAME: ${{ inputs.playlist_name }}
+          DURATION_MINUTES: ${{ inputs.duration_minutes }}
+        run: |
+          set +e
+          python - <<'PY'
+          import json,os,pathlib,datetime
+          out={'status':'failed','progress':100,'phase':'Falha na geração','request_id':os.environ['REQUEST_ID'],'series_key':os.environ['SERIES_KEY'],'playlist_name':os.environ['PLAYLIST_NAME'],'duration_minutes':int(os.environ['DURATION_MINUTES']),'github_run_id':int(os.environ['GITHUB_RUN_ID']),'github_run_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",'error_message':'A geração falhou. Abra a execução para ver o passo exato. Nenhum áudio antigo foi reutilizado.','completed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+          pathlib.Path('build').mkdir(exist_ok=True)
+          pathlib.Path('build/fail.json').write_text(json.dumps(out,ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+          for attempt in 1 2 3 4 5; do
+            git rebase --abort >/dev/null 2>&1 || true
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p control/generated-playlists
+            cp build/fail.json "control/generated-playlists/$REQUEST_ID.json"
+            git add "control/generated-playlists/$REQUEST_ID.json"
+            git commit -m "peter-lofi: fail generated playlist $REQUEST_ID" || true
+            git push origin HEAD:main && exit 0
+            sleep $((attempt*2))
+          done
+          exit 0
