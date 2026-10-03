@@ -1,37 +1,12 @@
 {
-  "checked_at": "2026-10-02T21:42:11.701274+00:00",
+  "checked_at": "2026-10-03T00:54:27.136463+00:00",
   "stations": {
     "deep-house": {
       "broadcast_id": "WYJuqbEQYZQ",
       "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790973399832628",
       "stream_status": "active",
-      "health_status": "ok",
-      "configuration_issues": [
-        {
-          "type": "framerateMismatch",
-          "severity": "warning",
-          "reason": "Check secondary stream",
-          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
-        },
-        {
-          "type": "framerateMismatch",
-          "severity": "warning",
-          "reason": "Check secondary stream",
-          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
-        },
-        {
-          "type": "framerateMismatch",
-          "severity": "warning",
-          "reason": "Check secondary stream",
-          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
-        },
-        {
-          "type": "framerateMismatch",
-          "severity": "warning",
-          "reason": "Check secondary stream",
-          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
-        }
-      ],
+      "health_status": "good",
+      "configuration_issues": [],
       "broadcast_lifecycle": "live",
       "privacy_status": "public",
       "cdn": {
@@ -52,12 +27,6 @@
           "severity": "error",
           "reason": "Video output low",
           "description": "YouTube is not receiving enough video to maintain smooth streaming. As such, viewers will experience buffering."
-        },
-        {
-          "type": "framerateMismatch",
-          "severity": "warning",
-          "reason": "Check secondary stream",
-          "description": "In the current configuration, the video's primary and backup streams have different framerates. You need to configure the streams to have the same framerate."
         },
         {
           "type": "typeUnspecified",
