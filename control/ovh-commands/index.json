@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "updated_at": "2026-10-03T01:21:45.065Z",
+  "commands": [
+    {
+      "id": "bootstrap-kick-ovh",
+      "path": "control/ovh-commands/bootstrap-kick-ovh.json",
+      "created_at": "2026-10-03T01:21:45.065Z"
+    },
+    {
+      "id": "bootstrap-twitch-ovh",
+      "path": "control/ovh-commands/bootstrap-twitch-ovh.json",
+      "created_at": "2026-10-03T01:21:45.065Z"
+    },
+    {
+      "id": "bootstrap-youtube-deep-house-ovh",
+      "path": "control/ovh-commands/bootstrap-youtube-deep-house-ovh.json",
+      "created_at": "2026-10-03T01:21:45.065Z"
+    },
+    {
+      "id": "bootstrap-youtube-rainy-ovh",
+      "path": "control/ovh-commands/bootstrap-youtube-rainy-ovh.json",
+      "created_at": "2026-10-03T01:21:45.065Z"
+    }
+  ]
+}
