@@ -1,0 +1,142 @@
+name: One-off — Cut Rainy to OVH
+
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-cut-rainy-to-ovh.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  cut:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      GH_TOKEN: ${{ github.token }}
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      SESSION_ID: 72fcb955-bbb3-41d1-b8d0-fd90427c57a5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Mark Rainy OVH-managed
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          python - <<'PY'
+          import json,pathlib,datetime
+          p=pathlib.Path('control/youtube-stations.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          for st in d.get('stations',[]):
+              if st.get('key')=='rainy':
+                  st['runtime']='ovh'
+                  st['migrated_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/youtube-stations.json
+          git commit -m "youtube: move Rainy runtime to OVH"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Stop old Rainy GitHub encoder
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          RUN_ID="$(jq -r '.github_run_id // empty' "control/live-results/${SESSION_ID}.json")"
+          echo "Stopping old Rainy GitHub run: $RUN_ID"
+          [ -z "$RUN_ID" ] || gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/$RUN_ID/cancel" || true
+
+      - name: Verify OVH takeover
+        id: verify
+        continue-on-error: true
+        run: |
+          sleep 75
+          python - <<'PY'
+          import json,os,time
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          session=os.environ['SESSION_ID']
+          res=json.load(open(f'control/live-results/{session}.json',encoding='utf-8'))
+          creds=Credentials(token=None,refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=os.environ['YOUTUBE_CLIENT_ID'],client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+          creds.refresh(Request()); yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+          sid=res['youtube_stream_id']; bid=res['youtube_broadcast_id']
+          good_count=0
+          for attempt in range(1,5):
+              s=(yt.liveStreams().list(part='status',id=sid).execute().get('items') or [None])[0]
+              b=(yt.liveBroadcasts().list(part='status',id=bid).execute().get('items') or [None])[0]
+              st=(s or {}).get('status') or {}; hs=st.get('healthStatus') or {}
+              lifecycle=((b or {}).get('status') or {}).get('lifeCycleStatus')
+              issues=hs.get('configurationIssues') or []
+              starved=any(str(i.get('type') or '')=='videoIngestionStarved' for i in issues)
+              ok=st.get('streamStatus')=='active' and lifecycle=='live' and not starved
+              print('attempt',attempt,'stream=',st.get('streamStatus'),'lifecycle=',lifecycle,'health=',hs.get('status'),'starved=',starved,flush=True)
+              if ok:
+                  good_count += 1
+              else:
+                  good_count = 0
+              if good_count >= 2:
+                  print('RAINY_OVH_TAKEOVER_CONFIRMED',flush=True)
+                  raise SystemExit(0)
+              time.sleep(30)
+          raise SystemExit('Rainy OVH takeover did not become healthy')
+          PY
+
+      - name: Roll back Rainy to GitHub if needed
+        if: steps.verify.outcome == 'failure'
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          python - <<'PY'
+          import json,pathlib
+          p=pathlib.Path('control/youtube-stations.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          for st in d.get('stations',[]):
+              if st.get('key')=='rainy':
+                  st['runtime']='github'
+                  st.pop('migrated_at',None)
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/youtube-stations.json
+          git commit -m "youtube: rollback Rainy OVH cutover" || true
+          git pull --rebase origin main || true
+          git push origin HEAD:main || true
+
+          Q="control/youtube-live-queue/fe6e6fd3-fd9c-4265-b12d-8eb50c0b52fc.json"
+          R="control/live-results/${SESSION_ID}.json"
+          jq -n --argfile q "$Q" --argfile r "$R" '{
+            ref:"main",
+            inputs:{
+              session_id:"72fcb955-bbb3-41d1-b8d0-fd90427c57a5",
+              track_urls_b64:($q.track_urls_b64|tostring),
+              duration_minutes:"0",
+              title:($q.title|tostring),
+              description:($q.description//""|tostring),
+              thumbnail_url:($q.thumbnail_url//""|tostring),
+              loop_url:($q.loop_url//""|tostring),
+              resume_broadcast_id:($r.youtube_broadcast_id//""|tostring),
+              resume_stream_id:($r.youtube_stream_id//""|tostring),
+              segment_index:((($r.segment_index//1)+1)|tostring),
+              privacy_status:"public",
+              segment_seconds_override:"0",
+              prewarm_lead_seconds:"900",
+              max_segments:"0"
+            }
+          }' >/tmp/dispatch.json
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/office-music-live.yml/dispatches" --input /tmp/dispatch.json
+          echo "::error::Rainy OVH takeover unhealthy; GitHub recovery dispatched."
+          exit 1
