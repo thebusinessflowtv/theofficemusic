@@ -266,18 +266,27 @@ class AudioEngine:
         return track["url"], False
 
     def write_pcm(self, dst, chunk, deadline_seconds=1.0):
+        # Do not discard PCM when the encoder applies brief backpressure.
+        # Dropping even a small PCM block is audible as a click/stutter.
+        # Wait for writability and preserve every sample instead.
         view = memoryview(chunk)
-        deadline = time.monotonic() + deadline_seconds
+        wait_started = time.monotonic()
         while view and self.running:
             try:
+                _, writable, _ = select.select([], [dst], [], 0.25)
+                if not writable:
+                    self.write_audio_health({
+                        "state": "encoder_backpressure_buffering",
+                        "backpressure_wait_seconds": round(time.monotonic() - wait_started, 3),
+                    })
+                    continue
                 written = os.write(dst, view)
-                view = view[written:]
+                if written > 0:
+                    view = view[written:]
             except BlockingIOError:
-                if time.monotonic() >= deadline:
-                    self.backpressure_drops += 1
-                    self.write_audio_health({"state": "encoder_backpressure"})
-                    return False
-                time.sleep(0.01)
+                time.sleep(0.005)
+            except InterruptedError:
+                continue
         return not view
 
     def read_command(self):
@@ -344,10 +353,6 @@ class AudioEngine:
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=0)
         src = proc.stdout.fileno()
         dst = sys.stdout.fileno()
-        try:
-            os.set_blocking(dst, False)
-        except Exception:
-            pass
         interrupted = None
         last_audio_at = time.monotonic()
         silence_frames = max(1, int(AUDIO_SILENCE_INTERVAL_SECONDS * PCM_RATE))
