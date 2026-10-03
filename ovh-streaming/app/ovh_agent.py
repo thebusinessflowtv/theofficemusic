@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, os, pathlib, shutil, time, urllib.request
+import json, os, pathlib, shutil, time, urllib.request, uuid
 from datetime import datetime, timezone
 
 STATE=pathlib.Path("/state")
@@ -45,7 +45,12 @@ def apply_command(cmd):
     if isinstance(tracks,list) and tracks:
         atomic_json(st/"playlist.json",{"station":slot,"shuffle":bool(cmd.get("shuffle",True)),"updated_at":iso_now(),"tracks":tracks})
     if action in {"skip","previous"}:
-        atomic_json(st/"command.json",{"action":action,"requested_at":iso_now(),"source":"mediaforge"})
+        atomic_json(st/"command.json",{
+            "id": str(cmd.get("id") or uuid.uuid4()),
+            "action": action,
+            "requested_at": iso_now(),
+            "source": "mediaforge"
+        })
         return
     if action=="update_playlist":
         return
