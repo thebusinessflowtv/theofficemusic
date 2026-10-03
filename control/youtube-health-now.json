@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-03T00:54:27.136463+00:00",
+  "checked_at": "2026-10-03T01:00:45.052624+00:00",
   "stations": {
     "deep-house": {
       "broadcast_id": "WYJuqbEQYZQ",
@@ -20,21 +20,8 @@
       "broadcast_id": "C9Et10tejC8",
       "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790974075552944",
       "stream_status": "active",
-      "health_status": "bad",
-      "configuration_issues": [
-        {
-          "type": "videoIngestionStarved",
-          "severity": "error",
-          "reason": "Video output low",
-          "description": "YouTube is not receiving enough video to maintain smooth streaming. As such, viewers will experience buffering."
-        },
-        {
-          "type": "typeUnspecified",
-          "severity": "warning",
-          "reason": "Bad secondary stream",
-          "description": "Please configure both primary and backup streams correctly. The comparison of the streams failed because one of the streams has an invalid configuration."
-        }
-      ],
+      "health_status": "good",
+      "configuration_issues": [],
       "broadcast_lifecycle": "live",
       "privacy_status": "public",
       "cdn": {
