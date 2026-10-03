@@ -78,9 +78,9 @@ sleep 4
 
 echo "[6/7] Validando painel e API..."
 ss -lntp | grep ":$PUBLIC_PORT" || true
-curl -kfsS "https://127.0.0.1:$PUBLIC_PORT/api/health"
+curl -kfsS --resolve "$PUBLIC_IP:$PUBLIC_PORT:127.0.0.1" "https://$PUBLIC_IP:$PUBLIC_PORT/api/health"
 echo
-curl -kfsS "https://127.0.0.1:$PUBLIC_PORT/secure.html" >/dev/null
+curl -kfsS --resolve "$PUBLIC_IP:$PUBLIC_PORT:127.0.0.1" "https://$PUBLIC_IP:$PUBLIC_PORT/secure.html" >/dev/null
 echo "HTTPS local OK"
 
 echo "[7/7] Confirmando que nenhuma live foi reiniciada..."
