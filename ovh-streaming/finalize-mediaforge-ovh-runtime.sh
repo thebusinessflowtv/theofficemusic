@@ -262,10 +262,9 @@ if envfile.is_file():
 print("Visual URLs localized:",",".join(changed) if changed else "already-local")
 PY
 
-# Activate only the non-streaming local command agent patch.
-cd "$STREAM_DIR"
-docker compose build ovh-agent
-docker compose up -d --no-deps --force-recreate ovh-agent
+# The existing ovh-agent already talks to the local API. Do not recreate it:
+# this keeps every streaming-related container untouched during this phase.
+echo "OVH command agent mantido em execução sem recriação."
 
 echo
 echo "[9/11] Instalando o orquestrador permanente de geração musical na OVH..."
