@@ -301,12 +301,22 @@ def apply_command(cmd):
         })
 
     if action in {"skip","previous"}:
-        atomic_json(st/"command.json",{
-            "id":str(cmd.get("id") or uuid.uuid4()),
+        # Realtime audio controls are queued as unique files so rapid clicks can
+        # never overwrite each other. command.json is kept only as a legacy
+        # mirror for older AudioEngine builds; the new engine de-duplicates IDs.
+        command_id=str(cmd.get("id") or uuid.uuid4())
+        payload={
+            "id":command_id,
             "action":action,
             "requested_at":iso_now(),
             "source":str(cmd.get("source") or "mediaforge"),
-        })
+        }
+        qdir=st/"audio-commands"
+        qdir.mkdir(parents=True,exist_ok=True)
+        safe_id="".join(ch for ch in command_id if ch.isalnum() or ch in "-_")[:96] or uuid.uuid4().hex
+        qname=f"{time.time_ns():020d}-{safe_id}.json"
+        atomic_json(qdir/qname,payload)
+        atomic_json(st/"command.json",payload)
         return
 
     if action in {"update_playlist","set_playlist"}:
