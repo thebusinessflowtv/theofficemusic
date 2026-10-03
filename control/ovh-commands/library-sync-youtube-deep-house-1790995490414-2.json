@@ -1,0 +1,527 @@
+{
+  "id": "library-sync-youtube-deep-house-1790995490414-2",
+  "action": "update_playlist",
+  "platform": "youtube",
+  "runtime": "ovh",
+  "runtime_slot": "youtube-deep-house",
+  "session_id": "8cf99db8-3e53-4b74-b9d2-51fb67b54ff8",
+  "title": "Peter Lofi Deep House Radio",
+  "playlist_key": "deep-house-radio",
+  "tracks": [
+    {
+      "id": "deep-house-radio-01",
+      "title": "Reference Test 20260929 024504 Track 01",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-847d72af-3a44-4526-92a7-19de170f7b3d/reference-test-20260929-024504_track_01.wav",
+      "duration_seconds": 300,
+      "position": 1
+    },
+    {
+      "id": "deep-house-radio-02",
+      "title": "Sunday Afterglow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/01-sunday-afterglow.wav",
+      "duration_seconds": 300,
+      "position": 2
+    },
+    {
+      "id": "deep-house-radio-03",
+      "title": "Midnight Boulevard",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/02-midnight-boulevard.wav",
+      "duration_seconds": 300,
+      "position": 3
+    },
+    {
+      "id": "deep-house-radio-04",
+      "title": "Glass Afterglow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/03-glass-afterglow.wav",
+      "duration_seconds": 300,
+      "position": 4
+    },
+    {
+      "id": "deep-house-radio-05",
+      "title": "Studio Boulevard",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/04-studio-boulevard.wav",
+      "duration_seconds": 300,
+      "position": 5
+    },
+    {
+      "id": "deep-house-radio-06",
+      "title": "Northbound Hallway",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/05-northbound-hallway.wav",
+      "duration_seconds": 300,
+      "position": 6
+    },
+    {
+      "id": "deep-house-radio-07",
+      "title": "Window Seat Avenue",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/06-window-seat-avenue.wav",
+      "duration_seconds": 300,
+      "position": 7
+    },
+    {
+      "id": "deep-house-radio-08",
+      "title": "Late Check In Workspace",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/07-late-check-in-workspace.wav",
+      "duration_seconds": 300,
+      "position": 8
+    },
+    {
+      "id": "deep-house-radio-09",
+      "title": "Midnight Hours",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/08-midnight-hours.wav",
+      "duration_seconds": 300,
+      "position": 9
+    },
+    {
+      "id": "deep-house-radio-10",
+      "title": "Studio Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/09-studio-lobby.wav",
+      "duration_seconds": 300,
+      "position": 10
+    },
+    {
+      "id": "deep-house-radio-11",
+      "title": "Midnight Meeting",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/10-midnight-meeting.wav",
+      "duration_seconds": 300,
+      "position": 11
+    },
+    {
+      "id": "deep-house-radio-12",
+      "title": "Downtown Coffee",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/11-downtown-coffee.wav",
+      "duration_seconds": 300,
+      "position": 12
+    },
+    {
+      "id": "deep-house-radio-13",
+      "title": "Late Check In District",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/12-late-check-in-district.wav",
+      "duration_seconds": 300,
+      "position": 13
+    },
+    {
+      "id": "deep-house-radio-14",
+      "title": "Downtown Transit",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/13-downtown-transit.wav",
+      "duration_seconds": 300,
+      "position": 14
+    },
+    {
+      "id": "deep-house-radio-15",
+      "title": "Lobby District",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/14-lobby-district.wav",
+      "duration_seconds": 300,
+      "position": 15
+    },
+    {
+      "id": "deep-house-radio-16",
+      "title": "Sunday Floor",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/15-sunday-floor.wav",
+      "duration_seconds": 300,
+      "position": 16
+    },
+    {
+      "id": "deep-house-radio-17",
+      "title": "City Escalator",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/16-city-escalator.wav",
+      "duration_seconds": 300,
+      "position": 17
+    },
+    {
+      "id": "deep-house-radio-18",
+      "title": "Sunday Hours",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/17-sunday-hours.wav",
+      "duration_seconds": 300,
+      "position": 18
+    },
+    {
+      "id": "deep-house-radio-19",
+      "title": "Silver Avenue",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/18-silver-avenue.wav",
+      "duration_seconds": 300,
+      "position": 19
+    },
+    {
+      "id": "deep-house-radio-20",
+      "title": "Golden Meeting",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/19-golden-meeting.wav",
+      "duration_seconds": 300,
+      "position": 20
+    },
+    {
+      "id": "deep-house-radio-21",
+      "title": "Window Seat Transit",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/20-window-seat-transit.wav",
+      "duration_seconds": 300,
+      "position": 21
+    },
+    {
+      "id": "deep-house-radio-22",
+      "title": "Downtown Elevator",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/21-downtown-elevator.wav",
+      "duration_seconds": 300,
+      "position": 22
+    },
+    {
+      "id": "deep-house-radio-23",
+      "title": "Northbound Coffee",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/22-northbound-coffee.wav",
+      "duration_seconds": 300,
+      "position": 23
+    },
+    {
+      "id": "deep-house-radio-24",
+      "title": "Velvet Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/23-velvet-lobby.wav",
+      "duration_seconds": 300,
+      "position": 24
+    },
+    {
+      "id": "deep-house-radio-25",
+      "title": "Sunday Suite",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/24-sunday-suite.wav",
+      "duration_seconds": 300,
+      "position": 25
+    },
+    {
+      "id": "deep-house-radio-26",
+      "title": "Neon Transit",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/25-neon-transit.wav",
+      "duration_seconds": 300,
+      "position": 26
+    },
+    {
+      "id": "deep-house-radio-27",
+      "title": "Neon Meeting",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/26-neon-meeting.wav",
+      "duration_seconds": 300,
+      "position": 27
+    },
+    {
+      "id": "deep-house-radio-28",
+      "title": "After Hours Skyline",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/27-after-hours-skyline.wav",
+      "duration_seconds": 300,
+      "position": 28
+    },
+    {
+      "id": "deep-house-radio-29",
+      "title": "Blue Hour Workspace",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/28-blue-hour-workspace.wav",
+      "duration_seconds": 300,
+      "position": 29
+    },
+    {
+      "id": "deep-house-radio-30",
+      "title": "Blue Hour Avenue",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/29-blue-hour-avenue.wav",
+      "duration_seconds": 300,
+      "position": 30
+    },
+    {
+      "id": "deep-house-radio-31",
+      "title": "Studio Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-5a4b4cc5-af5d-4c22-a3f9-6efbd99aaab0/30-studio-desk.wav",
+      "duration_seconds": 300,
+      "position": 31
+    },
+    {
+      "id": "deep-house-radio-32",
+      "title": "Neon Windows",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/01-neon-windows.wav",
+      "duration_seconds": 300,
+      "position": 32
+    },
+    {
+      "id": "deep-house-radio-33",
+      "title": "Soft Focus Elevator",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/02-soft-focus-elevator.wav",
+      "duration_seconds": 300,
+      "position": 33
+    },
+    {
+      "id": "deep-house-radio-34",
+      "title": "Late Check In Hallway",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/03-late-check-in-hallway.wav",
+      "duration_seconds": 300,
+      "position": 34
+    },
+    {
+      "id": "deep-house-radio-35",
+      "title": "Late Check In Avenue",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/04-late-check-in-avenue.wav",
+      "duration_seconds": 300,
+      "position": 35
+    },
+    {
+      "id": "deep-house-radio-36",
+      "title": "Silver Escalator",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/05-silver-escalator.wav",
+      "duration_seconds": 300,
+      "position": 36
+    },
+    {
+      "id": "deep-house-radio-37",
+      "title": "Quiet Coffee",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/06-quiet-coffee.wav",
+      "duration_seconds": 300,
+      "position": 37
+    },
+    {
+      "id": "deep-house-radio-38",
+      "title": "Northbound Workspace",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/07-northbound-workspace.wav",
+      "duration_seconds": 300,
+      "position": 38
+    },
+    {
+      "id": "deep-house-radio-39",
+      "title": "City Windows",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/08-city-windows.wav",
+      "duration_seconds": 300,
+      "position": 39
+    },
+    {
+      "id": "deep-house-radio-40",
+      "title": "Lobby Windows",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/09-lobby-windows.wav",
+      "duration_seconds": 300,
+      "position": 40
+    },
+    {
+      "id": "deep-house-radio-41",
+      "title": "Midnight Windows",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/10-midnight-windows.wav",
+      "duration_seconds": 300,
+      "position": 41
+    },
+    {
+      "id": "deep-house-radio-42",
+      "title": "Soft Focus Notes",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/11-soft-focus-notes.wav",
+      "duration_seconds": 300,
+      "position": 42
+    },
+    {
+      "id": "deep-house-radio-43",
+      "title": "Golden Workspace",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/12-golden-workspace.wav",
+      "duration_seconds": 300,
+      "position": 43
+    },
+    {
+      "id": "deep-house-radio-44",
+      "title": "Midnight Elevator",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/13-midnight-elevator.wav",
+      "duration_seconds": 300,
+      "position": 44
+    },
+    {
+      "id": "deep-house-radio-45",
+      "title": "Executive Afterglow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/14-executive-afterglow.wav",
+      "duration_seconds": 300,
+      "position": 45
+    },
+    {
+      "id": "deep-house-radio-46",
+      "title": "Glass Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/15-glass-lobby.wav",
+      "duration_seconds": 300,
+      "position": 46
+    },
+    {
+      "id": "deep-house-radio-47",
+      "title": "Executive Hallway",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/16-executive-hallway.wav",
+      "duration_seconds": 300,
+      "position": 47
+    },
+    {
+      "id": "deep-house-radio-48",
+      "title": "Golden Avenue",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/17-golden-avenue.wav",
+      "duration_seconds": 300,
+      "position": 48
+    },
+    {
+      "id": "deep-house-radio-49",
+      "title": "Sunday District",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/18-sunday-district.wav",
+      "duration_seconds": 300,
+      "position": 49
+    },
+    {
+      "id": "deep-house-radio-50",
+      "title": "Quiet Elevator",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/19-quiet-elevator.wav",
+      "duration_seconds": 300,
+      "position": 50
+    },
+    {
+      "id": "deep-house-radio-51",
+      "title": "Soft Focus Notes 20",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/20-soft-focus-notes-20.wav",
+      "duration_seconds": 300,
+      "position": 51
+    },
+    {
+      "id": "deep-house-radio-52",
+      "title": "Northbound Notes",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/21-northbound-notes.wav",
+      "duration_seconds": 300,
+      "position": 52
+    },
+    {
+      "id": "deep-house-radio-53",
+      "title": "Silver Escalator 22",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/22-silver-escalator-22.wav",
+      "duration_seconds": 300,
+      "position": 53
+    },
+    {
+      "id": "deep-house-radio-54",
+      "title": "City Routine",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/23-city-routine.wav",
+      "duration_seconds": 300,
+      "position": 54
+    },
+    {
+      "id": "deep-house-radio-55",
+      "title": "Soft Focus Skyline",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/24-soft-focus-skyline.wav",
+      "duration_seconds": 300,
+      "position": 55
+    },
+    {
+      "id": "deep-house-radio-56",
+      "title": "Velvet Avenue",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/25-velvet-avenue.wav",
+      "duration_seconds": 300,
+      "position": 56
+    },
+    {
+      "id": "deep-house-radio-57",
+      "title": "Golden Meeting",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/26-golden-meeting.wav",
+      "duration_seconds": 300,
+      "position": 57
+    },
+    {
+      "id": "deep-house-radio-58",
+      "title": "Downtown Notes",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/27-downtown-notes.wav",
+      "duration_seconds": 300,
+      "position": 58
+    },
+    {
+      "id": "deep-house-radio-59",
+      "title": "Lobby Hours",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/28-lobby-hours.wav",
+      "duration_seconds": 300,
+      "position": 59
+    },
+    {
+      "id": "deep-house-radio-60",
+      "title": "Neon Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/29-neon-desk.wav",
+      "duration_seconds": 300,
+      "position": 60
+    },
+    {
+      "id": "deep-house-radio-61",
+      "title": "Lobby Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-c6b32750-0f56-43d2-8b6e-b8066393bb51/30-lobby-desk.wav",
+      "duration_seconds": 300,
+      "position": 61
+    },
+    {
+      "id": "deep-house-radio-62",
+      "title": "Neon Avenue",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/01-neon-avenue.wav",
+      "duration_seconds": 300,
+      "position": 62
+    },
+    {
+      "id": "deep-house-radio-63",
+      "title": "Downtown Suite",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/02-downtown-suite.wav",
+      "duration_seconds": 300,
+      "position": 63
+    },
+    {
+      "id": "deep-house-radio-64",
+      "title": "Glass Notes",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/03-glass-notes.wav",
+      "duration_seconds": 300,
+      "position": 64
+    },
+    {
+      "id": "deep-house-radio-65",
+      "title": "Window Seat Workspace",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/04-window-seat-workspace.wav",
+      "duration_seconds": 300,
+      "position": 65
+    },
+    {
+      "id": "deep-house-radio-66",
+      "title": "Sunday Windows",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/05-sunday-windows.wav",
+      "duration_seconds": 300,
+      "position": 66
+    },
+    {
+      "id": "deep-house-radio-67",
+      "title": "Blue Hour Routine",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/06-blue-hour-routine.wav",
+      "duration_seconds": 300,
+      "position": 67
+    },
+    {
+      "id": "deep-house-radio-68",
+      "title": "Neon Escalator",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/07-neon-escalator.wav",
+      "duration_seconds": 300,
+      "position": 68
+    },
+    {
+      "id": "deep-house-radio-69",
+      "title": "Northbound Hours",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/08-northbound-hours.wav",
+      "duration_seconds": 300,
+      "position": 69
+    },
+    {
+      "id": "deep-house-radio-70",
+      "title": "Executive Boulevard",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/09-executive-boulevard.wav",
+      "duration_seconds": 300,
+      "position": 70
+    },
+    {
+      "id": "deep-house-radio-71",
+      "title": "Golden Boulevard",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/10-golden-boulevard.wav",
+      "duration_seconds": 300,
+      "position": 71
+    },
+    {
+      "id": "deep-house-radio-72",
+      "title": "Golden Afterglow 26",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/11-golden-afterglow-26.wav",
+      "duration_seconds": 300,
+      "position": 72
+    },
+    {
+      "id": "deep-house-radio-73",
+      "title": "Studio Skyline 28",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-music-b26c6d09-bac0-4ddf-892c-b02c28f2414e/12-studio-skyline-28.wav",
+      "duration_seconds": 300,
+      "position": 73
+    }
+  ],
+  "shuffle": true,
+  "repeat": true,
+  "requested_at": "2026-10-03T02:44:44.268Z",
+  "source": "music-library"
+}
