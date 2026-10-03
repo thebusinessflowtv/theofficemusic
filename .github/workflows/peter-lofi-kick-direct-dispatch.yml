@@ -1,9 +1,7 @@
 name: Peter Lofi — Kick Direct Dispatch
 
 on:
-  push:
-    paths:
-      - control/kick-live-direct-trigger.json
+  workflow_dispatch:
 
 permissions:
   contents: read
