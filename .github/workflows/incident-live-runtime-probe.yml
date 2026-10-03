@@ -1,0 +1,120 @@
+name: Incident — Live Runtime Probe 2026-10-03
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/incident-live-runtime-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2 requests
+
+      - name: Capture runtime and platform health
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, datetime, urllib.request
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          root=pathlib.Path('.')
+          out={"checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"ovh":None,"youtube":{},"kick":{}}
+
+          # Sanitized real-time state reported by the OVH agent.
+          try:
+              req=urllib.request.Request(
+                  "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/public-health",
+                  headers={"User-Agent":"MediaForge-Incident-Probe/1.0"}
+              )
+              with urllib.request.urlopen(req,timeout=20) as r:
+                  out["ovh"]=json.load(r)
+          except Exception as exc:
+              out["ovh"]={"error":str(exc)}
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"],
+          )
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+
+          cfg=json.loads((root/"control/youtube-stations.json").read_text(encoding="utf-8"))
+          for station in cfg.get("stations",[]):
+              key=station["key"]
+              bid=str(station.get("youtube_broadcast_id") or "")
+              sid=str(station.get("youtube_stream_id") or "")
+              b=(yt.liveBroadcasts().list(part="snippet,status,contentDetails",id=bid).execute().get("items") or [None])[0] if bid else None
+              s=(yt.liveStreams().list(part="snippet,status,cdn",id=sid).execute().get("items") or [None])[0] if sid else None
+              bs=(b or {}).get("status") or {}
+              bcd=(b or {}).get("contentDetails") or {}
+              ss=(s or {}).get("status") or {}
+              hs=ss.get("healthStatus") or {}
+              out["youtube"][key]={
+                  "broadcast_id":bid,
+                  "stream_id":sid,
+                  "title":((b or {}).get("snippet") or {}).get("title"),
+                  "actual_start_time":((b or {}).get("snippet") or {}).get("actualStartTime"),
+                  "actual_end_time":((b or {}).get("snippet") or {}).get("actualEndTime"),
+                  "lifecycle":bs.get("lifeCycleStatus"),
+                  "privacy":bs.get("privacyStatus"),
+                  "enable_auto_start":bcd.get("enableAutoStart"),
+                  "enable_auto_stop":bcd.get("enableAutoStop"),
+                  "bound_stream_id":bcd.get("boundStreamId"),
+                  "stream_status":ss.get("streamStatus"),
+                  "health_status":hs.get("status") if isinstance(hs,dict) else hs,
+                  "configuration_issues":hs.get("configurationIssues",[]) if isinstance(hs,dict) else [],
+                  "cdn":{k:v for k,v in ((s or {}).get("cdn") or {}).items() if k!="ingestionInfo"},
+                  "ingestion_info":((s or {}).get("cdn") or {}).get("ingestionInfo") or {},
+              }
+
+          try:
+              req=urllib.request.Request("https://kick.com/api/v2/channels/peterlofi",headers={"User-Agent":"Mozilla/5.0 MediaForge-Incident-Probe"})
+              with urllib.request.urlopen(req,timeout=20) as r: data=json.load(r)
+              live=data.get("livestream")
+              out["kick"]={
+                  "reachable":True,
+                  "is_live":live is not None,
+                  "title":(live or {}).get("session_title") if live else None,
+                  "created_at":(live or {}).get("created_at") if live else None,
+                  "id":(live or {}).get("id") if live else None,
+                  "viewer_count":(live or {}).get("viewer_count") if live else None,
+              }
+          except Exception as exc:
+              out["kick"]={"reachable":False,"error":str(exc)}
+
+          p=root/"control/diagnostics/live-incident-20261003.json"
+          p.parent.mkdir(parents=True,exist_ok=True)
+          p.write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          print(json.dumps(out,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Persist incident snapshot
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/live-incident-20261003.json
+          git commit -m "ops: capture live runtime incident snapshot" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
