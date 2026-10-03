@@ -1,57 +1,12 @@
-name: One-off — Restart Kick Current Session
+name: RETIRED — Restart Kick Current Session
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/oneoff-recover-kick-live.yml'
-
-permissions:
-  contents: read
-  actions: write
+  workflow_dispatch:
 
 jobs:
-  restart:
+  retired:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Stop current Kick encoder and restart same station
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          ACTIVE="control/kick-active.json"
-          test -s "$ACTIVE"
-          SESSION_ID="$(jq -r '.session_id' "$ACTIVE")"
-          RUN_ID="$(jq -r '.run_id // empty' "$ACTIVE")"
-          QUEUE="control/kick-live-queue/${SESSION_ID}.json"
-          test -s "$QUEUE"
-
-          if [ -n "$RUN_ID" ]; then
-            echo "Cancelling current Kick run $RUN_ID"
-            gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/cancel" >/dev/null 2>&1 || true
-            for i in $(seq 1 30); do
-              STATE="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" --jq '.status' 2>/dev/null || true)"
-              [ "$STATE" = "completed" ] && break
-              sleep 2
-            done
-          fi
-
-          jq '{ref:"main",inputs:{
-            session_id:(.session_id|tostring),
-            track_urls_b64:(.track_urls_b64|tostring),
-            duration_minutes:(.duration_minutes//"0"|tostring),
-            title:(.title|tostring),
-            description:(.description//""|tostring),
-            thumbnail_url:(.thumbnail_url//""|tostring),
-            loop_url:(.loop_url|tostring),
-            segment_index:"1"
-          }}' "$QUEUE" > /tmp/kick-dispatch.json
-
-          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/peter-lofi-kick-live.yml/dispatches" --input /tmp/kick-dispatch.json
-          echo "Kick restart dispatched for ${SESSION_ID}."
-
-# restart-trigger: 2026-10-02T19:34:00Z
+      - run: |
+          echo "RETIRED: Kick recovery is handled inside OVH."
+          echo "No GitHub-hosted encoder will be started."
