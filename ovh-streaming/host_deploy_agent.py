@@ -63,7 +63,7 @@ def write_state(data):
     tmp.replace(STATE_FILE)
 
 def git_head():
-    return run(["git","-C",str(REPO),"rev-parse","HEAD"],timeout=30).strip().splitlines()[-1]
+    return run(["runuser","-u","ubuntu","--","git","-C",str(REPO),"rev-parse","HEAD"],timeout=30).strip().splitlines()[-1]
 
 def git_sync():
     old=git_head()
@@ -194,7 +194,11 @@ def main():
                     print("deploy completed",cid,cmd.get("action"),cmd.get("target"),flush=True)
                 except Exception as exc:
                     err=str(exc)[:1200]
-                    try:post_json(API+"/api/ovh/deploy-agent/ack",{"id":cid,"status":"failed","error":err,"result":{"git_head":git_head() if REPO.exists() else ""}})
+                    try:
+                        head=""
+                        try: head=git_head() if REPO.exists() else ""
+                        except Exception: pass
+                        post_json(API+"/api/ovh/deploy-agent/ack",{"id":cid,"status":"failed","error":err,"result":{"git_head":head}})
                     except Exception:pass
                     print("deploy failed",cid,err,flush=True)
                 if reload_self:
