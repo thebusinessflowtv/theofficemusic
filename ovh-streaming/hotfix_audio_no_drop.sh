@@ -103,3 +103,15 @@ done
 echo
 echo "ZERO_DROP_AUDIO_HOTFIX_OK"
 echo "All RTMP encoder PIDs were preserved."
+
+# Restore only the control-plane agents. These are not publishers and do not
+# carry RTMP media, so this cannot end any live.
+echo
+echo "Restoring MediaForge control agents..."
+sudo systemctl restart mediaforge-deploy-agent 2>/dev/null || true
+if sudo docker compose version >/dev/null 2>&1; then
+  (cd "$OVH" && sudo docker compose up -d --no-deps ovh-agent) || true
+else
+  (cd "$OVH" && sudo docker-compose up -d --no-deps ovh-agent) || true
+fi
+echo "CONTROL_AGENTS_RESTORED"
