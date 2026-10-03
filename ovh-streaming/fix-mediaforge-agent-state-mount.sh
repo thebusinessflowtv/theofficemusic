@@ -49,7 +49,13 @@ runuser -u ubuntu -- git -C "$REPO" fetch origin main
 runuser -u ubuntu -- git -C "$REPO" reset --hard origin/main
 
 test -d "$LIVE_DIR/app" || { echo "Diretório live inválido: $LIVE_DIR"; exit 1; }
-cp "$REPO/ovh-streaming/app/ovh_agent.py" "$LIVE_DIR/app/ovh_agent.py"
+SRC_AGENT="$REPO/ovh-streaming/app/ovh_agent.py"
+DST_AGENT="$LIVE_DIR/app/ovh_agent.py"
+if [ "$(readlink -f "$SRC_AGENT")" != "$(readlink -f "$DST_AGENT")" ]; then
+  cp "$SRC_AGENT" "$DST_AGENT"
+else
+  echo "Agente já está no diretório de produção; cópia desnecessária."
+fi
 
 echo "[2/5] Garantindo que o agente fale com a API local da OVH..."
 ENV_FILE="$LIVE_DIR/.env"
@@ -74,7 +80,10 @@ echo "State do agente após correção: ${NEW_AGENT_STATE:-desconhecido}"
   exit 2
 }
 
-echo "[4/5] Verificando heartbeat novo..."
+echo "[4/5] Verificando logs + heartbeat novo..."
+echo "--- últimos logs do agente ---"
+docker logs --tail 80 peter-lofi-ovh-agent 2>&1 || true
+echo "--- status local ---"
 python3 - "$LIVE_STATE" <<'PY'
 import json,pathlib,sys
 p=pathlib.Path(sys.argv[1])/"agent"/"status.json"
