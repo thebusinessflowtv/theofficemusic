@@ -18,7 +18,8 @@ import uuid
 from datetime import datetime, timezone
 
 STATE=pathlib.Path("/state")
-API=os.environ.get("MEDIAFORGE_API_URL","https://mediaforge-api.guilhermeodsgn.workers.dev").rstrip("/")
+API=os.environ.get("MEDIAFORGE_API_URL","http://host.docker.internal:8790").rstrip("/")
+AGENT_TOKEN=os.environ.get("MEDIAFORGE_AGENT_TOKEN","").strip()
 POLL=max(3,int(os.environ.get("OVH_AGENT_POLL_SECONDS","5")))
 LOCAL_STATUS_SECONDS=max(5,int(os.environ.get("OVH_LOCAL_STATUS_SECONDS","10")))
 REMOTE_STATUS_SECONDS=max(30,int(os.environ.get("OVH_REMOTE_STATUS_SECONDS","60")))
@@ -53,10 +54,18 @@ def atomic_json(path,payload):
     tmp.replace(path)
 
 
+def agent_headers(extra=None):
+    headers={"User-Agent":"MediaForge-OVH-Agent"}
+    if AGENT_TOKEN:
+        headers["x-ovh-agent-token"]=AGENT_TOKEN
+    if extra:
+        headers.update(extra)
+    return headers
+
 def fetch_json(url):
     req=urllib.request.Request(
         url+("&" if "?" in url else "?")+"ts="+str(int(time.time()*1000)),
-        headers={"User-Agent":"MediaForge-OVH-Agent"},
+        headers=agent_headers(),
     )
     with urllib.request.urlopen(req,timeout=20) as r:
         return json.loads(r.read().decode("utf-8"))
@@ -68,7 +77,7 @@ def post_json(url,payload):
         url,
         data=data,
         method="POST",
-        headers={"content-type":"application/json","user-agent":"MediaForge-OVH-Agent"},
+        headers=agent_headers({"content-type":"application/json"}),
     )
     with urllib.request.urlopen(req,timeout=20) as r:
         return r.read()
