@@ -13,8 +13,8 @@
       "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790973399832628",
       "youtube_broadcast_id": "2nyGIYs7ixA",
       "current_session_id": "8cf99db8-3e53-4b74-b9d2-51fb67b54ff8",
-      "status": "starting",
-      "updated_at": "2026-10-03T15:43:46.138272+00:00"
+      "status": "live",
+      "updated_at": "2026-10-03T16:56:13.731146+00:00"
     },
     {
       "key": "rainy",
@@ -31,5 +31,5 @@
       "status": "live"
     }
   ],
-  "updated_at": "2026-10-03T15:43:46.138272+00:00"
+  "updated_at": "2026-10-03T16:56:13.731146+00:00"
 }

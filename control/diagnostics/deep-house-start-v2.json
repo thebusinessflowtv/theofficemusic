@@ -1,0 +1,17 @@
+{
+  "broadcast_id": "2nyGIYs7ixA",
+  "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1790973399832628",
+  "lifecycle": "live",
+  "privacy": "public",
+  "stream_status": "active",
+  "health_status": "ok",
+  "configuration_issues": [
+    {
+      "type": "frameRateHigh",
+      "severity": "warning",
+      "reason": "Framerate high",
+      "description": "The current framerate is too high. Please set the framerate to 30 fps or less."
+    }
+  ],
+  "checked_at": "2026-10-03T16:56:13.731094+00:00"
+}
