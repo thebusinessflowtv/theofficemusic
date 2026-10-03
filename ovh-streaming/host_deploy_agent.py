@@ -203,7 +203,10 @@ def hot_patch_streaming(target="all"):
         run(["docker","cp",str(OVH/"app"/"stream_core.py"),f"{name}:/app/stream_core.py"],timeout=30)
 
         if before_audio:
-            run(["docker","exec",name,"kill","-TERM",str(before_audio)],timeout=20)
+            run([
+                "docker","exec",name,"python","-c",
+                f"import os,signal; os.kill({int(before_audio)}, signal.SIGTERM)"
+            ],timeout=20)
 
         end=time.time()+45
         after={}
