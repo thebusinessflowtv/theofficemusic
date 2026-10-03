@@ -14,7 +14,8 @@
       "enabled": true,
       "session_id": "72fcb955-bbb3-41d1-b8d0-fd90427c57a5",
       "source_queue": "control/youtube-live-queue/fe6e6fd3-fd9c-4265-b12d-8eb50c0b52fc.json",
-      "runtime": "github"
+      "runtime": "ovh",
+      "migrated_at": "2026-10-03T01:01:28.668Z"
     }
   ]
 }
