@@ -102,9 +102,12 @@ services:
     command: ["python", "/app/ovh_agent.py"]
     restart: unless-stopped
     environment:
-      MEDIAFORGE_API_URL: "https://mediaforge-api.guilhermeodsgn.workers.dev"
-      OVH_COMMAND_INDEX_URL: "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/control/ovh-commands/index.json"
-      OVH_COMMAND_RAW_BASE: "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/"
+      MEDIAFORGE_API_URL: ${MEDIAFORGE_API_URL:-http://host.docker.internal:8790}
+      MEDIAFORGE_AGENT_TOKEN: ${MEDIAFORGE_AGENT_TOKEN:-}
       OVH_AGENT_POLL_SECONDS: "5"
+      OVH_LOCAL_STATUS_SECONDS: "10"
+      OVH_REMOTE_STATUS_SECONDS: "60"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./state:/state
