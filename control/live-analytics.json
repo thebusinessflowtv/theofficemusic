@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T14:32:58.748828+00:00",
+  "generated_at": "2026-10-03T18:37:46.915543+00:00",
   "youtube": {
     "configured": true,
     "sessions": [
@@ -10,12 +10,12 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "hetFHV-hCY8uqV5ujupcitUb4Dw",
+          "etag": "hzentbdTHFVkS2eVP-lEEt6defQ",
           "id": "C9Et10tejC8",
           "snippet": {
             "publishedAt": "2026-10-02T20:47:54Z",
             "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-            "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+            "title": "[24/7] Rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
             "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nCozy lofi for rainy windows, reading, calm work and slow evenings.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #RainyLofi",
             "thumbnails": {
               "default": {
@@ -65,7 +65,7 @@
             "liveBroadcastContent": "live",
             "defaultLanguage": "en",
             "localized": {
-              "title": "rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
+              "title": "[24/7] Rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
               "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nCozy lofi for rainy windows, reading, calm work and slow evenings.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #RainyLofi"
             },
             "defaultAudioLanguage": "en-US"
@@ -80,7 +80,7 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "3",
+            "viewCount": "4",
             "likeCount": "0",
             "dislikeCount": "0",
             "favoriteCount": "0",
@@ -100,7 +100,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "ElgllgsWAzkTXZXqJZbE2vziQBo",
+          "etag": "zqCXYebFK_4ZgGREeVJp-y9aLFY",
           "id": "GIOCNRogj0g",
           "snippet": {
             "publishedAt": "2026-10-01T02:10:44Z",
@@ -109,27 +109,27 @@
             "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
             "thumbnails": {
               "default": {
-                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/default_live.jpg",
+                "url": "https://i9.ytimg.com/vi/GIOCNRogj0g/default_live.jpg?sqp=CNSVhdYG&rs=AOn4CLB-ZHkS6h7n0tX4uA3GSNB4Mf6a3A",
                 "width": 120,
                 "height": 90
               },
               "medium": {
-                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/mqdefault_live.jpg",
+                "url": "https://i9.ytimg.com/vi/GIOCNRogj0g/mqdefault_live.jpg?sqp=CNSVhdYG&rs=AOn4CLCHAJz5hMCg-pJ1pcYByC8jTHLCuA",
                 "width": 320,
                 "height": 180
               },
               "high": {
-                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/hqdefault_live.jpg",
+                "url": "https://i9.ytimg.com/vi/GIOCNRogj0g/hqdefault_live.jpg?sqp=CNSVhdYG&rs=AOn4CLCy_S_kSBIX_5mCyQjfvIcmG3kzDg",
                 "width": 480,
                 "height": 360
               },
               "standard": {
-                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/sddefault_live.jpg",
+                "url": "https://i9.ytimg.com/vi/GIOCNRogj0g/sddefault_live.jpg?sqp=CNSVhdYG&rs=AOn4CLDjKn1_nbDxekkzFiO9MLEPKdfWpA",
                 "width": 640,
                 "height": 480
               },
               "maxres": {
-                "url": "https://i.ytimg.com/vi/GIOCNRogj0g/maxresdefault_live.jpg",
+                "url": "https://i9.ytimg.com/vi/GIOCNRogj0g/maxresdefault_live.jpg?sqp=CNSVhdYG&rs=AOn4CLAXcnigS4Cog_yXnzYIZzVVNezl3g",
                 "width": 1280,
                 "height": 720
               }
@@ -162,7 +162,7 @@
           },
           "status": {
             "uploadStatus": "uploaded",
-            "privacyStatus": "public",
+            "privacyStatus": "private",
             "license": "youtube",
             "embeddable": true,
             "publicStatsViewable": true,
@@ -190,7 +190,7 @@
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "38j71zElstDc37AIW2lFz53cYt0",
+          "etag": "VfaL5_w1YmxMw2pRvDR9cOBGEMw",
           "id": "PNdwQEFaIrA",
           "snippet": {
             "publishedAt": "2026-10-01T20:39:32Z",
@@ -199,32 +199,32 @@
             "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
             "thumbnails": {
               "default": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/default.jpg?sqp=COiihNYG&rs=AOn4CLBLPj_ulosHIIshFzXfdJpw1uOTEg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/default.jpg?sqp=CNSVhdYG&rs=AOn4CLA8l1_4caRvG9MzIqcMX5z3--irNQ",
                 "width": 120,
                 "height": 90
               },
               "medium": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/mqdefault.jpg?sqp=COiihNYG&rs=AOn4CLDeLXMEJMZQ-FAzoh_VuS0aoE-N0g",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/mqdefault.jpg?sqp=CNSVhdYG&rs=AOn4CLA8ir_3NwrpMYziWjiWnDVYOObJ1w",
                 "width": 320,
                 "height": 180
               },
               "high": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/hqdefault.jpg?sqp=COiihNYG&rs=AOn4CLB4vgoR0m3QP0KcsfXu8uHsbUBskg",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/hqdefault.jpg?sqp=CNSVhdYG&rs=AOn4CLAIlHh8-jGaL2HMzkZ-V2GDhUkITw",
                 "width": 480,
                 "height": 360
               },
               "standard": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/sddefault.jpg?sqp=COiihNYG&rs=AOn4CLDyBXHKnv3rqWNZRjFF-IVAEWtZJQ",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/sddefault.jpg?sqp=CNSVhdYG&rs=AOn4CLCTSgOPSlg-26BOLkUgpX7Nbnbimg",
                 "width": 640,
                 "height": 480
               },
               "maxres": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/maxresdefault.jpg?sqp=COiihNYG&rs=AOn4CLCWfkZ2Px5OSxwvkIYSxusC2bCvew",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/maxresdefault.jpg?sqp=CNSVhdYG&rs=AOn4CLC7B3_boE7CDn5eMgfAemaoWXcGgw",
                 "width": 1280,
                 "height": 720
               },
               "fhd": {
-                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/fhddefault.jpg?sqp=COiihNYG&rs=AOn4CLD0Eq7L0FLI1VqfycomuQw_16S-CQ",
+                "url": "https://i9.ytimg.com/vi/PNdwQEFaIrA/fhddefault.jpg?sqp=CNSVhdYG&rs=AOn4CLD6NdldIU1QJF9k3Wox0IisyNEP9w",
                 "width": 1920,
                 "height": 1080
               }
@@ -280,73 +280,73 @@
       },
       {
         "session_id": "8cf99db8-3e53-4b74-b9d2-51fb67b54ff8",
-        "video_id": "WYJuqbEQYZQ",
-        "youtube_url": "https://www.youtube.com/watch?v=WYJuqbEQYZQ",
+        "video_id": "2nyGIYs7ixA",
+        "youtube_url": "https://www.youtube.com/watch?v=2nyGIYs7ixA",
         "workflow_status": "live",
         "data": {
           "kind": "youtube#video",
-          "etag": "lNYPljj6G-A0FgZoUONYdGD004A",
-          "id": "WYJuqbEQYZQ",
+          "etag": "ocyI9-dExhlExwOFSZpFyDk65qM",
+          "id": "2nyGIYs7ixA",
           "snippet": {
-            "publishedAt": "2026-10-03T13:22:26Z",
+            "publishedAt": "2026-10-03T15:43:43Z",
             "channelId": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
-            "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix",
+            "title": "[24/7] Deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
+            "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi",
             "thumbnails": {
               "default": {
-                "url": "https://i.ytimg.com/vi/WYJuqbEQYZQ/default.jpg",
+                "url": "https://i.ytimg.com/vi/2nyGIYs7ixA/default_live.jpg",
                 "width": 120,
                 "height": 90
               },
               "medium": {
-                "url": "https://i.ytimg.com/vi/WYJuqbEQYZQ/mqdefault.jpg",
+                "url": "https://i.ytimg.com/vi/2nyGIYs7ixA/mqdefault_live.jpg",
                 "width": 320,
                 "height": 180
               },
               "high": {
-                "url": "https://i.ytimg.com/vi/WYJuqbEQYZQ/hqdefault.jpg",
+                "url": "https://i.ytimg.com/vi/2nyGIYs7ixA/hqdefault_live.jpg",
                 "width": 480,
                 "height": 360
               },
               "standard": {
-                "url": "https://i.ytimg.com/vi/WYJuqbEQYZQ/sddefault.jpg",
+                "url": "https://i.ytimg.com/vi/2nyGIYs7ixA/sddefault_live.jpg",
                 "width": 640,
                 "height": 480
               },
               "maxres": {
-                "url": "https://i.ytimg.com/vi/WYJuqbEQYZQ/maxresdefault.jpg",
+                "url": "https://i.ytimg.com/vi/2nyGIYs7ixA/maxresdefault_live.jpg",
                 "width": 1280,
                 "height": 720
               }
             },
             "channelTitle": "Peter Lofi",
             "tags": [
-              "1 hour lofi",
               "Peter Lofi",
               "PeterLofiSounds",
               "background music",
               "chill music",
               "focus music",
+              "late night lofi",
               "lofi",
               "lofi beats",
-              "lofi mix",
               "lofi music",
-              "long lofi mix",
+              "neon lofi",
+              "night lofi",
               "relaxing music",
               "study music",
               "work music"
             ],
             "categoryId": "10",
-            "liveBroadcastContent": "none",
+            "liveBroadcastContent": "live",
             "defaultLanguage": "en",
             "localized": {
-              "title": "deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLong-form lofi for uninterrupted focus, study, work and relaxation.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LofiMix"
+              "title": "[24/7] Deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
+              "description": "🎧 Peter Lofi — original lofi sounds for focus, study, work and late-night sessions.\n\nLate-night lofi for quiet city hours, headphones and after-dark focus.\n\nPut on your headphones, slow things down and stay awhile.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#PeterLofi #Lofi #LofiMusic #LofiBeats #FocusMusic #LateNightLofi"
             },
             "defaultAudioLanguage": "en-US"
           },
           "status": {
-            "uploadStatus": "processed",
+            "uploadStatus": "uploaded",
             "privacyStatus": "public",
             "license": "youtube",
             "embeddable": true,
@@ -355,16 +355,16 @@
             "selfDeclaredMadeForKids": false
           },
           "statistics": {
-            "viewCount": "3",
+            "viewCount": "2",
             "likeCount": "0",
             "dislikeCount": "0",
             "favoriteCount": "0",
             "commentCount": "0"
           },
           "liveStreamingDetails": {
-            "actualStartTime": "2026-10-02T20:36:55Z",
-            "actualEndTime": "2026-10-03T06:41:38Z",
-            "scheduledStartTime": "2026-10-02T20:36:58Z"
+            "actualStartTime": "2026-10-03T16:56:10Z",
+            "scheduledStartTime": "2026-10-03T15:44:13Z",
+            "activeLiveChatId": "Cg0KCzJueUdJWXM3aXhBKicKGFVDeE80Q2w3eENkY1RzV2tteERfNldmZxILMm55R0lZczdpeEE"
           }
         }
       }
