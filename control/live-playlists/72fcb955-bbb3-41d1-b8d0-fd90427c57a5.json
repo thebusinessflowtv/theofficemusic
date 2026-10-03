@@ -1,0 +1,204 @@
+{
+  "session_id": "72fcb955-bbb3-41d1-b8d0-fd90427c57a5",
+  "platform": "youtube",
+  "runtime": "ovh",
+  "runtime_slot": "youtube-rainy",
+  "playlist_key": "rainy-radio",
+  "shuffle": true,
+  "repeat": true,
+  "updated_at": "2026-10-03T02:44:19.520Z",
+  "tracks": [
+    {
+      "id": "rainy-radio-01",
+      "title": "Neon Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/01-neon-lobby.wav",
+      "duration_seconds": 300,
+      "position": 1,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-02",
+      "title": "After Hours Elevator",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/02-after-hours-elevator.wav",
+      "duration_seconds": 300,
+      "position": 2,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-03",
+      "title": "Blue Hour Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/03-blue-hour-desk.wav",
+      "duration_seconds": 300,
+      "position": 3,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-04",
+      "title": "Neon Deadline",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/04-neon-deadline.wav",
+      "duration_seconds": 300,
+      "position": 4,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-05",
+      "title": "Night Elevator",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/05-night-elevator.wav",
+      "duration_seconds": 300,
+      "position": 5,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-06",
+      "title": "Blue Hour Deadline",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/06-blue-hour-deadline.wav",
+      "duration_seconds": 300,
+      "position": 6,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-07",
+      "title": "Midnight Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/07-midnight-desk.wav",
+      "duration_seconds": 300,
+      "position": 7,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-08",
+      "title": "Night Windows",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/08-night-windows.wav",
+      "duration_seconds": 300,
+      "position": 8,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-09",
+      "title": "Neon Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/09-neon-desk.wav",
+      "duration_seconds": 300,
+      "position": 9,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-10",
+      "title": "Quiet Desk 23",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/10-quiet-desk-23.wav",
+      "duration_seconds": 300,
+      "position": 10,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-11",
+      "title": "Night Elevator 26",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/11-night-elevator-26.wav",
+      "duration_seconds": 300,
+      "position": 11,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-12",
+      "title": "Night Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-02-late-night-office-8a2398c1/12-night-desk.wav",
+      "duration_seconds": 300,
+      "position": 12,
+      "source_series": "late-night-office"
+    },
+    {
+      "id": "rainy-radio-13",
+      "title": "Soft Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/01-soft-desk.wav",
+      "duration_seconds": 300,
+      "position": 13,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-14",
+      "title": "Soft Hours",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/02-soft-hours.wav",
+      "duration_seconds": 300,
+      "position": 14,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-15",
+      "title": "Grey Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/03-grey-desk.wav",
+      "duration_seconds": 300,
+      "position": 15,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-16",
+      "title": "Quiet Glass",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/04-quiet-glass.wav",
+      "duration_seconds": 300,
+      "position": 16,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-17",
+      "title": "Quiet Street",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/05-quiet-street.wav",
+      "duration_seconds": 300,
+      "position": 17,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-18",
+      "title": "Quiet Desk",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/06-quiet-desk.wav",
+      "duration_seconds": 300,
+      "position": 18,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-19",
+      "title": "Grey Desk 16",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/07-grey-desk-16.wav",
+      "duration_seconds": 300,
+      "position": 19,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-20",
+      "title": "Rainy Glass",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/08-rainy-glass.wav",
+      "duration_seconds": 300,
+      "position": 20,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-21",
+      "title": "Rainy Notes",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/09-rainy-notes.wav",
+      "duration_seconds": 300,
+      "position": 21,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-22",
+      "title": "Quiet Desk 23",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/10-quiet-desk-23.wav",
+      "duration_seconds": 300,
+      "position": 22,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-23",
+      "title": "Rainy Glass 26",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/11-rainy-glass-26.wav",
+      "duration_seconds": 300,
+      "position": 23,
+      "source_series": "rainy-office"
+    },
+    {
+      "id": "rainy-radio-24",
+      "title": "Cloudy Street 28",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-series-05-rainy-office-8723845d/12-cloudy-street-28.wav",
+      "duration_seconds": 300,
+      "position": 24,
+      "source_series": "rainy-office"
+    }
+  ]
+}
