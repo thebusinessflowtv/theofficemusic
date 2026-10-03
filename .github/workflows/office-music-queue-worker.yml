@@ -1,8 +1,7 @@
 name: Office Music Queue Worker
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
+  # OVH is the production runtime. Kept only as an explicit emergency fallback.
   workflow_dispatch:
 
 permissions:
