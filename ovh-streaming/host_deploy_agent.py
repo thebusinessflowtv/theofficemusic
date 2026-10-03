@@ -631,6 +631,9 @@ def execute(cmd):
     if action=="deploy_host_agent":
         # Source was updated by git_sync. ACK first, then exec the fresh code.
         return {"old_head":old,"new_head":new,"host_agent":"reloading"},True
+    if action=="run_twitch_dj_balance":
+        out=run(["bash",str(OVH/"hotfix_twitch_dj_balance.sh")],cwd=OVH,timeout=180)
+        return {"old_head":old,"new_head":new,"output":out[-12000:]},False
     raise ValueError("action not allowed")
 
 
