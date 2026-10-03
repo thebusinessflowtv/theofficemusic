@@ -177,7 +177,7 @@ jobs:
           set -euo pipefail
           PUSH_OUTPUT="$(kaggle kernels push -p "$KERNEL_DIR" --timeout 7200 --accelerator NvidiaL4 2>&1)"
           printf '%s\n' "$PUSH_OUTPUT"
-          KERNEL_REF="$KAGGLE_USENAMM/$KERNEL_NAME"
+          KERNEL_REF="$KAGGLE_USERNAME/$KERNEL_NAME"
           echo "KERNEL_REF=$KERNEL_REF" >> "$GITHUB_ENV"
           sleep 20
 
@@ -205,7 +205,7 @@ jobs:
           MARKER="$(find generated -type f -name request_id.txt -print -quit)"
           test -n "$MARKER"
           test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID"
-          WAV="$(find generated -maxdepth 1 -type f -name '*.wav' -print -quit)"
+          WAV="$(find generated -type f -name '*.wav' -print -quit)"
           test -n "$WAV"
           echo "GENERATED_WAV=$WAV" >> "$GITHUB_ENV"
 
