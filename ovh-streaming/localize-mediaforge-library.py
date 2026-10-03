@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import mimetypes
 import os
@@ -120,6 +121,7 @@ def main() -> None:
     ap.add_argument("--cache-dir", default="/opt/mediaforge-control/library-migration-cache")
     ap.add_argument("--stream-state", default="/home/ubuntu/theofficemusic/ovh-streaming/state")
     ap.add_argument("--stations-dir", default="/home/ubuntu/theofficemusic/ovh-streaming/stations")
+    ap.add_argument("--audio-cache", default="/home/ubuntu/theofficemusic/ovh-streaming/state/audio-cache")
     args = ap.parse_args()
 
     api = args.api.rstrip("/")
@@ -175,6 +177,31 @@ def main() -> None:
         finally:
             target.unlink(missing_ok=True)
 
+    # Preserve any already-warmed audio cache without duplicating gigabytes.
+    # AudioEngine keys cached files by sha256(URL)[:32] + source suffix.
+    cache_root = pathlib.Path(args.audio_cache)
+    cache_links = 0
+    if cache_root.is_dir():
+        for old_url, row in mapping.items():
+            new_url = str(row.get("runtime_url") or "")
+            if not new_url:
+                continue
+            old_suffix = pathlib.PurePosixPath(urllib.parse.urlparse(old_url).path).suffix.lower()
+            new_suffix = pathlib.PurePosixPath(urllib.parse.urlparse(new_url).path).suffix.lower()
+            suffix = new_suffix or old_suffix or ".media"
+            if len(suffix) > 10:
+                suffix = ".media"
+            old_name = hashlib.sha256(old_url.encode("utf-8")).hexdigest()[:32] + (old_suffix if old_suffix and len(old_suffix) <= 10 else ".media")
+            new_name = hashlib.sha256(new_url.encode("utf-8")).hexdigest()[:32] + suffix
+            old_path = cache_root / old_name
+            new_path = cache_root / new_name
+            if old_path.is_file() and old_path.stat().st_size >= 4096 and not new_path.exists():
+                try:
+                    os.link(old_path, new_path)
+                    cache_links += 1
+                except OSError:
+                    pass
+
     for path, payload in configs.items():
         localized = replace_urls(payload, mapping)
         remaining = count_github(localized)
@@ -215,6 +242,7 @@ def main() -> None:
         "gib_localized": round(total_bytes / (1024**3), 3),
         "github_release_urls_remaining": 0,
         "active_playlist_files_rewritten": localized_files,
+        "audio_cache_hardlinks_created": cache_links,
         "map_path": str(map_path),
     }, ensure_ascii=False, indent=2))
 
