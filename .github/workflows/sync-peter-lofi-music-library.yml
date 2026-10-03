@@ -1,0 +1,39 @@
+name: Peter Lofi — Sync Music Library
+
+on:
+  push:
+    paths:
+      - 'control/series-results/**'
+      - 'ovh-streaming/stations/**'
+      - 'config/peter_lofi_series.json'
+      - 'scripts/sync_music_library.py'
+      - '.github/workflows/sync-peter-lofi-music-library.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild music library
+        run: python scripts/sync_music_library.py
+
+      - name: Commit catalog
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/music-library.json
+          git commit -m "Peter Lofi: sync music library" || exit 0
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((N*2))
+          done
+          exit 1
