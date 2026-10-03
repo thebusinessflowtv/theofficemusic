@@ -1,0 +1,31 @@
+name: Ops — Probe OVH Control Ports
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ops-probe-ovh-control-ports.yml'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      OVH_HOST: ${{ secrets.OVH_HOST }}
+    steps:
+      - name: Probe control surfaces
+        shell: bash
+        run: |
+          set +e
+          test -n "$OVH_HOST" || { echo "OVH_HOST missing"; exit 1; }
+          for proto in http https; do
+            for port in 8790 8787 80 443; do
+              echo "=== $proto port $port ==="
+              curl -k -sS --connect-timeout 4 --max-time 8 -o /tmp/body -w "HTTP=%{http_code}\n" "$proto://$OVH_HOST:$port/health"
+              RC=$?
+              echo "RC=$RC"
+              head -c 500 /tmp/body 2>/dev/null || true
+              echo
+            done
+          done
