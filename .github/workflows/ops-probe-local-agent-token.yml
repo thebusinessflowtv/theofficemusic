@@ -1,0 +1,24 @@
+name: Ops — Probe Local Agent Token
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ops-probe-local-agent-token.yml'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      A: ${{ secrets.MEDIAFORGE_AGENT_TOKEN }}
+      B: ${{ secrets.OVH_AGENT_TOKEN }}
+      C: ${{ secrets.MEDIAFORGE_OVH_AGENT_TOKEN }}
+      D: ${{ secrets.LOCAL_MIGRATION_TOKEN }}
+    steps:
+      - name: Presence only
+        shell: bash
+        run: |
+          for n in A B C D; do
+            if [ -n "${!n:-}" ]; then echo "$n=present"; else echo "$n=missing"; fi
+          done
