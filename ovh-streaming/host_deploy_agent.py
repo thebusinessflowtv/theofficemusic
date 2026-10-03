@@ -20,7 +20,8 @@ import time
 import urllib.request
 from datetime import datetime, timezone
 
-API=os.environ.get("MEDIAFORGE_API_URL","https://mediaforge-api.guilhermeodsgn.workers.dev").rstrip("/")
+API=os.environ.get("MEDIAFORGE_API_URL","http://127.0.0.1:8790").rstrip("/")
+AGENT_TOKEN=os.environ.get("MEDIAFORGE_AGENT_TOKEN","").strip()
 REPO=pathlib.Path(os.environ.get("MEDIAFORGE_REPO","/home/ubuntu/theofficemusic"))
 OVH=REPO/"ovh-streaming"
 STATE_DIR=pathlib.Path("/var/lib/mediaforge-deploy-agent")
@@ -66,10 +67,18 @@ def now():
     return datetime.now(timezone.utc).isoformat().replace("+00:00","Z")
 
 
+def agent_headers(extra=None):
+    headers={"User-Agent":"MediaForge-Host-Deploy-Agent"}
+    if AGENT_TOKEN:
+        headers["x-ovh-agent-token"]=AGENT_TOKEN
+    if extra:
+        headers.update(extra)
+    return headers
+
 def fetch_json(url):
     req=urllib.request.Request(
         url+("&" if "?" in url else "?")+"ts="+str(int(time.time()*1000)),
-        headers={"User-Agent":"MediaForge-Host-Deploy-Agent"},
+        headers=agent_headers(),
     )
     with urllib.request.urlopen(req,timeout=30) as r:
         return json.loads(r.read().decode("utf-8"))
@@ -81,7 +90,7 @@ def post_json(url,payload):
         url,
         data=data,
         method="POST",
-        headers={"content-type":"application/json","user-agent":"MediaForge-Host-Deploy-Agent"},
+        headers=agent_headers({"content-type":"application/json"}),
     )
     with urllib.request.urlopen(req,timeout=30) as r:
         return json.loads(r.read().decode("utf-8") or "{}")
