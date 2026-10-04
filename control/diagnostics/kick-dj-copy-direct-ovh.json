@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-10-04T00:40:05Z",
+  "reported_at": "2026-10-04T00:39:54.559842Z",
+  "kick": {
+    "status": "live",
+    "updated_at": "2026-10-04T00:39:54.411074Z",
+    "fps": 30,
+    "video_bitrate_kbps": 5000,
+    "restarts": 0,
+    "hot_swap": true,
+    "visual_revision": 5,
+    "playlist_key": null,
+    "playlist_track_count": 36,
+    "dj_import": {},
+    "now_playing": {
+      "state": "playing",
+      "track_id": "gaming-radio-23",
+      "title": "Cyber Lobby 11",
+      "started_at": "2026-10-04T00:38:00.802876Z"
+    }
+  },
+  "twitch": {
+    "status": "live",
+    "updated_at": "2026-10-04T00:39:53.574295Z",
+    "fps": 30,
+    "video_bitrate_kbps": 4500,
+    "restarts": 1,
+    "hot_swap": true,
+    "visual_revision": 4,
+    "playlist_key": "twitch-dj-mixed",
+    "playlist_track_count": 98,
+    "dj_import": {
+      "status": "validating",
+      "updated_at": "2026-10-03T23:29:00.163041Z",
+      "expected": 34
+    },
+    "now_playing": {
+      "state": "playing",
+      "track_id": "twitch-dj-original-25",
+      "title": "Checkpoint Drive",
+      "started_at": "2026-10-04T00:35:31.189385Z"
+    }
+  }
+}
