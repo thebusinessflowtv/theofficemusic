@@ -181,10 +181,23 @@ class VisualEngine:
         now = read_json(self.state / "now-playing.json", {}) or {}
         title = str(now.get("title") or now.get("name") or "PETER LOFI").strip().upper()
         wrapped = textwrap.wrap(title, width=18)[:2] or ["PETER LOFI"]
-        (self.state / "now-playing.txt").write_text("\n".join(wrapped) + "\n", encoding="utf-8")
+        is_two_lines = len(wrapped) > 1
+
+        # Two layout variants keep the complete CURRENT MUSIC block vertically
+        # centered whether the song occupies one line or two. Only one variant
+        # contains text at a time; the other remains blank.
+        one_title = "\n".join(wrapped) if not is_two_lines else ""
+        two_title = "\n".join(wrapped) if is_two_lines else ""
+        (self.state / "now-playing-one.txt").write_text(one_title + ("\n" if one_title else ""), encoding="utf-8")
+        (self.state / "now-playing-two.txt").write_text(two_title + ("\n" if two_title else ""), encoding="utf-8")
+        (self.state / "current-label-one.txt").write_text("CURRENT MUSIC:\n" if not is_two_lines else "", encoding="utf-8")
+        (self.state / "current-label-two.txt").write_text("CURRENT MUSIC:\n" if is_two_lines else "", encoding="utf-8")
+        (self.state / "music-note-one.txt").write_text("♫\n" if not is_two_lines else "", encoding="utf-8")
+        (self.state / "music-note-two.txt").write_text("♫\n" if is_two_lines else "", encoding="utf-8")
+
         message = self.state / "message.txt"
         if not message.exists():
-            message.write_text("HELLO GYS\n", encoding="utf-8")
+            message.write_text("Esse é um teste\nde envio de mensagem\n", encoding="utf-8")
 
     def stop_sender(self):
         proc = self.sender
@@ -216,7 +229,12 @@ class VisualEngine:
             icon = str(assets / "subscriber-icon.png")
             font = str(assets / "superstar.ttf")
             symbol_font = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-            title_file = str(self.state / "now-playing.txt")
+            title_one_file = str(self.state / "now-playing-one.txt")
+            title_two_file = str(self.state / "now-playing-two.txt")
+            label_one_file = str(self.state / "current-label-one.txt")
+            label_two_file = str(self.state / "current-label-two.txt")
+            note_one_file = str(self.state / "music-note-one.txt")
+            note_two_file = str(self.state / "music-note-two.txt")
             message_file = str(self.state / "message.txt")
             demo_enable = "between(mod(t\\,60)\\,45\\,52)"
 
@@ -226,15 +244,18 @@ class VisualEngine:
             # Text never lives inside the SVG assets.
             filters = (
                 f"[2:v]scale=430:-1[web];"
-                f"[3:v]split=3[subicon1][subicon2][subicon3];"
+                f"[3:v]scale=21:28:flags=lanczos,split=3[subicon1][subicon2][subicon3];"
                 f"[0:v][web]overlay=0:0[webbed];"
                 f"[webbed][1:v]overlay=59:54[head];"
                 f"[head][subicon1]overlay=84:240[s1];"
                 f"[s1][subicon2]overlay=84:275[s2];"
                 f"[s2][subicon3]overlay=84:310[base];"
 
+                # Center the header copy both horizontally and vertically inside
+                # the 448x161 SVG frame.
                 f"[base]drawtext=fontfile={font}:text='LATEST SUBSCRIPTIONS\\:':"
-                f"fontcolor=white:fontsize=29:x=59+(448-text_w)/2:y=99[latest];"
+                f"fontcolor=white:fontsize=29:"
+                f"x=59+(448-text_w)/2:y=54+(161-text_h)/2[latest];"
 
                 f"[latest]drawtext=fontfile={font}:text='@GUILHERMEODSGN':"
                 f"fontcolor=white:fontsize=25:x=113:y=241[sub1];"
@@ -243,25 +264,33 @@ class VisualEngine:
                 f"[sub2]drawtext=fontfile={font}:text='@PETERLOFI':"
                 f"fontcolor=white:fontsize=25:x=113:y=311[subs3];"
 
-                f"[subs3]drawtext=fontfile={symbol_font}:text='♫':"
-                f"fontcolor=black:fontsize=31:x=110:y=866[note];"
-                f"[note]drawtext=fontfile={font}:text='CURRENT MUSIC\\:':"
-                f"fontcolor=black:fontsize=34:x=144:y=869[label];"
-                f"[label]drawtext=fontfile={font}:textfile={title_file}:reload=1:"
-                f"fontcolor=black:fontsize=49:line_spacing=-8:"
-                f"x=110+(302-text_w)/2:y=917[title];"
+                # CURRENT MUSIC and the song name share the exact same left edge
+                # (x=110). The one-line variant is shifted down 15px so the full
+                # block remains centered in the TV screen just like the two-line
+                # Figma layout.
+                f"[subs3]drawtext=fontfile={symbol_font}:textfile={note_one_file}:reload=1:"
+                f"fontcolor=black:fontsize=31:x=78:y=881[note1];"
+                f"[note1]drawtext=fontfile={font}:textfile={label_one_file}:reload=1:"
+                f"fontcolor=black:fontsize=34:x=110:y=884[label1];"
+                f"[label1]drawtext=fontfile={font}:textfile={title_one_file}:reload=1:"
+                f"fontcolor=black:fontsize=49:line_spacing=-8:x=110:y=934[title1];"
 
-                f"[title]drawtext=fontfile={font}:text='VOTE TO CHANGE A SONG.':"
+                f"[title1]drawtext=fontfile={symbol_font}:textfile={note_two_file}:reload=1:"
+                f"fontcolor=black:fontsize=31:x=78:y=866[note2];"
+                f"[note2]drawtext=fontfile={font}:textfile={label_two_file}:reload=1:"
+                f"fontcolor=black:fontsize=34:x=110:y=869[label2];"
+                f"[label2]drawtext=fontfile={font}:textfile={title_two_file}:reload=1:"
+                f"fontcolor=black:fontsize=49:line_spacing=-8:x=110:y=919[title2];"
+
+                f"[title2]drawtext=fontfile={font}:text='VOTE TO CHANGE A SONG.':"
                 f"fontcolor=white:fontsize=34:x=1506:y=1020[vote];"
 
-                # Paid/user message state: one plain black alpha layer over the
-                # whole video, no blend mode / multiply / side mask.
-                f"[vote]drawbox=x=0:y=0:w=iw:h=ih:color=black@0.20:t=fill:"
-                f"enable='{demo_enable}'[messagebg];"
-                f"[messagebg]drawtext=fontfile={font}:textfile={message_file}:reload=1:"
-                f"fontcolor=white:fontsize=175:x=(w-text_w)/2:y=(h-text_h)/2:"
+                # Message is plain text over the video. No opacity layer,
+                # dimming, blend mode or background is applied.
+                f"[vote]drawtext=fontfile={font}:textfile={message_file}:reload=1:"
+                f"fontcolor=white:fontsize=130:line_spacing=12:"
+                f"x=(w-text_w)/2:y=(h-text_h)/2:"
                 f"enable='{demo_enable}'[v]"
-            )
             gop = self.fps * 2
             cmd = [
                 "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin",
