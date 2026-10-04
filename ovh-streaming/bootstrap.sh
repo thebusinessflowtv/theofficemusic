@@ -6,6 +6,7 @@ set -euo pipefail
 REPO_DIR="${MEDIAFORGE_REPO:-$HOME/theofficemusic}"
 OVH_DIR="$REPO_DIR/ovh-streaming"
 SLOTS=(kick twitch youtube-deep-house youtube-rainy)
+STREAM_PROFILE_VERSION="stable-start-v2-20261003"
 
 if [ ! -d "$REPO_DIR/.git" ] || [ ! -f "$OVH_DIR/docker-compose.yml" ]; then
   echo "::error::Git-backed MediaForge OVH runtime not found at $REPO_DIR" >&2
@@ -78,6 +79,37 @@ d=json.loads((pathlib.Path("state")/os.environ["SLOT"]/"desired.json").read_text
 v=d.get(os.environ["FIELD"])
 print("" if v is None else v)
 PY
+}
+
+container_env_field() {
+  local slot="$1" key="$2"
+  local name
+  name="$(container_name "$slot")"
+  sudo -n docker inspect "$name" --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null     | sed -n "s/^$key=//p" | tail -n1
+}
+
+slot_desired_live() {
+  local slot="$1"
+  local desired
+  desired="$(desired_field "$slot" desired 2>/dev/null || true)"
+  desired="$(printf '%s' "$desired" | tr '[:upper:]' '[:lower:]')"
+  case "$desired" in
+    stopped|stop|offline) return 1 ;;
+    *) return 0 ;;
+  esac
+}
+
+wait_container_running() {
+  local slot="$1"
+  local name
+  name="$(container_name "$slot")"
+  for _ in $(seq 1 30); do
+    if [ "$(sudo -n docker inspect -f '{{.State.Running}}' "$name" 2>/dev/null || true)" = "true" ]; then
+      return 0
+    fi
+    sleep 1
+  done
+  return 1
 }
 
 bump_visual_revision() {
@@ -154,9 +186,33 @@ verify_visual_swap() {
 
 RESULTS=()
 for slot in "${SLOTS[@]}"; do
-  if is_hotswap_ready "$slot"; then
-    echo "$slot already uses persistent RTMP hot-swap; no publisher restart needed."
-  else
+  current_profile="$(container_env_field "$slot" STREAM_PROFILE_VERSION || true)"
+  must_roll_profile=0
+  if [ "$current_profile" != "$STREAM_PROFILE_VERSION" ]; then
+    must_roll_profile=1
+  fi
+
+  if [ "$must_roll_profile" -eq 1 ]; then
+    echo "Applying permanent stable-start profile to $slot: current=$current_profile target=$STREAM_PROFILE_VERSION"
+    compose up -d --no-deps --force-recreate "$slot"
+    if slot_desired_live "$slot"; then
+      if ! wait_hotswap_ready "$slot"; then
+        echo "::error::$slot did not become hot-swap ready after stable-start rollout" >&2
+        cat "state/$slot/health.json" 2>/dev/null || true
+        rollback_slot "$slot"
+        exit 1
+      fi
+    else
+      if ! wait_container_running "$slot"; then
+        echo "::error::$slot container did not return after stable-start rollout" >&2
+        rollback_slot "$slot"
+        exit 1
+      fi
+      echo "$slot is intentionally stopped; stable-start runtime is installed for its next start."
+    fi
+  elif is_hotswap_ready "$slot"; then
+    echo "$slot already uses stable-start $STREAM_PROFILE_VERSION and persistent RTMP hot-swap."
+  elif slot_desired_live "$slot"; then
     echo "Migrating $slot to persistent RTMP hot-swap..."
     compose up -d --no-deps --force-recreate "$slot"
     if ! wait_hotswap_ready "$slot"; then
@@ -165,11 +221,15 @@ for slot in "${SLOTS[@]}"; do
       rollback_slot "$slot"
       exit 1
     fi
+  else
+    echo "$slot is stopped and already has stable-start $STREAM_PROFILE_VERSION; no publisher restart needed."
   fi
 
-  if ! verify_visual_swap "$slot"; then
-    rollback_slot "$slot"
-    exit 1
+  if slot_desired_live "$slot"; then
+    if ! verify_visual_swap "$slot"; then
+      rollback_slot "$slot"
+      exit 1
+    fi
   fi
 
   RESULTS+=("$slot")
@@ -196,8 +256,20 @@ for slot in slots:
         "generation":d.get("generation"),
         "visual_revision":d.get("visual_revision"),
     }
+def acceptable(slot, v):
+    desired_path=pathlib.Path("state")/slot/"desired.json"
+    desired_state="live"
+    try:
+        desired_state=str(json.loads(desired_path.read_text()).get("desired") or "live").lower()
+    except Exception:
+        pass
+    if desired_state in {"stopped","stop","offline"}:
+        return v.get("status") in {"stopped","starting","live"}
+    return v.get("status")=="live" and v.get("hot_swap") is True and v.get("encoder_pid") and v.get("visual_status")=="streaming"
+
 payload={
-    "ok":all(v.get("status")=="live" and v.get("hot_swap") is True and v.get("encoder_pid") and v.get("visual_status")=="streaming" for v in services.values()),
+    "ok":all(acceptable(slot,v) for slot,v in services.items()),
+    "profile_version":"stable-start-v2-20261003",
     "verified_at":datetime.now(timezone.utc).isoformat().replace("+00:00","Z"),
     "services":services,
 }
