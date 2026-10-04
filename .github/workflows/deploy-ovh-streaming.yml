@@ -1,66 +1,14 @@
-name: Deploy Peter Lofi OVH Streaming
+name: OVH Streaming Deployment — Local Agent Owned
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "ovh-streaming/**"
-      - ".github/workflows/deploy-ovh-streaming.yml"
-
-concurrency:
-  group: peter-lofi-ovh-production
-  cancel-in-progress: false
 
 jobs:
-  deploy:
+  notice:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Validate OVH access only
-        shell: bash
-        env:
-          OVH_HOST: ${{ secrets.OVH_HOST }}
-          OVH_USER: ${{ secrets.OVH_USER }}
-          OVH_SSH_PRIVATE_KEY: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
+      - name: OVH-local deployment owns production
         run: |
-          set -euo pipefail
-          for name in OVH_HOST OVH_USER OVH_SSH_PRIVATE_KEY; do
-            if [ -z "${!name:-}" ]; then
-              echo "::error::Missing required OVH access secret: $name"
-              exit 1
-            fi
-          done
-
-      - name: Prepare SSH
-        shell: bash
-        env:
-          OVH_HOST: ${{ secrets.OVH_HOST }}
-          OVH_SSH_PRIVATE_KEY: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
-        run: |
-          set -euo pipefail
-          install -d -m 700 ~/.ssh
-          printf '%s\n' "$OVH_SSH_PRIVATE_KEY" > ~/.ssh/peter_lofi_ovh
-          chmod 600 ~/.ssh/peter_lofi_ovh
-          ssh-keyscan -H "$OVH_HOST" >> ~/.ssh/known_hosts
-
-      - name: Deploy from Git to OVH and preserve OVH credentials
-        shell: bash
-        env:
-          OVH_HOST: ${{ secrets.OVH_HOST }}
-          OVH_USER: ${{ secrets.OVH_USER }}
-        run: |
-          set -euo pipefail
-          SSH="ssh -i ~/.ssh/peter_lofi_ovh -o BatchMode=yes $OVH_USER@$OVH_HOST"
-          # bootstrap.sh pulls origin/main inside the VPS. Streaming credentials
-          # remain only in the existing OVH .env and are never copied from GitHub.
-          $SSH 'bash -s' < ovh-streaming/bootstrap.sh
-          $SSH 'cd /home/ubuntu/theofficemusic/ovh-streaming && (docker compose ps || docker-compose ps)'
-          $SSH 'curl --fail --silent --show-error http://127.0.0.1:8787/health'
-
-      - name: Remove temporary SSH material
-        if: always()
-        run: rm -f ~/.ssh/peter_lofi_ovh
+          echo "Production streaming credentials and SSH access are intentionally OVH-only."
+          echo "GitHub Actions no longer deploys or recreates live publishers."
+          echo "Use the authenticated MediaForge deploy agent running on the OVH host."
