@@ -1,0 +1,241 @@
+name: Peter Lofi — Emergency Private UI Test Encoder
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/private-ui-test-github-encoder.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  stream:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Load current test metadata and media references
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, pathlib, re
+          diag=json.loads(pathlib.Path("control/diagnostics/private-ui-test.json").read_text(encoding="utf-8"))
+          src=pathlib.Path(".github/workflows/private-ui-test-ovh.yml").read_text(encoding="utf-8")
+          keys=["BACKGROUND_URL","FIGMA_HEADER_URL","FIGMA_WEB_URL","FIGMA_ICON_URL","FONT_CARRIER_URL"]
+          vals={}
+          for key in keys:
+              m=re.search(rf'^\s*{key}: "([^"]+)"',src,re.M)
+              if not m:
+                  raise SystemExit(f"Missing {key}")
+              vals[key]=m.group(1)
+          with open(os.environ["GITHUB_ENV"],"a",encoding="utf-8") as out:
+              out.write(f'UI_BROADCAST_ID={diag["youtube_broadcast_id"]}\n')
+              out.write(f'UI_STREAM_ID={diag["youtube_stream_id"]}\n')
+              for k,v in vals.items():
+                  out.write(f"{k}={v}\n")
+          print("broadcast",diag["youtube_broadcast_id"])
+          print("stream",diag["youtube_stream_id"])
+          PY
+
+      - name: Resolve YouTube ingest and preserve UNLISTED visibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"],
+          )
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+          sid=os.environ["UI_STREAM_ID"]
+          bid=os.environ["UI_BROADCAST_ID"]
+          s=(yt.liveStreams().list(part="cdn,status",id=sid).execute().get("items") or [None])[0]
+          b=(yt.liveBroadcasts().list(part="status,snippet",id=bid).execute().get("items") or [None])[0]
+          if not s or not b:
+              raise RuntimeError("Test stream/broadcast not found")
+          info=(s.get("cdn") or {}).get("ingestionInfo") or {}
+          url=info.get("rtmpsIngestionAddress") or info.get("ingestionAddress")
+          key=info.get("streamName")
+          if not url or not key:
+              raise RuntimeError("Missing YouTube ingest credentials")
+          privacy=(b.get("status") or {}).get("privacyStatus")
+          print("Current privacy:",privacy)
+          print("Current lifecycle:",(b.get("status") or {}).get("lifeCycleStatus"))
+          if privacy!="unlisted":
+              # Keep the user's selected visibility.
+              yt.liveBroadcasts().update(
+                  part="status",
+                  body={"id":bid,"status":{"privacyStatus":"unlisted","selfDeclaredMadeForKids":False}},
+              ).execute()
+              print("Visibility restored to unlisted")
+          with open(os.environ["GITHUB_ENV"],"a",encoding="utf-8") as out:
+              out.write(f"STREAM_URL_RESOLVED={url}\n")
+              out.write(f"STREAM_KEY_RESOLVED={key}\n")
+          PY
+
+      - name: Prepare exact Figma assets and SUPERSTAR font
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /app /state/youtube-ui-test /state/ui-test-assets /config
+          sudo chown -R "$USER:$USER" /app /state /config
+          cp ovh-streaming/app/audio_engine.py /app/audio_engine.py
+          cp ovh-streaming/app/visual_engine.py /app/visual_engine.py
+          cp ovh-streaming/app/stream_core.py /app/stream_core.py
+          cp ovh-streaming/stations/youtube-deep-house.json /config/youtube-deep-house.json
+
+          curl -fL --retry 4 "$FIGMA_HEADER_URL" -o /state/ui-test-assets/latest-subscriptions.png
+          curl -fL --retry 4 "$FIGMA_WEB_URL" -o /state/ui-test-assets/spider-web.png
+          curl -fL --retry 4 "$FIGMA_ICON_URL" -o /state/ui-test-assets/subscriber-icon.png
+          curl -fL --retry 4 "$FONT_CARRIER_URL" -o /tmp/font-carrier.png
+
+          python - <<'PY'
+          import subprocess, pathlib
+          raw=subprocess.check_output([
+              "ffmpeg","-v","error","-i","/tmp/font-carrier.png",
+              "-f","rawvideo","-pix_fmt","rgb24","pipe:1"
+          ])
+          size=int.from_bytes(raw[:4],"big")
+          data=raw[4:4+size]
+          if len(data)!=size or size<1000:
+              raise RuntimeError("SUPERSTAR carrier payload invalid")
+          pathlib.Path("/state/ui-test-assets/superstar.ttf").write_bytes(data)
+          print("SUPERSTAR bytes:",size)
+          PY
+
+          python - <<'PY'
+          import json, pathlib, datetime
+          p=pathlib.Path("/state/youtube-ui-test/desired.json")
+          p.write_text(json.dumps({
+              "desired":"live",
+              "runtime":"github-test-fallback",
+              "runtime_slot":"youtube-ui-test",
+              "session_id":"figma-ui-test",
+              "title":"Peter Lofi — Figma Interactive Layout Test",
+              "loop_url":"__BACKGROUND__",
+              "generation":1,
+              "visual_revision":1,
+              "updated_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+          },indent=2)+"\n",encoding="utf-8")
+          PY
+          python - <<'PY'
+          import os, pathlib
+          p=pathlib.Path("/state/youtube-ui-test/desired.json")
+          s=p.read_text(encoding="utf-8").replace("__BACKGROUND__",os.environ["BACKGROUND_URL"])
+          p.write_text(s,encoding="utf-8")
+          PY
+
+      - name: Start isolated test encoder
+        shell: bash
+        env:
+          STREAM_URL: ${{ env.STREAM_URL_RESOLVED }}
+          STREAM_KEY: ${{ env.STREAM_KEY_RESOLVED }}
+          LOOP_URL: ${{ env.BACKGROUND_URL }}
+          PLAYLIST_FILE: /config/youtube-deep-house.json
+          VIDEO_FPS: "30"
+          VIDEO_BITRATE_KBPS: "4500"
+          VIDEO_BUFSIZE_KBPS: "9000"
+          AUDIO_BITRATE_KBPS: "160"
+          VIDEO_PROFILE: "main"
+          VIDEO_PRESET: "superfast"
+          STREAM_PROFILE_VERSION: "ui-test-github-fallback-v1"
+          STARTUP_PREROLL_SECONDS: "1.5"
+          AUDIO_READY_TIMEOUT_SECONDS: "120"
+          VIDEO_UDP_PORT: "19140"
+          BOOTSTRAP_SESSION_ID: "figma-ui-test"
+          BOOTSTRAP_TITLE: "Peter Lofi — Figma Interactive Layout Test"
+        run: |
+          set -euo pipefail
+          nohup python /app/stream_core.py --platform youtube-ui-test > /tmp/ui-test-controller.log 2>&1 &
+          echo $! > /tmp/ui-test-controller.pid
+          sleep 20
+          echo "Controller PID $(cat /tmp/ui-test-controller.pid)"
+          cat /state/youtube-ui-test/health.json || true
+          cat /state/youtube-ui-test/visual-health.json || true
+          cat /state/youtube-ui-test/audio-health.json || true
+          cat /state/youtube-ui-test/now-playing.json || true
+
+      - name: Wait until YouTube is ACTIVE and LIVE
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,time,json
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"],
+          )
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+          bid=os.environ["UI_BROADCAST_ID"]; sid=os.environ["UI_STREAM_ID"]
+          final=None
+          for i in range(72):
+              s=(yt.liveStreams().list(part="status",id=sid).execute().get("items") or [None])[0]
+              b=(yt.liveBroadcasts().list(part="status",id=bid).execute().get("items") or [None])[0]
+              ss=((s or {}).get("status") or {}).get("streamStatus")
+              bs=(b or {}).get("status") or {}
+              final={"streamStatus":ss,"lifeCycleStatus":bs.get("lifeCycleStatus"),"privacyStatus":bs.get("privacyStatus")}
+              print(final,flush=True)
+              if ss=="active" and bs.get("lifeCycleStatus")=="live":
+                  if bs.get("privacyStatus")!="unlisted":
+                      raise RuntimeError(f"Live active but visibility drifted: {final}")
+                  print("LIVE_OK",json.dumps(final),flush=True)
+                  raise SystemExit(0)
+              time.sleep(5)
+          raise RuntimeError(f"Did not become active/live: {final}")
+          PY
+
+      - name: Keep test live running
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Peter Lofi Figma test is online. Keeping encoder alive."
+          while kill -0 "$(cat /tmp/ui-test-controller.pid)" 2>/dev/null; do
+            sleep 30
+            python - <<'PY'
+          import json, pathlib
+          for n in ["health.json","now-playing.json","visual-health.json","audio-health.json"]:
+              p=pathlib.Path("/state/youtube-ui-test")/n
+              if p.exists():
+                  try:
+                      d=json.loads(p.read_text(encoding="utf-8"))
+                      print(n, json.dumps(d,ensure_ascii=False)[:1200], flush=True)
+                  except Exception as e:
+                      print(n,e,flush=True)
+          PY
+          done
+          echo "Encoder exited unexpectedly"
+          cat /tmp/ui-test-controller.log || true
+          exit 1
