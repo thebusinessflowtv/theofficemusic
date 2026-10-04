@@ -1,0 +1,195 @@
+{
+  "checked_at": "2026-10-04T00:38:52Z",
+  "kick": {
+    "status": "live",
+    "updated_at": "2026-10-03T18:22:25.580618Z",
+    "fps": 30,
+    "video_bitrate_kbps": 5000,
+    "restarts": 1,
+    "hot_swap": true,
+    "visual_revision": 5,
+    "playlist_key": null,
+    "playlist_track_count": 36,
+    "dj_import": {},
+    "now_playing": {
+      "state": "playing",
+      "track_id": "gaming-radio-07",
+      "title": "Cyber Run",
+      "started_at": "2026-10-03T18:18:13.108700Z"
+    }
+  },
+  "twitch": {
+    "status": "live",
+    "updated_at": "2026-10-03T18:22:25.477549Z",
+    "fps": 30,
+    "video_bitrate_kbps": 4500,
+    "restarts": 1,
+    "hot_swap": true,
+    "visual_revision": 4,
+    "playlist_key": "twitch-dj-mixed",
+    "playlist_track_count": 71,
+    "dj_import": {
+      "status": "ready",
+      "updated_at": "2026-10-03T18:11:40.271548Z",
+      "playlist_key": "twitch-dj-mixed",
+      "original_tracks": 36,
+      "commercial_tracks": 35,
+      "track_count": 71,
+      "duplicates_ignored": 1,
+      "missing_hashes": [],
+      "rejected_files": [
+        {
+          "filename": "._Adam Lambert - Ghost Town (SPOTISAVER).mp3",
+          "sha256": "0b6aed918ef63b47f1c2fc1aa4ea75f38b5f1def41fe4a2c54e77fb6ea4b474d"
+        },
+        {
+          "filename": "._Alessia Cara - Here (SPOTISAVER).mp3",
+          "sha256": "c94cdcb25ca25a5bc7542f37927a687d8ced1f0543b3a8ba2674457b3dc8ddca"
+        },
+        {
+          "filename": "._Black Coast, M. Maggie, Lucian - Trndsttr (feat. M. Maggie) - Lucian Remix (SPOTISAVER).mp3",
+          "sha256": "7cc42f7995d930d3091cb55369e6af36069de675498582147f1d2e243457e88c"
+        },
+        {
+          "filename": "._Cracked Wall - VASSY.mp3",
+          "sha256": "f31168a23ed2ce5e4960b916ee631dc50eb05d3b87de5178fc00dde92b260034"
+        },
+        {
+          "filename": "._Daughter - Medicine (SPOTISAVER).mp3",
+          "sha256": "ae52170b5192ab794bfb3f3c79d8668d417eebc0bd760ff04558288c362d56ed"
+        },
+        {
+          "filename": "._Dazzle - Oh Wonder.mp3",
+          "sha256": "e02ab8060a73addb38ceaee205dd7b92a1b6e9704564c315e5d81637397be58d"
+        },
+        {
+          "filename": "._Flume, Tove Lo, ILLENIUM - Say It (Illenium Remix) (SPOTISAVER).mp3",
+          "sha256": "def52e927b596082a152db0b6975a7877e50ae424bb481017956ffd2ed10228a"
+        },
+        {
+          "filename": "._Halsey, R3HAB - Now Or Never - R3hab Remix (SPOTISAVER).mp3",
+          "sha256": "703aca6a705c3d0733e25ee4f70807dcf87f10da0a8aabfbfd7792e6deca06e0"
+        },
+        {
+          "filename": "._Keep Me from You (feat. ODA) - MORTEN.mp3",
+          "sha256": "4ee450f15258632850596e75f0742c2f54df700c35fe9f7094993c972669ae36"
+        },
+        {
+          "filename": "._Kiiara, Jai Wolf - Feels - Jai Wolf Remix (SPOTISAVER).mp3",
+          "sha256": "df60e2698a1641f28be291e048767c0f9f7a5f8067ba6a12b725e302ca2af87b"
+        },
+        {
+          "filename": "._Louis The Child, K.Flay - It's Strange (feat. K.Flay) (SPOTISAVER) (1).mp3",
+          "sha256": "a2f3a13f1dbde71457ef51135c2545ecb9b81e0d9a62036b198b549d1cca2b3d"
+        },
+        {
+          "filename": "._Louis The Child, K.Flay - It's Strange (feat. K.Flay) (SPOTISAVER).mp3",
+          "sha256": "192d250733291dd94e340094f7ca1225244697dcc65a2b4312b6befa6ba3918b"
+        },
+        {
+          "filename": "._Love On My Mind - Lucas & Steve.mp3",
+          "sha256": "d0a7120ae8d11f6c2d9ab3293e10f3c81df5e7ec0763aa9702a5e55e09cddc21"
+        },
+        {
+          "filename": "._Lush Life - Zara Larsson.mp3",
+          "sha256": "c867ef5e4125a74554d4444904daf48e49d1b452ab18747839b55422478a8516"
+        },
+        {
+          "filename": "._Milkman, MisterWives - Reflections (Milkman Remix) (SPOTISAVER).mp3",
+          "sha256": "8820f8d1ea7e92cc507e90a43ebb437f7afa8af5e04dbdc760864f6982c94bec"
+        },
+        {
+          "filename": "._NERO - Two Minds (SPOTISAVER).mp3",
+          "sha256": "e1535f46347d372891e9dc4047505fc1ad4733c9d3aa622c174581ef3dfe88e7"
+        },
+        {
+          "filename": "._Never Forget You - Mark Ralph Club Mix - Zara Larsson.mp3",
+          "sha256": "7d624e65ca3719a3a7e5de614d33276795aa10b18417e4e2d33862d7f4a64beb"
+        },
+        {
+          "filename": "._Niykee Heaton - Infinity (SPOTISAVER).mp3",
+          "sha256": "d625d660a9c905d72b5fb6314d572430538b8310388f19910abec27814d59ce0"
+        },
+        {
+          "filename": "._ODESZA, Monsoonsiren - Memories That You Call (SPOTISAVER).mp3",
+          "sha256": "7fb342df23dfd0caac6b75a56507b30d0778e1c6b9f0bcf8e7fa5bd939166234"
+        },
+        {
+          "filename": "._Oh Wonder - All We Do (SPOTISAVER).mp3",
+          "sha256": "149bb04f64312524c3b8e2ea95d183401dec016a0bb7342036955621e53d235d"
+        },
+        {
+          "filename": "._Oh Wonder - Body Gold (SPOTISAVER).mp3",
+          "sha256": "cf4ea1e3ab79a4f5df7b7f441e585f55ca4eb6b3addb3d12a5fa5e70382d106f"
+        },
+        {
+          "filename": "._Oh Wonder - Livewire (SPOTISAVER).mp3",
+          "sha256": "a604443acc2087aa5da61ce4989ea24bb880ef1985e095a65789abfd7f275f13"
+        },
+        {
+          "filename": "._Oh Wonder - Lose It (SPOTISAVER).mp3",
+          "sha256": "8ed1cecb7b6d7a7cd77a8cd69301fb2755e85bf94d6869aa0befc2e0de46ced4"
+        },
+        {
+          "filename": "._Oh Wonder - Without You (SPOTISAVER).mp3",
+          "sha256": "fbd7a00773c9fc5f0a0d03d634b5684c376ce6aa788ca829765ae7f5cced66cb"
+        },
+        {
+          "filename": "._Perfect Places - Lorde.mp3",
+          "sha256": "34e969a7edf3c9db274e151e5c420e75bd77a5ba573bb1efd4e1f8e9562ff03a"
+        },
+        {
+          "filename": "._Phaeleh, Soundmouse - Afterglow (SPOTISAVER).mp3",
+          "sha256": "dccd1ce7b1f620d4f2686352bbd4bf03ebe3be7b0f71d1e1f705acc0c478c088"
+        },
+        {
+          "filename": "._Phoebe Ryan - Mine (SPOTISAVER).mp3",
+          "sha256": "ca69bac5045efe939029a0bfc4255f2d91a7754374f09e4edc9dd6807b0c44af"
+        },
+        {
+          "filename": "._Porter Robinson - Sad Machine (SPOTISAVER).mp3",
+          "sha256": "9ff1f0432f1e7e12b850e6b058e06d9267e7d17fb544c1dd27eca605a054aadb"
+        },
+        {
+          "filename": "._Runaway (U & I) - Galantis.mp3",
+          "sha256": "5796995834037cba86bb2c494b6810bc79665418f9378223ee55516a1d30ccf8"
+        },
+        {
+          "filename": "._San Holo - Light (SPOTISAVER).mp3",
+          "sha256": "5abedc97954a60cac424baeae60bb922dfd6c751353cdd2041e2ef593dd1d794"
+        },
+        {
+          "filename": "._Smoke Signals - Hotel Garuda.mp3",
+          "sha256": "22012c61755dfef719c351431598221f3007e4cff5f483fd75b1263991c1afd8"
+        },
+        {
+          "filename": "._Stranded - smle.mp3",
+          "sha256": "2218518ceb70cc269d653dd42e3ab964760e274ca59508cc822fd6750fcc7aec"
+        },
+        {
+          "filename": "._Symphony (feat. Zara Larsson) - R3hab Remix - Clean Bandit.mp3",
+          "sha256": "6401bfdaf0681c4dddd45621dbba84500b28b59cc388872d66b6e38b3fe0f4e2"
+        },
+        {
+          "filename": "._Technicolour Beat - Oh Wonder.mp3",
+          "sha256": "10a60b3204771f68f9d108b3a7ab8f6ba4879d059203c68089788a3ad5428505"
+        },
+        {
+          "filename": "._The Chainsmokers, ROZES, Zaxx - Roses (feat. ROZES) - Zaxx Remix (SPOTISAVER).mp3",
+          "sha256": "8b8f359369a8408850fb067c1901808ff6e31f8f024851de005d608e99766fb0"
+        },
+        {
+          "filename": "._Veorra - Lay Here (SPOTISAVER).mp3",
+          "sha256": "6613db9b04a6a00b93d55b8bb07dc73f5b9ec90edd0fdb5727e3a34ae018e58c"
+        }
+      ],
+      "rtmp_restart": false
+    },
+    "now_playing": {
+      "state": "playing",
+      "track_id": "twitch-dj-46ac4e28e74d",
+      "title": "All We Do",
+      "started_at": "2026-10-03T18:21:29.742878Z"
+    }
+  }
+}
