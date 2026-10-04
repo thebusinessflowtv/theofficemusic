@@ -1,6 +1,7 @@
 name: Peter Lofi — Emergency Private UI Test Encoder
 # retry-after-audio-ready-fix
 # svg-text-layer-fix
+# centered-current-music-message-v2
 
 on:
   push:
@@ -32,6 +33,12 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg librsvg2-bin
           python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Validate corrected visual engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile ovh-streaming/app/visual_engine.py ovh-streaming/app/stream_core.py
 
       - name: Load current test metadata and media references
         shell: bash
@@ -119,7 +126,9 @@ jobs:
           cp ovh-streaming/ui-test-assets/ARANHA.svg /state/ui-test-assets/subscriber-icon.svg
           rsvg-convert -w 448 -h 161 /state/ui-test-assets/latest-subscriptions-frame.svg \
             -o /state/ui-test-assets/latest-subscriptions-frame.png
-          rsvg-convert -w 21 -h 28 /state/ui-test-assets/subscriber-icon.svg \
+          # Rasterize the exact uploaded SVG at 4x resolution, then the visual
+          # engine downsamples it with Lanczos to preserve crisp edges.
+          rsvg-convert -w 84 -h 112 /state/ui-test-assets/subscriber-icon.svg \
             -o /state/ui-test-assets/subscriber-icon.png
 
           curl -fL --retry 4 "$TEIA_URL" -o /state/ui-test-assets/spider-web.png
