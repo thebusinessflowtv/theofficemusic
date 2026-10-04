@@ -222,6 +222,32 @@ def backup_image(service):
         return ""
 
 
+def ensure_control_plane_containers():
+    """Keep the non-streaming MediaForge control plane alive.
+
+    This never touches Kick/Twitch/YouTube publisher containers.
+    Docker restart policies do not recover a container that was created but
+    never started, so explicitly start control-plane containers in that state.
+    """
+    results={}
+    for name in ("mediaforge-api-ovh","mediaforge-web-ovh"):
+        try:
+            state=run(["docker","inspect","-f","{{.State.Status}}",name],timeout=20).strip().lower()
+        except Exception as exc:
+            results[name]={"status":"missing","error":str(exc)[:180]}
+            continue
+        if state!="running":
+            try:
+                run(["docker","start",name],timeout=60)
+                state=run(["docker","inspect","-f","{{.State.Status}}",name],timeout=20).strip().lower()
+                results[name]={"status":state,"recovered":True}
+            except Exception as exc:
+                results[name]={"status":state,"recovered":False,"error":str(exc)[:240]}
+        else:
+            results[name]={"status":"running","recovered":False}
+    return results
+
+
 def publish_mediaforge_control_plane():
     """Publish MediaForge UI + local API without touching RTMP publisher containers."""
     before={slot:health(slot) for slot in SLOTS}
@@ -258,7 +284,13 @@ def publish_mediaforge_control_plane():
 
     compose=str(CONTROL_ROOT/"docker-compose.yml")
     run(["docker","compose","-f",compose,"build","api"],timeout=1800)
-    run(["docker","compose","-f",compose,"up","-d","--no-deps","--force-recreate","api","web"],timeout=300)
+
+    # The web container serves /control/site through a bind mount, so copying
+    # static files does NOT require recreating Caddy. Recreate only the API when
+    # its image actually changed. Never use --force-recreate here: an interrupted
+    # compose transaction could leave the API in Docker's "created" state.
+    run(["docker","compose","-f",compose,"up","-d","--no-deps","api"],timeout=300)
+    ensure_control_plane_containers()
 
     # Wait for the local MediaForge API, then seed the new DJ candidate manifest
     # into local_config because LOCAL_RUNTIME deliberately does not fetch GitHub.
@@ -713,6 +745,7 @@ def watchdog_tick():
         "mode":"local-ovh",
         "cloudflare_required":False,
         "container_restarts_allowed":False,
+        "control_plane":ensure_control_plane_containers(),
         "services":{},
     }
     for slot in SLOTS:
