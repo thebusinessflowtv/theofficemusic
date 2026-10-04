@@ -1,0 +1,53 @@
+name: Peter Lofi — Snapshot Private UI Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/private-ui-test-status.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ask current host agent for isolated UI-test snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          BEFORE="$(date -u +%s)"
+          curl -fsS -X POST "$BASE/api/ops/20261003-live-stability/host-agent?v=11&id=ops-ui-test-snapshot-v1" > /tmp/request.json
+          for I in $(seq 1 80); do
+            curl -fsS "$BASE/api/ops/20261003-live-stability/status" > /tmp/status.json
+            ST="$(jq -r '[.commands[]? | select(.action=="deploy_host_agent")] | sort_by(.created_at) | last | .status // empty' /tmp/status.json)"
+            echo "snapshot command=$ST"
+            [ "$ST" = "completed" ] && break
+            [ "$ST" = "failed" ] && break
+            sleep 3
+          done
+          cat /tmp/status.json
+
+      - name: Persist latest host result
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p control/diagnostics
+          jq '{
+            checked_at:(now|todateiso8601),
+            latest_host_agent:([.commands[]? | select(.action=="deploy_host_agent")] | sort_by(.created_at) | last)
+          }' /tmp/status.json > control/diagnostics/private-ui-test-snapshot.json
+          cat control/diagnostics/private-ui-test-snapshot.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/private-ui-test-snapshot.json
+          git commit -m "ui-test: snapshot isolated OVH runtime state" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
