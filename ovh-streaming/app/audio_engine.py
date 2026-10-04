@@ -765,7 +765,7 @@ class AudioEngine:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--platform", required=True, choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy"])
+    ap.add_argument("--platform", required=True, choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy", "youtube-ui-test"])
     ap.add_argument("--playlist-file", required=True)
     ap.add_argument("--state-dir", default="/state")
     args = ap.parse_args()
