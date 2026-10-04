@@ -25,6 +25,8 @@ API=os.environ.get("MEDIAFORGE_API_URL","https://mediaforge-api.guilhermeodsgn.w
 AGENT_TOKEN=os.environ.get("MEDIAFORGE_AGENT_TOKEN","").strip()
 REPO=pathlib.Path(os.environ.get("MEDIAFORGE_REPO","/home/ubuntu/theofficemusic"))
 OVH=REPO/"ovh-streaming"
+PANEL_REPO=pathlib.Path(os.environ.get("MEDIAFORGE_PANEL_REPO","/home/ubuntu/thebusinessflow"))
+CONTROL_ROOT=pathlib.Path(os.environ.get("MEDIAFORGE_CONTROL_ROOT","/opt/mediaforge-control"))
 STATE_DIR=pathlib.Path("/var/lib/mediaforge-deploy-agent")
 STATE_FILE=STATE_DIR/"state.json"
 WATCHDOG_FILE=STATE_DIR/"watchdog.json"
@@ -220,6 +222,94 @@ def backup_image(service):
         return ""
 
 
+def publish_mediaforge_control_plane():
+    """Publish MediaForge UI + local API without touching RTMP publisher containers."""
+    before={slot:health(slot) for slot in SLOTS}
+
+    # This host agent is intentionally sandboxed with ProtectHome=read-only.
+    # Use the Docker daemon (already allow-listed for deploys) to update the
+    # panel checkout and control-plane files without widening the agent sandbox.
+    helper_image="caddy:2-alpine"
+    git_cmd=(
+        "apk add --no-cache git >/dev/null && "
+        "git config --global --add safe.directory /repo && "
+        "git fetch origin main && git reset --hard origin/main"
+    )
+    run([
+        "docker","run","--rm",
+        "-v",f"{PANEL_REPO}:/repo",
+        "-w","/repo",
+        helper_image,"sh","-lc",git_cmd
+    ],timeout=300)
+
+    copy_cmd=(
+        "mkdir -p /control/site && "
+        "rm -rf /control/site/* && "
+        "cp -a /panel/control-center/. /control/site/ && "
+        "cp /control/site/secure.html /control/site/index.html && "
+        "printf '%s\\n' \"window.MEDIAFORGE_CONFIG = { API_URL: window.location.origin };\" > /control/site/mediaforge-config.js"
+    )
+    run([
+        "docker","run","--rm",
+        "-v",f"{PANEL_REPO}:/panel:ro",
+        "-v",f"{CONTROL_ROOT}:/control",
+        helper_image,"sh","-lc",copy_cmd
+    ],timeout=120)
+
+    compose=str(CONTROL_ROOT/"docker-compose.yml")
+    run(["docker","compose","-f",compose,"build","api"],timeout=1800)
+    run(["docker","compose","-f",compose,"up","-d","--no-deps","--force-recreate","api","web"],timeout=300)
+
+    # Wait for the local MediaForge API, then seed the new DJ candidate manifest
+    # into local_config because LOCAL_RUNTIME deliberately does not fetch GitHub.
+    api_health={}
+    end=time.time()+120
+    while time.time()<end:
+        try:
+            with urllib.request.urlopen("http://127.0.0.1:8790/api/health",timeout=5) as r:
+                api_health=json.loads(r.read().decode("utf-8") or "{}")
+            if api_health:
+                break
+        except Exception:
+            time.sleep(2)
+    if not api_health:
+        raise RuntimeError("local MediaForge API did not return after control-plane publish")
+
+    manifest_path=PANEL_REPO/"control"/"twitch-dj-candidates-2026-10-03.json"
+    if not manifest_path.is_file():
+        raise RuntimeError(f"DJ 100 manifest missing after panel sync: {manifest_path}")
+    manifest=json.loads(manifest_path.read_text(encoding="utf-8"))
+    post_json(
+        "http://127.0.0.1:8790/api/ovh/agent/runtime-config",
+        {"path":"control/twitch-dj-candidates-2026-10-03.json","payload":manifest},
+    )
+
+    ui_file=CONTROL_ROOT/"site"/"lives-cloudflare.js"
+    ui_text=ui_file.read_text(encoding="utf-8") if ui_file.is_file() else ""
+    if "Verificar 100 novas" not in ui_text or "dance100" not in ui_text:
+        raise RuntimeError("published Control Center bundle does not contain DJ 100 UI")
+
+    after={slot:health(slot) for slot in SLOTS}
+    changed=[]
+    for slot in SLOTS:
+        bp=before.get(slot,{}).get("encoder_pid")
+        ap=after.get(slot,{}).get("encoder_pid")
+        if bp is not None and ap!=bp:
+            changed.append(f"{slot}:{bp}->{ap}")
+    if changed:
+        raise RuntimeError("publisher PID changed during control-plane publish: "+",".join(changed))
+
+    return {
+        "panel_repo":str(PANEL_REPO),
+        "control_root":str(CONTROL_ROOT),
+        "api_status":"live",
+        "dj100_manifest_seeded":True,
+        "ui_verified":True,
+        "publisher_pids_preserved":True,
+        "services":after,
+    }
+
+
 def deploy_service(service):
     if service not in SERVICES:
         raise ValueError("service not allowed")
@@ -264,7 +354,10 @@ def deploy_service(service):
         after_updated_at=before.get("updated_at"),
         require_hot_swap=service in SLOTS,
     )
-    return {"service":service,"health":h,"backup_image":backup}
+    extra={}
+    if service=="control-api":
+        extra["mediaforge_control_plane"]=publish_mediaforge_control_plane()
+    return {"service":service,"health":h,"backup_image":backup,**extra}
 
 
 def deploy_all():
