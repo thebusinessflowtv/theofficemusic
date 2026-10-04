@@ -18,7 +18,7 @@ jobs:
       - name: Inspect actual kernel
         run: |
           set -uo pipefail
-          REF="$KAGGLE_USERNAME/peter-lofi-gaming-reference-37168340038"
+          REF="$KAGGLE_USERNAME/peter-lofi-dj30-1-37175734843-1"
           kaggle kernels status "$REF"
           kaggle kernels logs "$REF" 2>&1 | tail -n 180
           mkdir -p recovered
