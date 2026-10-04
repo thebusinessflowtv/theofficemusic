@@ -1,0 +1,10 @@
+{
+  "batch_id": "gaming-twitch-dj-30-20261004",
+  "tracks": 30,
+  "seconds_per_track": 300,
+  "energy": "very high",
+  "reference": "twitch-dj-mixed",
+  "destination": "gaming-radio",
+  "requested_by": "owner",
+  "action": "start"
+}
