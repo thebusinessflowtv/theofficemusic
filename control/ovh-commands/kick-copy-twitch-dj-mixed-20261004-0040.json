@@ -1,0 +1,930 @@
+{
+  "id": "kick-copy-twitch-dj-mixed-20261004-0040",
+  "action": "set_playlist",
+  "platform": "kick",
+  "runtime": "ovh",
+  "runtime_slot": "kick",
+  "session_id": "2c2b6335-7872-4a9c-af69-cee17f10bedc",
+  "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
+  "playlist_key": "kick-dj-mixed-independent",
+  "tracks": [
+    {
+      "id": "kick-original-01",
+      "title": "Respawn Grid",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/01-01-s1-01-respawn-grid.mp3",
+      "position": 1,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-02",
+      "title": "Velocity Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/02-02-s1-02-velocity-lobby.mp3",
+      "position": 2,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-03",
+      "title": "Midnight Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/03-03-s1-03-midnight-lobby.mp3",
+      "position": 3,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-04",
+      "title": "Checkpoint Flow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/04-04-s1-04-checkpoint-flow.mp3",
+      "position": 4,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-05",
+      "title": "Cyber Circuit",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/05-05-s1-05-cyber-circuit.mp3",
+      "position": 5,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-06",
+      "title": "Level Session",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/06-06-s1-06-level-session.mp3",
+      "position": 6,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-07",
+      "title": "Cyber Run",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/07-01-s1-07-cyber-run.mp3",
+      "position": 7,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-08",
+      "title": "Pixel Grid 18",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/08-02-s1-08-pixel-grid-18.mp3",
+      "position": 8,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-09",
+      "title": "Loading Match",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/09-03-s1-09-loading-match.mp3",
+      "position": 9,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-10",
+      "title": "Neon Arena",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/10-04-s1-10-neon-arena.mp3",
+      "position": 10,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-11",
+      "title": "Velocity Session",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/11-05-s1-11-velocity-session.mp3",
+      "position": 11,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-12",
+      "title": "Night Flow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/12-06-s1-12-night-flow.mp3",
+      "position": 12,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-13",
+      "title": "Level Zone",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/13-01-s1-13-level-zone.mp3",
+      "position": 13,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-14",
+      "title": "Velocity Session 33",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/14-02-s1-14-velocity-session-33.mp3",
+      "position": 14,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-15",
+      "title": "Pixel Match 36",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/15-03-s1-15-pixel-match-36.mp3",
+      "position": 15,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-16",
+      "title": "Cyber Mode",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/16-04-s1-16-cyber-mode.mp3",
+      "position": 16,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-17",
+      "title": "Night Circuit",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/17-05-s1-17-night-circuit.mp3",
+      "position": 17,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-18",
+      "title": "Loading Session",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/18-06-s1-18-loading-session.mp3",
+      "position": 18,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-19",
+      "title": "Arcade Mode",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/19-01-s2-01-arcade-mode.mp3",
+      "position": 19,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-20",
+      "title": "Respawn Grid",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/20-02-s2-02-respawn-grid.mp3",
+      "position": 20,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-21",
+      "title": "Neon Session",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/21-03-s2-03-neon-session.mp3",
+      "position": 21,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-22",
+      "title": "Cyber Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/22-04-s2-04-cyber-lobby.mp3",
+      "position": 22,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-23",
+      "title": "Cyber Lobby 11",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/23-05-s2-05-cyber-lobby-11.mp3",
+      "position": 23,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-24",
+      "title": "Velocity Lobby",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/24-06-s2-06-velocity-lobby.mp3",
+      "position": 24,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-25",
+      "title": "Checkpoint Drive",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/25-01-s2-07-checkpoint-drive.mp3",
+      "position": 25,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-26",
+      "title": "Cyber Run 18",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/26-02-s2-08-cyber-run-18.mp3",
+      "position": 26,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-27",
+      "title": "Checkpoint Match",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/27-03-s2-09-checkpoint-match.mp3",
+      "position": 27,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-28",
+      "title": "Respawn Run",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/28-04-s2-10-respawn-run.mp3",
+      "position": 28,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-29",
+      "title": "Level Quest",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/29-05-s2-11-level-quest.mp3",
+      "position": 29,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-30",
+      "title": "Checkpoint Flow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/30-06-s2-12-checkpoint-flow.mp3",
+      "position": 30,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-31",
+      "title": "Level Zone",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/31-01-s2-13-level-zone.mp3",
+      "position": 31,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-32",
+      "title": "Velocity Mode",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/32-02-s2-14-velocity-mode.mp3",
+      "position": 32,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-33",
+      "title": "Digital Mode",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/33-03-s2-15-digital-mode.mp3",
+      "position": 33,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-34",
+      "title": "Arcade Zone",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/34-04-s2-16-arcade-zone.mp3",
+      "position": 34,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-35",
+      "title": "Velocity Zone",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/35-05-s2-17-velocity-zone.mp3",
+      "position": 35,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-original-36",
+      "title": "Checkpoint Run",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/36-06-s2-18-checkpoint-run.mp3",
+      "position": 36,
+      "duration_seconds": 300,
+      "source": "peter_lofi_original"
+    },
+    {
+      "id": "kick-dj-a94e607a4a3f",
+      "title": "Truth or Dare",
+      "artists": "R3HAB, Little Daylight",
+      "url": "file:///state/twitch-dj-audio/a94e607a4a3f6d075bd22b6b6c2025f3369f3dedbdfe7cd5ad5b113e7ca51b76.mp3",
+      "position": 37,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "a94e607a4a3f6d075bd22b6b6c2025f3369f3dedbdfe7cd5ad5b113e7ca51b76"
+    },
+    {
+      "id": "kick-dj-241f1817ab29",
+      "title": "Salvage (Up All Night) (feat. Poo Bear)",
+      "artists": "Galantis, Poo Bear",
+      "url": "file:///state/twitch-dj-audio/241f1817ab29a619d701269f2014dee5dcb4b3184dcd16a46a708bfef2f67187.mp3",
+      "position": 38,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "241f1817ab29a619d701269f2014dee5dcb4b3184dcd16a46a708bfef2f67187"
+    },
+    {
+      "id": "kick-dj-1c66f81b7818",
+      "title": "Stranded",
+      "artists": "WRLD, smle, Kiddo A.I.",
+      "url": "file:///state/twitch-dj-audio/1c66f81b7818a1651fc8b944b124f9c293489de1c2836928ecd4d1f9df11d345.mp3",
+      "position": 39,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "1c66f81b7818a1651fc8b944b124f9c293489de1c2836928ecd4d1f9df11d345"
+    },
+    {
+      "id": "kick-dj-45b0d4bddcbe",
+      "title": "Ghost Town",
+      "artists": "Adam Lambert",
+      "url": "file:///state/twitch-dj-audio/45b0d4bddcbec79df2068cb4de529de32c4a2f73601bbb65e1aa594ad150f8ba.mp3",
+      "position": 40,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "45b0d4bddcbec79df2068cb4de529de32c4a2f73601bbb65e1aa594ad150f8ba"
+    },
+    {
+      "id": "kick-dj-bc2b61589027",
+      "title": "Run",
+      "artists": "Veorra",
+      "url": "file:///state/twitch-dj-audio/bc2b615890272d375aea3f20af3e2e9504e4d3285895f121f55f1e2f833f9a21.mp3",
+      "position": 41,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "bc2b615890272d375aea3f20af3e2e9504e4d3285895f121f55f1e2f833f9a21"
+    },
+    {
+      "id": "kick-dj-edbaf6501d84",
+      "title": "Perfect Places",
+      "artists": "Lorde",
+      "url": "file:///state/twitch-dj-audio/edbaf6501d84b63524207eed97b594a1c2c3cd45e88d9c604cfce0d3df105ec3.mp3",
+      "position": 42,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "edbaf6501d84b63524207eed97b594a1c2c3cd45e88d9c604cfce0d3df105ec3"
+    },
+    {
+      "id": "kick-dj-264ca44d8ef4",
+      "title": "Ain't My Fault - R3hab Remix",
+      "artists": "Zara Larsson, R3HAB",
+      "url": "file:///state/twitch-dj-audio/264ca44d8ef45b5abcb956b60eb4fcf3d9b9342709fda9d71c8435515f9489cc.mp3",
+      "position": 43,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "264ca44d8ef45b5abcb956b60eb4fcf3d9b9342709fda9d71c8435515f9489cc"
+    },
+    {
+      "id": "kick-dj-01811e9cdb33",
+      "title": "Two Minds",
+      "artists": "NERO",
+      "url": "file:///state/twitch-dj-audio/01811e9cdb33f37a0af26c7b70b086fca8744a373d20d4fb2adfb5debc13fc3f.mp3",
+      "position": 44,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "01811e9cdb33f37a0af26c7b70b086fca8744a373d20d4fb2adfb5debc13fc3f"
+    },
+    {
+      "id": "kick-dj-6fce5d8af7ca",
+      "title": "Dazzle",
+      "artists": "Oh Wonder",
+      "url": "file:///state/twitch-dj-audio/6fce5d8af7ca46123df62719ef744e84dd2426658abae0cb22d3ec7a7650a0d2.mp3",
+      "position": 45,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "6fce5d8af7ca46123df62719ef744e84dd2426658abae0cb22d3ec7a7650a0d2"
+    },
+    {
+      "id": "kick-dj-0313ad4af3f6",
+      "title": "Body Gold",
+      "artists": "Oh Wonder",
+      "url": "file:///state/twitch-dj-audio/0313ad4af3f6705f45005ccc86d43070e6c81eb95376862b98b889a0fda89419.mp3",
+      "position": 46,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "0313ad4af3f6705f45005ccc86d43070e6c81eb95376862b98b889a0fda89419"
+    },
+    {
+      "id": "kick-dj-3bcaa6c7d80d",
+      "title": "Medicine",
+      "artists": "Daughter",
+      "url": "file:///state/twitch-dj-audio/3bcaa6c7d80dfb04a854aeb03301f3e1bb6f05bcfeb60e00376feba7a2b2b215.mp3",
+      "position": 47,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "3bcaa6c7d80dfb04a854aeb03301f3e1bb6f05bcfeb60e00376feba7a2b2b215"
+    },
+    {
+      "id": "kick-dj-eda026bb9132",
+      "title": "Lay Here",
+      "artists": "Veorra",
+      "url": "file:///state/twitch-dj-audio/eda026bb91322118b1b1193a0451a50a82522f7b6da8db6991e2f1c619c069a1.mp3",
+      "position": 48,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "eda026bb91322118b1b1193a0451a50a82522f7b6da8db6991e2f1c619c069a1"
+    },
+    {
+      "id": "kick-dj-237078d31135",
+      "title": "Runaway (U & I)",
+      "artists": "Galantis",
+      "url": "file:///state/twitch-dj-audio/237078d31135f4c40bb49a37e5ca1816b0e0dd81df49b240e012d41d5cf3f4b1.mp3",
+      "position": 49,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "237078d31135f4c40bb49a37e5ca1816b0e0dd81df49b240e012d41d5cf3f4b1"
+    },
+    {
+      "id": "kick-dj-2560a2c7d8f8",
+      "title": "To Say Goodbye",
+      "artists": "Slushii",
+      "url": "file:///state/twitch-dj-audio/2560a2c7d8f87babb3f39da86b0041ce900f25fddba6500f7f77130e54242917.mp3",
+      "position": 50,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "2560a2c7d8f87babb3f39da86b0041ce900f25fddba6500f7f77130e54242917"
+    },
+    {
+      "id": "kick-dj-08c2125e398d",
+      "title": "Drive",
+      "artists": "Oh Wonder",
+      "url": "file:///state/twitch-dj-audio/08c2125e398d93db3d2d50d4041b7f44959c79f7f9923b69c11b6dce65fd710c.mp3",
+      "position": 51,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "08c2125e398d93db3d2d50d4041b7f44959c79f7f9923b69c11b6dce65fd710c"
+    },
+    {
+      "id": "kick-dj-07fd7b245ac6",
+      "title": "Love On My Mind",
+      "artists": "Lucas & Steve",
+      "url": "file:///state/twitch-dj-audio/07fd7b245ac6da57b897c95408272285cd3af416ae454b3eb523fb9b10b09262.mp3",
+      "position": 52,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "07fd7b245ac6da57b897c95408272285cd3af416ae454b3eb523fb9b10b09262"
+    },
+    {
+      "id": "kick-dj-902913f2f390",
+      "title": "Memories That You Call",
+      "artists": "ODESZA, Monsoonsiren",
+      "url": "file:///state/twitch-dj-audio/902913f2f3907dfce939104efcedd36a80305b962cdd420ede9043b3fc7f5ab6.mp3",
+      "position": 53,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "902913f2f3907dfce939104efcedd36a80305b962cdd420ede9043b3fc7f5ab6"
+    },
+    {
+      "id": "kick-dj-dd7a5bca730e",
+      "title": "Nobody Compares To You",
+      "artists": "Gryffin, Katie Pearlman",
+      "url": "file:///state/twitch-dj-audio/dd7a5bca730e805bbe37a9c0a0569e24cc98e652e23c7e36d9be5f1efffe4eeb.mp3",
+      "position": 54,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "dd7a5bca730e805bbe37a9c0a0569e24cc98e652e23c7e36d9be5f1efffe4eeb"
+    },
+    {
+      "id": "kick-dj-45cc77f018eb",
+      "title": "Lose It",
+      "artists": "Oh Wonder",
+      "url": "file:///state/twitch-dj-audio/45cc77f018eb6395fe6f9d97ce0311b10b6859050f996fddb7f8656493b9e686.mp3",
+      "position": 55,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "45cc77f018eb6395fe6f9d97ce0311b10b6859050f996fddb7f8656493b9e686"
+    },
+    {
+      "id": "kick-dj-a1529117a170",
+      "title": "Mine",
+      "artists": "Phoebe Ryan",
+      "url": "file:///state/twitch-dj-audio/a1529117a1700cd0dd8df366aadc803dbccc01f3ae33fe03a8cc1f53d9f57440.mp3",
+      "position": 56,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "a1529117a1700cd0dd8df366aadc803dbccc01f3ae33fe03a8cc1f53d9f57440"
+    },
+    {
+      "id": "kick-dj-8611f36cad89",
+      "title": "Electric (R3hab Remix)",
+      "artists": "Alina Baraz, Khalid, R3HAB",
+      "url": "file:///state/twitch-dj-audio/8611f36cad89f4ddb42cfa466473df424121a0503298dc3addcb99deb6197345.mp3",
+      "position": 57,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "8611f36cad89f4ddb42cfa466473df424121a0503298dc3addcb99deb6197345"
+    },
+    {
+      "id": "kick-dj-c155aa7a2582",
+      "title": "Moments",
+      "artists": "MitiS, Adara",
+      "url": "file:///state/twitch-dj-audio/c155aa7a258201edeed7387786fc2ccf7f3215fea1332ec8a14ab146f2012b65.mp3",
+      "position": 58,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "c155aa7a258201edeed7387786fc2ccf7f3215fea1332ec8a14ab146f2012b65"
+    },
+    {
+      "id": "kick-dj-37daddb329f6",
+      "title": "Keep Me from You (feat. ODA)",
+      "artists": "MORTEN, ODA",
+      "url": "file:///state/twitch-dj-audio/37daddb329f6856172b75655041cf7b9501e9a8e7ae43247a71fe0547990eed6.mp3",
+      "position": 59,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "37daddb329f6856172b75655041cf7b9501e9a8e7ae43247a71fe0547990eed6"
+    },
+    {
+      "id": "kick-dj-4212e9119d53",
+      "title": "Don't Let Me Down - Illenium Remix",
+      "artists": "The Chainsmokers, Daya, ILLENIUM",
+      "url": "file:///state/twitch-dj-audio/4212e9119d531d97b968b41c837d7aa483a2dc1adedca2e5ed11fadea6cb3da5.mp3",
+      "position": 60,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "4212e9119d531d97b968b41c837d7aa483a2dc1adedca2e5ed11fadea6cb3da5"
+    },
+    {
+      "id": "kick-dj-62b38879e7fb",
+      "title": "Never Be Like You",
+      "artists": "Flume, kai",
+      "url": "file:///state/twitch-dj-audio/62b38879e7fb0093b25e5294141ecc0418765ec4d9f43565f90fe0b133f66e19.mp3",
+      "position": 61,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "62b38879e7fb0093b25e5294141ecc0418765ec4d9f43565f90fe0b133f66e19"
+    },
+    {
+      "id": "kick-dj-7d2227bd2804",
+      "title": "Sad Machine",
+      "artists": "Porter Robinson",
+      "url": "file:///state/twitch-dj-audio/7d2227bd28042628b2a3b1ce9033ec6a905e396aa8c8c4c58f8716c8bf2210d3.mp3",
+      "position": 62,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "7d2227bd28042628b2a3b1ce9033ec6a905e396aa8c8c4c58f8716c8bf2210d3"
+    },
+    {
+      "id": "kick-dj-20fd5f684dd7",
+      "title": "Youth - Adventure Club Remix",
+      "artists": "Foxes, Adventure Club",
+      "url": "file:///state/twitch-dj-audio/20fd5f684dd7bfc1b95eca71d77a06f753eb376aed4ec15ec1425642bf122ad6.mp3",
+      "position": 63,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "20fd5f684dd7bfc1b95eca71d77a06f753eb376aed4ec15ec1425642bf122ad6"
+    },
+    {
+      "id": "kick-dj-243ee2ac03be",
+      "title": "Say It - Illenium Remix",
+      "artists": "Flume, Tove Lo, ILLENIUM",
+      "url": "file:///state/twitch-dj-audio/243ee2ac03be40b047c8da3fd86123985aa513c7c952be28916b729dc319fb4c.mp3",
+      "position": 64,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "243ee2ac03be40b047c8da3fd86123985aa513c7c952be28916b729dc319fb4c"
+    },
+    {
+      "id": "kick-dj-1d5cac26d42f",
+      "title": "Feel Good (feat. Daya)",
+      "artists": "Gryffin, ILLENIUM, Daya",
+      "url": "file:///state/twitch-dj-audio/1d5cac26d42f72494d6fac1299b23931b6f3122008ba9a455e95dc671a2d1e22.mp3",
+      "position": 65,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "1d5cac26d42f72494d6fac1299b23931b6f3122008ba9a455e95dc671a2d1e22"
+    },
+    {
+      "id": "kick-dj-61c1e6c232a4",
+      "title": "One Thing",
+      "artists": "San Holo",
+      "url": "file:///state/twitch-dj-audio/61c1e6c232a4ecc86e1aece4542feb344859d1411367a2a7df4af8beadff60dd.mp3",
+      "position": 66,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "61c1e6c232a4ecc86e1aece4542feb344859d1411367a2a7df4af8beadff60dd"
+    },
+    {
+      "id": "kick-dj-be635c678cf4",
+      "title": "Now Or Never - R3hab Remix",
+      "artists": "Halsey, R3HAB",
+      "url": "file:///state/twitch-dj-audio/be635c678cf45a85019db947efdda85acd937d8a051235ab47dbc8f47823c373.mp3",
+      "position": 67,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "be635c678cf45a85019db947efdda85acd937d8a051235ab47dbc8f47823c373"
+    },
+    {
+      "id": "kick-dj-0d0c8ceb82aa",
+      "title": "Roses (feat. ROZES) - Zaxx Remix",
+      "artists": "The Chainsmokers, ROZES, Zaxx",
+      "url": "file:///state/twitch-dj-audio/0d0c8ceb82aa547338744e620e0973a94c6ecec11675703e3ecc51727180758d.mp3",
+      "position": 68,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "0d0c8ceb82aa547338744e620e0973a94c6ecec11675703e3ecc51727180758d"
+    },
+    {
+      "id": "kick-dj-a5bdcc255899",
+      "title": "Reflections (Milkman Remix)",
+      "artists": "Milkman, MisterWives",
+      "url": "file:///state/twitch-dj-audio/a5bdcc255899e289fefca28d019d7e420ce3011bf3b1f3721235d5749e34b0fd.mp3",
+      "position": 69,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "a5bdcc255899e289fefca28d019d7e420ce3011bf3b1f3721235d5749e34b0fd"
+    },
+    {
+      "id": "kick-dj-10b07a82c409",
+      "title": "Light",
+      "artists": "San Holo",
+      "url": "file:///state/twitch-dj-audio/10b07a82c409bd0163ca6f49595cb57245486f6617a74b5224fb6551f84cbb16.mp3",
+      "position": 70,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "10b07a82c409bd0163ca6f49595cb57245486f6617a74b5224fb6551f84cbb16"
+    },
+    {
+      "id": "kick-dj-c6fb632fb463",
+      "title": "Last To Leave (feat. Caroline Ailin)",
+      "artists": "Louis The Child, Caroline Ailin",
+      "url": "file:///state/twitch-dj-audio/c6fb632fb4636b1c2758abad131d2ee6c18d3f3f3e57ece23c9bb01a4b2b53eb.mp3",
+      "position": 71,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "c6fb632fb4636b1c2758abad131d2ee6c18d3f3f3e57ece23c9bb01a4b2b53eb"
+    },
+    {
+      "id": "kick-dj-8a8b4f10aab2",
+      "title": "Afterglow",
+      "artists": "Phaeleh, Soundmouse",
+      "url": "file:///state/twitch-dj-audio/8a8b4f10aab24473e6fa55626ac263f881f077f41235f865b73f9194c5c2f976.mp3",
+      "position": 72,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "8a8b4f10aab24473e6fa55626ac263f881f077f41235f865b73f9194c5c2f976"
+    },
+    {
+      "id": "kick-dj-56f62f51b54f",
+      "title": "Something About You - ODESZA Remix",
+      "artists": "Hayden James, ODESZA",
+      "url": "file:///state/twitch-dj-audio/56f62f51b54f092132e808576f38d5a00f6a3e5ad3d8d781826ec14e6668d6a9.mp3",
+      "position": 73,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "56f62f51b54f092132e808576f38d5a00f6a3e5ad3d8d781826ec14e6668d6a9"
+    },
+    {
+      "id": "kick-dj-a8be1e7d98e5",
+      "title": "Lush Life",
+      "artists": "Zara Larsson",
+      "url": "file:///state/twitch-dj-audio/a8be1e7d98e5ccb0ac37cd0161a0f6ef0b431126779900c789ec9d424ed03c48.mp3",
+      "position": 74,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "a8be1e7d98e5ccb0ac37cd0161a0f6ef0b431126779900c789ec9d424ed03c48"
+    },
+    {
+      "id": "kick-dj-a647f21df708",
+      "title": "Undercover - Devault Remix",
+      "artists": "Kehlani, Devault",
+      "url": "file:///state/twitch-dj-audio/a647f21df708698c978e5a3134d5529560bad2d61f1d49fa2609aa37855a38e2.mp3",
+      "position": 75,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "a647f21df708698c978e5a3134d5529560bad2d61f1d49fa2609aa37855a38e2"
+    },
+    {
+      "id": "kick-dj-448ba113a36f",
+      "title": "Without You",
+      "artists": "Oh Wonder",
+      "url": "file:///state/twitch-dj-audio/448ba113a36f9d21ba3ca048cf86895d4877a1a629a4a8247f3581e0303083a1.mp3",
+      "position": 76,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "448ba113a36f9d21ba3ca048cf86895d4877a1a629a4a8247f3581e0303083a1"
+    },
+    {
+      "id": "kick-dj-22c3506bd323",
+      "title": "Temporary",
+      "artists": "CHOCO, Angel Taylor",
+      "url": "file:///state/twitch-dj-audio/22c3506bd3232b11ca15500379015742a8d3d2215746d9bde53c8d2738d6c917.mp3",
+      "position": 77,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "22c3506bd3232b11ca15500379015742a8d3d2215746d9bde53c8d2738d6c917"
+    },
+    {
+      "id": "kick-dj-33993f72bf31",
+      "title": "Alone - R3hab Remix",
+      "artists": "Jessie Ware, R3HAB",
+      "url": "file:///state/twitch-dj-audio/33993f72bf318ba30c723632acae5ca4774e1f05f9415470dc66f78e2cf45769.mp3",
+      "position": 78,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "33993f72bf318ba30c723632acae5ca4774e1f05f9415470dc66f78e2cf45769"
+    },
+    {
+      "id": "kick-dj-f8f810113b88",
+      "title": "Everything",
+      "artists": "ROZES",
+      "url": "file:///state/twitch-dj-audio/f8f810113b88b3af6b33e4b55dcb8cb1c23ded9083823564a763ae438b9d948b.mp3",
+      "position": 79,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "f8f810113b88b3af6b33e4b55dcb8cb1c23ded9083823564a763ae438b9d948b"
+    },
+    {
+      "id": "kick-dj-115a699d0d14",
+      "title": "I Wanna Know",
+      "artists": "RL Grime, Daya",
+      "url": "file:///state/twitch-dj-audio/115a699d0d144e28376aa49db1d63f070d89eb85c8f96da5f6011dd580e85b33.mp3",
+      "position": 80,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "115a699d0d144e28376aa49db1d63f070d89eb85c8f96da5f6011dd580e85b33"
+    },
+    {
+      "id": "kick-dj-9c9efe7df42a",
+      "title": "Cracked Wall",
+      "artists": "Florian Picasso, VASSY",
+      "url": "file:///state/twitch-dj-audio/9c9efe7df42ad782e4d376fc78af7913d0e70b53dc0e3e0a3b4e377e8428e4be.mp3",
+      "position": 81,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "9c9efe7df42ad782e4d376fc78af7913d0e70b53dc0e3e0a3b4e377e8428e4be"
+    },
+    {
+      "id": "kick-dj-8dd36c47d9b1",
+      "title": "Smoke Signals",
+      "artists": "Hotel Garuda",
+      "url": "file:///state/twitch-dj-audio/8dd36c47d9b1ea85e8fb92744e47e16cebfcb269bff39d0a10d171f48b91bbf7.mp3",
+      "position": 82,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "8dd36c47d9b1ea85e8fb92744e47e16cebfcb269bff39d0a10d171f48b91bbf7"
+    },
+    {
+      "id": "kick-dj-65e9cbfc881f",
+      "title": "Symphony (feat. Zara Larsson) - R3hab Remix",
+      "artists": "Clean Bandit, Zara Larsson, R3HAB",
+      "url": "file:///state/twitch-dj-audio/65e9cbfc881f1181aa55f33c7b2f0a202dca243c51a2687463868b58092f7b37.mp3",
+      "position": 83,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "65e9cbfc881f1181aa55f33c7b2f0a202dca243c51a2687463868b58092f7b37"
+    },
+    {
+      "id": "kick-dj-2f9c78cfe33e",
+      "title": "Frontlines - Crankdat Remix",
+      "artists": "Zeds Dead, NGHTMRE, GG Magree, Crankdat",
+      "url": "file:///state/twitch-dj-audio/2f9c78cfe33e0d9d7b7841bc7b4136ac12a7fbe3177d297cdfd6cd06bb679409.mp3",
+      "position": 84,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "2f9c78cfe33e0d9d7b7841bc7b4136ac12a7fbe3177d297cdfd6cd06bb679409"
+    },
+    {
+      "id": "kick-dj-74e04aa99e26",
+      "title": "Livewire",
+      "artists": "Oh Wonder",
+      "url": "file:///state/twitch-dj-audio/74e04aa99e26a3a34d6653ae52094229448aa62fc6a7f2e1a7f0f6fc57bf1302.mp3",
+      "position": 85,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "74e04aa99e26a3a34d6653ae52094229448aa62fc6a7f2e1a7f0f6fc57bf1302"
+    },
+    {
+      "id": "kick-dj-284050b1988e",
+      "title": "Never Forget You - Mark Ralph Club Mix",
+      "artists": "Zara Larsson, MNEK",
+      "url": "file:///state/twitch-dj-audio/284050b1988e89d1d384bef21b373f6ee3011fe7caeb66428307350ed15bbd12.mp3",
+      "position": 86,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "284050b1988e89d1d384bef21b373f6ee3011fe7caeb66428307350ed15bbd12"
+    },
+    {
+      "id": "kick-dj-73166f3a7817",
+      "title": "BWU",
+      "artists": "San Holo",
+      "url": "file:///state/twitch-dj-audio/73166f3a78174930283d0219072e34aa2bab43cf89ba1b7c2bf27e36ce0877e5.mp3",
+      "position": 87,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "73166f3a78174930283d0219072e34aa2bab43cf89ba1b7c2bf27e36ce0877e5"
+    },
+    {
+      "id": "kick-dj-858c6194f8ef",
+      "title": "Here",
+      "artists": "Alessia Cara",
+      "url": "file:///state/twitch-dj-audio/858c6194f8ef0b14e7826d14b3aeb807eabb08352ef88a456839748e6afeaeec.mp3",
+      "position": 88,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "858c6194f8ef0b14e7826d14b3aeb807eabb08352ef88a456839748e6afeaeec"
+    },
+    {
+      "id": "kick-dj-1195019037cc",
+      "title": "Infinity",
+      "artists": "Niykee Heaton",
+      "url": "file:///state/twitch-dj-audio/1195019037cc2e05eef3c8454b584b2ecc93bc3545ad0aa7658d1e5891ce1ea0.mp3",
+      "position": 89,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "1195019037cc2e05eef3c8454b584b2ecc93bc3545ad0aa7658d1e5891ce1ea0"
+    },
+    {
+      "id": "kick-dj-3724da16f823",
+      "title": "Lately",
+      "artists": "Dead Robot, tribes.",
+      "url": "file:///state/twitch-dj-audio/3724da16f823bbfc93471ca4459d64cf791ccca0e69111330e71f91e596762f0.mp3",
+      "position": 90,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "3724da16f823bbfc93471ca4459d64cf791ccca0e69111330e71f91e596762f0"
+    },
+    {
+      "id": "kick-dj-138739321f8d",
+      "title": "All We Do",
+      "artists": "Oh Wonder",
+      "url": "file:///state/twitch-dj-audio/138739321f8d6d254712f776918358642a25c7e407caea1c7ef00fcee122a91e.mp3",
+      "position": 91,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "138739321f8d6d254712f776918358642a25c7e407caea1c7ef00fcee122a91e"
+    },
+    {
+      "id": "kick-dj-074c7a2ccf48",
+      "title": "Technicolour Beat",
+      "artists": "Oh Wonder",
+      "url": "file:///state/twitch-dj-audio/074c7a2ccf4865316d5d54ae5f5ad266681b832bc5d123949beb5698fab04e67.mp3",
+      "position": 92,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "074c7a2ccf4865316d5d54ae5f5ad266681b832bc5d123949beb5698fab04e67"
+    },
+    {
+      "id": "kick-dj-eede3cd23ee9",
+      "title": "Trndsttr (feat. M. Maggie) - Lucian Remix",
+      "artists": "Black Coast, M. Maggie, Lucian",
+      "url": "file:///state/twitch-dj-audio/eede3cd23ee913e7882ec7a4237ee5ec3a533c0a048f40ba4860983c4b1b67be.mp3",
+      "position": 93,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "eede3cd23ee913e7882ec7a4237ee5ec3a533c0a048f40ba4860983c4b1b67be"
+    },
+    {
+      "id": "kick-dj-1621e516aed1",
+      "title": "Feels - Jai Wolf Remix",
+      "artists": "Kiiara, Jai Wolf",
+      "url": "file:///state/twitch-dj-audio/1621e516aed13ef7a5624b8d0efdef05d8c65a3dc3ed1ec1cb19a37760115103.mp3",
+      "position": 94,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "1621e516aed13ef7a5624b8d0efdef05d8c65a3dc3ed1ec1cb19a37760115103"
+    },
+    {
+      "id": "kick-dj-2899c704a30d",
+      "title": "Sleepy Eyes",
+      "artists": "Elohim, Whethan",
+      "url": "file:///state/twitch-dj-audio/2899c704a30d7acb1da78fc7ca63c8f61b9e96ecd018b78284623522c11a5798.mp3",
+      "position": 95,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "2899c704a30d7acb1da78fc7ca63c8f61b9e96ecd018b78284623522c11a5798"
+    },
+    {
+      "id": "kick-dj-c6a6b01a6fc2",
+      "title": "Make Me (Cry) - Marshmello Remix",
+      "artists": "Noah Cyrus, Labrinth, Marshmello",
+      "url": "file:///state/twitch-dj-audio/c6a6b01a6fc2354e5f1ce7ad3ce099b887dd238f4e82ecbfc511d89276b526ce.mp3",
+      "position": 96,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "c6a6b01a6fc2354e5f1ce7ad3ce099b887dd238f4e82ecbfc511d89276b526ce"
+    },
+    {
+      "id": "kick-dj-0187b7af7bf0",
+      "title": "I Would Like - R3hab Remix",
+      "artists": "Zara Larsson, R3HAB",
+      "url": "file:///state/twitch-dj-audio/0187b7af7bf09b79e3aae089be4666bccd5655745f87c67b7a4ad7711ae880ca.mp3",
+      "position": 97,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "0187b7af7bf09b79e3aae089be4666bccd5655745f87c67b7a4ad7711ae880ca"
+    },
+    {
+      "id": "kick-dj-149bd7a6d65e",
+      "title": "It's Strange (feat. K.Flay)",
+      "artists": "Louis The Child, K.Flay",
+      "url": "file:///state/twitch-dj-audio/149bd7a6d65ea21e758c06d1118c9a7a5128b3c435611dc6db8a567ce3bfc9fb.mp3",
+      "position": 98,
+      "duration_seconds": 0,
+      "source": "twitch_dj_catalog_copy_for_kick",
+      "sha256": "149bd7a6d65ea21e758c06d1118c9a7a5128b3c435611dc6db8a567ce3bfc9fb"
+    }
+  ],
+  "shuffle": true,
+  "repeat": true,
+  "requested_at": "2026-10-04T00:40:00Z",
+  "source": "mediaforge-kick-independent-dj-copy",
+  "safety": {
+    "rtmp_restart": false,
+    "generation_change": false,
+    "player_shared_with_twitch": false,
+    "backup_path": "control/playlist-backups/kick-gaming-radio-before-dj-copy-20261004T0040Z.json"
+  }
+}
