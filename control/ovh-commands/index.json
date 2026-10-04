@@ -166,6 +166,11 @@
       "id": "48ac602b-46c6-4c1e-8bbe-1e7a203b6b3a",
       "path": "control/ovh-commands/48ac602b-46c6-4c1e-8bbe-1e7a203b6b3a.json",
       "created_at": "2026-10-03T23:33:03.733Z"
+    },
+    {
+      "id": "kick-copy-twitch-dj-mixed-20261004-0040",
+      "path": "control/ovh-commands/kick-copy-twitch-dj-mixed-20261004-0040.json",
+      "created_at": "2026-10-04T00:40:00Z"
     }
   ]
 }
