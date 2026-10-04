@@ -1,4 +1,4 @@
 {
-  "version": "figma-ui-test-v2",
-  "purpose": "Refresh only the non-publisher OVH control container with latest youtube-ui-test code and expose isolated diagnostics. Do not touch existing RTMP publisher containers."
+  "version": "figma-ui-test-v3",
+  "purpose": "Refresh only OVH control code and bridge latest private youtube-ui-test command through local state. Never recreate production publishers."
 }
