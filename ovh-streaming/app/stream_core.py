@@ -43,7 +43,13 @@ class StreamCore:
         self.base_loop_url = os.environ.get("LOOP_URL", "").strip()
         self.fps = int(os.environ.get("VIDEO_FPS", "60" if platform.startswith("youtube") else "30"))
         self.vbitrate = int(os.environ.get("VIDEO_BITRATE_KBPS", "8000" if platform.startswith("youtube") else "6000"))
+        self.bufsize = int(os.environ.get("VIDEO_BUFSIZE_KBPS", str(self.vbitrate * 2)))
         self.abitrate = int(os.environ.get("AUDIO_BITRATE_KBPS", "160"))
+        self.vprofile = os.environ.get("VIDEO_PROFILE", "main").strip() or "main"
+        self.vpreset = os.environ.get("VIDEO_PRESET", "superfast").strip() or "superfast"
+        self.profile_version = os.environ.get("STREAM_PROFILE_VERSION", "stable-start-v2").strip() or "stable-start-v2"
+        self.startup_preroll_seconds = max(0.25, float(os.environ.get("STARTUP_PREROLL_SECONDS", "1.5")))
+        self.audio_ready_timeout = max(10.0, float(os.environ.get("AUDIO_READY_TIMEOUT_SECONDS", "90")))
         self.video_udp_port = int(os.environ.get("VIDEO_UDP_PORT", "19000"))
 
         self.encoder = None
@@ -87,6 +93,25 @@ class StreamCore:
             raise RuntimeError("LOOP_URL is missing")
         if not self.runtime_playlist.exists():
             raise RuntimeError(f"playlist file not found: {self.runtime_playlist}")
+
+        # Never open RTMP with a drifted profile. If production settings are
+        # wrong, fail before connecting instead of starting an unstable live.
+        expected = {
+            "kick": {"fps": 30, "vbitrate": 5000, "bufsize": 10000, "abitrate": 160, "profile": "main", "preset": "superfast"},
+            "twitch": {"fps": 30, "vbitrate": 4500, "bufsize": 9000, "abitrate": 160, "profile": "main", "preset": "superfast"},
+            "youtube-deep-house": {"fps": 60, "vbitrate": 8000, "bufsize": 16000, "abitrate": 192, "profile": "main", "preset": "superfast"},
+            "youtube-rainy": {"fps": 60, "vbitrate": 8000, "bufsize": 16000, "abitrate": 192, "profile": "main", "preset": "superfast"},
+        }.get(self.platform)
+        actual = {
+            "fps": self.fps,
+            "vbitrate": self.vbitrate,
+            "bufsize": self.bufsize,
+            "abitrate": self.abitrate,
+            "profile": self.vprofile,
+            "preset": self.vpreset,
+        }
+        if expected and actual != expected:
+            raise RuntimeError(f"unsafe encoder profile for {self.platform}: expected={expected} actual={actual}")
 
     def desired(self):
         data = read_json(self.desired_path, {}) or {}
@@ -211,11 +236,36 @@ class StreamCore:
             time.sleep(0.5)
         raise RuntimeError("visual engine did not become ready")
 
+    def audio_ready(self):
+        ah = read_json(self.state / "audio-health.json", {}) or {}
+        state = str(ah.get("state") or ah.get("status") or "").lower()
+        return state in {
+            "playing",
+            "crossfading",
+            "encoder_backpressure_buffering",
+            "source_stalled_pcm_clock_preserved",
+            "prebuffering_transition",
+        } and bool(ah.get("track_id"))
+
+    def wait_audio_ready(self):
+        end = time.time() + self.audio_ready_timeout
+        while self.running and time.time() < end:
+            if self.audio_feeder and self.audio_feeder.poll() is not None:
+                raise RuntimeError(f"audio engine exited with code {self.audio_feeder.returncode}")
+            if self.audio_ready():
+                # Pre-roll the PCM clock before opening RTMP. This stops a new
+                # session from connecting while its first track is still warming.
+                time.sleep(self.startup_preroll_seconds)
+                return
+            time.sleep(0.25)
+        raise RuntimeError("audio engine did not become ready before RTMP start")
+
     def start_encoder(self):
         if self.encoder and self.encoder.poll() is None:
             return
         fifo = self.ensure_audio_fifo()
         self.wait_visual_ready()
+        self.wait_audio_ready()
         video_input = (
             f"udp://127.0.0.1:{self.video_udp_port}"
             "?fifo_size=1000000&overrun_nonfatal=1"
@@ -268,11 +318,11 @@ class StreamCore:
                 "-c:v",
                 "libx264",
                 "-preset",
-                "superfast",
+                self.vpreset,
                 "-tune",
                 "zerolatency",
                 "-profile:v",
-                "main",
+                self.vprofile,
                 "-bf",
                 "0",
                 "-b:v",
@@ -282,7 +332,7 @@ class StreamCore:
                 "-maxrate",
                 f"{self.vbitrate}k",
                 "-bufsize",
-                f"{self.vbitrate * 2}k",
+                f"{self.bufsize}k",
                 "-g",
                 str(self.fps * 2),
                 "-keyint_min",
@@ -394,6 +444,11 @@ class StreamCore:
             "status": status,
             "fps": self.fps,
             "video_bitrate_kbps": self.vbitrate,
+            "video_bufsize_kbps": self.bufsize,
+            "video_profile": self.vprofile,
+            "video_preset": self.vpreset,
+            "stream_profile_version": self.profile_version,
+            "startup_preroll_seconds": self.startup_preroll_seconds,
             "restarts": self.restarts,
             "updated_at": iso_now(),
             "loop_url": desired.get("loop_url") or self.base_loop_url,
