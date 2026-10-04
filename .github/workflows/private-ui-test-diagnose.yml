@@ -1,0 +1,93 @@
+name: Peter Lofi — Diagnose Private UI Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/private-ui-test-diagnose.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reload host agent to newest diagnostic code
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          ID="ops-ui-test-diag-a"
+          curl -fsS -X POST "$BASE/api/ops/20261003-live-stability/host-agent?v=8&id=$ID" | tee /tmp/a-request.json
+          for I in $(seq 1 80); do
+            curl -fsS "$BASE/api/ops/20261003-live-stability/status" > /tmp/a-status.json
+            ST="$(jq -r --arg id "$ID" '.commands[]? | select(.id==$id) | .status // empty' /tmp/a-status.json | tail -1)"
+            echo "first reload=$ST"
+            [ "$ST" = "completed" ] && break
+            [ "$ST" = "failed" ] && exit 1
+            sleep 3
+          done
+          [ "$ST" = "completed" ]
+          sleep 8
+
+      - name: Reload again and capture isolated UI-test ACK
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          ID="ops-ui-test-diag-b"
+          curl -fsS -X POST "$BASE/api/ops/20261003-live-stability/host-agent?v=9&id=$ID" | tee /tmp/b-request.json
+          for I in $(seq 1 80); do
+            curl -fsS "$BASE/api/ops/20261003-live-stability/status" > /tmp/b-status.json
+            ST="$(jq -r --arg id "$ID" '.commands[]? | select(.id==$id) | .status // empty' /tmp/b-status.json | tail -1)"
+            echo "second reload=$ST"
+            [ "$ST" = "completed" ] && break
+            [ "$ST" = "failed" ] && { cat /tmp/b-status.json; exit 1; }
+            sleep 3
+          done
+          [ "$ST" = "completed" ]
+          sleep 5
+
+      - name: Capture remote and direct health
+        shell: bash
+        run: |
+          set +e
+          curl -fsS "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/public-health" > /tmp/cloud-health.json
+          curl -k -fsS "https://146.59.156.224:8443/api/ovh/public-health" > /tmp/direct-health.json
+          exit 0
+
+      - name: Persist diagnostic proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p control/diagnostics
+          python - <<'PY'
+          import json, pathlib, datetime as dt
+          def load(path):
+              try:return json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+              except Exception:return {}
+          status=load("/tmp/b-status.json")
+          cmd=next((x for x in status.get("commands",[]) if x.get("id")=="ops-ui-test-diag-b"),{})
+          out={
+              "checked_at":dt.datetime.now(dt.timezone.utc).isoformat(),
+              "host_agent_command":cmd,
+              "cloud_health":load("/tmp/cloud-health.json"),
+              "direct_health":load("/tmp/direct-health.json"),
+          }
+          pathlib.Path("control/diagnostics/private-ui-test-host.json").write_text(
+              json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8"
+          )
+          PY
+          cat control/diagnostics/private-ui-test-host.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/private-ui-test-host.json
+          git commit -m "ui-test: capture OVH isolated runtime diagnostics" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
