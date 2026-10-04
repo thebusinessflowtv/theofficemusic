@@ -1,0 +1,132 @@
+name: One-off — Apply Stable Start v2 on OVH
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/oneoff-apply-stable-start-v2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      BASE: https://146.59.156.224:8443
+      E1: ${{ secrets.MEDIAFORGE_ADMIN_EMAIL }}
+      P1: ${{ secrets.MEDIAFORGE_ADMIN_PASSWORD }}
+      E2: ${{ secrets.ADMIN_EMAIL }}
+      P2: ${{ secrets.ADMIN_PASSWORD }}
+      E3: ${{ secrets.MEDIAFORGE_EMAIL }}
+      P3: ${{ secrets.MEDIAFORGE_PASSWORD }}
+      E4: ${{ secrets.CONTROL_ADMIN_EMAIL }}
+      P4: ${{ secrets.CONTROL_ADMIN_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply stable-start through authenticated OVH control plane
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p control/diagnostics
+          OUT=control/diagnostics/stable-start-v2-oneoff.json
+          TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          health_http="$(curl -k -sS --connect-timeout 6 --max-time 15 -o /tmp/health.json -w '%{http_code}' "$BASE/api/health" || true)"
+          if [ "$health_http" != "200" ]; then
+            jq -n --arg checked_at "$TS" --arg state "ovh_api_unreachable" --arg http "$health_http"               '{checked_at:$checked_at,state:$state,health_http:$http}' > "$OUT"
+            exit 0
+          fi
+
+          EMAIL=""; PASSWORD=""; source=""
+          for n in 1 2 3 4; do
+            eval "e=\${E$n:-}"
+            eval "p=\${P$n:-}"
+            if [ -n "$e" ] && [ -n "$p" ]; then
+              EMAIL="$e"; PASSWORD="$p"; source="candidate_$n"; break
+            fi
+          done
+
+          if [ -z "$EMAIL" ] || [ -z "$PASSWORD" ]; then
+            jq -n --arg checked_at "$TS" --arg state "no_github_admin_credentials" --arg health_http "$health_http"               '{checked_at:$checked_at,state:$state,health_http:$health_http}' > "$OUT"
+            exit 0
+          fi
+
+          login_http="$(curl -k -sS --connect-timeout 6 --max-time 20             -o /tmp/login.json -w '%{http_code}'             -H 'content-type: application/json'             --data "$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password}')"             "$BASE/api/auth/login" || true)"
+          TOKEN="$(jq -r '.token // empty' /tmp/login.json 2>/dev/null || true)"
+          unset EMAIL PASSWORD
+
+          if [ "$login_http" != "200" ] || [ -z "$TOKEN" ]; then
+            jq -n --arg checked_at "$TS" --arg state "admin_login_failed" --arg login_http "$login_http" --arg credential_source "$source"               '{checked_at:$checked_at,state:$state,login_http:$login_http,credential_source:$credential_source}' > "$OUT"
+            exit 0
+          fi
+
+          auth=(-H "authorization: Bearer $TOKEN" -H 'content-type: application/json')
+
+          queue() {
+            local id="$1" action="$2" target="$3"
+            curl -k -fsS "${auth[@]}"               --data "$(jq -nc --arg id "$id" --arg action "$action" --arg target "$target"                 '{request_id:$id,action:$action,target:$target,source:"stable-start-v2-oneoff"}')"               "$BASE/api/ovh/deploy" >/tmp/queue.json
+          }
+
+          wait_cmd() {
+            local id="$1" max="$2"
+            local i=0 status=""
+            while [ "$i" -lt "$max" ]; do
+              curl -k -fsS -H "authorization: Bearer $TOKEN"                 "$BASE/api/ovh/deploy-status?id=$id" >/tmp/cmd.json || true
+              status="$(jq -r '.command.status // empty' /tmp/cmd.json 2>/dev/null || true)"
+              case "$status" in
+                completed) return 0 ;;
+                failed) return 2 ;;
+              esac
+              i=$((i+1))
+              sleep 5
+            done
+            return 3
+          }
+
+          host_id="stable-start-v2-host-agent-20261003"
+          queue "$host_id" "deploy_host_agent" "host-agent"
+          host_rc=0
+          wait_cmd "$host_id" 36 || host_rc=$?
+          if [ "$host_rc" -ne 0 ]; then
+            err="$(jq -r '.command.error // ""' /tmp/cmd.json 2>/dev/null || true)"
+            jq -n --arg checked_at "$TS" --arg state "host_agent_deploy_failed" --arg error "$err"               '{checked_at:$checked_at,state:$state,error:$error}' > "$OUT"
+            unset TOKEN
+            exit 0
+          fi
+
+          results='[]'
+          for slot in twitch kick youtube-deep-house youtube-rainy; do
+            id="stable-start-v2-${slot}-20261003"
+            queue "$id" "deploy_service" "$slot"
+            rc=0
+            wait_cmd "$id" 72 || rc=$?
+            state="$(jq -r '.command.status // "unknown"' /tmp/cmd.json 2>/dev/null || echo unknown)"
+            err="$(jq -r '.command.error // ""' /tmp/cmd.json 2>/dev/null || true)"
+            results="$(jq -c --arg slot "$slot" --arg state "$state" --arg error "$err"               '. + [{slot:$slot,status:$state,error:$error}]' <<<"$results")"
+            if [ "$rc" -ne 0 ]; then
+              break
+            fi
+          done
+
+          curl -k -fsS -H "authorization: Bearer $TOKEN" "$BASE/api/ovh/status" >/tmp/status.json || true
+          unset TOKEN
+
+          jq -n             --arg checked_at "$TS"             --arg state "deploy_attempt_completed"             --arg credential_source "$source"             --argjson deployments "$results"             --slurpfile ovh_status /tmp/status.json             '{checked_at:$checked_at,state:$state,credential_source:$credential_source,deployments:$deployments,ovh_status:($ovh_status[0] // null)}'             > "$OUT"
+
+      - name: Persist non-secret result
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f control/diagnostics/stable-start-v2-oneoff.json ||             echo '{"state":"workflow_failed_before_diagnostic"}' > control/diagnostics/stable-start-v2-oneoff.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/stable-start-v2-oneoff.json
+          git commit -m "ops: record stable-start v2 deployment result" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
