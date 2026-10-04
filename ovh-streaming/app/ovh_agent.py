@@ -14,6 +14,8 @@ import os
 import pathlib
 import shutil
 import time
+import subprocess
+import signal
 import urllib.request
 import uuid
 import zipfile
@@ -28,11 +30,13 @@ LOCAL_STATUS_SECONDS=max(5,int(os.environ.get("OVH_LOCAL_STATUS_SECONDS","10")))
 REMOTE_STATUS_SECONDS=max(5,int(os.environ.get("OVH_REMOTE_STATUS_SECONDS","10")))
 GITHUB_RAW_BASE=os.environ.get("MEDIAFORGE_GITHUB_RAW_BASE","https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main").rstrip("/")
 GITHUB_FALLBACK_MAX_AGE_SECONDS=max(30,int(os.environ.get("OVH_GITHUB_FALLBACK_MAX_AGE_SECONDS","900")))
-SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy")
+SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy","youtube-ui-test")
 AGENT_DIR=STATE/"agent"
 PROCESSED=AGENT_DIR/"processed.json"
 LOCAL_STATUS=AGENT_DIR/"status.json"
 AGENT_DIR.mkdir(parents=True,exist_ok=True)
+UI_TEST_PROC=None
+UI_TEST_LOG=None
 
 # These sources represent ordinary hot changes and are never allowed to
 # interrupt a live RTMP session, even if an upstream bug labels them restart.
@@ -273,6 +277,71 @@ def import_twitch_dj_archive(cmd):
     return result
 
 
+def _ui_test_secret_path():
+    return STATE/"youtube-ui-test"/"runtime-secret.json"
+
+
+def ensure_ui_test_process():
+    global UI_TEST_PROC, UI_TEST_LOG
+    st=STATE/"youtube-ui-test"
+    desired=read_json(st/"desired.json",{}) or {}
+    wants_live=str(desired.get("desired") or "stopped").lower() not in {"stopped","stop","offline"}
+    if not wants_live:
+        if UI_TEST_PROC and UI_TEST_PROC.poll() is None:
+            try:
+                UI_TEST_PROC.send_signal(signal.SIGTERM)
+                UI_TEST_PROC.wait(timeout=8)
+            except Exception:
+                try: UI_TEST_PROC.kill()
+                except Exception: pass
+        UI_TEST_PROC=None
+        if UI_TEST_LOG:
+            try: UI_TEST_LOG.close()
+            except Exception: pass
+            UI_TEST_LOG=None
+        return
+
+    if UI_TEST_PROC and UI_TEST_PROC.poll() is None:
+        return
+
+    secret=read_json(_ui_test_secret_path(),{}) or {}
+    stream_url=str(secret.get("stream_url") or "").strip()
+    stream_key=str(secret.get("stream_key") or "").strip()
+    if not stream_url or not stream_key:
+        return
+
+    playlist=st/"playlist.json"
+    if not playlist.exists():
+        src=pathlib.Path("/config/youtube-deep-house.json")
+        if src.exists():
+            shutil.copyfile(src,playlist)
+
+    env=os.environ.copy()
+    env.update({
+        "STREAM_URL":stream_url,
+        "STREAM_KEY":stream_key,
+        "LOOP_URL":"file:///ui-test-assets/background.mp4",
+        "PLAYLIST_FILE":"/config/youtube-deep-house.json",
+        "VIDEO_FPS":"30",
+        "VIDEO_BITRATE_KBPS":"4500",
+        "VIDEO_BUFSIZE_KBPS":"9000",
+        "AUDIO_BITRATE_KBPS":"160",
+        "VIDEO_PROFILE":"main",
+        "VIDEO_PRESET":"superfast",
+        "STREAM_PROFILE_VERSION":"ui-test-v1",
+        "STARTUP_PREROLL_SECONDS":"1.5",
+        "AUDIO_READY_TIMEOUT_SECONDS":"90",
+        "VIDEO_UDP_PORT":"19140",
+        "BOOTSTRAP_SESSION_ID":str(desired.get("session_id") or "ui-test"),
+        "BOOTSTRAP_TITLE":str(desired.get("title") or "Peter Lofi UI Test"),
+    })
+    UI_TEST_LOG=open(st/"controller.log","ab",buffering=0)
+    UI_TEST_PROC=subprocess.Popen(
+        ["python","/app/stream_core.py","--platform","youtube-ui-test"],
+        env=env,stdout=UI_TEST_LOG,stderr=UI_TEST_LOG,
+    )
+
+
 def apply_command(cmd):
     slot=slot_for(cmd)
     if not slot:
@@ -283,6 +352,48 @@ def apply_command(cmd):
     desired_path=st/"desired.json"
     desired=read_json(desired_path,{}) or {}
     action=str(cmd.get("action") or "start").lower()
+
+    if slot=="youtube-ui-test":
+        if action in {"start","resume","restart"}:
+            stream_url=str(cmd.get("stream_url") or "").strip()
+            stream_key=str(cmd.get("stream_key") or "").strip()
+            secret_path=_ui_test_secret_path()
+            if stream_url and stream_key:
+                atomic_json(secret_path,{"stream_url":stream_url,"stream_key":stream_key,"updated_at":iso_now()})
+                try: os.chmod(secret_path,0o600)
+                except Exception: pass
+            elif not secret_path.exists():
+                raise ValueError("stream_url and stream_key are required for first youtube-ui-test start")
+
+            if not (st/"playlist.json").exists():
+                src=pathlib.Path("/config/youtube-deep-house.json")
+                if src.exists():
+                    shutil.copyfile(src,st/"playlist.json")
+
+            desired.update({
+                "runtime":"ovh",
+                "runtime_slot":"youtube-ui-test",
+                "session_id":str(cmd.get("session_id") or desired.get("session_id") or "ui-test"),
+                "title":str(cmd.get("title") or desired.get("title") or "Peter Lofi UI Test"),
+                "loop_url":"file:///ui-test-assets/background.mp4",
+                "playlist_key":"deep-house-radio-test",
+                "desired":"live",
+                "generation":next_generation(desired),
+                "visual_revision":next_visual_revision(desired),
+                "updated_at":iso_now(),
+            })
+            atomic_json(desired_path,desired)
+            ensure_ui_test_process()
+            return
+        if action=="stop":
+            desired.update({
+                "desired":"stopped",
+                "generation":next_generation(desired),
+                "updated_at":iso_now(),
+            })
+            atomic_json(desired_path,desired)
+            ensure_ui_test_process()
+            return
 
     if action=="import_twitch_dj_archive":
         import_twitch_dj_archive(cmd)
@@ -556,6 +667,10 @@ def main():
     last_cmd=None
 
     while True:
+        try:
+            ensure_ui_test_process()
+        except Exception as exc:
+            print("ui test supervisor failed:",exc,flush=True)
         cloud_ok=False
         # Cloudflare is the primary inbox, but GitHub is an independent fallback
         # because every MediaForge command is already mirrored there.
