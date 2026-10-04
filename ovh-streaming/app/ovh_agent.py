@@ -279,6 +279,353 @@ def import_twitch_dj_archive(cmd):
     return result
 
 
+
+def _dj_track_sha_from_row(row):
+    digest=str((row or {}).get("sha256") or "").lower().strip()
+    if len(digest)==64 and all(ch in "0123456789abcdef" for ch in digest):
+        return digest
+    url=str((row or {}).get("url") or "")
+    name=pathlib.PurePosixPath(url.replace("file://","")).name
+    if name.lower().endswith(".mp3"):
+        stem=name[:-4].lower()
+        if len(stem)==64 and all(ch in "0123456789abcdef" for ch in stem):
+            return stem
+    return ""
+
+
+def _probe_dj_mp3(path, fallback_title):
+    try:
+        raw=subprocess.check_output([
+            "ffprobe","-v","error",
+            "-show_entries","format=duration:format_tags=title,artist,album_artist",
+            "-of","json",str(path)
+        ],text=True,stderr=subprocess.STDOUT,timeout=30)
+        data=json.loads(raw or "{}")
+        fmt=data.get("format") or {}
+        duration=float(fmt.get("duration") or 0)
+        if duration < 15:
+            raise RuntimeError("audio duration too short")
+        tags=fmt.get("tags") or {}
+        title=str(tags.get("title") or fallback_title or path.stem).strip()
+        artists=str(tags.get("artist") or tags.get("album_artist") or "").strip()
+        return {"duration_seconds":round(duration,3),"title":title,"artists":artists}
+    except Exception as exc:
+        raise RuntimeError(f"invalid MP3 ({path.name}): {exc}")
+
+
+def _queue_audio_skip(slot, source):
+    st=STATE/slot
+    cid=f"{slot}-dj-{uuid.uuid4().hex}"
+    payload={"id":cid,"action":"skip","requested_at":iso_now(),"source":source}
+    qdir=st/"audio-commands"
+    qdir.mkdir(parents=True,exist_ok=True)
+    atomic_json(qdir/f"{time.time_ns():020d}-{cid}.json",payload)
+    atomic_json(st/"command.json",payload)
+
+
+def import_shared_dj_archive(cmd):
+    """Import a user-supplied DJ ZIP, dedupe it, then make Twitch+Kick commercial-only.
+
+    Safety order:
+    1) download/audit the complete ZIP;
+    2) extract all valid new MP3s and stage them into Twitch while originals remain;
+    3) validate the staged playlist and require exactly the expected originals;
+    4) only then remove originals from Twitch and build an independent Kick copy;
+    5) queue audio-only fades/skips; never restart RTMP or containers.
+    """
+    archive_url=str(cmd.get("archive_url") or "").strip()
+    if not archive_url:
+        raise ValueError("archive_url is required")
+
+    expected_originals=int(cmd.get("expected_original_tracks") or 36)
+    twitch=STATE/"twitch"
+    kick=STATE/"kick"
+    current=read_json(twitch/"playlist.json",{}) or {}
+    current_tracks=[x for x in (current.get("tracks") or []) if isinstance(x,dict) and x.get("url")]
+    if not current_tracks:
+        raise RuntimeError("current Twitch DJ playlist is empty")
+
+    before_twitch_pid=(read_json(twitch/"health.json",{}) or {}).get("encoder_pid")
+    before_kick_pid=(read_json(kick/"health.json",{}) or {}).get("encoder_pid")
+    batch_id=str(cmd.get("id") or uuid.uuid4())
+    status_path=twitch/"dj-import.json"
+    audit_dir=STATE/"dj-batches"
+    audit_dir.mkdir(parents=True,exist_ok=True)
+    archive=STATE/f"dj-batch-{batch_id}.zip"
+    dj_dir=STATE/"twitch-dj-audio"
+    kick_dir=STATE/"kick-dj-audio"
+    dj_dir.mkdir(parents=True,exist_ok=True)
+    kick_dir.mkdir(parents=True,exist_ok=True)
+
+    existing_hashes={}
+    existing_commercial=[]
+    original_tracks=[]
+    for row in current_tracks:
+        src=str(row.get("source") or "")
+        rid=str(row.get("id") or "")
+        is_original=(src=="peter_lofi_original" or rid.startswith("twitch-dj-original-"))
+        if is_original:
+            original_tracks.append(row)
+            continue
+        existing_commercial.append(row)
+        digest=_dj_track_sha_from_row(row)
+        if digest:
+            existing_hashes[digest]=row
+
+    atomic_json(status_path,{
+        "status":"downloading","updated_at":iso_now(),"batch_id":batch_id,
+        "original_tracks":len(original_tracks),
+        "commercial_tracks":len(existing_commercial),
+        "track_count":len(current_tracks),
+        "rtmp_restart":False,
+    })
+    download_file(archive_url,archive)
+
+    valid=[]
+    rejected=[]
+    batch_hashes=set()
+    duplicate_in_batch=0
+    duplicate_existing=0
+    real_mp3s=0
+    atomic_json(status_path,{
+        "status":"validating","updated_at":iso_now(),"batch_id":batch_id,
+        "original_tracks":len(original_tracks),
+        "commercial_tracks":len(existing_commercial),
+        "track_count":len(current_tracks),
+        "rtmp_restart":False,
+    })
+
+    with zipfile.ZipFile(archive,"r") as zf:
+        infos=[]
+        for info in zf.infolist():
+            name=str(info.filename)
+            base=pathlib.PurePosixPath(name).name
+            if info.is_dir() or not name.lower().endswith(".mp3"):
+                continue
+            if base.startswith("._") or "/__MACOSX/" in ("/"+name):
+                continue
+            infos.append(info)
+
+        if not infos:
+            raise RuntimeError("ZIP has no MP3 files")
+
+        for info in infos:
+            real_mp3s+=1
+            h=hashlib.sha256()
+            with zf.open(info,"r") as src:
+                while True:
+                    chunk=src.read(1024*1024)
+                    if not chunk:
+                        break
+                    h.update(chunk)
+            digest=h.hexdigest()
+            filename=pathlib.PurePosixPath(info.filename).name
+
+            if digest in batch_hashes:
+                duplicate_in_batch+=1
+                continue
+            batch_hashes.add(digest)
+
+            if digest in existing_hashes:
+                duplicate_existing+=1
+                continue
+
+            target=dj_dir/(digest+".mp3")
+            created=False
+            if not target.exists() or target.stat().st_size<1024:
+                temp=target.with_suffix(".mp3.part")
+                with zf.open(info,"r") as src, open(temp,"wb") as dst:
+                    shutil.copyfileobj(src,dst,1024*1024)
+                temp.replace(target)
+                created=True
+            try:
+                stem=pathlib.PurePosixPath(filename).stem
+                stem=stem.lstrip("0123456789 ._-") or pathlib.PurePosixPath(filename).stem
+                meta=_probe_dj_mp3(target,stem)
+                row={
+                    "id":"twitch-dj-"+digest[:12],
+                    "title":meta["title"],
+                    "artists":meta["artists"],
+                    "url":"file:///state/twitch-dj-audio/"+target.name,
+                    "duration_seconds":meta["duration_seconds"],
+                    "source":"twitch_dj_user_batch",
+                    "sha256":digest,
+                    "import_batch":batch_id,
+                    "original_filename":filename,
+                }
+                valid.append(row)
+                existing_hashes[digest]=row
+            except Exception as exc:
+                if created:
+                    target.unlink(missing_ok=True)
+                rejected.append({"filename":filename,"sha256":digest,"reason":str(exc)[:300]})
+
+    if not valid and duplicate_existing==0:
+        raise RuntimeError("No valid new MP3 found in archive")
+
+    # Stage new commercial tracks while the 36 Peter Lofi originals are still present.
+    staged=list(current_tracks)+valid
+    atomic_json(twitch/"playlist.json",{
+        "station":"twitch",
+        "playlist_key":"twitch-dj-mixed-staged",
+        "platform_lock":["twitch"],
+        "shuffle":True,
+        "repeat":True,
+        "updated_at":iso_now(),
+        "tracks":staged,
+    })
+    atomic_json(status_path,{
+        "status":"staged","updated_at":iso_now(),"batch_id":batch_id,
+        "zip_mp3_files":real_mp3s,
+        "new_valid_tracks":len(valid),
+        "duplicates_existing":duplicate_existing,
+        "duplicates_in_batch":duplicate_in_batch,
+        "rejected_files":rejected,
+        "original_tracks":len(original_tracks),
+        "commercial_tracks":len(existing_commercial)+len(valid),
+        "track_count":len(staged),
+        "rtmp_restart":False,
+    })
+
+    # Hard safety rail: originals are removed only after a complete staged playlist exists.
+    staged_check=read_json(twitch/"playlist.json",{}) or {}
+    staged_tracks=staged_check.get("tracks") or []
+    if len(staged_tracks)!=len(staged):
+        raise RuntimeError("staged Twitch playlist validation failed")
+    staged_originals=[
+        t for t in staged_tracks
+        if str(t.get("source") or "")=="peter_lofi_original"
+        or str(t.get("id") or "").startswith("twitch-dj-original-")
+    ]
+    if len(staged_originals)!=expected_originals:
+        raise RuntimeError(
+            f"original-removal safety blocked: expected {expected_originals}, found {len(staged_originals)}"
+        )
+
+    final_commercial=[
+        t for t in staged_tracks
+        if not (
+            str(t.get("source") or "")=="peter_lofi_original"
+            or str(t.get("id") or "").startswith("twitch-dj-original-")
+        )
+    ]
+    # Deduplicate commercial set by SHA or URL while preserving order.
+    unique=[]
+    seen=set()
+    for row in final_commercial:
+        key=_dj_track_sha_from_row(row) or str(row.get("url") or "")
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        unique.append(row)
+    final_commercial=unique
+    if len(final_commercial)<len(existing_commercial):
+        raise RuntimeError("commercial-count safety blocked: final set shrank unexpectedly")
+
+    # Back up both live playlists before final replacement.
+    backups=STATE/"playlist-backups"
+    backups.mkdir(parents=True,exist_ok=True)
+    stamp=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    atomic_json(backups/f"{stamp}-twitch-before-commercial-only.json",current)
+    atomic_json(backups/f"{stamp}-kick-before-commercial-only.json",read_json(kick/"playlist.json",{}) or {})
+
+    # Twitch: commercial only.
+    final_twitch=[]
+    for i,row in enumerate(final_commercial,1):
+        t=dict(row);t["position"]=i
+        final_twitch.append(t)
+    atomic_json(twitch/"playlist.json",{
+        "station":"twitch",
+        "playlist_key":"twitch-dj-commercial-only",
+        "platform_lock":["twitch"],
+        "shuffle":True,
+        "repeat":True,
+        "updated_at":iso_now(),
+        "commercial_only":True,
+        "tracks":final_twitch,
+    })
+    td=read_json(twitch/"desired.json",{}) or {}
+    td.update({"runtime":"ovh","runtime_slot":"twitch","playlist_key":"twitch-dj-commercial-only","updated_at":iso_now()})
+    atomic_json(twitch/"desired.json",td)
+
+    # Kick: independent commercial copy/player. Local files are hard-linked when possible.
+    final_kick=[]
+    linked=0
+    copied=0
+    for i,row in enumerate(final_twitch,1):
+        t=dict(row)
+        t["id"]="kick-copy-"+str(row.get("id") or f"dj-{i:03d}")
+        t["position"]=i
+        url=str(row.get("url") or "")
+        prefix="file:///state/twitch-dj-audio/"
+        if url.startswith(prefix):
+            filename=url[len(prefix):]
+            src=STATE/"twitch-dj-audio"/filename
+            dst=kick_dir/filename
+            if not src.exists():
+                raise RuntimeError(f"commercial audio missing before Kick copy: {src}")
+            if not dst.exists():
+                try:
+                    os.link(src,dst);linked+=1
+                except OSError:
+                    shutil.copy2(src,dst);copied+=1
+            t["url"]="file:///state/kick-dj-audio/"+filename
+        t["source"]="kick_independent_commercial_copy"
+        final_kick.append(t)
+
+    atomic_json(kick/"playlist.json",{
+        "station":"kick",
+        "playlist_key":"kick-dj-commercial-only-independent",
+        "shuffle":True,
+        "repeat":True,
+        "updated_at":iso_now(),
+        "copied_from":"twitch-dj-commercial-only",
+        "commercial_only":True,
+        "independent_player":True,
+        "tracks":final_kick,
+    })
+    kd=read_json(kick/"desired.json",{}) or {}
+    kd.update({"runtime":"ovh","runtime_slot":"kick","playlist_key":"kick-dj-commercial-only-independent","updated_at":iso_now()})
+    atomic_json(kick/"desired.json",kd)
+
+    _queue_audio_skip("twitch","mediaforge-shared-dj-commercial-only")
+    _queue_audio_skip("kick","mediaforge-shared-dj-commercial-only")
+
+    after_twitch_pid=(read_json(twitch/"health.json",{}) or {}).get("encoder_pid")
+    after_kick_pid=(read_json(kick/"health.json",{}) or {}).get("encoder_pid")
+    if before_twitch_pid and after_twitch_pid and before_twitch_pid!=after_twitch_pid:
+        raise RuntimeError("Twitch encoder PID changed during audio-only DJ import")
+    if before_kick_pid and after_kick_pid and before_kick_pid!=after_kick_pid:
+        raise RuntimeError("Kick encoder PID changed during audio-only DJ import")
+
+    result={
+        "status":"ready",
+        "updated_at":iso_now(),
+        "batch_id":batch_id,
+        "zip_mp3_files":real_mp3s,
+        "new_valid_tracks":len(valid),
+        "duplicates_existing":duplicate_existing,
+        "duplicates_in_batch":duplicate_in_batch,
+        "rejected_files":rejected,
+        "original_tracks":0,
+        "originals_removed":len(staged_originals),
+        "commercial_tracks":len(final_twitch),
+        "track_count":len(final_twitch),
+        "twitch_track_count":len(final_twitch),
+        "kick_track_count":len(final_kick),
+        "kick_hardlinks_created":linked,
+        "kick_files_copied":copied,
+        "rtmp_restart":False,
+        "container_restart":False,
+        "twitch_encoder_pid":after_twitch_pid or before_twitch_pid,
+        "kick_encoder_pid":after_kick_pid or before_kick_pid,
+    }
+    atomic_json(twitch/"dj-import.json",result)
+    atomic_json(kick/"dj-import.json",result)
+    atomic_json(audit_dir/f"{batch_id}.json",result)
+    archive.unlink(missing_ok=True)
+    return result
+
 def _ui_test_secret_path():
     return STATE/"youtube-ui-test"/"runtime-secret.json"
 
@@ -433,6 +780,9 @@ def apply_command(cmd):
 
     if action=="import_twitch_dj_archive":
         import_twitch_dj_archive(cmd)
+        return
+    if action=="import_shared_dj_archive":
+        import_shared_dj_archive(cmd)
         return
 
     # Playlist payloads are persisted locally on OVH. AudioEngine keeps a
