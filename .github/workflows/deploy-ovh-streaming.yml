@@ -20,26 +20,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate required secrets
+      - name: Validate OVH access only
         shell: bash
         env:
           OVH_HOST: ${{ secrets.OVH_HOST }}
           OVH_USER: ${{ secrets.OVH_USER }}
           OVH_SSH_PRIVATE_KEY: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
-          KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
-          KICK_STREAM_KEY: ${{ secrets.KICK_STREAM_KEY }}
-          TWITCH_STREAM_KEY: ${{ secrets.TWITCH_STREAM_KEY }}
         run: |
           set -euo pipefail
-          for name in OVH_HOST OVH_USER OVH_SSH_PRIVATE_KEY KICK_STREAM_URL KICK_STREAM_KEY TWITCH_STREAM_KEY; do
+          for name in OVH_HOST OVH_USER OVH_SSH_PRIVATE_KEY; do
             if [ -z "${!name:-}" ]; then
-              echo "::error::Missing required secret: $name"
+              echo "::error::Missing required OVH access secret: $name"
               exit 1
             fi
           done
-
-      - name: Package OVH streaming core
-        run: tar -czf /tmp/peter-lofi-ovh.tgz ovh-streaming
 
       - name: Prepare SSH
         shell: bash
@@ -53,35 +47,7 @@ jobs:
           chmod 600 ~/.ssh/peter_lofi_ovh
           ssh-keyscan -H "$OVH_HOST" >> ~/.ssh/known_hosts
 
-      - name: Build production environment
-        shell: bash
-        env:
-          KICK_STREAM_URL: ${{ secrets.KICK_STREAM_URL }}
-          KICK_STREAM_KEY: ${{ secrets.KICK_STREAM_KEY }}
-          TWITCH_STREAM_KEY: ${{ secrets.TWITCH_STREAM_KEY }}
-          LOOP_URL: "https://mediaforge-api.guilhermeodsgn.workers.dev/media/8d7b81f4-5328-4505-82ac-79cf6221a8e1/51ab646b49d14c55b4720f89f6ee913e1ab5cb5b9df74788afcb099eeb6d6136"
-        run: |
-          set -euo pipefail
-          {
-            printf 'KICK_STREAM_URL=%s\n' "$KICK_STREAM_URL"
-            printf 'KICK_STREAM_KEY=%s\n' "$KICK_STREAM_KEY"
-            printf 'TWITCH_STREAM_KEY=%s\n' "$TWITCH_STREAM_KEY"
-            printf 'LOOP_URL=%s\n' "$LOOP_URL"
-          } > /tmp/peter-lofi.env
-          chmod 600 /tmp/peter-lofi.env
-
-      - name: Upload release to OVH
-        shell: bash
-        env:
-          OVH_HOST: ${{ secrets.OVH_HOST }}
-          OVH_USER: ${{ secrets.OVH_USER }}
-        run: |
-          set -euo pipefail
-          SCP="scp -i ~/.ssh/peter_lofi_ovh -o BatchMode=yes"
-          $SCP /tmp/peter-lofi-ovh.tgz "$OVH_USER@$OVH_HOST:/tmp/peter-lofi-ovh.tgz"
-          $SCP /tmp/peter-lofi.env "$OVH_USER@$OVH_HOST:/tmp/peter-lofi.env"
-
-      - name: Deploy and verify
+      - name: Deploy from Git to OVH and preserve OVH credentials
         shell: bash
         env:
           OVH_HOST: ${{ secrets.OVH_HOST }}
@@ -89,11 +55,12 @@ jobs:
         run: |
           set -euo pipefail
           SSH="ssh -i ~/.ssh/peter_lofi_ovh -o BatchMode=yes $OVH_USER@$OVH_HOST"
+          # bootstrap.sh pulls origin/main inside the VPS. Streaming credentials
+          # remain only in the existing OVH .env and are never copied from GitHub.
           $SSH 'bash -s' < ovh-streaming/bootstrap.sh
-          $SSH 'cd /opt/peter-lofi/ovh-streaming && (docker compose ps || docker-compose ps)'
+          $SSH 'cd /home/ubuntu/theofficemusic/ovh-streaming && (docker compose ps || docker-compose ps)'
           $SSH 'curl --fail --silent --show-error http://127.0.0.1:8787/health'
 
-      - name: Remove temporary local secrets
+      - name: Remove temporary SSH material
         if: always()
-        run: |
-          rm -f ~/.ssh/peter_lofi_ovh /tmp/peter-lofi.env /tmp/peter-lofi-ovh.tgz
+        run: rm -f ~/.ssh/peter_lofi_ovh
