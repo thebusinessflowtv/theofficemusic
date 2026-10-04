@@ -1,0 +1,163 @@
+name: Peter Lofi — 30 energetic Gaming tracks (5 minutes)
+'on':
+  push:
+    branches:
+    - main
+    paths:
+    - control/gaming-twitch-dj-30/start.json
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: gaming-twitch-dj-30-production
+  cancel-in-progress: false
+env:
+  SECRET_DATASET_SLUG: peter-lofi-gaming-dj30-secrets
+  KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  OVH_AGENT_TOKEN: ${{ secrets.OVH_AGENT_TOKEN }}
+jobs:
+  generate:
+    name: Track ${{ matrix.index }}/30 — 5 min — High energy
+    runs-on: ubuntu-latest
+    timeout-minutes: 210
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        index:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        - 22
+        - 23
+        - 24
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+    env:
+      INDEX: ${{ matrix.index }}
+      ATTEMPT: ${{ github.run_attempt }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: main
+    - name: Install runtime
+      run: 'set -euo pipefail
+
+        sudo apt-get update -y
+
+        sudo apt-get install -y ffmpeg jq
+
+        python -m pip install --upgrade pip kaggle requests
+
+        git config user.name github-actions[bot]
+
+        git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+        test -n "$KAGGLE_USERNAME"
+
+        test -n "$KAGGLE_API_TOKEN"
+
+        test -n "$HF_TOKEN"
+
+        '
+    - name: Skip previously completed tracks
+      run: "mkdir -p build\nif test -f \"control/gaming-twitch-dj-30/$(printf '%02d' \"$INDEX\").json\"; then\n\
+        \  echo \"SKIP_REST=1\" >> \"$GITHUB_ENV\"\nfi\n"
+    - name: Build high-energy five-minute profile
+      if: env.SKIP_REST != '1'
+      run: python scripts/build_gaming_dj30_profile.py --index "$INDEX" --out build/reference_profile.json
+    - name: Prepare private Hugging Face credential
+      if: env.SKIP_REST != '1'
+      run: "set -euo pipefail\nSECRET_DIR=\"$(mktemp -d)\"\ntrap 'rm -rf \"$SECRET_DIR\"' EXIT\nprintf '%s' \"$HF_TOKEN\"\
+        \ > \"$SECRET_DIR/hf_token.txt\"\nchmod 600 \"$SECRET_DIR/hf_token.txt\"\npython - \"$SECRET_DIR\" <<'PY'\n\
+        import json, os, pathlib, sys\np=pathlib.Path(sys.argv[1])\n(p/\"dataset-metadata.json\").write_text(json.dumps({\n\
+        \    \"title\":\"The Office Music Secrets\",\n    \"id\":f\"{os.environ['KAGGLE_USERNAME']}/peter-lofi-gaming-dj30-secrets\"\
+        ,\n    \"licenses\":[{\"name\":\"other\"}],\n    \"description\":\"Private CI credential input for Peter\
+        \ Lofi generation.\"\n},indent=2))\nPY\nDATASET=\"$KAGGLE_USERNAME/$SECRET_DATASET_SLUG\"\nif kaggle datasets\
+        \ status \"$DATASET\" >/dev/null 2>&1; then\n  kaggle datasets version -p \"$SECRET_DIR\" -m \"Refresh HF\
+        \ token for Gaming Twitch DJ 30\" -q\nelse\n  kaggle datasets create -p \"$SECRET_DIR\" -q\nfi\n"
+    - name: Prepare one-track Medium kernel
+      if: env.SKIP_REST != '1'
+      run: "set -euo pipefail\nTMP=\"$(mktemp -d)\"\ncp kaggle/runner_gaming_dj30.py \"$TMP/runner.py\"\nREQUEST_ID=\"\
+        gaming-dj30-${INDEX}-a${ATTEMPT}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}\"\nPROFILE_B64=\"$(base64 -w0 build/reference_profile.json)\"\
+        \n\npython - \"$TMP/runner.py\" \"$REQUEST_ID\" \"$INDEX\" \"$ATTEMPT\" \"$PROFILE_B64\" <<'PY'\nimport\
+        \ pathlib,re,sys\np=pathlib.Path(sys.argv[1]); req=sys.argv[2]; idx=int(sys.argv[3]); attempt=int(sys.argv[4]);\
+        \ payload=sys.argv[5]\nt=p.read_text(encoding=\"utf-8\")\nt=re.sub(r'REQUEST_ID = \"[^\"]*\"', f'REQUEST_ID\
+        \ = \"{req}\"', t, count=1)\nt=re.sub(r'REFERENCE_INDEX = \\d+', f'REFERENCE_INDEX = {idx}', t, count=1)\n\
+        t=re.sub(r'ATTEMPT = \\d+', f'ATTEMPT = {attempt}', t, count=1)\nt=re.sub(r'REFERENCE_PAYLOAD_B64 = \"[^\"\
+        ]*\"', f'REFERENCE_PAYLOAD_B64 = \"{payload}\"', t, count=1)\np.write_text(t,encoding=\"utf-8\")\nPY\n\n\
+        KERNEL_NAME=\"peter-lofi-dj30-${INDEX}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}\"\npython - \"$TMP\" \"$KERNEL_NAME\"\
+        \ <<'PY'\nimport json,os,pathlib,sys\nd=pathlib.Path(sys.argv[1]); name=sys.argv[2]\n(d/\"kernel-metadata.json\"\
+        ).write_text(json.dumps({\n    \"id\":f\"{os.environ['KAGGLE_USERNAME']}/{name}\",\n    \"title\":f\"Peter\
+        \ Lofi Gaming Reference {os.environ['GITHUB_RUN_ID']}\",\n    \"code_file\":\"runner.py\",\n    \"language\"\
+        :\"python\",\n    \"kernel_type\":\"script\",\n    \"is_private\":True,\n    \"enable_gpu\":True,\n    \"\
+        machine_shape\":\"NvidiaL4\",\n    \"enable_internet\":True,\n    \"dataset_sources\":[f\"{os.environ['KAGGLE_USERNAME']}/peter-lofi-gaming-dj30-secrets\"\
+        ],\n    \"competition_sources\":[],\n    \"kernel_sources\":[]\n},indent=2))\nPY\n\necho \"KERNEL_NAME=$KERNEL_NAME\"\
+        \ >> \"$GITHUB_ENV\"\necho \"REQUEST_ID=$REQUEST_ID\" >> \"$GITHUB_ENV\"\necho \"KERNEL_DIR=$TMP\" >> \"\
+        $GITHUB_ENV\"\n"
+    - name: Generate one coherent 5-minute track
+      if: env.SKIP_REST != '1'
+      run: "set -euo pipefail\nPUSH_OUTPUT=\"$(kaggle kernels push -p \"$KERNEL_DIR\" --timeout 7200 --accelerator\
+        \ NvidiaL4 2>&1)\"\nprintf '%s\\n' \"$PUSH_OUTPUT\"\nKERNEL_REF=\"$KAGGLE_USERNAME/$KERNEL_NAME\"\necho\
+        \ \"KERNEL_REF=$KERNEL_REF\" >> \"$GITHUB_ENV\"\nsleep 20\n\nfor i in $(seq 1 120); do\n  STATUS=\"$(kaggle\
+        \ kernels status \"$KERNEL_REF\" 2>&1 || true)\"\n  echo \"$STATUS\"\n  if echo \"$STATUS\" | grep -Eqi\
+        \ 'complete|completed'; then\n    break\n  fi\n  if echo \"$STATUS\" | grep -Eqi 'error|failed|cancel';\
+        \ then\n    kaggle kernels logs \"$KERNEL_REF\" 2>&1 | tail -n 250 || true\n    exit 1\n  fi\n  if [ \"\
+        $i\" -eq 120 ]; then\n    kaggle kernels logs \"$KERNEL_REF\" 2>&1 | tail -n 250 || true\n    exit 1\n \
+        \ fi\n  sleep 60\ndone\n\nrm -rf generated\nmkdir -p generated\nkaggle kernels output \"$KERNEL_REF\" -p\
+        \ generated\n\nMARKER=\"$(find generated -type f -name request_id.txt -print -quit)\"\ntest -n \"$MARKER\"\
+        \ntest \"$(tr -d '\\r\\n ' < \"$MARKER\")\" = \"$REQUEST_ID\"\nWAV=\"$(find generated -type f -name '*.wav'\
+        \ -print -quit)\"\ntest -n \"$WAV\"\necho \"GENERATED_WAV=$WAV\" >> \"$GITHUB_ENV\"\n"
+    - name: Quality Gate
+      id: qc
+      if: env.SKIP_REST != '1'
+      run: "set -euo pipefail\npython scripts/quality_gate_audio.py \"$GENERATED_WAV\" \\\n  --reference-profile\
+        \ build/reference_profile.json \\\n  --out build/qc.json \\\n  --normalized build/approved.mp3\n"
+    - name: Publish approved track to GitHub Release
+      if: env.SKIP_REST != '1' && steps.qc.outcome == 'success'
+      run: "set -euo pipefail\nPAD=\"$(printf '%03d' \"$INDEX\")\"\nMP3_NAME=\"peter-lofi-gaming-dj30-${PAD}.mp3\"\
+        \nmv build/approved.mp3 \"build/$MP3_NAME\"\nTAG=\"peter-lofi-gaming-dj30-${PAD}-${GITHUB_RUN_ID}\"\ngh\
+        \ release create \"$TAG\" \"build/$MP3_NAME\" build/qc.json build/reference_profile.json \\\n  --repo \"\
+        $GITHUB_REPOSITORY\" --target main \\\n  --title \"Peter Lofi — Gaming Reference ${PAD}\" \\\n  --notes\
+        \ \"Original 5-minute Peter Lofi Gaming track. Pure text-to-audio; reference audio was not used. Passed\
+        \ automated Quality Gate.\"\necho \"RELEASE_TAG=$TAG\" >> \"$GITHUB_ENV\"\necho \"MP3_NAME=$MP3_NAME\" >>\
+        \ \"$GITHUB_ENV\"\n"
+    - name: Append approved track to Gaming
+      if: env.SKIP_REST != '1'
+      run: "set -euo pipefail\nfor attempt in 1 2 3 4 5; do\n  git fetch origin main\n  git reset --hard origin/main\n\
+        \  python scripts/publish_gaming_dj30.py\n  git add control/music-library.json ovh-streaming/stations/gaming.json\
+        \ control/gaming-twitch-dj-30\n  git diff --cached --quiet || git commit -m \"gaming: append five-minute\
+        \ DJ track $INDEX\"\n  if git push origin HEAD:main; then exit 0; fi\n  sleep 3\ndone\nexit 1\n"
+    - name: Keep diagnostics
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: gaming-dj30-${{ matrix.index }}-${{ github.run_attempt }}
+        path: build/*.json
+        if-no-files-found: ignore
