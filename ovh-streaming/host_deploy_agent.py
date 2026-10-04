@@ -474,6 +474,40 @@ def hot_patch_audio_controls(target="twitch-kick"):
     return results
 
 
+def bootstrap_ui_test_control_agent():
+    """One-time safe refresh of the non-publisher OVH control container.
+
+    This is intentionally limited to the ovh-agent container. It never recreates
+    or signals Kick/Twitch/YouTube publisher containers.
+    """
+    marker=REPO/"control"/"ui-test-control-agent-refresh.json"
+    if not marker.exists():
+        return None
+    try:
+        cfg=json.loads(marker.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise RuntimeError(f"invalid ui-test control-agent marker: {exc}")
+    version=str(cfg.get("version") or "")
+    if not version:
+        raise RuntimeError("ui-test control-agent marker has no version")
+    st=read_state()
+    if str(st.get("ui_test_control_agent_version") or "")==version:
+        return {"status":"already_applied","version":version}
+
+    name=CONTAINERS.get("ovh-agent","peter-lofi-ovh-agent")
+    for filename in ("ovh_agent.py","stream_core.py","audio_engine.py","visual_engine.py"):
+        run(["docker","cp",str(OVH/"app"/filename),f"{name}:/app/{filename}"],timeout=30)
+    run(["docker","restart",name],timeout=60)
+    time.sleep(4)
+    running=run(["docker","inspect","-f","{{.State.Running}}",name],timeout=20).strip().lower()
+    if running!="true":
+        raise RuntimeError("ovh-agent did not return after ui-test control refresh")
+    st["ui_test_control_agent_version"]=version
+    st["ui_test_control_agent_refreshed_at"]=now()
+    write_state(st)
+    return {"status":"applied","version":version,"publisher_containers_touched":False}
+
+
 def rollback_service(service):
     if service not in SERVICES:
         raise ValueError("service not allowed")
@@ -746,6 +780,13 @@ def execute(cmd):
 
 
 def main():
+    try:
+        result=bootstrap_ui_test_control_agent()
+        if result:
+            print("ui-test control-agent bootstrap",result,flush=True)
+    except Exception as exc:
+        print("ui-test control-agent bootstrap failed",str(exc)[:800],flush=True)
+
     # The watchdog is fully local and keeps running even when Cloudflare/D1 is
     # unavailable or rate-limited.
     threading.Thread(target=watchdog_loop,name="mediaforge-watchdog",daemon=True).start()
