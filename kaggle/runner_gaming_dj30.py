@@ -51,6 +51,17 @@ def main():
     payload = json.loads(base64.b64decode(REFERENCE_PAYLOAD_B64).decode("utf-8"))
     profile = payload["profile"]
 
+    # Fail before downloading gigabytes if Kaggle did not attach the requested GPU.
+    import torch
+    gpu_check = subprocess.run(["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"], capture_output=True, text=True)
+    print("GPU allocation:", gpu_check.stdout.strip() or gpu_check.stderr.strip(), flush=True)
+    if gpu_check.returncode != 0 or not torch.cuda.is_available():
+        raise RuntimeError("GPU_ALLOCATION_FAILED: Kaggle session has no usable CUDA device")
+    capability = torch.cuda.get_device_capability(0)
+    if capability[0] < 8:
+        raise RuntimeError("GPU_INCOMPATIBLE: Medium requires Ampere or newer for Flash Attention")
+    print("GPU_PREFLIGHT_OK:", torch.cuda.get_device_name(0), capability, flush=True)
+
     token = load_hf_token()
     os.environ["HF_TOKEN"] = token
     os.environ["HUGGING_FACE_HUB_TOKEN"] = token
