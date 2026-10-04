@@ -1,7 +1,7 @@
 name: Peter Lofi — Emergency Private UI Test Encoder
 # retry-after-audio-ready-fix
 # svg-text-layer-fix
-# centered-current-music-message-v4-title-2x-centered
+# centered-current-music-message-v5-title-60px
 
 on:
   push:
