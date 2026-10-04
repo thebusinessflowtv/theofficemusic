@@ -210,8 +210,8 @@ class VisualEngine:
         target = f"udp://127.0.0.1:{self.udp_port}?pkt_size=1316"
         if self.platform == "youtube-ui-test":
             self.sync_ui_test_text()
-            overlay = "/ui-test-assets/overlay-static.png"
-            font = "/ui-test-assets/superstar.ttf"
+            overlay = "/state/ui-test-assets/overlay-static.png"
+            font = "/state/ui-test-assets/superstar.ttf"
             title_file = str(self.state / "now-playing.txt")
             message_file = str(self.state / "message.txt")
             demo_enable = "between(mod(t\\,60)\\,45\\,52)"
