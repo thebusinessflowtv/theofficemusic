@@ -239,14 +239,16 @@ class StreamCore:
 
     def audio_ready(self):
         ah = read_json(self.state / "audio-health.json", {}) or {}
+        now_playing = read_json(self.state / "now-playing.json", {}) or {}
         state = str(ah.get("state") or ah.get("status") or "").lower()
+        track_id = ah.get("track_id") or now_playing.get("track_id")
         return state in {
             "playing",
             "crossfading",
             "encoder_backpressure_buffering",
             "source_stalled_pcm_clock_preserved",
             "prebuffering_transition",
-        } and bool(ah.get("track_id"))
+        } and bool(track_id)
 
     def wait_audio_ready(self):
         end = time.time() + self.audio_ready_timeout
