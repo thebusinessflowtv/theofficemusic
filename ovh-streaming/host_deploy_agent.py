@@ -322,6 +322,37 @@ def publish_mediaforge_control_plane():
         raise RuntimeError("published Control Center bundle does not contain DJ 100 UI")
 
     after={slot:health(slot) for slot in SLOTS}
+    # Publish a non-sensitive DJ batch snapshot for operational validation.
+    try:
+        tw_import=read_json(OVH/"state"/"twitch"/"dj-import.json",{}) or {}
+        ki_import=read_json(OVH/"state"/"kick"/"dj-import.json",{}) or {}
+        tw_playlist=read_json(OVH/"state"/"twitch"/"playlist.json",{}) or {}
+        ki_playlist=read_json(OVH/"state"/"kick"/"playlist.json",{}) or {}
+        snapshot={
+            "checked_at":now(),
+            "import_status":str(tw_import.get("status") or "none"),
+            "zip_mp3_files":int(tw_import.get("zip_mp3_files") or 0),
+            "new_valid_tracks":int(tw_import.get("new_valid_tracks") or 0),
+            "duplicates_existing":int(tw_import.get("duplicates_existing") or 0),
+            "duplicates_in_batch":int(tw_import.get("duplicates_in_batch") or 0),
+            "rejected_files":len(tw_import.get("rejected_files") or []),
+            "original_tracks":int(tw_import.get("original_tracks") if tw_import.get("original_tracks") is not None else -1),
+            "originals_removed":int(tw_import.get("originals_removed") or 0),
+            "commercial_tracks":int(tw_import.get("commercial_tracks") or 0),
+            "twitch_track_count":len(tw_playlist.get("tracks") or []),
+            "kick_track_count":len(ki_playlist.get("tracks") or []),
+            "rtmp_restart":bool(tw_import.get("rtmp_restart",False)),
+            "container_restart":bool(tw_import.get("container_restart",False)),
+            "twitch_status":str(after.get("twitch",{}).get("status") or "unknown"),
+            "kick_status":str(after.get("kick",{}).get("status") or "unknown"),
+            "twitch_hot_swap":bool(after.get("twitch",{}).get("hot_swap",False)),
+            "kick_hot_swap":bool(after.get("kick",{}).get("hot_swap",False)),
+            "kick_import_status":str(ki_import.get("status") or "none"),
+        }
+        atomic_json(CONTROL_ROOT/"site"/"dj-validation.json",snapshot)
+    except Exception as exc:
+        atomic_json(CONTROL_ROOT/"site"/"dj-validation.json",{"checked_at":now(),"error":str(exc)[:240]})
+
     changed=[]
     for slot in SLOTS:
         bp=before.get(slot,{}).get("encoder_pid")
