@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 210
     strategy:
-      fail-fast: false
+      fail-fast: true
       max-parallel: 1
       matrix:
         index:
@@ -73,7 +73,7 @@ jobs:
 
         sudo apt-get install -y ffmpeg jq
 
-        python -m pip install --upgrade pip kaggle requests
+        python -m pip install --upgrade pip kaggle==2.2.4 requests
 
         git config user.name github-actions[bot]
 
@@ -97,11 +97,15 @@ jobs:
       run: "set -euo pipefail\nSECRET_DIR=\"$(mktemp -d)\"\ntrap 'rm -rf \"$SECRET_DIR\"' EXIT\nprintf '%s' \"$HF_TOKEN\"\
         \ > \"$SECRET_DIR/hf_token.txt\"\nchmod 600 \"$SECRET_DIR/hf_token.txt\"\npython - \"$SECRET_DIR\" <<'PY'\n\
         import json, os, pathlib, sys\np=pathlib.Path(sys.argv[1])\n(p/\"dataset-metadata.json\").write_text(json.dumps({\n\
-        \    \"title\":\"The Office Music Secrets\",\n    \"id\":f\"{os.environ['KAGGLE_USERNAME']}/peter-lofi-gaming-dj30-secrets\"\
+        \    \"title\":\"Peter Lofi Gaming DJ30 Secrets\",\n    \"id\":f\"{os.environ['KAGGLE_USERNAME']}/peter-lofi-gaming-dj30-secrets\"\
         ,\n    \"licenses\":[{\"name\":\"other\"}],\n    \"description\":\"Private CI credential input for Peter\
         \ Lofi generation.\"\n},indent=2))\nPY\nDATASET=\"$KAGGLE_USERNAME/$SECRET_DATASET_SLUG\"\nif kaggle datasets\
         \ status \"$DATASET\" >/dev/null 2>&1; then\n  kaggle datasets version -p \"$SECRET_DIR\" -m \"Refresh HF\
-        \ token for Gaming Twitch DJ 30\" -q\nelse\n  kaggle datasets create -p \"$SECRET_DIR\" -q\nfi\n"
+        \ token for Gaming Twitch DJ 30\" -q\nelse\n  kaggle datasets create -p \"$SECRET_DIR\" -q\nfi\n\nREADY=0\n\
+        for n in $(seq 1 60); do\n  STATUS=\"$(kaggle datasets status \"$DATASET\" 2>&1)\"\n  echo \"$STATUS\"\n\
+        \  if printf '%s' \"$STATUS\" | grep -Eqi '\\bready\\b'; then READY=1; break; fi\n  if printf '%s' \"$STATUS\"\
+        \ | grep -Eqi 'error|failed|denied|not found'; then exit 1; fi\n  sleep 5\ndone\ntest \"$READY\" -eq 1\n\
+        kaggle datasets files \"$DATASET\" | grep -q hf_token.txt\n"
     - name: Prepare one-track Medium kernel
       if: env.SKIP_REST != '1'
       run: "set -euo pipefail\nTMP=\"$(mktemp -d)\"\ncp kaggle/runner_gaming_dj30.py \"$TMP/runner.py\"\nREQUEST_ID=\"\
@@ -114,24 +118,27 @@ jobs:
         ]*\"', f'REFERENCE_PAYLOAD_B64 = \"{payload}\"', t, count=1)\np.write_text(t,encoding=\"utf-8\")\nPY\n\n\
         KERNEL_NAME=\"peter-lofi-dj30-${INDEX}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}\"\npython - \"$TMP\" \"$KERNEL_NAME\"\
         \ <<'PY'\nimport json,os,pathlib,sys\nd=pathlib.Path(sys.argv[1]); name=sys.argv[2]\n(d/\"kernel-metadata.json\"\
-        ).write_text(json.dumps({\n    \"id\":f\"{os.environ['KAGGLE_USERNAME']}/{name}\",\n    \"title\":f\"Peter\
-        \ Lofi Gaming Reference {os.environ['GITHUB_RUN_ID']}\",\n    \"code_file\":\"runner.py\",\n    \"language\"\
-        :\"python\",\n    \"kernel_type\":\"script\",\n    \"is_private\":True,\n    \"enable_gpu\":True,\n    \"\
-        machine_shape\":\"NvidiaL4\",\n    \"enable_internet\":True,\n    \"dataset_sources\":[f\"{os.environ['KAGGLE_USERNAME']}/peter-lofi-gaming-dj30-secrets\"\
-        ],\n    \"competition_sources\":[],\n    \"kernel_sources\":[]\n},indent=2))\nPY\n\necho \"KERNEL_NAME=$KERNEL_NAME\"\
+        ).write_text(json.dumps({\n    \"id\":f\"{os.environ['KAGGLE_USERNAME']}/{name}\",\n    \"title\":name,\n\
+        \    \"code_file\":\"runner.py\",\n    \"language\":\"python\",\n    \"kernel_type\":\"script\",\n    \"\
+        is_private\":True,\n    \"enable_gpu\":True,\n    \"machine_shape\":\"NvidiaL4\",\n    \"enable_internet\"\
+        :True,\n    \"dataset_sources\":[f\"{os.environ['KAGGLE_USERNAME']}/peter-lofi-gaming-dj30-secrets\"],\n\
+        \    \"competition_sources\":[],\n    \"kernel_sources\":[]\n},indent=2))\nPY\n\necho \"KERNEL_NAME=$KERNEL_NAME\"\
         \ >> \"$GITHUB_ENV\"\necho \"REQUEST_ID=$REQUEST_ID\" >> \"$GITHUB_ENV\"\necho \"KERNEL_DIR=$TMP\" >> \"\
         $GITHUB_ENV\"\n"
     - name: Generate one coherent 5-minute track
       if: env.SKIP_REST != '1'
-      run: "set -euo pipefail\nPUSH_OUTPUT=\"$(kaggle kernels push -p \"$KERNEL_DIR\" --timeout 7200 --accelerator\
-        \ NvidiaL4 2>&1)\"\nprintf '%s\\n' \"$PUSH_OUTPUT\"\nKERNEL_REF=\"$KAGGLE_USERNAME/$KERNEL_NAME\"\necho\
-        \ \"KERNEL_REF=$KERNEL_REF\" >> \"$GITHUB_ENV\"\nsleep 20\n\nfor i in $(seq 1 120); do\n  STATUS=\"$(kaggle\
-        \ kernels status \"$KERNEL_REF\" 2>&1 || true)\"\n  echo \"$STATUS\"\n  if echo \"$STATUS\" | grep -Eqi\
-        \ 'complete|completed'; then\n    break\n  fi\n  if echo \"$STATUS\" | grep -Eqi 'error|failed|cancel';\
-        \ then\n    kaggle kernels logs \"$KERNEL_REF\" 2>&1 | tail -n 250 || true\n    exit 1\n  fi\n  if [ \"\
-        $i\" -eq 120 ]; then\n    kaggle kernels logs \"$KERNEL_REF\" 2>&1 | tail -n 250 || true\n    exit 1\n \
-        \ fi\n  sleep 60\ndone\n\nrm -rf generated\nmkdir -p generated\nkaggle kernels output \"$KERNEL_REF\" -p\
-        \ generated\n\nMARKER=\"$(find generated -type f -name request_id.txt -print -quit)\"\ntest -n \"$MARKER\"\
+      run: "set -euo pipefail\nif ! PUSH_OUTPUT=\"$(kaggle kernels push -p \"$KERNEL_DIR\" --timeout 7200 --accelerator\
+        \ NvidiaL4 2>&1)\"; then\n  printf '%s\\n' \"$PUSH_OUTPUT\"\n  exit 1\nfi\nprintf '%s\\n' \"$PUSH_OUTPUT\"\
+        \nKERNEL_REF=\"$(printf '%s\\n' \"$PUSH_OUTPUT\" | python -c 'import re,sys; m=re.search(r\"https://www[.]kaggle[.]com/code/([A-Za-z0-9_-]+/[A-Za-z0-9_-]+)\"\
+        ,sys.stdin.read()); print(m.group(1) if m else \"\")')\"\ntest -n \"$KERNEL_REF\" || { echo 'Kaggle did\
+        \ not return a canonical kernel URL'; exit 1; }\necho \"KERNEL_REF=$KERNEL_REF\" >> \"$GITHUB_ENV\"\nsleep\
+        \ 20\n\nfor i in $(seq 1 120); do\n  if ! STATUS=\"$(kaggle kernels status \"$KERNEL_REF\" 2>&1)\"; then\n\
+        \  printf '%s\\n' \"$STATUS\"\n  exit 1\nfi\n  echo \"$STATUS\"\n  if echo \"$STATUS\" | grep -Eqi 'complete|completed';\
+        \ then\n    break\n  fi\n  if echo \"$STATUS\" | grep -Eqi 'error|failed|cancel|denied|Cannot access|not\
+        \ found'; then\n    kaggle kernels logs \"$KERNEL_REF\" 2>&1 | tail -n 250 || true\n    exit 1\n  fi\n \
+        \ if [ \"$i\" -eq 120 ]; then\n    kaggle kernels logs \"$KERNEL_REF\" 2>&1 | tail -n 250 || true\n    exit\
+        \ 1\n  fi\n  sleep 60\ndone\n\nrm -rf generated\nmkdir -p generated\nkaggle kernels output \"$KERNEL_REF\"\
+        \ -p generated\n\nMARKER=\"$(find generated -type f -name request_id.txt -print -quit)\"\ntest -n \"$MARKER\"\
         \ntest \"$(tr -d '\\r\\n ' < \"$MARKER\")\" = \"$REQUEST_ID\"\nWAV=\"$(find generated -type f -name '*.wav'\
         \ -print -quit)\"\ntest -n \"$WAV\"\necho \"GENERATED_WAV=$WAV\" >> \"$GITHUB_ENV\"\n"
     - name: Quality Gate
