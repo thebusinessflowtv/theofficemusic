@@ -1,0 +1,185 @@
+name: Peter Lofi — Direct OVH Private UI Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/private-ui-test-direct-ovh.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      KEY_A: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
+      KEY_B: ${{ secrets.OVH_SSH_KEY }}
+      KEY_C: ${{ secrets.SSH_PRIVATE_KEY }}
+      KEY_D: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+      KEY_E: ${{ secrets.VPS_SSH_KEY }}
+      KEY_F: ${{ secrets.SSH_KEY }}
+      KEY_G: ${{ secrets.OVH_PRIVATE_KEY }}
+      PASS_A: ${{ secrets.OVH_SSH_PASSWORD }}
+      PASS_B: ${{ secrets.OVH_PASSWORD }}
+      PASS_C: ${{ secrets.VPS_PASSWORD }}
+      OVH_HOST_SECRET: ${{ secrets.OVH_HOST }}
+      OVH_USER_SECRET: ${{ secrets.OVH_USER }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare OVH authentication
+        shell: bash
+        run: |
+          set -euo pipefail
+          HOST="${OVH_HOST_SECRET:-146.59.156.224}"
+          USER="${OVH_USER_SECRET:-ubuntu}"
+          echo "OVH_HOST_RESOLVED=$HOST" >> "$GITHUB_ENV"
+          echo "OVH_USER_RESOLVED=$USER" >> "$GITHUB_ENV"
+
+          KEY=""
+          for n in KEY_A KEY_B KEY_C KEY_D KEY_E KEY_F KEY_G; do
+            if [ -n "${!n:-}" ]; then KEY="${!n}"; break; fi
+          done
+          PASS=""
+          for n in PASS_A PASS_B PASS_C; do
+            if [ -n "${!n:-}" ]; then PASS="${!n}"; break; fi
+          done
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          if [ -n "$KEY" ]; then
+            printf '%s\n' "$KEY" > ~/.ssh/id_ovh
+            chmod 600 ~/.ssh/id_ovh
+            echo "OVH_AUTH_MODE=key" >> "$GITHUB_ENV"
+          elif [ -n "$PASS" ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq sshpass
+            echo "::add-mask::$PASS"
+            echo "OVH_PASSWORD_RESOLVED=$PASS" >> "$GITHUB_ENV"
+            echo "OVH_AUTH_MODE=password" >> "$GITHUB_ENV"
+          else
+            echo "No OVH SSH credential alias is present in GitHub Actions secrets."
+            exit 2
+          fi
+
+      - name: Deploy ONLY isolated UI-test control code and queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=15"
+          if [ "$OVH_AUTH_MODE" = "key" ]; then
+            SSH_CMD=(ssh $SSH_OPTS -i ~/.ssh/id_ovh "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED")
+          else
+            SSH_CMD=(sshpass -p "$OVH_PASSWORD_RESOLVED" ssh $SSH_OPTS "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED")
+          fi
+
+          "${SSH_CMD[@]}" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+          cd /home/ubuntu/theofficemusic
+          echo "=== BEFORE production publisher identities ==="
+          for c in peter-lofi-kick peter-lofi-twitch peter-lofi-youtube-deep-house peter-lofi-youtube-rainy; do
+            sudo docker inspect -f '{{.Name}} id={{.Id}} pid={{.State.Pid}} running={{.State.Running}}' "$c" || true
+          done
+
+          git fetch origin main
+          git reset --hard origin/main
+
+          echo "=== Copy latest control/test code into ovh-agent only ==="
+          for f in ovh_agent.py stream_core.py audio_engine.py visual_engine.py; do
+            sudo docker cp "ovh-streaming/app/$f" "peter-lofi-ovh-agent:/app/$f"
+          done
+
+          python3 - <<'PY'
+          import json, pathlib, shutil
+          root=pathlib.Path("/home/ubuntu/theofficemusic")
+          idx=json.loads((root/"control/ovh-commands/index.json").read_text(encoding="utf-8"))
+          chosen=None
+          for entry in reversed(idx.get("commands") or []):
+              p=root/str(entry.get("path") or "")
+              if not p.exists():
+                  continue
+              try: cmd=json.loads(p.read_text(encoding="utf-8"))
+              except Exception: continue
+              if str(cmd.get("runtime_slot") or "")=="youtube-ui-test" and str(cmd.get("action") or "").lower() in {"start","resume","restart"}:
+                  chosen=(p,cmd)
+                  break
+          if not chosen:
+              raise SystemExit("No youtube-ui-test start command found")
+          p,cmd=chosen
+          inbox=root/"ovh-streaming/state/agent/local-inbox"
+          inbox.mkdir(parents=True,exist_ok=True)
+          cid=str(cmd.get("id") or "ui-test-start")
+          safe="".join(ch for ch in cid if ch.isalnum() or ch in "-_")[:120] or "ui-test-start"
+          shutil.copyfile(p,inbox/(safe+".json"))
+          print("Queued isolated command:",cid)
+          PY
+
+          echo "=== Restart non-publisher control agent only ==="
+          sudo docker restart peter-lofi-ovh-agent
+          sleep 25
+
+          echo "=== UI test state ==="
+          python3 - <<'PY'
+          import json, pathlib
+          st=pathlib.Path("/home/ubuntu/theofficemusic/ovh-streaming/state/youtube-ui-test")
+          for name in ["desired.json","health.json","audio-health.json","visual-health.json","now-playing.json"]:
+              p=st/name
+              print("---",name)
+              if not p.exists():
+                  print("MISSING")
+                  continue
+              try:
+                  d=json.loads(p.read_text(encoding="utf-8"))
+                  if isinstance(d,dict):
+                      d.pop("stream_key",None)
+                      d.pop("stream_url",None)
+                  print(json.dumps(d,ensure_ascii=False,indent=2))
+              except Exception as e:
+                  print("ERROR",e)
+          PY
+
+          echo "=== AFTER production publisher identities ==="
+          for c in peter-lofi-kick peter-lofi-twitch peter-lofi-youtube-deep-house peter-lofi-youtube-rainy; do
+            sudo docker inspect -f '{{.Name}} id={{.Id}} pid={{.State.Pid}} running={{.State.Running}}' "$c" || true
+          done
+          REMOTE
+
+      - name: Save sanitized OVH test state
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=15"
+          if [ "$OVH_AUTH_MODE" = "key" ]; then
+            SSH_CMD=(ssh $SSH_OPTS -i ~/.ssh/id_ovh "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED")
+          else
+            SSH_CMD=(sshpass -p "$OVH_PASSWORD_RESOLVED" ssh $SSH_OPTS "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED")
+          fi
+          mkdir -p control/diagnostics
+          "${SSH_CMD[@]}" 'python3 -' > control/diagnostics/private-ui-test-ovh-state.json <<'PY'
+          import json, pathlib, datetime
+          st=pathlib.Path("/home/ubuntu/theofficemusic/ovh-streaming/state/youtube-ui-test")
+          def load(n):
+              try:return json.loads((st/n).read_text(encoding="utf-8"))
+              except Exception:return {}
+          print(json.dumps({
+              "checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "desired":load("desired.json"),
+              "health":load("health.json"),
+              "audio_health":load("audio-health.json"),
+              "visual_health":load("visual-health.json"),
+              "now_playing":load("now-playing.json"),
+          },ensure_ascii=False,indent=2))
+          PY
+          cat control/diagnostics/private-ui-test-ovh-state.json
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/private-ui-test-ovh-state.json
+          git commit -m "ui-test: record direct OVH private live state" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
