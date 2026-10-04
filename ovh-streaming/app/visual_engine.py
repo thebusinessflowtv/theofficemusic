@@ -180,7 +180,19 @@ class VisualEngine:
             return
         now = read_json(self.state / "now-playing.json", {}) or {}
         title = str(now.get("title") or now.get("name") or "PETER LOFI").strip().upper()
-        wrapped = textwrap.wrap(title, width=18)[:2] or ["PETER LOFI"]
+        # The CRT title has a hard visual width. Wrap aggressively enough that
+        # even wide SUPERSTAR glyphs cannot escape the white screen.
+        title_lines = textwrap.wrap(
+            title,
+            width=11,
+            break_long_words=True,
+            break_on_hyphens=False,
+        ) or ["PETER LOFI"]
+        if len(title_lines) > 2:
+            title_lines = title_lines[:2]
+            tail = title_lines[-1].rstrip()
+            title_lines[-1] = (tail[:8].rstrip() + "...") if len(tail) > 8 else (tail + "...")
+        wrapped = title_lines
         is_two_lines = len(wrapped) > 1
 
         # Two layout variants keep the complete CURRENT MUSIC block vertically
@@ -195,9 +207,31 @@ class VisualEngine:
         (self.state / "music-note-one.txt").write_text("♫\n" if not is_two_lines else "", encoding="utf-8")
         (self.state / "music-note-two.txt").write_text("♫\n" if is_two_lines else "", encoding="utf-8")
 
+        # Twitch chat/Bits messages are capped at 500 characters. Keep the full
+        # accepted message visible by switching among three wrapped font tiers.
         message = self.state / "message.txt"
         if not message.exists():
-            message.write_text("Esse é um teste\nde envio de mensagem\n", encoding="utf-8")
+            message.write_text("Esse é um teste de envio de mensagem\n", encoding="utf-8")
+        raw_message = message.read_text(encoding="utf-8", errors="replace")
+        raw_message = " ".join(raw_message.replace("\r", " ").replace("\n", " ").split())[:500]
+
+        if len(raw_message) <= 80:
+            tier = "short"
+            wrapped_message = textwrap.wrap(raw_message, width=22, break_long_words=True, break_on_hyphens=False)
+        elif len(raw_message) <= 220:
+            tier = "medium"
+            wrapped_message = textwrap.wrap(raw_message, width=32, break_long_words=True, break_on_hyphens=False)
+        else:
+            tier = "long"
+            wrapped_message = textwrap.wrap(raw_message, width=42, break_long_words=True, break_on_hyphens=False)
+
+        rendered_message = "\n".join(wrapped_message)
+        for name in ("short", "medium", "long"):
+            content = rendered_message if name == tier else ""
+            (self.state / f"message-{name}.txt").write_text(
+                content + ("\n" if content else ""),
+                encoding="utf-8",
+            )
 
     def stop_sender(self):
         proc = self.sender
@@ -235,7 +269,9 @@ class VisualEngine:
             label_two_file = str(self.state / "current-label-two.txt")
             note_one_file = str(self.state / "music-note-one.txt")
             note_two_file = str(self.state / "music-note-two.txt")
-            message_file = str(self.state / "message.txt")
+            message_short_file = str(self.state / "message-short.txt")
+            message_medium_file = str(self.state / "message-medium.txt")
+            message_long_file = str(self.state / "message-long.txt")
             demo_enable = "between(mod(t\\,60)\\,45\\,52)"
 
             # HTML-like layer model:
@@ -255,7 +291,7 @@ class VisualEngine:
                 # the 448x161 SVG frame.
                 f"[base]drawtext=fontfile={font}:text='LATEST SUBSCRIPTIONS\\:':"
                 f"fontcolor=white:fontsize=29:"
-                f"x=59+(448-text_w)/2:y=54+(161-text_h)/2[latest];"
+                f"x=59+(448-text_w)/2:y=54+(161-text_h)/2+5[latest];"
 
                 f"[latest]drawtext=fontfile={font}:text='@GUILHERMEODSGN':"
                 f"fontcolor=white:fontsize=25:x=113:y=241[sub1];"
@@ -264,33 +300,41 @@ class VisualEngine:
                 f"[sub2]drawtext=fontfile={font}:text='@PETERLOFI':"
                 f"fontcolor=white:fontsize=25:x=113:y=311[subs3];"
 
-                # CURRENT MUSIC and the song name share the exact same left edge
-                # (x=110). The one-line variant is shifted down 15px so the full
-                # block remains centered in the TV screen just like the two-line
-                # Figma layout.
+                # Keep the title optically aligned with CURRENT MUSIC while
+                # respecting the CRT's hard right boundary. The title starts 4px
+                # farther left and uses the width-safe wrapped text generated above.
                 f"[subs3]drawtext=fontfile={symbol_font}:textfile={note_one_file}:reload=1:"
                 f"fontcolor=black:fontsize=31:x=78:y=881[note1];"
                 f"[note1]drawtext=fontfile={font}:textfile={label_one_file}:reload=1:"
                 f"fontcolor=black:fontsize=34:x=110:y=884[label1];"
                 f"[label1]drawtext=fontfile={font}:textfile={title_one_file}:reload=1:"
-                f"fontcolor=black:fontsize=49:line_spacing=-8:x=110:y=934[title1];"
+                f"fontcolor=black:fontsize=38:line_spacing=-4:x=106:y=934[title1];"
 
                 f"[title1]drawtext=fontfile={symbol_font}:textfile={note_two_file}:reload=1:"
                 f"fontcolor=black:fontsize=31:x=78:y=866[note2];"
                 f"[note2]drawtext=fontfile={font}:textfile={label_two_file}:reload=1:"
                 f"fontcolor=black:fontsize=34:x=110:y=869[label2];"
                 f"[label2]drawtext=fontfile={font}:textfile={title_two_file}:reload=1:"
-                f"fontcolor=black:fontsize=49:line_spacing=-8:x=110:y=919[title2];"
+                f"fontcolor=black:fontsize=38:line_spacing=-4:x=106:y=919[title2];"
 
                 f"[title2]drawtext=fontfile={font}:text='VOTE TO CHANGE A SONG.':"
                 f"fontcolor=white:fontsize=34:x=1506:y=1020[vote];"
 
-                # Message is plain text over the video. No opacity layer,
-                # dimming, blend mode or background is applied.
-                f"[vote]drawtext=fontfile={font}:textfile={message_file}:reload=1:"
-                f"fontcolor=white:fontsize=130:line_spacing=12:"
-                f"x=(w-text_w)/2:y=(h-text_h)/2:"
-                f"enable='{demo_enable}'[v]"
+                # Paid/Bits message: 5% black dim over the full frame, then
+                # one of three width/height-safe text tiers. Every tier is centered
+                # horizontally and vertically and can represent the full 500-char
+                # Twitch chat payload without escaping the frame.
+                f"[vote]drawbox=x=0:y=0:w=iw:h=ih:color=black@0.05:t=fill:"
+                f"enable='{demo_enable}'[messagebg];"
+                f"[messagebg]drawtext=fontfile={font}:textfile={message_short_file}:reload=1:"
+                f"fontcolor=white:fontsize=120:line_spacing=10:fix_bounds=1:"
+                f"x=(w-text_w)/2:y=(h-text_h)/2:enable='{demo_enable}'[msgshort];"
+                f"[msgshort]drawtext=fontfile={font}:textfile={message_medium_file}:reload=1:"
+                f"fontcolor=white:fontsize=82:line_spacing=10:fix_bounds=1:"
+                f"x=(w-text_w)/2:y=(h-text_h)/2:enable='{demo_enable}'[msgmedium];"
+                f"[msgmedium]drawtext=fontfile={font}:textfile={message_long_file}:reload=1:"
+                f"fontcolor=white:fontsize=58:line_spacing=8:fix_bounds=1:"
+                f"x=(w-text_w)/2:y=(h-text_h)/2:enable='{demo_enable}'[v]"
             )
             gop = self.fps * 2
             cmd = [
