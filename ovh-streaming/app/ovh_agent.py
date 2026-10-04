@@ -320,7 +320,7 @@ def ensure_ui_test_process():
     env.update({
         "STREAM_URL":stream_url,
         "STREAM_KEY":stream_key,
-        "LOOP_URL":"file:///ui-test-assets/background.mp4",
+        "LOOP_URL":str(desired.get("loop_url") or ""),
         "PLAYLIST_FILE":"/config/youtube-deep-house.json",
         "VIDEO_FPS":"30",
         "VIDEO_BITRATE_KBPS":"4500",
@@ -365,6 +365,32 @@ def apply_command(cmd):
             elif not secret_path.exists():
                 raise ValueError("stream_url and stream_key are required for first youtube-ui-test start")
 
+            assets_dir=STATE/"ui-test-assets"
+            assets_dir.mkdir(parents=True,exist_ok=True)
+            overlay_url=str(cmd.get("overlay_url") or "").strip()
+            font_carrier_url=str(cmd.get("font_carrier_url") or "").strip()
+            overlay_path=assets_dir/"overlay-static.png"
+            font_path=assets_dir/"superstar.ttf"
+            if overlay_url and not overlay_path.exists():
+                download_file(overlay_url,overlay_path)
+            if font_carrier_url and not font_path.exists():
+                carrier=assets_dir/"font-carrier.png"
+                download_file(font_carrier_url,carrier)
+                raw=subprocess.check_output([
+                    "ffmpeg","-v","error","-i",str(carrier),
+                    "-f","rawvideo","-pix_fmt","rgb24","pipe:1"
+                ])
+                if len(raw)<8:
+                    raise RuntimeError("font carrier decode failed")
+                size=int.from_bytes(raw[:4],"big")
+                data=raw[4:4+size]
+                if len(data)!=size or size<1000:
+                    raise RuntimeError("font carrier payload invalid")
+                font_path.write_bytes(data)
+                carrier.unlink(missing_ok=True)
+            if not overlay_path.exists() or not font_path.exists():
+                raise RuntimeError("ui-test overlay/font assets are missing")
+
             if not (st/"playlist.json").exists():
                 src=pathlib.Path("/config/youtube-deep-house.json")
                 if src.exists():
@@ -375,7 +401,7 @@ def apply_command(cmd):
                 "runtime_slot":"youtube-ui-test",
                 "session_id":str(cmd.get("session_id") or desired.get("session_id") or "ui-test"),
                 "title":str(cmd.get("title") or desired.get("title") or "Peter Lofi UI Test"),
-                "loop_url":"file:///ui-test-assets/background.mp4",
+                "loop_url":str(cmd.get("loop_url") or desired.get("loop_url") or ""),
                 "playlist_key":"deep-house-radio-test",
                 "desired":"live",
                 "generation":next_generation(desired),
