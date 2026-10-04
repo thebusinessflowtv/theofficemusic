@@ -8,6 +8,9 @@ import signal
 import subprocess
 import time
 import urllib.request
+import urllib.parse
+import shutil
+import textwrap
 from datetime import datetime, timezone
 
 
@@ -110,13 +113,19 @@ class VisualEngine:
         source.unlink(missing_ok=True)
         temp.unlink(missing_ok=True)
 
-        req = urllib.request.Request(loop_url, headers={"User-Agent": f"MediaForge-Visual-{self.platform}"})
-        with urllib.request.urlopen(req, timeout=180) as response, open(source, "wb") as fh:
-            while self.running:
-                chunk = response.read(1024 * 1024)
-                if not chunk:
-                    break
-                fh.write(chunk)
+        if loop_url.startswith("file://"):
+            local_path = pathlib.Path(urllib.parse.urlparse(loop_url).path)
+            if not local_path.exists():
+                raise RuntimeError(f"local visual not found: {local_path}")
+            shutil.copyfile(local_path, source)
+        else:
+            req = urllib.request.Request(loop_url, headers={"User-Agent": f"MediaForge-Visual-{self.platform}"})
+            with urllib.request.urlopen(req, timeout=180) as response, open(source, "wb") as fh:
+                while self.running:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    fh.write(chunk)
         if not self.running:
             raise RuntimeError("visual engine stopping")
 
@@ -166,6 +175,17 @@ class VisualEngine:
             except Exception:
                 pass
 
+    def sync_ui_test_text(self):
+        if self.platform != "youtube-ui-test":
+            return
+        now = read_json(self.state / "now-playing.json", {}) or {}
+        title = str(now.get("title") or now.get("name") or "PETER LOFI").strip().upper()
+        wrapped = textwrap.wrap(title, width=18)[:2] or ["PETER LOFI"]
+        (self.state / "now-playing.txt").write_text("\n".join(wrapped) + "\n", encoding="utf-8")
+        message = self.state / "message.txt"
+        if not message.exists():
+            message.write_text("HELLO GYS\n", encoding="utf-8")
+
     def stop_sender(self):
         proc = self.sender
         self.sender = None
@@ -188,14 +208,48 @@ class VisualEngine:
     def start_sender(self, path, loop_url):
         self.stop_sender()
         target = f"udp://127.0.0.1:{self.udp_port}?pkt_size=1316"
-        cmd = [
-            "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin",
-            "-re", "-stream_loop", "-1", "-i", str(path),
-            "-map", "0:v:0", "-an", "-c:v", "copy",
-            "-bsf:v", "h264_mp4toannexb",
-            "-muxdelay", "0", "-muxpreload", "0",
-            "-f", "mpegts", target,
-        ]
+        if self.platform == "youtube-ui-test":
+            self.sync_ui_test_text()
+            overlay = "/ui-test-assets/overlay-static.png"
+            font = "/ui-test-assets/superstar.ttf"
+            title_file = str(self.state / "now-playing.txt")
+            message_file = str(self.state / "message.txt")
+            demo_enable = "between(mod(t\\,60)\\,45\\,52)"
+            filters = (
+                f"[0:v][1:v]overlay=0:0[base];"
+                f"[base]drawtext=fontfile={font}:textfile={title_file}:reload=1:"
+                f"fontcolor=black:fontsize=42:line_spacing=4:x=110:y=920[title];"
+                f"[title]drawbox=x=0:y=0:w=iw:h=ih:color=black@0.58:t=fill:enable='{demo_enable}'[dim];"
+                f"[dim]drawtext=fontfile={font}:textfile={message_file}:reload=1:"
+                f"fontcolor=white:fontsize=92:x=(w-text_w)/2:y=(h-text_h)/2:"
+                f"enable='{demo_enable}'[v]"
+            )
+            gop = self.fps * 2
+            cmd = [
+                "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin",
+                "-re", "-stream_loop", "-1", "-i", str(path),
+                "-loop", "1", "-i", overlay,
+                "-filter_complex", filters,
+                "-map", "[v]", "-an",
+                "-c:v", "libx264", "-preset", self.vpreset, "-tune", "zerolatency",
+                "-profile:v", self.vprofile, "-bf", "0",
+                "-b:v", f"{self.vbitrate}k", "-minrate", f"{self.vbitrate}k",
+                "-maxrate", f"{self.vbitrate}k", "-bufsize", f"{self.bufsize}k",
+                "-g", str(gop), "-keyint_min", str(gop), "-sc_threshold", "0",
+                "-pix_fmt", "yuv420p",
+                "-x264-params", "nal-hrd=cbr:force-cfr=1",
+                "-muxdelay", "0", "-muxpreload", "0",
+                "-f", "mpegts", target,
+            ]
+        else:
+            cmd = [
+                "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin",
+                "-re", "-stream_loop", "-1", "-i", str(path),
+                "-map", "0:v:0", "-an", "-c:v", "copy",
+                "-bsf:v", "h264_mp4toannexb",
+                "-muxdelay", "0", "-muxpreload", "0",
+                "-f", "mpegts", target,
+            ]
         self.sender_log = open(self.state / "visual-ffmpeg.log", "ab", buffering=0)
         self.sender = subprocess.Popen(cmd, stdout=self.sender_log, stderr=self.sender_log)
         time.sleep(0.25)
@@ -207,6 +261,7 @@ class VisualEngine:
 
     def run(self):
         while self.running:
+            self.sync_ui_test_text()
             desired, loop_url, revision = self.desired()
             if str(desired.get("desired") or "live").lower() in {"stopped", "stop", "offline"}:
                 self.stop_sender()
@@ -249,7 +304,7 @@ class VisualEngine:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--platform", required=True, choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy"])
+    ap.add_argument("--platform", required=True, choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy", "youtube-ui-test"])
     ap.add_argument("--state-dir", default="/state")
     args = ap.parse_args()
     engine = VisualEngine(args.platform, args.state_dir)
