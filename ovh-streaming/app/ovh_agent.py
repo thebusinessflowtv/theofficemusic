@@ -367,12 +367,20 @@ def apply_command(cmd):
 
             assets_dir=STATE/"ui-test-assets"
             assets_dir.mkdir(parents=True,exist_ok=True)
-            overlay_url=str(cmd.get("overlay_url") or "").strip()
+            header_url=str(cmd.get("header_url") or "").strip()
+            web_url=str(cmd.get("web_url") or "").strip()
+            icon_url=str(cmd.get("icon_url") or "").strip()
             font_carrier_url=str(cmd.get("font_carrier_url") or "").strip()
-            overlay_path=assets_dir/"overlay-static.png"
+            header_path=assets_dir/"latest-subscriptions.png"
+            web_path=assets_dir/"spider-web.png"
+            icon_path=assets_dir/"subscriber-icon.png"
             font_path=assets_dir/"superstar.ttf"
-            if overlay_url and not overlay_path.exists():
-                download_file(overlay_url,overlay_path)
+            if header_url and not header_path.exists():
+                download_file(header_url,header_path)
+            if web_url and not web_path.exists():
+                download_file(web_url,web_path)
+            if icon_url and not icon_path.exists():
+                download_file(icon_url,icon_path)
             if font_carrier_url and not font_path.exists():
                 carrier=assets_dir/"font-carrier.png"
                 download_file(font_carrier_url,carrier)
@@ -388,8 +396,8 @@ def apply_command(cmd):
                     raise RuntimeError("font carrier payload invalid")
                 font_path.write_bytes(data)
                 carrier.unlink(missing_ok=True)
-            if not overlay_path.exists() or not font_path.exists():
-                raise RuntimeError("ui-test overlay/font assets are missing")
+            if not header_path.exists() or not web_path.exists() or not icon_path.exists() or not font_path.exists():
+                raise RuntimeError("ui-test Figma/font assets are missing")
 
             if not (st/"playlist.json").exists():
                 src=pathlib.Path("/config/youtube-deep-house.json")
