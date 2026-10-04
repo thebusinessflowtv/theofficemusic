@@ -1,0 +1,46 @@
+name: Ops — Probe MediaForge Public Routing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ops-probe-mediaforge-public-routing.yml'
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      OVH_HOST: ${{ secrets.OVH_HOST }}
+    steps:
+      - name: Probe OVH and custom-domain routes
+        shell: bash
+        run: |
+          set +e
+          test -n "$OVH_HOST" || { echo "OVH_HOST missing"; exit 1; }
+          probe() {
+            label="$1"; url="$2"
+            echo
+            echo "===== $label ====="
+            curl -k -sS -D /tmp/h -o /tmp/b --connect-timeout 5 --max-time 12               -H 'Cache-Control: no-cache' "$url"
+            rc=$?
+            echo "URL=$url"
+            echo "RC=$rc"
+            head -25 /tmp/h 2>/dev/null || true
+            echo "--- body ---"
+            head -c 1600 /tmp/b 2>/dev/null || true
+            echo
+          }
+          probe "OVH443 root" "https://$OVH_HOST/"
+          probe "OVH443 app" "https://$OVH_HOST/app.html?probe=dj100"
+          probe "OVH443 JS" "https://$OVH_HOST/lives-cloudflare.js?probe=dj100"
+          probe "OVH443 API" "https://$OVH_HOST/api/health"
+          probe "OVH8443 root" "https://$OVH_HOST:8443/"
+          probe "OVH8443 app" "https://$OVH_HOST:8443/app.html?probe=dj100"
+          probe "OVH8443 JS" "https://$OVH_HOST:8443/lives-cloudflare.js?probe=dj100"
+          probe "OVH8443 API" "https://$OVH_HOST:8443/api/health"
+          probe "CUSTOM root" "https://peterlofi.odsgn.com.br/"
+          probe "CUSTOM app" "https://peterlofi.odsgn.com.br/app.html?probe=dj100"
+          probe "CUSTOM JS" "https://peterlofi.odsgn.com.br/lives-cloudflare.js?probe=dj100"
+          probe "CUSTOM API" "https://peterlofi.odsgn.com.br/api/health"
