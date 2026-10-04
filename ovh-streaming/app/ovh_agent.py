@@ -139,27 +139,42 @@ def download_file(url,target):
     target.parent.mkdir(parents=True,exist_ok=True)
     temp=target.with_suffix(target.suffix+".part")
     temp.unlink(missing_ok=True)
-    # Large DJ archives can exceed urllib's practical streaming tolerance
-    # through the local Wrangler media endpoint. curl gives us robust retries,
-    # stalled-transfer detection and a hard upper bound without buffering.
-    cmd=[
-        "curl","-fL",
-        "--retry","3","--retry-all-errors","--retry-delay","2",
-        "--connect-timeout","10","--max-time","900",
-        "--speed-time","60","--speed-limit","1024",
-        "-A","MediaForge-Twitch-DJ-Importer",
-        "-o",str(temp),str(url),
-    ]
-    try:
-        subprocess.run(cmd,check=True,timeout=930)
-    except Exception as exc:
-        temp_size=temp.stat().st_size if temp.exists() else 0
-        raise RuntimeError(f"DJ archive download failed after {temp_size} bytes: {exc}")
-    if not temp.exists() or temp.stat().st_size<1024:
-        raise RuntimeError("DJ archive download is empty")
-    temp.replace(target)
-    return target
-
+    last=None
+    for attempt in range(1,4):
+        try:
+            temp.unlink(missing_ok=True)
+            req=urllib.request.Request(
+                str(url),
+                headers={
+                    "User-Agent":"MediaForge-Twitch-DJ-Importer",
+                    "Accept":"application/octet-stream,*/*",
+                    "Connection":"close",
+                },
+            )
+            # The DJ batch can be hundreds of MB and is streamed from the local
+            # MediaForge runtime. Keep a generous socket timeout and retry the
+            # full transfer if the local endpoint closes early.
+            with urllib.request.urlopen(req,timeout=900) as r, open(temp,"wb") as fh:
+                total=0
+                while True:
+                    chunk=r.read(4*1024*1024)
+                    if not chunk:
+                        break
+                    fh.write(chunk)
+                    total+=len(chunk)
+                fh.flush()
+                os.fsync(fh.fileno())
+            if not temp.exists() or temp.stat().st_size<1024:
+                raise RuntimeError("DJ archive download is empty")
+            temp.replace(target)
+            return target
+        except Exception as exc:
+            last=exc
+            size=temp.stat().st_size if temp.exists() else 0
+            if attempt>=3:
+                raise RuntimeError(f"DJ archive download failed after {size} bytes and {attempt} attempts: {exc}")
+            time.sleep(attempt*2)
+    raise RuntimeError(f"DJ archive download failed: {last}")
 
 def import_twitch_dj_archive(cmd):
     if slot_for(cmd)!="twitch":
