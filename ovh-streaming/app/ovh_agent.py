@@ -139,13 +139,22 @@ def download_file(url,target):
     target.parent.mkdir(parents=True,exist_ok=True)
     temp=target.with_suffix(target.suffix+".part")
     temp.unlink(missing_ok=True)
-    req=urllib.request.Request(str(url),headers={"User-Agent":"MediaForge-Twitch-DJ-Importer"})
-    with urllib.request.urlopen(req,timeout=60) as r, open(temp,"wb") as fh:
-        while True:
-            chunk=r.read(1024*1024)
-            if not chunk:
-                break
-            fh.write(chunk)
+    # Large DJ archives can exceed urllib's practical streaming tolerance
+    # through the local Wrangler media endpoint. curl gives us robust retries,
+    # stalled-transfer detection and a hard upper bound without buffering.
+    cmd=[
+        "curl","-fL",
+        "--retry","3","--retry-all-errors","--retry-delay","2",
+        "--connect-timeout","10","--max-time","900",
+        "--speed-time","60","--speed-limit","1024",
+        "-A","MediaForge-Twitch-DJ-Importer",
+        "-o",str(temp),str(url),
+    ]
+    try:
+        subprocess.run(cmd,check=True,timeout=930)
+    except Exception as exc:
+        temp_size=temp.stat().st_size if temp.exists() else 0
+        raise RuntimeError(f"DJ archive download failed after {temp_size} bytes: {exc}")
     if not temp.exists() or temp.stat().st_size<1024:
         raise RuntimeError("DJ archive download is empty")
     temp.replace(target)
@@ -177,7 +186,11 @@ def import_twitch_dj_archive(cmd):
     archive=STATE/"twitch-dj-import.zip"
     status_path=STATE/"twitch"/"dj-import.json"
     atomic_json(status_path,{"status":"downloading","updated_at":iso_now(),"expected":len(expected)})
-    download_file(archive_url,archive)
+    try:
+        download_file(archive_url,archive)
+    except Exception as exc:
+        atomic_json(status_path,{"status":"failed","updated_at":iso_now(),"expected":len(expected),"error":str(exc)[:500],"rtmp_restart":False})
+        raise
 
     found={}
     rejected=[]
@@ -379,7 +392,19 @@ def import_shared_dj_archive(cmd):
         "track_count":len(current_tracks),
         "rtmp_restart":False,
     })
-    download_file(archive_url,archive)
+    try:
+        download_file(archive_url,archive)
+    except Exception as exc:
+        atomic_json(status_path,{
+            "status":"failed","updated_at":iso_now(),"batch_id":batch_id,
+            "error":str(exc)[:500],
+            "original_tracks":len(original_tracks),
+            "commercial_tracks":len(existing_commercial),
+            "track_count":len(current_tracks),
+            "rtmp_restart":False,
+            "container_restart":False,
+        })
+        raise
 
     valid=[]
     rejected=[]
