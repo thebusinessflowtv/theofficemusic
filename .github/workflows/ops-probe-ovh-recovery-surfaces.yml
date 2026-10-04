@@ -1,0 +1,31 @@
+name: Ops — Probe OVH Recovery Surfaces
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ops-probe-ovh-recovery-surfaces.yml'
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      OVH_HOST: ${{ secrets.OVH_HOST }}
+    steps:
+      - name: Probe recovery-only ports
+        shell: bash
+        run: |
+          set +e
+          test -n "$OVH_HOST" || exit 1
+          for port in 22 2019 2375 2376 8844 8790 8787 8443; do
+            echo "=== TCP $port ==="
+            timeout 4 bash -c "</dev/tcp/$OVH_HOST/$port" >/dev/null 2>&1
+            echo "TCP_RC=$?"
+          done
+          for url in             "http://$OVH_HOST:2019/config/"             "http://$OVH_HOST:2375/_ping"             "https://$OVH_HOST:2376/_ping"             "http://$OVH_HOST:8844/api/health"; do
+            echo "=== $url ==="
+            curl -k -sS -i --connect-timeout 4 --max-time 7 "$url" | head -60
+            echo "RC=${PIPESTATUS[0]}"
+          done
