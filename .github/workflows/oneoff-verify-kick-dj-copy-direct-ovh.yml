@@ -1,0 +1,43 @@
+name: One-off — Verify Kick DJ Copy Direct OVH
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/oneoff-verify-kick-dj-copy-direct-ovh.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Read current OVH public health
+        shell: bash
+        run: |
+          set -euo pipefail
+          sleep 20
+          mkdir -p control/diagnostics
+          curl -k -fsS --retry 5 --retry-delay 3             https://146.59.156.224:8443/api/ovh/public-health             > /tmp/health.json
+          jq '{
+            checked_at:(now|todateiso8601),
+            reported_at:.reported_at,
+            kick:.services.kick,
+            twitch:.services.twitch
+          }' /tmp/health.json > control/diagnostics/kick-dj-copy-direct-ovh.json
+          cat control/diagnostics/kick-dj-copy-direct-ovh.json
+      - name: Persist verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/kick-dj-copy-direct-ovh.json
+          git commit -m "ops: verify Kick DJ copy directly on OVH" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
