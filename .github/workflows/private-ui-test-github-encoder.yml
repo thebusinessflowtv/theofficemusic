@@ -1,5 +1,6 @@
 name: Peter Lofi — Emergency Private UI Test Encoder
 # retry-after-audio-ready-fix
+# svg-text-layer-fix
 
 on:
   push:
@@ -9,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 jobs:
   stream:
@@ -18,6 +20,7 @@ jobs:
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      TEIA_URL: "https://d2jqrm6oza8nb6.cloudfront.net/datasets/cc3730a3-188b-4adc-89a1-6743d1e20945.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiOWVjMWNjNTE5NzBiYTA3ZCIsImJ1Y2tldCI6InJ1bndheS1kYXRhc2V0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MTIwNjQ4MX0.caI6CqZV8Sh8yK10odMu32PnHfBs9-BiagvgLOyWvQk"
 
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
+          sudo apt-get install -y -qq ffmpeg librsvg2-bin
           python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
 
       - name: Load current test metadata and media references
@@ -38,7 +41,7 @@ jobs:
           import json, os, pathlib, re
           diag=json.loads(pathlib.Path("control/diagnostics/private-ui-test.json").read_text(encoding="utf-8"))
           src=pathlib.Path(".github/workflows/private-ui-test-ovh.yml").read_text(encoding="utf-8")
-          keys=["BACKGROUND_URL","FIGMA_HEADER_URL","FIGMA_WEB_URL","FIGMA_ICON_URL","FONT_CARRIER_URL"]
+          keys=["BACKGROUND_URL","FONT_CARRIER_URL"]
           vals={}
           for key in keys:
               m=re.search(rf'^\s*{key}: "([^"]+)"',src,re.M)
@@ -110,9 +113,16 @@ jobs:
           cp ovh-streaming/app/stream_core.py /app/stream_core.py
           cp ovh-streaming/stations/youtube-deep-house.json /config/youtube-deep-house.json
 
-          curl -fL --retry 4 "$FIGMA_HEADER_URL" -o /state/ui-test-assets/latest-subscriptions.png
-          curl -fL --retry 4 "$FIGMA_WEB_URL" -o /state/ui-test-assets/spider-web.png
-          curl -fL --retry 4 "$FIGMA_ICON_URL" -o /state/ui-test-assets/subscriber-icon.png
+          # Keep the layer model semantic: source SVG stays SVG in the repo,
+          # dynamic labels stay live text, and the spider web stays its own image.
+          cp ovh-streaming/ui-test-assets/TEXT.svg /state/ui-test-assets/latest-subscriptions-frame.svg
+          cp ovh-streaming/ui-test-assets/ARANHA.svg /state/ui-test-assets/subscriber-icon.svg
+          rsvg-convert -w 448 -h 161 /state/ui-test-assets/latest-subscriptions-frame.svg \
+            -o /state/ui-test-assets/latest-subscriptions-frame.png
+          rsvg-convert -w 21 -h 28 /state/ui-test-assets/subscriber-icon.svg \
+            -o /state/ui-test-assets/subscriber-icon.png
+
+          curl -fL --retry 4 "$TEIA_URL" -o /state/ui-test-assets/spider-web.png
           curl -fL --retry 4 "$FONT_CARRIER_URL" -o /tmp/font-carrier.png
 
           python - <<'PY'
@@ -151,6 +161,22 @@ jobs:
           p.write_text(s,encoding="utf-8")
           PY
 
+      - name: Replace previous UI-test encoder without touching production lives
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          IDS="$(gh api "/repos/$GITHUB_REPOSITORY/actions/workflows/private-ui-test-github-encoder.yml/runs?status=in_progress&per_page=20" \
+            --jq '.workflow_runs[].id')"
+          for ID in $IDS; do
+            if [ "$ID" != "$GITHUB_RUN_ID" ]; then
+              echo "Stopping previous UI-test encoder run $ID"
+              gh api --method POST "/repos/$GITHUB_REPOSITORY/actions/runs/$ID/cancel" || true
+            fi
+          done
+          sleep 4
+
       - name: Start isolated test encoder
         shell: bash
         env:
@@ -179,7 +205,11 @@ jobs:
           cat /state/youtube-ui-test/health.json || true
           cat /state/youtube-ui-test/visual-health.json || true
           cat /state/youtube-ui-test/audio-health.json || true
-          cat /state/youtube-ui-test/now-playing.json || true\n          echo "--- ffmpeg publisher log ---"\n          cat /state/youtube-ui-test/ffmpeg.log || true\n          echo "--- controller log ---"\n          cat /tmp/ui-test-controller.log || true
+          cat /state/youtube-ui-test/now-playing.json || true
+          echo "--- ffmpeg publisher log ---"
+          cat /state/youtube-ui-test/ffmpeg.log || true
+          echo "--- controller log ---"
+          cat /tmp/ui-test-controller.log || true
 
       - name: Wait until YouTube is ACTIVE and LIVE
         shell: bash
