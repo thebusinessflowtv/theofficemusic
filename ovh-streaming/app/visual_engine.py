@@ -240,7 +240,7 @@ class VisualEngine:
 
             # HTML-like layer model:
             # video -> spider-web image -> SVG frame -> SVG subscriber icons ->
-            # live text -> transient 20% black message layer -> live message text.
+            # live text -> live message text. No dimming/background layer.
             # Text never lives inside the SVG assets.
             filters = (
                 f"[2:v]scale=430:-1[web];"
@@ -291,6 +291,7 @@ class VisualEngine:
                 f"fontcolor=white:fontsize=130:line_spacing=12:"
                 f"x=(w-text_w)/2:y=(h-text_h)/2:"
                 f"enable='{demo_enable}'[v]"
+            )
             gop = self.fps * 2
             cmd = [
                 "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin",
