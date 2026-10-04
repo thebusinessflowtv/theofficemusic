@@ -11,7 +11,11 @@ KICK_DJ_AUDIO="$STATE/kick-dj-audio"
 
 mkdir -p "$BACKUPS" "$KICK_DJ_AUDIO"
 
-python3 - "$TWITCH" "$KICK" "$BACKUPS" "$KICK_DJ_AUDIO" <<'PY'
+# state/ is a Docker bind mount and some runtime files are created by root.
+# Normalize host-side write access without touching/restarting the live containers.
+bash "$OVH_DIR/fix-kick-state-permissions.sh"
+
+sudo -n python3 - "$TWITCH" "$KICK" "$BACKUPS" "$KICK_DJ_AUDIO" <<'PY'
 import copy, json, os, pathlib, shutil, sys, time, uuid
 from datetime import datetime, timezone
 
