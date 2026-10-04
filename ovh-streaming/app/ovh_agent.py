@@ -34,7 +34,9 @@ SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy","youtube-ui-test")
 AGENT_DIR=STATE/"agent"
 PROCESSED=AGENT_DIR/"processed.json"
 LOCAL_STATUS=AGENT_DIR/"status.json"
+LOCAL_INBOX=AGENT_DIR/"local-inbox"
 AGENT_DIR.mkdir(parents=True,exist_ok=True)
+LOCAL_INBOX.mkdir(parents=True,exist_ok=True)
 UI_TEST_PROC=None
 UI_TEST_LOG=None
 
@@ -667,6 +669,31 @@ def process_one_command(cmd,processed,transport,ack_api=None):
         return None
 
 
+def poll_local_inbox(processed):
+    handled=[]
+    try:
+        LOCAL_INBOX.mkdir(parents=True,exist_ok=True)
+        for path in sorted(LOCAL_INBOX.glob("*.json")):
+            try:
+                cmd=read_json(path,{}) or {}
+                cid=str(cmd.get("id") or "")
+                if not cid:
+                    path.unlink(missing_ok=True)
+                    continue
+                if cid in processed:
+                    path.unlink(missing_ok=True)
+                    continue
+                last=process_one_command(cmd,processed,"local-ovh-inbox")
+                if last:
+                    handled.append(last)
+                    path.unlink(missing_ok=True)
+            except Exception as exc:
+                print("local inbox command failed:",path.name,exc,flush=True)
+    except Exception as exc:
+        print("local inbox poll failed:",exc,flush=True)
+    return handled
+
+
 def poll_github_fallback(processed):
     handled=[]
     try:
@@ -705,6 +732,11 @@ def main():
             ensure_ui_test_process()
         except Exception as exc:
             print("ui test supervisor failed:",exc,flush=True)
+
+        local_handled=poll_local_inbox(processed)
+        if local_handled:
+            last_cmd=local_handled[-1]
+
         cloud_ok=False
         # Cloudflare is the primary inbox, but GitHub is an independent fallback
         # because every MediaForge command is already mirrored there.
