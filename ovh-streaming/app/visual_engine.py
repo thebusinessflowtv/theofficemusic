@@ -210,25 +210,51 @@ class VisualEngine:
         target = f"udp://127.0.0.1:{self.udp_port}?pkt_size=1316"
         if self.platform == "youtube-ui-test":
             self.sync_ui_test_text()
-            overlay = "/state/ui-test-assets/overlay-static.png"
-            font = "/state/ui-test-assets/superstar.ttf"
+            assets = pathlib.Path("/state/ui-test-assets")
+            header = str(assets / "latest-subscriptions.png")
+            web = str(assets / "spider-web.png")
+            icon = str(assets / "subscriber-icon.png")
+            font = str(assets / "superstar.ttf")
             title_file = str(self.state / "now-playing.txt")
             message_file = str(self.state / "message.txt")
             demo_enable = "between(mod(t\\,60)\\,45\\,52)"
+            # Figma 32:5 / 38:190 geometry (1920x1080):
+            # header 59,54; subscriber rows 104,240/275/310;
+            # current music 110,869; vote copy 1506,1020;
+            # paid-message copy 588,459.52 at 174.812px.
             filters = (
-                f"[0:v][1:v]overlay=0:0[base];"
-                f"[base]drawtext=fontfile={font}:textfile={title_file}:reload=1:"
-                f"fontcolor=black:fontsize=42:line_spacing=4:x=110:y=920[title];"
-                f"[title]drawbox=x=0:y=0:w=iw:h=ih:color=black@0.58:t=fill:enable='{demo_enable}'[dim];"
-                f"[dim]drawtext=fontfile={font}:textfile={message_file}:reload=1:"
-                f"fontcolor=white:fontsize=92:x=(w-text_w)/2:y=(h-text_h)/2:"
+                f"[3:v]split=3[subicon1][subicon2][subicon3];"
+                f"[0:v]drawbox=x=0:y=0:w=960:h=1080:color=black@0.20:t=fill[shade];"
+                f"[shade]drawbox=x=0:y=0:w=1920:h=1080:color=black@0.40:t=fill:"
+                f"enable='{demo_enable}'[scene];"
+                f"[scene][1:v]overlay=59:54[head];"
+                f"[head][2:v]overlay=0:0[webbed];"
+                f"[webbed][subicon1]overlay=104:240[s1];"
+                f"[s1][subicon2]overlay=104:275[s2];"
+                f"[s2][subicon3]overlay=104:310[base];"
+                f"[base]drawtext=fontfile={font}:text='@GUILHERMEODSGN':"
+                f"fontcolor=white:fontsize=29:x=137:y=240[subs1];"
+                f"[subs1]drawtext=fontfile={font}:text='@PETERLOFI':"
+                f"fontcolor=white:fontsize=29:x=137:y=275[subs2];"
+                f"[subs2]drawtext=fontfile={font}:text='@PETERLOFI':"
+                f"fontcolor=white:fontsize=29:x=137:y=310[subs3];"
+                f"[subs3]drawtext=fontfile={font}:text='♫ CURRENT MUSIC\\:':"
+                f"fontcolor=black:fontsize=37:x=110:y=869[label];"
+                f"[label]drawtext=fontfile={font}:textfile={title_file}:reload=1:"
+                f"fontcolor=black:fontsize=58:line_spacing=-12:x=110:y=919[title];"
+                f"[title]drawtext=fontfile={font}:text='VOTE TO CHANGE A SONG.':"
+                f"fontcolor=white:fontsize=38:x=1506:y=1020[vote];"
+                f"[vote]drawtext=fontfile={font}:textfile={message_file}:reload=1:"
+                f"fontcolor=white:fontsize=175:x=588:y=460:"
                 f"enable='{demo_enable}'[v]"
             )
             gop = self.fps * 2
             cmd = [
                 "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin",
                 "-re", "-stream_loop", "-1", "-i", str(path),
-                "-loop", "1", "-i", overlay,
+                "-loop", "1", "-i", header,
+                "-loop", "1", "-i", web,
+                "-loop", "1", "-i", icon,
                 "-filter_complex", filters,
                 "-map", "[v]", "-an",
                 "-c:v", "libx264", "-preset", self.vpreset, "-tune", "zerolatency",
