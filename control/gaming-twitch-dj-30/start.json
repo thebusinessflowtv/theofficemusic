@@ -6,5 +6,7 @@
   "reference": "twitch-dj-mixed",
   "destination": "gaming-radio",
   "requested_by": "owner",
-  "action": "start"
+  "action": "start",
+  "retry": 2,
+  "correction": "canonical_kernel_identity_and_dataset_readiness"
 }
