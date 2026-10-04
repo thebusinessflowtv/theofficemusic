@@ -1,4 +1,4 @@
-name: Diagnose Gaming DJ30 canonical kernel
+name: Diagnose Gaming GPU allocation
 on:
   push:
     branches: [main]
@@ -8,29 +8,20 @@ permissions:
 jobs:
   inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
       KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
       KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
-      HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
       - run: python -m pip install kaggle==2.2.4
-      - name: Inspect actual kernel
+      - name: Inspect quota and assigned hardware metadata
         run: |
-          set -uo pipefail
-          REF="$KAGGLE_USERNAME/peter-lofi-dj30-1-37175734843-1"
-          kaggle kernels status "$REF"
-          kaggle kernels logs "$REF" 2>&1 | tail -n 180
-          mkdir -p recovered
-          kaggle kernels output "$REF" -p recovered
-          find recovered -type f -printf '%P %s bytes\n'
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: recovered-gaming-first-track
-          path: |
-            recovered/**/*.wav
-            recovered/**/request_id.txt
-            recovered/**/*manifest.json
-            recovered/**/generation_request.json
-          if-no-files-found: ignore
+          set -euo pipefail
+          kaggle quota
+          mkdir -p /tmp/kernel-meta
+          kaggle kernels pull "$KAGGLE_USERNAME/peter-lofi-dj30-1-37175734843-1" -m -p /tmp/kernel-meta
+          python - <<'PY'
+          import json,pathlib
+          d=json.loads(pathlib.Path('/tmp/kernel-meta/kernel-metadata.json').read_text())
+          print(json.dumps({k:d.get(k) for k in ('enable_gpu','machine_shape','enable_internet','docker_image','docker_image_pinning_type')}))
+          PY
