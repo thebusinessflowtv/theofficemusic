@@ -1,0 +1,36 @@
+name: Diagnose Gaming DJ30 canonical kernel
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/diagnose-gaming-dj30.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+    steps:
+      - run: python -m pip install kaggle==2.2.4
+      - name: Inspect actual kernel
+        run: |
+          set -uo pipefail
+          REF="$KAGGLE_USERNAME/peter-lofi-gaming-reference-37168340038"
+          kaggle kernels status "$REF"
+          kaggle kernels logs "$REF" 2>&1 | tail -n 180
+          mkdir -p recovered
+          kaggle kernels output "$REF" -p recovered
+          find recovered -type f -printf '%P %s bytes\n'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: recovered-gaming-first-track
+          path: |
+            recovered/**/*.wav
+            recovered/**/request_id.txt
+            recovered/**/*manifest.json
+            recovered/**/generation_request.json
+          if-no-files-found: ignore
