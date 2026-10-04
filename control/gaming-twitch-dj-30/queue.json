@@ -1,0 +1,491 @@
+{
+  "batch_id": "gaming-twitch-dj-30-20261004",
+  "reference_playlist": "twitch-dj-mixed",
+  "destination_playlist": "gaming-radio",
+  "reference_basis": "Curated broad style descriptors based on supplied track metadata; no measured audio-feature claims.",
+  "duration_seconds": 300,
+  "total": 30,
+  "tracks": [
+    {
+      "index": 1,
+      "id": "gaming-twitch-dj-20261004-01",
+      "title": "Neon Horizon",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "energetic melodic future bass",
+      "target_bpm": 150,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 2,
+      "id": "gaming-twitch-dj-20261004-02",
+      "title": "Crystal Respawn",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "uplifting electro house",
+      "target_bpm": 128,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 3,
+      "id": "gaming-twitch-dj-20261004-03",
+      "title": "Midnight Pulse",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "driving melodic dance music",
+      "target_bpm": 134,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 4,
+      "id": "gaming-twitch-dj-20261004-04",
+      "title": "Aurora Drift",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "euphoric melodic bass music",
+      "target_bpm": 154,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 5,
+      "id": "gaming-twitch-dj-20261004-05",
+      "title": "Pixel Reverie",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "high-energy progressive house",
+      "target_bpm": 130,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 6,
+      "id": "gaming-twitch-dj-20261004-06",
+      "title": "Electric Bloom",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "energetic melodic future bass",
+      "target_bpm": 151,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 7,
+      "id": "gaming-twitch-dj-20261004-07",
+      "title": "Dream Circuit",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "uplifting electro house",
+      "target_bpm": 129,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 8,
+      "id": "gaming-twitch-dj-20261004-08",
+      "title": "Silver Echo",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "driving melodic dance music",
+      "target_bpm": 135,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 9,
+      "id": "gaming-twitch-dj-20261004-09",
+      "title": "Afterlight Run",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "euphoric melodic bass music",
+      "target_bpm": 155,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 10,
+      "id": "gaming-twitch-dj-20261004-10",
+      "title": "Prism Skies",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "high-energy progressive house",
+      "target_bpm": 131,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 11,
+      "id": "gaming-twitch-dj-20261004-11",
+      "title": "Velvet Orbit",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "energetic melodic future bass",
+      "target_bpm": 152,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 12,
+      "id": "gaming-twitch-dj-20261004-12",
+      "title": "Gravity Fields",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "uplifting electro house",
+      "target_bpm": 130,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 13,
+      "id": "gaming-twitch-dj-20261004-13",
+      "title": "Starlit Motion",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "driving melodic dance music",
+      "target_bpm": 136,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 14,
+      "id": "gaming-twitch-dj-20261004-14",
+      "title": "Cobalt Wave",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "euphoric melodic bass music",
+      "target_bpm": 156,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 15,
+      "id": "gaming-twitch-dj-20261004-15",
+      "title": "Distant Sparks",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "high-energy progressive house",
+      "target_bpm": 132,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 16,
+      "id": "gaming-twitch-dj-20261004-16",
+      "title": "Spectrum Glide",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "energetic melodic future bass",
+      "target_bpm": 153,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 17,
+      "id": "gaming-twitch-dj-20261004-17",
+      "title": "Moonlit Arcade",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "uplifting electro house",
+      "target_bpm": 131,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 18,
+      "id": "gaming-twitch-dj-20261004-18",
+      "title": "Radiant Quest",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "driving melodic dance music",
+      "target_bpm": 137,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 19,
+      "id": "gaming-twitch-dj-20261004-19",
+      "title": "Lucid Valley",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "euphoric melodic bass music",
+      "target_bpm": 157,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 20,
+      "id": "gaming-twitch-dj-20261004-20",
+      "title": "Celestial Drive",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "high-energy progressive house",
+      "target_bpm": 133,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 21,
+      "id": "gaming-twitch-dj-20261004-21",
+      "title": "Chromatic Rain",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "energetic melodic future bass",
+      "target_bpm": 154,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 22,
+      "id": "gaming-twitch-dj-20261004-22",
+      "title": "Soft Collision",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "uplifting electro house",
+      "target_bpm": 132,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 23,
+      "id": "gaming-twitch-dj-20261004-23",
+      "title": "Infinity Trail",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "driving melodic dance music",
+      "target_bpm": 138,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 24,
+      "id": "gaming-twitch-dj-20261004-24",
+      "title": "Opal Current",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "euphoric melodic bass music",
+      "target_bpm": 158,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 25,
+      "id": "gaming-twitch-dj-20261004-25",
+      "title": "Hollow Stars",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "high-energy progressive house",
+      "target_bpm": 134,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 26,
+      "id": "gaming-twitch-dj-20261004-26",
+      "title": "Golden Signal",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "energetic melodic future bass",
+      "target_bpm": 155,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 27,
+      "id": "gaming-twitch-dj-20261004-27",
+      "title": "Violet Rush",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "uplifting electro house",
+      "target_bpm": 133,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 28,
+      "id": "gaming-twitch-dj-20261004-28",
+      "title": "Parallel Dawn",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "driving melodic dance music",
+      "target_bpm": 139,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 29,
+      "id": "gaming-twitch-dj-20261004-29",
+      "title": "Luminous Path",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "euphoric melodic bass music",
+      "target_bpm": 159,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    },
+    {
+      "index": 30,
+      "id": "gaming-twitch-dj-20261004-30",
+      "title": "Final Sunrise",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "high-energy progressive house",
+      "target_bpm": 135,
+      "instruments": [
+        "punchy electronic kick and snare",
+        "bright layered synth chords",
+        "catchy original synth lead",
+        "powerful controlled synth bass"
+      ],
+      "mood": "very energetic, euphoric, uplifting, exciting"
+    }
+  ],
+  "energy": "high throughout"
+}
