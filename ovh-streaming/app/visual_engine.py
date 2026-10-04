@@ -300,22 +300,22 @@ class VisualEngine:
                 f"[sub2]drawtext=fontfile={font}:text='@PETERLOFI':"
                 f"fontcolor=white:fontsize=25:x=113:y=311[subs3];"
 
-                # CURRENT MUSIC and the song title now share the same left edge.
-                # The 76px title is 2x the previous size, with tighter wrapping,
-                # and the full block is visually centered inside the CRT screen.
+                # CURRENT MUSIC and the song title share the same left edge.
+                # The title uses 60px for better balance while the complete block
+                # remains visually centered inside the CRT screen.
                 f"[subs3]drawtext=fontfile={symbol_font}:textfile={note_one_file}:reload=1:"
                 f"fontcolor=black:fontsize=31:x=86:y=872[note1];"
                 f"[note1]drawtext=fontfile={font}:textfile={label_one_file}:reload=1:"
                 f"fontcolor=black:fontsize=34:x=118:y=875[label1];"
                 f"[label1]drawtext=fontfile={font}:textfile={title_one_file}:reload=1:"
-                f"fontcolor=black:fontsize=76:line_spacing=-10:x=118:y=926[title1];"
+                f"fontcolor=black:fontsize=60:line_spacing=-8:x=118:y=926[title1];"
 
                 f"[title1]drawtext=fontfile={symbol_font}:textfile={note_two_file}:reload=1:"
                 f"fontcolor=black:fontsize=31:x=86:y=844[note2];"
                 f"[note2]drawtext=fontfile={font}:textfile={label_two_file}:reload=1:"
                 f"fontcolor=black:fontsize=34:x=118:y=847[label2];"
                 f"[label2]drawtext=fontfile={font}:textfile={title_two_file}:reload=1:"
-                f"fontcolor=black:fontsize=76:line_spacing=-12:x=118:y=898[title2];"
+                f"fontcolor=black:fontsize=60:line_spacing=-10:x=118:y=898[title2];"
 
                 f"[title2]drawtext=fontfile={font}:text='VOTE TO CHANGE A SONG.':"
                 f"fontcolor=white:fontsize=34:x=1506:y=1020[vote];"
