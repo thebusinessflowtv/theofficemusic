@@ -101,6 +101,7 @@ class StreamCore:
             "twitch": {"fps": 30, "vbitrate": 4500, "bufsize": 9000, "abitrate": 160, "profile": "main", "preset": "superfast"},
             "youtube-deep-house": {"fps": 60, "vbitrate": 8000, "bufsize": 16000, "abitrate": 192, "profile": "main", "preset": "superfast"},
             "youtube-rainy": {"fps": 60, "vbitrate": 8000, "bufsize": 16000, "abitrate": 192, "profile": "main", "preset": "superfast"},
+            "youtube-ui-test": {"fps": 30, "vbitrate": 4500, "bufsize": 9000, "abitrate": 160, "profile": "main", "preset": "superfast"},
         }.get(self.platform)
         actual = {
             "fps": self.fps,
@@ -515,7 +516,7 @@ def main():
     ap.add_argument(
         "--platform",
         required=True,
-        choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy"],
+        choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy", "youtube-ui-test"],
     )
     args = ap.parse_args()
     core = StreamCore(args.platform)
