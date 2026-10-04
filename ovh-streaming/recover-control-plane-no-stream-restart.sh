@@ -77,7 +77,26 @@ cd "$STREAM_DIR"
 docker compose build ovh-agent
 docker compose up -d --no-deps --force-recreate ovh-agent
 
-echo "[5/6] Aguardando heartbeat local..."
+echo "[5/6] Mantendo deploy-agent independente da API local..."
+if [ -f /etc/mediaforge-control-agent.env ]; then
+  python3 - /etc/mediaforge-control-agent.env <<'PY'
+import pathlib,sys
+p=pathlib.Path(sys.argv[1])
+lines=p.read_text().splitlines()
+out=[]; seen=False
+for line in lines:
+    if line.startswith("MEDIAFORGE_API_URL="):
+        out.append("MEDIAFORGE_API_URL=https://mediaforge-api.guilhermeodsgn.workers.dev"); seen=True
+    else:
+        out.append(line)
+if not seen: out.append("MEDIAFORGE_API_URL=https://mediaforge-api.guilhermeodsgn.workers.dev")
+p.write_text("\n".join(out)+"\n")
+PY
+  systemctl daemon-reload
+  systemctl restart mediaforge-deploy-agent.service
+fi
+
+echo "[5/6] Aguardando heartbeat local...
 sleep 12
 curl -fsS "$LOCAL_API/api/ovh/public-health" | tee /tmp/mf-local-ovh-health.json
 echo
