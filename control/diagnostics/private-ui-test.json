@@ -1,0 +1,14 @@
+{
+  "status": "queued",
+  "privacy_status": "private",
+  "session_id": "figma-ui-test-20261004-004621",
+  "runtime_slot": "youtube-ui-test",
+  "youtube_broadcast_id": "pjajpDTBWFo",
+  "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1791074781471720",
+  "youtube_url": "https://www.youtube.com/watch?v=pjajpDTBWFo",
+  "figma_nodes": [
+    "32:5",
+    "38:190"
+  ],
+  "created_at": "2026-10-04T00:46:21.062467+00:00"
+}
