@@ -184,7 +184,7 @@ class VisualEngine:
         # even wide SUPERSTAR glyphs cannot escape the white screen.
         title_lines = textwrap.wrap(
             title,
-            width=11,
+            width=9,
             break_long_words=True,
             break_on_hyphens=False,
         ) or ["PETER LOFI"]
@@ -300,22 +300,22 @@ class VisualEngine:
                 f"[sub2]drawtext=fontfile={font}:text='@PETERLOFI':"
                 f"fontcolor=white:fontsize=25:x=113:y=311[subs3];"
 
-                # Keep the title optically aligned with CURRENT MUSIC while
-                # respecting the CRT's hard right boundary. The title starts 4px
-                # farther left and uses the width-safe wrapped text generated above.
+                # CURRENT MUSIC and the song title now share the same left edge.
+                # The 76px title is 2x the previous size, with tighter wrapping,
+                # and the full block is visually centered inside the CRT screen.
                 f"[subs3]drawtext=fontfile={symbol_font}:textfile={note_one_file}:reload=1:"
-                f"fontcolor=black:fontsize=31:x=78:y=881[note1];"
+                f"fontcolor=black:fontsize=31:x=86:y=872[note1];"
                 f"[note1]drawtext=fontfile={font}:textfile={label_one_file}:reload=1:"
-                f"fontcolor=black:fontsize=34:x=110:y=884[label1];"
+                f"fontcolor=black:fontsize=34:x=118:y=875[label1];"
                 f"[label1]drawtext=fontfile={font}:textfile={title_one_file}:reload=1:"
-                f"fontcolor=black:fontsize=38:line_spacing=-4:x=106:y=934[title1];"
+                f"fontcolor=black:fontsize=76:line_spacing=-10:x=118:y=926[title1];"
 
                 f"[title1]drawtext=fontfile={symbol_font}:textfile={note_two_file}:reload=1:"
-                f"fontcolor=black:fontsize=31:x=78:y=866[note2];"
+                f"fontcolor=black:fontsize=31:x=86:y=844[note2];"
                 f"[note2]drawtext=fontfile={font}:textfile={label_two_file}:reload=1:"
-                f"fontcolor=black:fontsize=34:x=110:y=869[label2];"
+                f"fontcolor=black:fontsize=34:x=118:y=847[label2];"
                 f"[label2]drawtext=fontfile={font}:textfile={title_two_file}:reload=1:"
-                f"fontcolor=black:fontsize=38:line_spacing=-4:x=106:y=919[title2];"
+                f"fontcolor=black:fontsize=76:line_spacing=-12:x=118:y=898[title2];"
 
                 f"[title2]drawtext=fontfile={font}:text='VOTE TO CHANGE A SONG.':"
                 f"fontcolor=white:fontsize=34:x=1506:y=1020[vote];"
