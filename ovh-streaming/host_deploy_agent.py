@@ -225,8 +225,39 @@ def deploy_service(service):
         raise ValueError("service not allowed")
     before=health(service)
     backup=backup_image(service)
+
+    desired_state="live"
+    if service in SLOTS:
+        try:
+            desired=json.loads((OVH/"state"/service/"desired.json").read_text(encoding="utf-8"))
+            desired_state=str(desired.get("desired") or "live").lower()
+        except Exception:
+            desired_state="live"
+
     run(["docker","compose","build",service],cwd=OVH,timeout=1800)
     run(["docker","compose","up","-d","--no-deps","--force-recreate",service],cwd=OVH,timeout=300)
+
+    # A stopped station still needs the new image/runtime installed, but it must
+    # remain stopped. Treat that as a successful deployment instead of waiting
+    # four minutes for a LIVE state that must never happen.
+    if service in SLOTS and desired_state in {"stopped","stop","offline"}:
+        end=time.time()+90
+        last={}
+        while time.time()<end:
+            last=health(service)
+            fresh=(not before.get("updated_at")) or (
+                last.get("updated_at") and last.get("updated_at")!=before.get("updated_at")
+            )
+            if fresh and last.get("status") in {"stopped","starting"}:
+                return {
+                    "service":service,
+                    "health":last,
+                    "backup_image":backup,
+                    "desired_preserved":"stopped",
+                }
+            time.sleep(3)
+        raise RuntimeError(f"{service} did not return in preserved stopped state: {last}")
+
     h=wait_healthy(
         service,
         240,
