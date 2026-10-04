@@ -525,6 +525,36 @@ def bootstrap_ui_test_control_agent():
     name=CONTAINERS.get("ovh-agent","peter-lofi-ovh-agent")
     for filename in ("ovh_agent.py","stream_core.py","audio_engine.py","visual_engine.py"):
         run(["docker","cp",str(OVH/"app"/filename),f"{name}:/app/{filename}"],timeout=30)
+
+    # Bridge the newest isolated test command from the local repository into a
+    # host-local inbox. This avoids any dependency on Cloudflare or GitHub HTTP
+    # polling for the private test while keeping production publishers untouched.
+    queued_command_id=None
+    try:
+        idx_path=REPO/"control"/"ovh-commands"/"index.json"
+        idx=json.loads(idx_path.read_text(encoding="utf-8")) if idx_path.exists() else {}
+        for entry in reversed(list(idx.get("commands") or [])):
+            rel=str((entry or {}).get("path") or "")
+            if not rel:
+                continue
+            path=REPO/rel
+            try:
+                cmd=json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            slot=str(cmd.get("runtime_slot") or cmd.get("slot") or "")
+            action=str(cmd.get("action") or "").lower()
+            if slot=="youtube-ui-test" and action in {"start","resume","restart"}:
+                inbox=OVH/"state"/"agent"/"local-inbox"
+                inbox.mkdir(parents=True,exist_ok=True)
+                cid=str(cmd.get("id") or "ui-test-start")
+                safe="".join(ch for ch in cid if ch.isalnum() or ch in "-_")[:120] or "ui-test-start"
+                atomic_json(inbox/(safe+".json"),cmd)
+                queued_command_id=cid
+                break
+    except Exception as exc:
+        raise RuntimeError(f"failed to bridge ui-test local command: {exc}")
+
     run(["docker","restart",name],timeout=60)
     time.sleep(4)
     running=run(["docker","inspect","-f","{{.State.Running}}",name],timeout=20).strip().lower()
@@ -538,6 +568,7 @@ def bootstrap_ui_test_control_agent():
         "status":"applied",
         "version":version,
         "publisher_containers_touched":False,
+        "queued_command_id":queued_command_id,
         "ui_test":ui_test_status_snapshot(),
     }
 
