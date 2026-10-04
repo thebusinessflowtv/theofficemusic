@@ -1,0 +1,42 @@
+name: One-off — Verify Kick DJ Copy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/oneoff-verify-kick-dj-copy.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Wait for OVH agent and capture health
+        shell: bash
+        run: |
+          set -euo pipefail
+          sleep 15
+          mkdir -p control/diagnostics
+          curl -fsS --retry 5 --retry-delay 3             https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/public-health             > /tmp/health.json
+          jq '{
+            checked_at:(now|todateiso8601),
+            kick:.services.kick,
+            twitch:.services.twitch
+          }' /tmp/health.json > control/diagnostics/kick-dj-copy-verification.json
+          cat control/diagnostics/kick-dj-copy-verification.json
+      - name: Persist verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/kick-dj-copy-verification.json
+          git commit -m "ops: verify Kick independent DJ playlist" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
