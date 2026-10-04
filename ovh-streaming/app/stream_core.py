@@ -393,8 +393,7 @@ class StreamCore:
                     self.target(),
                 ]
         else:
-            # Keep the current YouTube path untouched for this incident.
-            cmd = common + [
+            youtube_av = common + [
                 "-map",
                 "0:v:0",
                 "-map",
@@ -411,26 +410,42 @@ class StreamCore:
                 "2",
                 "-max_interleave_delta",
                 "1000000",
-                "-f",
-                "fifo",
-                "-fifo_format",
-                "flv",
-                "-queue_size",
-                "1200",
-                "-attempt_recovery",
-                "1",
-                "-recover_any_error",
-                "1",
-                "-recovery_wait_time",
-                "1",
-                "-drop_pkts_on_overflow",
-                "1",
-                "-restart_with_keyframe",
-                "1",
-                "-max_recovery_attempts",
-                "1000000",
-                self.target(),
             ]
+            if self.platform == "youtube-ui-test":
+                # Test slot: use the same simple direct FLV transport already
+                # proven by the production GitHub YouTube encoder. This makes
+                # connection failures visible instead of being hidden inside
+                # the fifo recovery child.
+                cmd = youtube_av + [
+                    "-flvflags",
+                    "no_duration_filesize",
+                    "-f",
+                    "flv",
+                    self.target(),
+                ]
+            else:
+                # Existing production YouTube slots keep their current path.
+                cmd = youtube_av + [
+                    "-f",
+                    "fifo",
+                    "-fifo_format",
+                    "flv",
+                    "-queue_size",
+                    "1200",
+                    "-attempt_recovery",
+                    "1",
+                    "-recover_any_error",
+                    "1",
+                    "-recovery_wait_time",
+                    "1",
+                    "-drop_pkts_on_overflow",
+                    "1",
+                    "-restart_with_keyframe",
+                    "1",
+                    "-max_recovery_attempts",
+                    "1000000",
+                    self.target(),
+                ]
         self.ffmpeg_log = open(self.state / "ffmpeg.log", "ab", buffering=0)
         self.encoder = subprocess.Popen(cmd, stdout=self.ffmpeg_log, stderr=self.ffmpeg_log)
         self.connected_since = time.time()
