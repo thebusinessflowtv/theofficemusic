@@ -1,0 +1,281 @@
+name: Peter Lofi — Private Figma Live V3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/private-ui-test-launch-v3.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  launch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      BASE_API: "https://mediaforge-api.guilhermeodsgn.workers.dev"
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Load temporary visual references
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, pathlib, re
+          src=pathlib.Path(".github/workflows/private-ui-test-ovh.yml").read_text(encoding="utf-8")
+          keys=["BACKGROUND_URL","FIGMA_HEADER_URL","FIGMA_WEB_URL","FIGMA_ICON_URL","FONT_CARRIER_URL"]
+          with open(os.environ["GITHUB_ENV"],"a",encoding="utf-8") as out:
+              for key in keys:
+                  m=re.search(rf'^\s*{key}: "([^"]+)"',src,re.M)
+                  if not m:
+                      raise SystemExit(f"Missing {key}")
+                  out.write(f"{key}={m.group(1)}\n")
+          PY
+
+      - name: Validate runtime
+        run: |
+          python -m py_compile ovh-streaming/app/audio_engine.py ovh-streaming/app/visual_engine.py ovh-streaming/app/stream_core.py ovh-streaming/app/ovh_agent.py ovh-streaming/host_deploy_agent.py
+
+      - name: Ensure host/control agent has latest isolated test code
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST "$BASE_API/api/ops/20261003-live-stability/host-agent?v=5&id=ops-ui-test-host-agent-v2" > /tmp/host-request.json
+          for I in $(seq 1 80); do
+            curl -fsS "$BASE_API/api/ops/20261003-live-stability/status" > /tmp/ops-status.json
+            STATUS="$(jq -r '[.commands[]? | select(.action=="deploy_host_agent")] | sort_by(.created_at) | last | .status // empty' /tmp/ops-status.json)"
+            echo "deploy_host_agent=$STATUS"
+            [ "$STATUS" = "completed" ] && break
+            [ "$STATUS" = "failed" ] && exit 1
+            sleep 3
+          done
+          [ "$STATUS" = "completed" ]
+          sleep 8
+
+      - name: Install YouTube client
+        run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Create PRIVATE live and command
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt, json, os, pathlib
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          root=pathlib.Path(".")
+          now=dt.datetime.now(dt.timezone.utc)
+          sid="figma-ui-test-"+now.strftime("%Y%m%d-%H%M%S")
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"],
+          )
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+
+          stream=yt.liveStreams().insert(
+              part="snippet,cdn,contentDetails",
+              body={
+                  "snippet":{"title":"Peter Lofi — Figma UI Private Test"},
+                  "cdn":{"frameRate":"30fps","ingestionType":"rtmp","resolution":"1080p"},
+                  "contentDetails":{"isReusable":False},
+              },
+          ).execute()
+          stream_id=stream["id"]
+          info=(stream.get("cdn") or {}).get("ingestionInfo") or {}
+          stream_url=info.get("rtmpsIngestionAddress") or info.get("ingestionAddress")
+          stream_key=info.get("streamName")
+          if not stream_url or not stream_key:
+              raise RuntimeError("YouTube did not return ingest credentials")
+
+          b=yt.liveBroadcasts().insert(
+              part="snippet,status,contentDetails",
+              body={
+                  "snippet":{
+                      "title":"Peter Lofi — Figma Interactive Layout Test",
+                      "description":"PRIVATE TEST — Peter Lofi Figma layout, dynamic current music and message overlay.",
+                      "categoryId":"10",
+                      "scheduledStartTime":(now+dt.timedelta(seconds=15)).isoformat(),
+                  },
+                  "status":{"privacyStatus":"private","selfDeclaredMadeForKids":False},
+                  "contentDetails":{
+                      "enableAutoStart":True,
+                      "enableAutoStop":False,
+                      "monitorStream":{"enableMonitorStream":False},
+                  },
+              },
+          ).execute()
+          bid=b["id"]
+          yt.liveBroadcasts().bind(part="id,contentDetails",id=bid,streamId=stream_id).execute()
+
+          tracks=json.loads((root/"ovh-streaming/stations/youtube-deep-house.json").read_text(encoding="utf-8")).get("tracks") or []
+          cmd_id="start-"+sid
+          cmd={
+              "id":cmd_id,
+              "action":"start",
+              "runtime_slot":"youtube-ui-test",
+              "session_id":sid,
+              "title":"Peter Lofi — Figma Interactive Layout Test",
+              "stream_url":stream_url,
+              "stream_key":stream_key,
+              "loop_url":os.environ["BACKGROUND_URL"],
+              "header_url":os.environ["FIGMA_HEADER_URL"],
+              "web_url":os.environ["FIGMA_WEB_URL"],
+              "icon_url":os.environ["FIGMA_ICON_URL"],
+              "font_carrier_url":os.environ["FONT_CARRIER_URL"],
+              "playlist_key":"deep-house-radio-test",
+              "tracks":tracks,
+              "shuffle":True,
+              "repeat":True,
+              "requested_at":now.isoformat(),
+              "source":"figma-private-ui-test-v3",
+          }
+          cp=root/f"control/ovh-commands/{cmd_id}.json"
+          cp.parent.mkdir(parents=True,exist_ok=True)
+          cp.write_text(json.dumps(cmd,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          ip=root/"control/ovh-commands/index.json"
+          idx=json.loads(ip.read_text(encoding="utf-8")) if ip.exists() else {"version":1,"commands":[]}
+          items=[x for x in idx.get("commands",[]) if str(x.get("id"))!=cmd_id]
+          items.append({"id":cmd_id,"path":str(cp).replace("\\","/"),"created_at":now.isoformat()})
+          idx.update({"version":1,"updated_at":now.isoformat(),"commands":items[-500:]})
+          ip.write_text(json.dumps(idx,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+
+          dp=root/"control/diagnostics/private-ui-test.json"
+          dp.parent.mkdir(parents=True,exist_ok=True)
+          dp.write_text(json.dumps({
+              "status":"queued",
+              "privacy_status":"private",
+              "session_id":sid,
+              "runtime_slot":"youtube-ui-test",
+              "youtube_broadcast_id":bid,
+              "youtube_stream_id":stream_id,
+              "youtube_url":f"https://www.youtube.com/watch?v={bid}",
+              "figma_nodes":["32:5","38:190"],
+              "created_at":now.isoformat(),
+          },ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+
+          with open(os.environ["GITHUB_ENV"],"a",encoding="utf-8") as fh:
+              fh.write(f"UI_BROADCAST_ID={bid}\n")
+              fh.write(f"UI_STREAM_ID={stream_id}\n")
+              fh.write(f"UI_YOUTUBE_URL=https://www.youtube.com/watch?v={bid}\n")
+          print(f"Private live prepared: https://www.youtube.com/watch?v={bid}")
+          PY
+
+      - name: Publish command for OVH
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/ovh-commands control/diagnostics/private-ui-test.json
+          git commit -m "ui-test: queue private Figma live v3"
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((N*2))
+          done
+          exit 1
+
+      - name: Verify incoming stream and PRIVATE broadcast
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, time
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"],
+          )
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+          bid=os.environ["UI_BROADCAST_ID"]
+          sid=os.environ["UI_STREAM_ID"]
+          final={}
+          for _ in range(100):
+              streams=yt.liveStreams().list(part="status",id=sid).execute().get("items") or []
+              broadcasts=yt.liveBroadcasts().list(part="snippet,status",id=bid).execute().get("items") or []
+              stream_status=((streams[0].get("status") or {}).get("streamStatus") if streams else None)
+              if not broadcasts:
+                  raise RuntimeError("Broadcast missing")
+              bb=broadcasts[0]
+              life=(bb.get("status") or {}).get("lifeCycleStatus")
+              privacy=(bb.get("status") or {}).get("privacyStatus")
+              final={"streamStatus":stream_status,"lifeCycleStatus":life,"privacyStatus":privacy}
+              print(final)
+              if stream_status=="active" and life=="live" and privacy=="private":
+                  break
+              time.sleep(5)
+          else:
+              raise RuntimeError(f"Private live failed to become active: {final}")
+          with open("/tmp/youtube-status.json","w",encoding="utf-8") as fh:
+              json.dump(final,fh,ensure_ascii=False,indent=2)
+          PY
+
+      - name: Capture OVH status if exposed
+        shell: bash
+        run: |
+          set +e
+          curl -k -fsS https://146.59.156.224:8443/api/ovh/public-health > /tmp/ui-health.json 2>/dev/null
+          if [ $? -ne 0 ]; then
+            curl -fsS "$BASE_API/api/ovh/public-health" > /tmp/ui-health.json 2>/dev/null
+          fi
+          jq '.services["youtube-ui-test"] // {}' /tmp/ui-health.json 2>/dev/null || true
+          exit 0
+
+      - name: Save verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime as dt, json, pathlib
+          p=pathlib.Path("control/diagnostics/private-ui-test.json")
+          d=json.loads(p.read_text(encoding="utf-8"))
+          y=json.loads(pathlib.Path("/tmp/youtube-status.json").read_text(encoding="utf-8"))
+          try:
+              h=json.loads(pathlib.Path("/tmp/ui-health.json").read_text(encoding="utf-8"))
+          except Exception:
+              h={}
+          svc=(h.get("services") or {}).get("youtube-ui-test") or {}
+          d.update({
+              "status":"live",
+              "verified_at":dt.datetime.now(dt.timezone.utc).isoformat(),
+              "youtube_status":y,
+              "ovh_status":svc,
+          })
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          PY
+          git add control/diagnostics/private-ui-test.json
+          git commit -m "ui-test: verify private Figma YouTube live v3"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Remove temporary URL carrier workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/private-ui-test-ovh.yml
+          git commit -m "ui-test: remove temporary visual URL carrier"
+          git pull --rebase origin main
+          git push origin HEAD:main
