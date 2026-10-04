@@ -80,7 +80,7 @@ jobs:
           if not s or not b:
               raise RuntimeError("Test stream/broadcast not found")
           info=(s.get("cdn") or {}).get("ingestionInfo") or {}
-          url=info.get("rtmpsIngestionAddress") or info.get("ingestionAddress")
+          url=info.get("ingestionAddress") or info.get("rtmpsIngestionAddress")
           key=info.get("streamName")
           if not url or not key:
               raise RuntimeError("Missing YouTube ingest credentials")
@@ -179,7 +179,7 @@ jobs:
           cat /state/youtube-ui-test/health.json || true
           cat /state/youtube-ui-test/visual-health.json || true
           cat /state/youtube-ui-test/audio-health.json || true
-          cat /state/youtube-ui-test/now-playing.json || true
+          cat /state/youtube-ui-test/now-playing.json || true\n          echo "--- ffmpeg publisher log ---"\n          cat /state/youtube-ui-test/ffmpeg.log || true\n          echo "--- controller log ---"\n          cat /tmp/ui-test-controller.log || true
 
       - name: Wait until YouTube is ACTIVE and LIVE
         shell: bash
