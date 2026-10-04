@@ -1,4 +1,5 @@
 name: Ops — Probe Local Agent Token
+# dj100-recovery-probe: 2026-10-03T23:30
 
 on:
   workflow_dispatch:
