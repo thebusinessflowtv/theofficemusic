@@ -1,0 +1,4 @@
+{
+  "version": "figma-ui-test-v1",
+  "purpose": "Refresh only the non-publisher OVH control container with youtube-ui-test code. Do not touch existing RTMP publisher containers."
+}
