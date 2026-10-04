@@ -474,6 +474,34 @@ def hot_patch_audio_controls(target="twitch-kick"):
     return results
 
 
+def ui_test_status_snapshot():
+    st=OVH/"state"/"youtube-ui-test"
+    def load(name):
+        try:
+            return json.loads((st/name).read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+    tail=""
+    try:
+        p=st/"controller.log"
+        if p.exists():
+            with open(p,"rb") as fh:
+                fh.seek(0,2)
+                size=fh.tell()
+                fh.seek(max(0,size-12000))
+                tail=fh.read().decode("utf-8","ignore")
+    except Exception as exc:
+        tail="controller_log_error:"+str(exc)[:200]
+    return {
+        "desired":load("desired.json"),
+        "health":load("health.json"),
+        "audio_health":load("audio-health.json"),
+        "visual_health":load("visual-health.json"),
+        "now_playing":load("now-playing.json"),
+        "controller_log_tail":_redact_stream_log(tail),
+    }
+
+
 def bootstrap_ui_test_control_agent():
     """One-time safe refresh of the non-publisher OVH control container.
 
@@ -505,7 +533,13 @@ def bootstrap_ui_test_control_agent():
     st["ui_test_control_agent_version"]=version
     st["ui_test_control_agent_refreshed_at"]=now()
     write_state(st)
-    return {"status":"applied","version":version,"publisher_containers_touched":False}
+    time.sleep(3)
+    return {
+        "status":"applied",
+        "version":version,
+        "publisher_containers_touched":False,
+        "ui_test":ui_test_status_snapshot(),
+    }
 
 
 def rollback_service(service):
@@ -770,8 +804,17 @@ def execute(cmd):
     if action=="deploy_all":
         return {"old_head":old,"new_head":new,"services":deploy_all()},False
     if action=="deploy_host_agent":
-        # Source was updated by git_sync. ACK first, then exec the fresh code.
-        return {"old_head":old,"new_head":new,"host_agent":"reloading"},True
+        # Refreshing this host agent never recreates publisher containers. When
+        # a new UI-test marker is present, refresh only the non-publisher
+        # control container and include its isolated state in the ACK.
+        bootstrap=bootstrap_ui_test_control_agent()
+        return {
+            "old_head":old,
+            "new_head":new,
+            "host_agent":"reloading",
+            "ui_test_bootstrap":bootstrap,
+            "ui_test":ui_test_status_snapshot(),
+        },True
     if action=="run_twitch_dj_balance":
         out=run(["bash",str(OVH/"hotfix_twitch_dj_balance.sh")],cwd=OVH,timeout=180)
         return {"old_head":old,"new_head":new,"output":out[-12000:]},False
