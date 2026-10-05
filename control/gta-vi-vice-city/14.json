@@ -1,0 +1,68 @@
+{
+  "index": 14,
+  "status": "generated",
+  "track": {
+    "id": "gta-vice-city-20261005-14",
+    "title": "Afterdark Skyline",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-014-37375397083/peter-lofi-gta-vice-city-r2-014.mp3",
+    "duration_seconds": 300,
+    "position": 19,
+    "source": "gta-vi-vice-city",
+    "quality_gate": "technical_checks_passed",
+    "target_bpm": 108
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-05T21:38:53.949062Z",
+    "reference_index": 14,
+    "attempt": null,
+    "source_wav_sha256": "8b296aa4e556fa7ef1ea9146564699b60b9031868814d3a9ada24e0dcde66de5",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -17.89,
+      "true_peak_db": -1.15,
+      "lra": 7.5,
+      "threshold_lufs": -28.58
+    },
+    "silence_seconds": 1.622,
+    "silence_ratio": 0.005408,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37375397083"
+}
