@@ -1,0 +1,67 @@
+name: Peter Lofi — GTA VI - Vice City
+
+'on':
+  push:
+    branches:
+      - main
+    paths:
+      - control/gta-vi-vice-city/start.json
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gaming-twitch-dj-30-production
+  cancel-in-progress: false
+
+env:
+  SECRET_DATASET_SLUG: peter-lofi-gaming-dj30-secrets
+  KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  OVH_AGENT_TOKEN: ${{ secrets.OVH_AGENT_TOKEN }}
+
+jobs:
+  generate:
+    name: Track ${{ matrix.index }}/35 — 5 min — Vice City
+    runs-on: ubuntu-latest
+    timeout-minutes: 210
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        index: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+    env:
+      INDEX: ${{ matrix.index }}
+      ATTEMPT: ${{ github.run_attempt }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Install production runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip kaggle==2.2.4 requests
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          test -n "$KAGGLE_USERNAME"
+          test -n "$KAGGLE_API_TOKEN"
+          test -n "$HF_TOKEN"
+
+      - name: Generate, QC and publish one Vice City track
+        run: bash scripts/run_gta_vice_city_track.sh
+
+      - name: Keep diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gta-vice-city-${{ matrix.index }}-${{ github.run_attempt }}
+          path: build/*.json
+          if-no-files-found: ignore
