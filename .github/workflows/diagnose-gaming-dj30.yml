@@ -12,6 +12,7 @@ jobs:
     env:
       KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
       KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
       - run: python -m pip install -q kaggle==2.2.4
       - name: Read actual production kernel status and logs
@@ -20,3 +21,7 @@ jobs:
           REF="$KAGGLE_USERNAME/peter-lofi-dj30-1-37261069134-1"
           kaggle kernels status "$REF"
           kaggle kernels logs "$REF" | tail -n 160
+      - name: Verify actual Medium model duration capacity
+        run: |
+          curl -fsS --connect-timeout 10 --max-time 45 -H "authorization: Bearer $HF_TOKEN" "https://huggingface.co/stabilityai/stable-audio-3-medium/resolve/main/model_config.json" -o /tmp/model.json
+          jq '{sample_size,sample_rate,maximum_seconds:(.sample_size/.sample_rate)}' /tmp/model.json
