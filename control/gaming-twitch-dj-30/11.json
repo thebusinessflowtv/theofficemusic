@@ -1,0 +1,66 @@
+{
+  "index": 11,
+  "status": "generated",
+  "track": {
+    "id": "gaming-twitch-dj-20261004-11",
+    "title": "Velvet Orbit",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-011-37261069134/peter-lofi-gaming-dj30-011.mp3",
+    "duration_seconds": 300,
+    "source": "gaming-twitch-dj-30",
+    "quality_gate": "technical_checks_passed"
+  },
+  "delivery": "pending_local_sync",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-05T04:57:29.577413Z",
+    "reference_index": 11,
+    "attempt": 1,
+    "source_wav_sha256": "752b41aceb12aea7465cb417407d5226a7d02c4355b1472b640f80086db6078a",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -20.61,
+      "true_peak_db": -1.81,
+      "lra": 9.7,
+      "threshold_lufs": -30.78
+    },
+    "silence_seconds": 2.957,
+    "silence_ratio": 0.009858,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37261069134"
+}
