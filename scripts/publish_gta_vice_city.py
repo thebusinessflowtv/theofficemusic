@@ -10,11 +10,11 @@ PLAYLIST_KEY = "gta-vi-vice-city"
 PLAYLIST_NAME = "GTA VI - Vice City"
 
 OWNER_TRACKS = [
-    {"title": "Digifunk", "artist": "DivKid", "filename": "Digifunk - DivKid.mp3"},
-    {"title": "Icelandic Arpeggios", "artist": "DivKid", "filename": "Icelandic Arpeggios - DivKid.mp3"},
-    {"title": "No One Here Gets In Alive", "artist": "National Sweetheart", "filename": "No One Here Gets In Alive - National Sweetheart.mp3"},
-    {"title": "Rinse Repeat", "artist": "DivKid", "filename": "Rinse Repeat - DivKid.mp3"},
-    {"title": "Visions", "artist": "Patrick Jordan Patrikios", "filename": "Visions - Patrick Jordan Patrikios.mp3"},
+    {"title": "Digifunk", "artist": "DivKid", "filename": "Digifunk - DivKid.mp3", "source_duration_seconds": 192.0, "target_duration_seconds": 300, "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"},
+    {"title": "Icelandic Arpeggios", "artist": "DivKid", "filename": "Icelandic Arpeggios - DivKid.mp3", "source_duration_seconds": 170.0, "target_duration_seconds": 300, "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"},
+    {"title": "No One Here Gets In Alive", "artist": "National Sweetheart", "filename": "No One Here Gets In Alive - National Sweetheart.mp3", "source_duration_seconds": 238.4, "target_duration_seconds": 300, "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"},
+    {"title": "Rinse Repeat", "artist": "DivKid", "filename": "Rinse Repeat - DivKid.mp3", "source_duration_seconds": 156.0, "target_duration_seconds": 300, "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"},
+    {"title": "Visions", "artist": "Patrick Jordan Patrikios", "filename": "Visions - Patrick Jordan Patrikios.mp3", "source_duration_seconds": 148.0, "target_duration_seconds": 300, "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"},
 ]
 
 
@@ -30,6 +30,8 @@ def ensure_playlist(library):
             "moods": ["neon", "nocturnal", "coastal", "driving"],
             "source": "gta-vi-vice-city-production",
             "planned_track_count": 40,
+            "planned_duration_seconds": 12000,
+            "target_duration_seconds_per_track": 300,
             "owner_library_tracks": OWNER_TRACKS,
             "track_count": 0,
             "total_duration_seconds": 0,
