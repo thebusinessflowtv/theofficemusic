@@ -2,7 +2,7 @@
   "batch_id": "gta-vi-vice-city-20261005",
   "playlist_key": "gta-vi-vice-city",
   "playlist_name": "GTA VI - Vice City",
-  "action": "start",
+  "action": "resume",
   "requested_by": "owner",
   "total_playlist_tracks": 40,
   "owner_library_tracks": 5,
@@ -13,7 +13,7 @@
   "generation_mode": "pure_text_to_audio",
   "queue_policy": "sequential_max_parallel_1",
   "shared_concurrency_group": "gaming-twitch-dj-30-production",
-  "requested_at": "2026-10-05T17:24:00Z",
+  "requested_at": "2026-10-05T20:09:00Z",
   "revision": 2,
   "keep_track_index": 1,
   "keep_title": "Ocean Drive Heat",
@@ -21,5 +21,9 @@
   "rejected_tracks_removed": 34,
   "diversity_gate": "enabled",
   "max_diversity_attempts_per_track": 4,
-  "reason": "Owner rejected R1 tracks 2-35 for excessive similarity in intros, beats and structure. Preserve aesthetic but enforce distinct composition and arrangement."
+  "reason": "Previous workflow became stuck after track 13; resume remaining R2 tracks on a fresh concurrency group.",
+  "resume_from_track": 14,
+  "resume_to_track": 35,
+  "keep_completed_tracks": "1-13",
+  "resume_token": "r2-continuation-14-35-20261005"
 }
