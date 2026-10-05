@@ -24,7 +24,25 @@ env:
   OVH_AGENT_TOKEN: ${{ secrets.OVH_AGENT_TOKEN }}
 
 jobs:
+  cleanup:
+    name: Remove rejected Vice City releases
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete rejected R1 releases but preserve Ocean Drive Heat
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName --jq '.[].tagName' | while read -r tag; do
+            case "$tag" in
+              peter-lofi-gta-vice-city-001-*) echo "Preserving $tag" ;;
+              peter-lofi-gta-vice-city-r2-*) echo "Preserving R2 $tag" ;;
+              peter-lofi-gta-vice-city-*) gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --cleanup-tag -y || true ;;
+            esac
+          done
+
   generate:
+    needs: cleanup
     name: Redo ${{ matrix.index }}/35 — 5 min — Diverse Vice City
     runs-on: ubuntu-latest
     timeout-minutes: 210
