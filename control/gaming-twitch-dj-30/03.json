@@ -1,0 +1,66 @@
+{
+  "index": 3,
+  "status": "generated",
+  "track": {
+    "id": "gaming-twitch-dj-20261004-03",
+    "title": "Midnight Pulse",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-003-37261069134/peter-lofi-gaming-dj30-003.mp3",
+    "duration_seconds": 300,
+    "source": "gaming-twitch-dj-30",
+    "quality_gate": "technical_checks_passed"
+  },
+  "delivery": "pending_local_sync",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-05T04:09:17.165865Z",
+    "reference_index": 3,
+    "attempt": 1,
+    "source_wav_sha256": "89d2cb8ba73a061fca1e49ad9f554657948aa0787663a4939939605c4886e071",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -21.31,
+      "true_peak_db": -2.4,
+      "lra": 7.1,
+      "threshold_lufs": -31.4
+    },
+    "silence_seconds": 2.096,
+    "silence_ratio": 0.006986,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37261069134"
+}
