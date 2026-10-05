@@ -158,6 +158,22 @@ def main():
         filename = f"{i:02d}-{safe_title}.wav"
         filepath = output_dir / filename
         waveform = audio[0].detach().to(torch.float32).cpu()
+        if os.getenv("SA3_ATTENTION_BACKEND") == "sdpa":
+            target_samples = sample_rate * duration
+            if waveform.shape[-1] < target_samples or not torch.isfinite(waveform).all():
+                raise RuntimeError("Generated waveform is incomplete or contains non-finite samples.")
+            # The codec pads its output to decoder blocks. Deliver exactly the
+            # requested duration, with a short musical fade and peak headroom
+            # before PCM encoding so the generated floats are never clipped.
+            waveform = waveform[..., :target_samples].clone()
+            fade_in = min(sample_rate // 4, target_samples)
+            fade_out = min(sample_rate * 2, target_samples)
+            waveform[..., :fade_in] *= torch.linspace(0, 1, fade_in)
+            waveform[..., -fade_out:] *= torch.linspace(1, 0, fade_out)
+            peak = float(waveform.abs().max())
+            if peak > 0.7:
+                waveform *= 0.7 / peak
+            print(f"Audio finalized: {duration}s, peak={float(waveform.abs().max()):.4f}", flush=True)
         torchaudio.save(str(filepath), waveform, sample_rate)
 
         manifest["tracks"].append(
