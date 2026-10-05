@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T06:36:03.386953+00:00",
+  "updated_at": "2026-10-05T06:41:43.971945+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -40,8 +40,8 @@
         "neon"
       ],
       "source": "ovh-station",
-      "track_count": 63,
-      "total_duration_seconds": 18900,
+      "track_count": 64,
+      "total_duration_seconds": 19200,
       "tracks": [
         {
           "id": "gaming-radio-01",
@@ -537,6 +537,15 @@
           "source": "gaming-twitch-dj-30",
           "quality_gate": "technical_checks_passed",
           "position": 63
+        },
+        {
+          "id": "gaming-twitch-dj-20261004-28",
+          "title": "Parallel Dawn",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-028-37261069134/peter-lofi-gaming-dj30-028.mp3",
+          "duration_seconds": 300,
+          "source": "gaming-twitch-dj-30",
+          "quality_gate": "technical_checks_passed",
+          "position": 64
         }
       ]
     },
