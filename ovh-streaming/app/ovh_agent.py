@@ -666,6 +666,107 @@ def import_shared_dj_archive(cmd):
     archive.unlink(missing_ok=True)
     return result
 
+def add_approved_gaming30_to_dj_mix(cmd):
+    """Append the approved batch to both local DJs, keeping their RTMP publishers."""
+    cid=str(cmd.get("id") or "")
+    result_path=STATE/"agent"/"gaming30-dj-mix.json"
+    previous=read_json(result_path,{}) or {}
+    if previous.get("command_id")==cid and previous.get("status")=="ready":
+        return previous
+    library_path="control/music-library.json"
+    library=fetch_json(API+"/api/ovh/agent/runtime-config?path="+library_path+"&raw=1")
+    gaming=next((p for p in library.get("playlists",[]) if p.get("key")=="gaming-radio"),{})
+    approved=[t for t in gaming.get("tracks",[]) if t.get("source")=="gaming-twitch-dj-30" and t.get("asset_id")]
+    expected={f"gaming-twitch-dj-20261004-{n:02d}" for n in range(1,31)}
+    if len(approved)!=30 or {t.get("id") for t in approved}!=expected:
+        raise RuntimeError("Exactly 30 approved local Gaming tracks are required")
+    approved.sort(key=lambda t:t["id"])
+    for row in approved:
+        if float(row.get("duration_seconds") or 0)!=300 or not str(row.get("url") or "").startswith("https://peterlofi.odsgn.com.br/media/"):
+            raise RuntimeError("Invalid approved Gaming audio source")
+
+    before={slot:read_json(STATE/slot/"health.json",{}) or {} for slot in ("twitch","kick")}
+    current={slot:read_json(STATE/slot/"playlist.json",{}) or {} for slot in ("twitch","kick")}
+    desired={slot:read_json(STATE/slot/"desired.json",{}) or {} for slot in ("twitch","kick")}
+    if any(not current[s].get("tracks") for s in current):
+        raise RuntimeError("Existing DJ playlists must be preserved")
+    if any(before[s].get("status")!="live" for s in before):
+        raise RuntimeError("Twitch and Kick must already be live")
+    # Validate/cache every new file before changing either live playlist.
+    additions={"twitch":[],"kick":[]}
+    for row in approved:
+        target=STATE/"gaming30-dj-audio"/(row["id"]+".mp3")
+        if not target.exists() or target.stat().st_size<3000000:
+            download_file(row["url"],target)
+        if not 3000000<=target.stat().st_size<=20000000:
+            raise RuntimeError("Invalid Gaming MP3 size")
+        probe=_probe_dj_mp3(target,row["title"])
+        if not 298<=float(probe["duration_seconds"])<=302:
+            raise RuntimeError("Gaming audio duration must be five minutes")
+        tw={**row,"url":"file:///state/gaming30-dj-audio/"+target.name,"source":"peter_lofi_original","generation_source":"gaming-twitch-dj-30"}
+        additions["twitch"].append(tw)
+        dest=STATE/"kick-gaming30-dj-audio"/target.name
+        dest.parent.mkdir(parents=True,exist_ok=True)
+        if not dest.exists():
+            try:os.link(target,dest)
+            except OSError:shutil.copy2(target,dest)
+        additions["kick"].append({**tw,"id":"kick-copy-"+row["id"],"original_track_id":row["id"],"source":"kick_independent_original_copy","url":"file:///state/kick-gaming30-dj-audio/"+target.name})
+
+    keys={"twitch":"twitch-dj-mixed","kick":"kick-dj-mixed-independent"}
+    mixed={}
+    for slot in ("twitch","kick"):
+        new_ids={t["id"] for t in additions[slot]}
+        base=[dict(t) for t in current[slot]["tracks"] if t.get("id") not in new_ids]
+        tracks=base+additions[slot]
+        if len({t["id"] for t in tracks})!=len(tracks):
+            raise RuntimeError("Duplicate DJ track IDs")
+        for i,t in enumerate(tracks,1):t["position"]=i
+        mixed[slot]={**current[slot],"station":slot,"playlist_key":keys[slot],"shuffle":True,"repeat":True,"commercial_only":False,"independent_player":True,"updated_at":iso_now(),"tracks":tracks}
+        safe="".join(ch for ch in cid if ch.isalnum() or ch in "-_")[:96]
+        backup=STATE/"playlist-backups"/(safe+"-"+slot+"-before-gaming30.json")
+        if not backup.exists():atomic_json(backup,{"playlist":current[slot],"desired":desired[slot]})
+
+    # Merge the canonical entries into a fresh copy, preserving every other playlist.
+    library=fetch_json(API+"/api/ovh/agent/runtime-config?path="+library_path+"&raw=1")
+    for slot in ("twitch","kick"):
+        entry=next((p for p in library.get("playlists",[]) if p.get("key")==keys[slot]),None)
+        if entry is None:
+            entry={"key":keys[slot]};library.setdefault("playlists",[]).append(entry)
+        entry.update({"name":"Twitch DJ Mixed" if slot=="twitch" else "Kick DJ Mixed · Independent","tracks":mixed[slot]["tracks"],"track_count":len(mixed[slot]["tracks"]),"total_duration_seconds":sum(float(t.get("duration_seconds") or 0) for t in mixed[slot]["tracks"]),"allowed_platforms":[slot],"shuffle":True,"repeat":True,"commercial_only":False,"independent_player":True})
+    library["updated_at"]=iso_now()
+    post_json(API+"/api/ovh/agent/runtime-config",{"path":library_path,"payload":library})
+
+    # One audio fade starts a new approved song on each independent player.
+    # The complete merged list is restored after the fade; the current decoder
+    # keeps playing and neither the video nor the RTMP encoder is restarted.
+    started={}
+    try:
+        for slot in ("twitch","kick"):
+            atomic_json(STATE/slot/"playlist.json",{**mixed[slot],"tracks":additions[slot]})
+            atomic_json(STATE/slot/"desired.json",{**desired[slot],"playlist_key":keys[slot],"updated_at":iso_now()})
+            _queue_audio_skip(slot,"mediaforge-playlist-switch-gaming30")
+        end=time.time()+45
+        while time.time()<end:
+            for slot in ("twitch","kick"):
+                n=read_json(STATE/slot/"now-playing.json",{}) or {}
+                if n.get("state")=="playing" and n.get("track_id") in {t["id"] for t in additions[slot]}:
+                    started[slot]={"track_id":n["track_id"],"title":n.get("title")}
+            if len(started)==2:break
+            time.sleep(.5)
+    finally:
+        for slot in ("twitch","kick"):
+            atomic_json(STATE/slot/"playlist.json",mixed[slot])
+    if len(started)!=2:
+        raise RuntimeError("Merged playlists ready, but new-song playback was not confirmed")
+    for slot in ("twitch","kick"):
+        after=read_json(STATE/slot/"health.json",{}) or {}
+        if before[slot].get("encoder_pid")!=after.get("encoder_pid"):
+            raise RuntimeError(slot+" RTMP publisher changed")
+    result={"status":"ready","command_id":cid,"updated_at":iso_now(),"approved_new_tracks":30,"playlist_counts":{s:len(mixed[s]["tracks"]) for s in mixed},"started":started,"publisher_pids":{s:before[s].get("encoder_pid") for s in before},"rtmp_restart":False,"container_restart":False,"independent_players":True}
+    atomic_json(result_path,result)
+    return result
+
+
 def _ui_test_secret_path():
     return STATE/"youtube-ui-test"/"runtime-secret.json"
 
@@ -823,6 +924,9 @@ def apply_command(cmd):
         return
     if action=="import_shared_dj_archive":
         import_shared_dj_archive(cmd)
+        return
+    if action=="add_approved_gaming30_to_dj_mix":
+        add_approved_gaming30_to_dj_mix(cmd)
         return
 
     # Playlist payloads are persisted locally on OVH. AudioEngine keeps a
@@ -996,6 +1100,8 @@ def status_payload(processed_count=0,last_command=None):
         "authority":"local",
         "cloudflare_required_for_live":False,
         "github_runtime_polling":False,
+        "gaming_dj30_mix_supported":True,
+        "gaming_dj30_mix":read_json(AGENT_DIR/"gaming30-dj-mix.json",{}),
         "reported_at":iso_now(),
         "host":host_metrics(),
         "services":{s:service_payload(s) for s in SLOTS},
