@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T17:50:31.328350+00:00",
+  "updated_at": "2026-10-05T17:56:15.224188+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3226,8 +3226,8 @@
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 2,
-      "total_duration_seconds": 600,
+      "track_count": 3,
+      "total_duration_seconds": 900,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3248,6 +3248,16 @@
           "source": "gta-vi-vice-city",
           "quality_gate": "technical_checks_passed",
           "target_bpm": 116
+        },
+        {
+          "id": "gta-vice-city-20261005-03",
+          "title": "Midnight Causeway",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-003-37349889973/peter-lofi-gta-vice-city-r2-003.mp3",
+          "duration_seconds": 300,
+          "position": 8,
+          "source": "gta-vi-vice-city",
+          "quality_gate": "technical_checks_passed",
+          "target_bpm": 123
         }
       ],
       "planned_duration_seconds": 12000,
