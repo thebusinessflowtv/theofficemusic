@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# LIVE QUEUE GUARD: obsolete queued workflows must never generate duplicate tracks.
+if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+  if [ "${GITHUB_WORKFLOW:-}" != "Peter Lofi — GTA VI Vice City Live Queue" ] || [ "${SERIAL_GENERATION_TOKEN:-}" != "gta-live-20261005-v2" ]; then
+    echo "Superseded GTA VI workflow; skipping generation to prevent duplicates."
+    exit 0
+  fi
+fi
+
 mkdir -p build
 if test -f "control/gta-vi-vice-city/$(printf '%02d' "$INDEX").json"; then
   echo "Track $INDEX already completed; skipping."
