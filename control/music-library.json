@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-03T16:44:58.716Z",
+  "updated_at": "2026-10-05T03:50:27.030Z",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -2897,6 +2897,58 @@
           "source": "peter_lofi_original"
         }
       ]
+    },
+    {
+      "key": "gta-vi-vice-city",
+      "name": "GTA VI - Vice City",
+      "category": "Series",
+      "series": "GTA VI - Vice City",
+      "genre": "Retro synthwave / electro-funk / neon night-drive",
+      "moods": [
+        "neon",
+        "nocturnal",
+        "coastal",
+        "driving"
+      ],
+      "source": "gta-vi-vice-city-production",
+      "planned_track_count": 40,
+      "generated_target_count": 35,
+      "owner_library_track_count": 5,
+      "owner_library_tracks": [
+        {
+          "title": "Digifunk",
+          "artist": "DivKid",
+          "filename": "Digifunk - DivKid.mp3",
+          "status": "pending_remote_ingest"
+        },
+        {
+          "title": "Icelandic Arpeggios",
+          "artist": "DivKid",
+          "filename": "Icelandic Arpeggios - DivKid.mp3",
+          "status": "pending_remote_ingest"
+        },
+        {
+          "title": "No One Here Gets In Alive",
+          "artist": "National Sweetheart",
+          "filename": "No One Here Gets In Alive - National Sweetheart.mp3",
+          "status": "pending_remote_ingest"
+        },
+        {
+          "title": "Rinse Repeat",
+          "artist": "DivKid",
+          "filename": "Rinse Repeat - DivKid.mp3",
+          "status": "pending_remote_ingest"
+        },
+        {
+          "title": "Visions",
+          "artist": "Patrick Jordan Patrikios",
+          "filename": "Visions - Patrick Jordan Patrikios.mp3",
+          "status": "pending_remote_ingest"
+        }
+      ],
+      "track_count": 0,
+      "total_duration_seconds": 0,
+      "tracks": []
     }
   ]
 }
