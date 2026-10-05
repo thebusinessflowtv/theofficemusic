@@ -25,7 +25,7 @@ if __name__ == '__main__':
     p = Path('ovh-streaming/stations/gaming.json'); station = json.loads(p.read_text())
     if not any(t['id'] == track['id'] for t in station['tracks']): station['tracks'].append(dict(track, position=len(station['tracks'])+1))
     p.write_text(json.dumps(station, indent=2)+'\n')
-    delivery = 'pending_ovh_credentials'
+    delivery = 'pending_local_sync'
     token = os.environ.get('OVH_AGENT_TOKEN', '')
     if token:
         base = 'https://peterlofi.odsgn.com.br/api/ovh/agent/runtime-config'
