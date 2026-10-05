@@ -1,0 +1,66 @@
+{
+  "index": 15,
+  "status": "generated",
+  "track": {
+    "id": "gaming-twitch-dj-20261004-15",
+    "title": "Distant Sparks",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-015-37261069134/peter-lofi-gaming-dj30-015.mp3",
+    "duration_seconds": 300,
+    "source": "gaming-twitch-dj-30",
+    "quality_gate": "technical_checks_passed"
+  },
+  "delivery": "pending_local_sync",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-05T05:22:17.848032Z",
+    "reference_index": 15,
+    "attempt": 1,
+    "source_wav_sha256": "a9ef94462cca3b9b7c1fc1f41c78db98aaf345045d469a3f2d68120df8cb486d",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -18.21,
+      "true_peak_db": -1.84,
+      "lra": 7.2,
+      "threshold_lufs": -28.31
+    },
+    "silence_seconds": 2.439,
+    "silence_ratio": 0.00813,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37261069134"
+}
