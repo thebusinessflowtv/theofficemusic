@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T10:28:11.449290+00:00",
+  "updated_at": "2026-10-05T17:33:56.487Z",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3189,7 +3189,7 @@
           "title": "Digifunk",
           "artist": "DivKid",
           "filename": "Digifunk - DivKid.mp3",
-          "source_duration_seconds": 192.0,
+          "source_duration_seconds": 192,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3197,7 +3197,7 @@
           "title": "Icelandic Arpeggios",
           "artist": "DivKid",
           "filename": "Icelandic Arpeggios - DivKid.mp3",
-          "source_duration_seconds": 170.0,
+          "source_duration_seconds": 170,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3213,7 +3213,7 @@
           "title": "Rinse Repeat",
           "artist": "DivKid",
           "filename": "Rinse Repeat - DivKid.mp3",
-          "source_duration_seconds": 156.0,
+          "source_duration_seconds": 156,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3221,13 +3221,13 @@
           "title": "Visions",
           "artist": "Patrick Jordan Patrikios",
           "filename": "Visions - Patrick Jordan Patrikios.mp3",
-          "source_duration_seconds": 148.0,
+          "source_duration_seconds": 148,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 35,
-      "total_duration_seconds": 10500,
+      "track_count": 1,
+      "total_duration_seconds": 300,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3238,350 +3238,14 @@
           "source": "gta-vi-vice-city",
           "quality_gate": "technical_checks_passed",
           "target_bpm": 112
-        },
-        {
-          "id": "gta-vice-city-20261005-02",
-          "title": "Neon Palm Circuit",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-002-37261075361/peter-lofi-gta-vice-city-002.mp3",
-          "duration_seconds": 300,
-          "position": 7,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 114
-        },
-        {
-          "id": "gta-vice-city-20261005-03",
-          "title": "Midnight Causeway",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-003-37261075361/peter-lofi-gta-vice-city-003.mp3",
-          "duration_seconds": 300,
-          "position": 8,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 113
-        },
-        {
-          "id": "gta-vice-city-20261005-04",
-          "title": "Sunset Motel",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-004-37261075361/peter-lofi-gta-vice-city-004.mp3",
-          "duration_seconds": 300,
-          "position": 9,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 115
-        },
-        {
-          "id": "gta-vice-city-20261005-05",
-          "title": "Vice Afterglow",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-005-37261075361/peter-lofi-gta-vice-city-005.mp3",
-          "duration_seconds": 300,
-          "position": 10,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 112
-        },
-        {
-          "id": "gta-vice-city-20261005-06",
-          "title": "Coastal Static",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-006-37261075361/peter-lofi-gta-vice-city-006.mp3",
-          "duration_seconds": 300,
-          "position": 11,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 114
-        },
-        {
-          "id": "gta-vice-city-20261005-07",
-          "title": "Pink Horizon",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-007-37261075361/peter-lofi-gta-vice-city-007.mp3",
-          "duration_seconds": 300,
-          "position": 12,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 113
-        },
-        {
-          "id": "gta-vice-city-20261005-08",
-          "title": "Night Cruise FM",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-008-37261075361/peter-lofi-gta-vice-city-008.mp3",
-          "duration_seconds": 300,
-          "position": 13,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 115
-        },
-        {
-          "id": "gta-vice-city-20261005-09",
-          "title": "Electric Marina",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-009-37261075361/peter-lofi-gta-vice-city-009.mp3",
-          "duration_seconds": 300,
-          "position": 14,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 112
-        },
-        {
-          "id": "gta-vice-city-20261005-10",
-          "title": "South Beach Signal",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-010-37261075361/peter-lofi-gta-vice-city-010.mp3",
-          "duration_seconds": 300,
-          "position": 15,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 114
-        },
-        {
-          "id": "gta-vice-city-20261005-11",
-          "title": "Chrome Palms",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-011-37261075361/peter-lofi-gta-vice-city-011.mp3",
-          "duration_seconds": 300,
-          "position": 16,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 113
-        },
-        {
-          "id": "gta-vice-city-20261005-12",
-          "title": "Bayfront Motion",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-012-37261075361/peter-lofi-gta-vice-city-012.mp3",
-          "duration_seconds": 300,
-          "position": 17,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 115
-        },
-        {
-          "id": "gta-vice-city-20261005-13",
-          "title": "Heatwave Boulevard",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-013-37261075361/peter-lofi-gta-vice-city-013.mp3",
-          "duration_seconds": 300,
-          "position": 18,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 112
-        },
-        {
-          "id": "gta-vice-city-20261005-14",
-          "title": "Afterdark Skyline",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-014-37261075361/peter-lofi-gta-vice-city-014.mp3",
-          "duration_seconds": 300,
-          "position": 19,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 114
-        },
-        {
-          "id": "gta-vice-city-20261005-15",
-          "title": "Turbo Sunset",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-015-37261075361/peter-lofi-gta-vice-city-015.mp3",
-          "duration_seconds": 300,
-          "position": 20,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 113
-        },
-        {
-          "id": "gta-vice-city-20261005-16",
-          "title": "Glass Highway",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-016-37261075361/peter-lofi-gta-vice-city-016.mp3",
-          "duration_seconds": 300,
-          "position": 21,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 115
-        },
-        {
-          "id": "gta-vice-city-20261005-17",
-          "title": "Neon Flamingo",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-017-37261075361/peter-lofi-gta-vice-city-017.mp3",
-          "duration_seconds": 300,
-          "position": 22,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 112
-        },
-        {
-          "id": "gta-vice-city-20261005-18",
-          "title": "Moonlit Causeway",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-018-37261075361/peter-lofi-gta-vice-city-018.mp3",
-          "duration_seconds": 300,
-          "position": 23,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 114
-        },
-        {
-          "id": "gta-vice-city-20261005-19",
-          "title": "Palmline Pulse",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-019-37261075361/peter-lofi-gta-vice-city-019.mp3",
-          "duration_seconds": 300,
-          "position": 24,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 113
-        },
-        {
-          "id": "gta-vice-city-20261005-20",
-          "title": "Golden Overpass",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-020-37261075361/peter-lofi-gta-vice-city-020.mp3",
-          "duration_seconds": 300,
-          "position": 25,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 115
-        },
-        {
-          "id": "gta-vice-city-20261005-21",
-          "title": "Electric Coastline",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-021-37261075361/peter-lofi-gta-vice-city-021.mp3",
-          "duration_seconds": 300,
-          "position": 26,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 112
-        },
-        {
-          "id": "gta-vice-city-20261005-22",
-          "title": "Midnight Convertible",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-022-37261075361/peter-lofi-gta-vice-city-022.mp3",
-          "duration_seconds": 300,
-          "position": 27,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 114
-        },
-        {
-          "id": "gta-vice-city-20261005-23",
-          "title": "Velvet Asphalt",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-023-37261075361/peter-lofi-gta-vice-city-023.mp3",
-          "duration_seconds": 300,
-          "position": 28,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 113
-        },
-        {
-          "id": "gta-vice-city-20261005-24",
-          "title": "Ocean Neon",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-024-37261075361/peter-lofi-gta-vice-city-024.mp3",
-          "duration_seconds": 300,
-          "position": 29,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 115
-        },
-        {
-          "id": "gta-vice-city-20261005-25",
-          "title": "City Heatline",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-025-37261075361/peter-lofi-gta-vice-city-025.mp3",
-          "duration_seconds": 300,
-          "position": 30,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 112
-        },
-        {
-          "id": "gta-vice-city-20261005-26",
-          "title": "Nightwave District",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-026-37261075361/peter-lofi-gta-vice-city-026.mp3",
-          "duration_seconds": 300,
-          "position": 31,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 114
-        },
-        {
-          "id": "gta-vice-city-20261005-27",
-          "title": "Sunset Frequency",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-027-37261075361/peter-lofi-gta-vice-city-027.mp3",
-          "duration_seconds": 300,
-          "position": 32,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 113
-        },
-        {
-          "id": "gta-vice-city-20261005-28",
-          "title": "Coastal Voltage",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-028-37261075361/peter-lofi-gta-vice-city-028.mp3",
-          "duration_seconds": 300,
-          "position": 33,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 115
-        },
-        {
-          "id": "gta-vice-city-20261005-29",
-          "title": "Palm Shadow Drive",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-029-37261075361/peter-lofi-gta-vice-city-029.mp3",
-          "duration_seconds": 300,
-          "position": 34,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 112
-        },
-        {
-          "id": "gta-vice-city-20261005-30",
-          "title": "Neon Motel",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-030-37261075361/peter-lofi-gta-vice-city-030.mp3",
-          "duration_seconds": 300,
-          "position": 35,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 114
-        },
-        {
-          "id": "gta-vice-city-20261005-31",
-          "title": "Mirage Avenue",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-031-37261075361/peter-lofi-gta-vice-city-031.mp3",
-          "duration_seconds": 300,
-          "position": 36,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 113
-        },
-        {
-          "id": "gta-vice-city-20261005-32",
-          "title": "Heat Signature",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-032-37261075361/peter-lofi-gta-vice-city-032.mp3",
-          "duration_seconds": 300,
-          "position": 37,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 115
-        },
-        {
-          "id": "gta-vice-city-20261005-33",
-          "title": "Blue Hour Boulevard",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-033-37261075361/peter-lofi-gta-vice-city-033.mp3",
-          "duration_seconds": 300,
-          "position": 38,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 112
-        },
-        {
-          "id": "gta-vice-city-20261005-34",
-          "title": "Afterhours Coast",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-034-37261075361/peter-lofi-gta-vice-city-034.mp3",
-          "duration_seconds": 300,
-          "position": 39,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 114
-        },
-        {
-          "id": "gta-vice-city-20261005-35",
-          "title": "Vice City Lights",
-          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-035-37261075361/peter-lofi-gta-vice-city-035.mp3",
-          "duration_seconds": 300,
-          "position": 40,
-          "source": "gta-vi-vice-city",
-          "quality_gate": "technical_checks_passed",
-          "target_bpm": 113
         }
       ],
       "planned_duration_seconds": 12000,
-      "target_duration_seconds_per_track": 300
+      "target_duration_seconds_per_track": 300,
+      "status": "regenerating_r2",
+      "revision": 2,
+      "rejected_generated_tracks": 34,
+      "revision_note": "Owner approved Ocean Drive Heat only. Tracks 2-35 removed and queued for structurally diverse regeneration."
     }
   ]
 }
