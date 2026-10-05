@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T21:51:08.174234+00:00",
+  "updated_at": "2026-10-05T22:35:53.068940+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3226,8 +3226,8 @@
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 16,
-      "total_duration_seconds": 4800,
+      "track_count": 17,
+      "total_duration_seconds": 5100,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3388,6 +3388,16 @@
           "source": "gta-vi-vice-city",
           "quality_gate": "technical_checks_passed",
           "target_bpm": 122
+        },
+        {
+          "id": "gta-vice-city-20261005-17",
+          "title": "Neon Flamingo",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-017-37375397083/peter-lofi-gta-vice-city-r2-017.mp3",
+          "duration_seconds": 300,
+          "position": 22,
+          "source": "gta-vi-vice-city",
+          "quality_gate": "technical_checks_passed",
+          "target_bpm": 106
         }
       ],
       "planned_duration_seconds": 16500,
