@@ -17,6 +17,6 @@ jobs:
       - name: Read actual production kernel status and logs
         run: |
           set -euo pipefail
-          REF="$KAGGLE_USERNAME/peter-lofi-dj30-1-37260058983-1"
+          REF="$KAGGLE_USERNAME/peter-lofi-dj30-1-37260504886-1"
           kaggle kernels status "$REF"
           kaggle kernels logs "$REF" | tail -n 160
