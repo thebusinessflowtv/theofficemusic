@@ -58,8 +58,8 @@ def main():
     if gpu_check.returncode != 0 or not torch.cuda.is_available():
         raise RuntimeError("GPU_ALLOCATION_FAILED: Kaggle session has no usable CUDA device")
     capability = torch.cuda.get_device_capability(0)
-    if capability[0] < 8:
-        raise RuntimeError("GPU_INCOMPATIBLE: Medium requires Ampere or newer for Flash Attention")
+    if capability < (7, 5):
+        raise RuntimeError("GPU_INCOMPATIBLE: SDPA runtime requires T4 or newer")
     print("GPU_PREFLIGHT_OK:", torch.cuda.get_device_name(0), capability, flush=True)
 
     token = load_hf_token()
@@ -67,6 +67,9 @@ def main():
     os.environ["HUGGING_FACE_HUB_TOKEN"] = token
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     os.environ["SA3_TARGET_MODEL"] = "medium"
+    os.environ["SA3_ATTENTION_BACKEND"] = "sdpa"
+    os.environ["ENABLE_TORCH_COMPILE"] = "0"
+    os.environ["PYTHONUNBUFFERED"] = "1"
 
     for p in (REPO_DIR, SA3_DIR, OUTPUT_DIR):
         if p.exists():
@@ -81,7 +84,7 @@ def main():
     runtime = REPO_DIR / "config" / "runtime_gaming_reference_profile.json"
     runtime.write_text(json.dumps(profile, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    run(["bash", "scripts/bootstrap_kaggle.sh"], cwd=REPO_DIR)
+    run(["bash", "scripts/bootstrap_gaming_dj30.sh"], cwd=REPO_DIR)
     python_bin = SA3_DIR / ".venv" / "bin" / "python"
     if not python_bin.exists():
         raise RuntimeError("Stable Audio 3 runtime not found")
@@ -112,6 +115,8 @@ def main():
         "reference_index": REFERENCE_INDEX,
         "attempt": ATTEMPT,
         "model": "medium",
+        "attention_backend": "sdpa",
+        "gpu": torch.cuda.get_device_name(0),
         "master_seed": seed,
         "track_duration_seconds": 300,
         "pure_text_to_audio": True,
