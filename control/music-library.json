@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T06:53:46.638165+00:00",
+  "updated_at": "2026-10-05T06:59:29.814590+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3189,8 +3189,7 @@
           "title": "Digifunk",
           "artist": "DivKid",
           "filename": "Digifunk - DivKid.mp3",
-          "status": "pending_remote_ingest",
-          "source_duration_seconds": 192,
+          "source_duration_seconds": 192.0,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3198,8 +3197,7 @@
           "title": "Icelandic Arpeggios",
           "artist": "DivKid",
           "filename": "Icelandic Arpeggios - DivKid.mp3",
-          "status": "pending_remote_ingest",
-          "source_duration_seconds": 170,
+          "source_duration_seconds": 170.0,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3207,7 +3205,6 @@
           "title": "No One Here Gets In Alive",
           "artist": "National Sweetheart",
           "filename": "No One Here Gets In Alive - National Sweetheart.mp3",
-          "status": "pending_remote_ingest",
           "source_duration_seconds": 238.4,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
@@ -3216,8 +3213,7 @@
           "title": "Rinse Repeat",
           "artist": "DivKid",
           "filename": "Rinse Repeat - DivKid.mp3",
-          "status": "pending_remote_ingest",
-          "source_duration_seconds": 156,
+          "source_duration_seconds": 156.0,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3225,15 +3221,25 @@
           "title": "Visions",
           "artist": "Patrick Jordan Patrikios",
           "filename": "Visions - Patrick Jordan Patrikios.mp3",
-          "status": "pending_remote_ingest",
-          "source_duration_seconds": 148,
+          "source_duration_seconds": 148.0,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 0,
-      "total_duration_seconds": 0,
-      "tracks": [],
+      "track_count": 1,
+      "total_duration_seconds": 300,
+      "tracks": [
+        {
+          "id": "gta-vice-city-20261005-01",
+          "title": "Ocean Drive Heat",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-001-37261075361/peter-lofi-gta-vice-city-001.mp3",
+          "duration_seconds": 300,
+          "position": 6,
+          "source": "gta-vi-vice-city",
+          "quality_gate": "technical_checks_passed",
+          "target_bpm": 112
+        }
+      ],
       "planned_duration_seconds": 12000,
       "target_duration_seconds_per_track": 300
     }
