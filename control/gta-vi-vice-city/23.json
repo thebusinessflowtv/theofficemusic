@@ -1,0 +1,68 @@
+{
+  "index": 23,
+  "status": "generated",
+  "track": {
+    "id": "gta-vice-city-20261005-23",
+    "title": "Velvet Asphalt",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-023-37261075361/peter-lofi-gta-vice-city-023.mp3",
+    "duration_seconds": 300,
+    "position": 28,
+    "source": "gta-vi-vice-city",
+    "quality_gate": "technical_checks_passed",
+    "target_bpm": 113
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-05T09:14:04.188181Z",
+    "reference_index": 23,
+    "attempt": 1,
+    "source_wav_sha256": "a4a29e8efa8fb1441d1e57d3bcfd4638ef546c7ade646c8297593067b8283a4f",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -19.63,
+      "true_peak_db": -2.88,
+      "lra": 2.4,
+      "threshold_lufs": -29.75
+    },
+    "silence_seconds": 5.51,
+    "silence_ratio": 0.018366,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37261075361"
+}
