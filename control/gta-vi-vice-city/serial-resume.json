@@ -1,0 +1,12 @@
+{
+  "action": "run_now",
+  "mode": "single_serial_job",
+  "from_track": 14,
+  "to_track": 35,
+  "preserve_completed": "1-13",
+  "skip_completed_markers": true,
+  "quality_gate": true,
+  "diversity_gate": true,
+  "requested_by": "owner",
+  "token": "serial-resume-14-35-v1"
+}
