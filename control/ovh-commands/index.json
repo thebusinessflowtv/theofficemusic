@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-04T00:46:21.062467+00:00",
+  "updated_at": "2026-10-05T22:14:20.391Z",
   "commands": [
     {
       "id": "bootstrap-kick-ovh",
@@ -171,6 +171,12 @@
       "id": "start-figma-ui-test-20261004-004621",
       "path": "control/ovh-commands/start-figma-ui-test-20261004-004621.json",
       "created_at": "2026-10-04T00:46:21.062467+00:00"
+    },
+    {
+      "id": "approved-gaming30-dj-mix-20261005T221413995Z",
+      "path": "control/ovh-commands/approved-gaming30-dj-mix-20261005T221413995Z.json",
+      "created_at": "2026-10-05T22:14:13.995Z",
+      "realtime": false
     }
   ]
 }
