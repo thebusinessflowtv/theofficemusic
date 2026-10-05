@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T18:59:16.607776+00:00",
+  "updated_at": "2026-10-05T19:11:46.251Z",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3181,15 +3181,15 @@
         "driving"
       ],
       "source": "gta-vi-vice-city-production",
-      "planned_track_count": 40,
-      "generated_target_count": 35,
+      "planned_track_count": 55,
+      "generated_target_count": 50,
       "owner_library_track_count": 5,
       "owner_library_tracks": [
         {
           "title": "Digifunk",
           "artist": "DivKid",
           "filename": "Digifunk - DivKid.mp3",
-          "source_duration_seconds": 192.0,
+          "source_duration_seconds": 192,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3197,7 +3197,7 @@
           "title": "Icelandic Arpeggios",
           "artist": "DivKid",
           "filename": "Icelandic Arpeggios - DivKid.mp3",
-          "source_duration_seconds": 170.0,
+          "source_duration_seconds": 170,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3213,7 +3213,7 @@
           "title": "Rinse Repeat",
           "artist": "DivKid",
           "filename": "Rinse Repeat - DivKid.mp3",
-          "source_duration_seconds": 156.0,
+          "source_duration_seconds": 156,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3221,7 +3221,7 @@
           "title": "Visions",
           "artist": "Patrick Jordan Patrikios",
           "filename": "Visions - Patrick Jordan Patrikios.mp3",
-          "source_duration_seconds": 148.0,
+          "source_duration_seconds": 148,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
@@ -3350,12 +3350,18 @@
           "target_bpm": 117
         }
       ],
-      "planned_duration_seconds": 12000,
+      "planned_duration_seconds": 16500,
       "target_duration_seconds_per_track": 300,
       "status": "regenerating_r2",
       "revision": 2,
       "rejected_generated_tracks": 34,
-      "revision_note": "Owner approved Ocean Drive Heat only. Tracks 2-35 removed and queued for structurally diverse regeneration."
+      "revision_note": "Owner approved Ocean Drive Heat only. Tracks 2-35 removed and queued for structurally diverse regeneration.",
+      "expansion_plan": {
+        "extra_tracks": 15,
+        "families": 3,
+        "tracks_per_family": 5,
+        "trigger": "after current GTA VI - Vice City R2 workflow completes successfully"
+      }
     }
   ]
 }
