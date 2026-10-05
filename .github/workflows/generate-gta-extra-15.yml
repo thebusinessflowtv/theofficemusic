@@ -3,8 +3,7 @@ name: Peter Lofi — GTA VI - Vice City Extra 15
 'on':
   workflow_run:
     workflows:
-      - Peter Lofi — GTA VI - Vice City
-      - Peter Lofi — GTA VI Vice City Serial Resume
+      - Peter Lofi — GTA VI Vice City Live Queue
     branches:
       - main
     types:
