@@ -1,0 +1,374 @@
+{
+  "version": 1,
+  "key": "gta-vi-vice-city",
+  "name": "GTA VI - Vice City",
+  "brand": "Peter Lofi",
+  "category": "Series",
+  "genre": "Retro synthwave / electro-funk / neon night-drive",
+  "target_track_count": 40,
+  "target_generated_minutes": 175,
+  "total_generated_tracks": 35,
+  "owner_library_tracks": 5,
+  "generated_track_duration_seconds": 300,
+  "shuffle": true,
+  "repeat": true,
+  "status": "queued",
+  "reference_rule": "Supplied tracks are used only to define broad musical characteristics. Generated tracks remain original text-to-audio compositions.",
+  "tracks": [
+    {
+      "position": 1,
+      "type": "owner_library_track",
+      "title": "Digifunk",
+      "artist": "DivKid",
+      "source_filename": "Digifunk - DivKid.mp3",
+      "status": "reserved_pending_remote_ingest"
+    },
+    {
+      "position": 2,
+      "type": "owner_library_track",
+      "title": "Icelandic Arpeggios",
+      "artist": "DivKid",
+      "source_filename": "Icelandic Arpeggios - DivKid.mp3",
+      "status": "reserved_pending_remote_ingest"
+    },
+    {
+      "position": 3,
+      "type": "owner_library_track",
+      "title": "No One Here Gets In Alive",
+      "artist": "National Sweetheart",
+      "source_filename": "No One Here Gets In Alive - National Sweetheart.mp3",
+      "status": "reserved_pending_remote_ingest"
+    },
+    {
+      "position": 4,
+      "type": "owner_library_track",
+      "title": "Rinse Repeat",
+      "artist": "DivKid",
+      "source_filename": "Rinse Repeat - DivKid.mp3",
+      "status": "reserved_pending_remote_ingest"
+    },
+    {
+      "position": 5,
+      "type": "owner_library_track",
+      "title": "Visions",
+      "artist": "Patrick Patrikios",
+      "source_filename": "Visions - Patrick Jordan Patrikios.mp3",
+      "status": "reserved_pending_remote_ingest"
+    },
+    {
+      "position": 6,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-01",
+      "title": "Ocean Drive Heat",
+      "duration_seconds": 300,
+      "target_bpm": 112,
+      "status": "queued"
+    },
+    {
+      "position": 7,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-02",
+      "title": "Neon Palm Circuit",
+      "duration_seconds": 300,
+      "target_bpm": 114,
+      "status": "queued"
+    },
+    {
+      "position": 8,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-03",
+      "title": "Midnight Causeway",
+      "duration_seconds": 300,
+      "target_bpm": 113,
+      "status": "queued"
+    },
+    {
+      "position": 9,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-04",
+      "title": "Sunset Motel",
+      "duration_seconds": 300,
+      "target_bpm": 115,
+      "status": "queued"
+    },
+    {
+      "position": 10,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-05",
+      "title": "Vice Afterglow",
+      "duration_seconds": 300,
+      "target_bpm": 112,
+      "status": "queued"
+    },
+    {
+      "position": 11,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-06",
+      "title": "Coastal Static",
+      "duration_seconds": 300,
+      "target_bpm": 114,
+      "status": "queued"
+    },
+    {
+      "position": 12,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-07",
+      "title": "Pink Horizon",
+      "duration_seconds": 300,
+      "target_bpm": 113,
+      "status": "queued"
+    },
+    {
+      "position": 13,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-08",
+      "title": "Night Cruise FM",
+      "duration_seconds": 300,
+      "target_bpm": 115,
+      "status": "queued"
+    },
+    {
+      "position": 14,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-09",
+      "title": "Electric Marina",
+      "duration_seconds": 300,
+      "target_bpm": 112,
+      "status": "queued"
+    },
+    {
+      "position": 15,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-10",
+      "title": "South Beach Signal",
+      "duration_seconds": 300,
+      "target_bpm": 114,
+      "status": "queued"
+    },
+    {
+      "position": 16,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-11",
+      "title": "Chrome Palms",
+      "duration_seconds": 300,
+      "target_bpm": 113,
+      "status": "queued"
+    },
+    {
+      "position": 17,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-12",
+      "title": "Bayfront Motion",
+      "duration_seconds": 300,
+      "target_bpm": 115,
+      "status": "queued"
+    },
+    {
+      "position": 18,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-13",
+      "title": "Heatwave Boulevard",
+      "duration_seconds": 300,
+      "target_bpm": 112,
+      "status": "queued"
+    },
+    {
+      "position": 19,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-14",
+      "title": "Afterdark Skyline",
+      "duration_seconds": 300,
+      "target_bpm": 114,
+      "status": "queued"
+    },
+    {
+      "position": 20,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-15",
+      "title": "Turbo Sunset",
+      "duration_seconds": 300,
+      "target_bpm": 113,
+      "status": "queued"
+    },
+    {
+      "position": 21,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-16",
+      "title": "Glass Highway",
+      "duration_seconds": 300,
+      "target_bpm": 115,
+      "status": "queued"
+    },
+    {
+      "position": 22,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-17",
+      "title": "Neon Flamingo",
+      "duration_seconds": 300,
+      "target_bpm": 112,
+      "status": "queued"
+    },
+    {
+      "position": 23,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-18",
+      "title": "Moonlit Causeway",
+      "duration_seconds": 300,
+      "target_bpm": 114,
+      "status": "queued"
+    },
+    {
+      "position": 24,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-19",
+      "title": "Palmline Pulse",
+      "duration_seconds": 300,
+      "target_bpm": 113,
+      "status": "queued"
+    },
+    {
+      "position": 25,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-20",
+      "title": "Golden Overpass",
+      "duration_seconds": 300,
+      "target_bpm": 115,
+      "status": "queued"
+    },
+    {
+      "position": 26,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-21",
+      "title": "Electric Coastline",
+      "duration_seconds": 300,
+      "target_bpm": 112,
+      "status": "queued"
+    },
+    {
+      "position": 27,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-22",
+      "title": "Midnight Convertible",
+      "duration_seconds": 300,
+      "target_bpm": 114,
+      "status": "queued"
+    },
+    {
+      "position": 28,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-23",
+      "title": "Velvet Asphalt",
+      "duration_seconds": 300,
+      "target_bpm": 113,
+      "status": "queued"
+    },
+    {
+      "position": 29,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-24",
+      "title": "Ocean Neon",
+      "duration_seconds": 300,
+      "target_bpm": 115,
+      "status": "queued"
+    },
+    {
+      "position": 30,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-25",
+      "title": "City Heatline",
+      "duration_seconds": 300,
+      "target_bpm": 112,
+      "status": "queued"
+    },
+    {
+      "position": 31,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-26",
+      "title": "Nightwave District",
+      "duration_seconds": 300,
+      "target_bpm": 114,
+      "status": "queued"
+    },
+    {
+      "position": 32,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-27",
+      "title": "Sunset Frequency",
+      "duration_seconds": 300,
+      "target_bpm": 113,
+      "status": "queued"
+    },
+    {
+      "position": 33,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-28",
+      "title": "Coastal Voltage",
+      "duration_seconds": 300,
+      "target_bpm": 115,
+      "status": "queued"
+    },
+    {
+      "position": 34,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-29",
+      "title": "Palm Shadow Drive",
+      "duration_seconds": 300,
+      "target_bpm": 112,
+      "status": "queued"
+    },
+    {
+      "position": 35,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-30",
+      "title": "Neon Motel",
+      "duration_seconds": 300,
+      "target_bpm": 114,
+      "status": "queued"
+    },
+    {
+      "position": 36,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-31",
+      "title": "Mirage Avenue",
+      "duration_seconds": 300,
+      "target_bpm": 113,
+      "status": "queued"
+    },
+    {
+      "position": 37,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-32",
+      "title": "Heat Signature",
+      "duration_seconds": 300,
+      "target_bpm": 115,
+      "status": "queued"
+    },
+    {
+      "position": 38,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-33",
+      "title": "Blue Hour Boulevard",
+      "duration_seconds": 300,
+      "target_bpm": 112,
+      "status": "queued"
+    },
+    {
+      "position": 39,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-34",
+      "title": "Afterhours Coast",
+      "duration_seconds": 300,
+      "target_bpm": 114,
+      "status": "queued"
+    },
+    {
+      "position": 40,
+      "type": "generated",
+      "id": "gta-vice-city-20261005-35",
+      "title": "Vice City Lights",
+      "duration_seconds": 300,
+      "target_bpm": 113,
+      "status": "queued"
+    }
+  ]
+}
