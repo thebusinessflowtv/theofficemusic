@@ -13,5 +13,13 @@
   "generation_mode": "pure_text_to_audio",
   "queue_policy": "sequential_max_parallel_1",
   "shared_concurrency_group": "gaming-twitch-dj-30-production",
-  "requested_at": "2026-10-05T03:35:00Z"
+  "requested_at": "2026-10-05T17:24:00Z",
+  "revision": 2,
+  "keep_track_index": 1,
+  "keep_title": "Ocean Drive Heat",
+  "regenerate_indices": "2-35",
+  "rejected_tracks_removed": 34,
+  "diversity_gate": "enabled",
+  "max_diversity_attempts_per_track": 4,
+  "reason": "Owner rejected R1 tracks 2-35 for excessive similarity in intros, beats and structure. Preserve aesthetic but enforce distinct composition and arrangement."
 }
