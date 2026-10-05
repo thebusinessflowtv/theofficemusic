@@ -1,0 +1,68 @@
+{
+  "index": 10,
+  "status": "generated",
+  "track": {
+    "id": "gta-vice-city-20261005-10",
+    "title": "South Beach Signal",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-010-37349889973/peter-lofi-gta-vice-city-r2-010.mp3",
+    "duration_seconds": 300,
+    "position": 15,
+    "source": "gta-vi-vice-city",
+    "quality_gate": "technical_checks_passed",
+    "target_bpm": 103
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-05T18:39:17.265757Z",
+    "reference_index": 10,
+    "attempt": null,
+    "source_wav_sha256": "99daa191a543cdbfee31cb982a9b8a797f86c9b0c25c655f6f8d18e03f992cbe",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -19.38,
+      "true_peak_db": -1.51,
+      "lra": 3.1,
+      "threshold_lufs": -29.79
+    },
+    "silence_seconds": 0,
+    "silence_ratio": 0.0,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37349889973"
+}
