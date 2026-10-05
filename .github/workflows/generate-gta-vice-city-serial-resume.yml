@@ -53,7 +53,27 @@ jobs:
             echo "===== SERIAL GTA VI R2 TRACK $idx/35 ====="
             export INDEX="$idx"
             export ATTEMPT="$GITHUB_RUN_ATTEMPT"
-            bash scripts/run_gta_vice_city_track.sh
+            SUCCESS=0
+            for track_try in 1 2 3; do
+              echo "Track $idx pipeline attempt $track_try/3"
+              git fetch origin main
+              git reset --hard origin/main
+              if test -f "control/gta-vi-vice-city/$(printf '%02d' "$idx").json"; then
+                echo "Track $idx already completed; skipping."
+                SUCCESS=1
+                break
+              fi
+              if bash scripts/run_gta_vice_city_track.sh; then
+                SUCCESS=1
+                break
+              fi
+              echo "Track $idx attempt $track_try failed; retrying."
+              sleep 10
+            done
+            if test "$SUCCESS" -ne 1; then
+              echo "Track $idx failed after 3 pipeline attempts."
+              exit 1
+            fi
           done
 
       - name: Keep final diagnostics
