@@ -1,0 +1,17 @@
+{
+  "batch_id": "gta-vi-vice-city-20261005",
+  "playlist_key": "gta-vi-vice-city",
+  "playlist_name": "GTA VI - Vice City",
+  "action": "start",
+  "requested_by": "owner",
+  "total_playlist_tracks": 40,
+  "owner_library_tracks": 5,
+  "tracks_to_generate": 35,
+  "seconds_per_generated_track": 300,
+  "bpm_range": "112-115",
+  "style": "retro-futurist synthwave electro-funk / neon coastal night-drive",
+  "generation_mode": "pure_text_to_audio",
+  "queue_policy": "sequential_max_parallel_1",
+  "shared_concurrency_group": "gaming-twitch-dj-30-production",
+  "requested_at": "2026-10-05T03:35:00Z"
+}
