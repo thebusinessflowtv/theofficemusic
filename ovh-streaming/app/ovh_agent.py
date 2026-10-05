@@ -668,6 +668,7 @@ def import_shared_dj_archive(cmd):
 
 def add_approved_gaming30_to_dj_mix(cmd):
     """Append the approved batch to both local DJs, keeping their RTMP publishers."""
+    from urllib.parse import urlsplit, urlunsplit
     cid=str(cmd.get("id") or "")
     result_path=STATE/"agent"/"gaming30-dj-mix.json"
     previous=read_json(result_path,{}) or {}
@@ -681,9 +682,11 @@ def add_approved_gaming30_to_dj_mix(cmd):
     if len(approved)!=30 or {t.get("id") for t in approved}!=expected:
         raise RuntimeError("Exactly 30 approved local Gaming tracks are required")
     approved.sort(key=lambda t:t["id"])
-    for row in approved:
-        if float(row.get("duration_seconds") or 0)!=300 or not str(row.get("url") or "").startswith("https://peterlofi.odsgn.com.br/media/"):
+    for i,row in enumerate(approved):
+        audio_url=urlsplit(str(row.get("url") or ""))
+        if float(row.get("duration_seconds") or 0)!=300 or audio_url.scheme not in {"http","https"} or audio_url.netloc!="peterlofi.odsgn.com.br" or not audio_url.path.startswith("/media/"):
             raise RuntimeError("Invalid approved Gaming audio source")
+        approved[i]={**row,"url":urlunsplit(audio_url._replace(scheme="https"))}
 
     before={slot:read_json(STATE/slot/"health.json",{}) or {} for slot in ("twitch","kick")}
     current={slot:read_json(STATE/slot/"playlist.json",{}) or {} for slot in ("twitch","kick")}
@@ -926,7 +929,11 @@ def apply_command(cmd):
         import_shared_dj_archive(cmd)
         return
     if action=="add_approved_gaming30_to_dj_mix":
-        add_approved_gaming30_to_dj_mix(cmd)
+        try:
+            add_approved_gaming30_to_dj_mix(cmd)
+        except Exception as exc:
+            atomic_json(AGENT_DIR/"gaming30-dj-mix.json",{"status":"failed","command_id":str(cmd.get("id") or ""),"updated_at":iso_now(),"error":str(exc)[:500]})
+            raise
         return
 
     # Playlist payloads are persisted locally on OVH. AudioEngine keeps a
@@ -1101,6 +1108,7 @@ def status_payload(processed_count=0,last_command=None):
         "cloudflare_required_for_live":False,
         "github_runtime_polling":False,
         "gaming_dj30_mix_supported":True,
+        "gaming_dj30_mix_version":2,
         "gaming_dj30_mix":read_json(AGENT_DIR/"gaming30-dj-mix.json",{}),
         "reported_at":iso_now(),
         "host":host_metrics(),
