@@ -1,0 +1,12 @@
+{
+  "action": "run_now",
+  "workflow": ".github/workflows/generate-gta-vice-city-resume-now.yml",
+  "resume_from": 14,
+  "resume_to": 35,
+  "preserve_completed": "1-13",
+  "max_parallel": 1,
+  "diversity_gate": true,
+  "requested_by": "owner",
+  "requested_at": "2026-10-05T20:09:00Z",
+  "token": "force-resume-14-35-v1"
+}
