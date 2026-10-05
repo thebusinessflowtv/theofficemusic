@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T07:28:34.653796+00:00",
+  "updated_at": "2026-10-05T07:35:21.650599+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3226,8 +3226,8 @@
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 6,
-      "total_duration_seconds": 1800,
+      "track_count": 7,
+      "total_duration_seconds": 2100,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3288,6 +3288,16 @@
           "source": "gta-vi-vice-city",
           "quality_gate": "technical_checks_passed",
           "target_bpm": 114
+        },
+        {
+          "id": "gta-vice-city-20261005-07",
+          "title": "Pink Horizon",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-007-37261075361/peter-lofi-gta-vice-city-007.mp3",
+          "duration_seconds": 300,
+          "position": 12,
+          "source": "gta-vi-vice-city",
+          "quality_gate": "technical_checks_passed",
+          "target_bpm": 113
         }
       ],
       "planned_duration_seconds": 12000,
