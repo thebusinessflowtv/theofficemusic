@@ -21,7 +21,9 @@
       "title": "Digifunk",
       "artist": "DivKid",
       "source_filename": "Digifunk - DivKid.mp3",
-      "status": "reserved_pending_remote_ingest"
+      "status": "reserved_pending_remote_ingest_and_300s_normalization",
+      "source_duration_seconds": 192,
+      "target_duration_seconds": 300
     },
     {
       "position": 2,
@@ -29,7 +31,9 @@
       "title": "Icelandic Arpeggios",
       "artist": "DivKid",
       "source_filename": "Icelandic Arpeggios - DivKid.mp3",
-      "status": "reserved_pending_remote_ingest"
+      "status": "reserved_pending_remote_ingest_and_300s_normalization",
+      "source_duration_seconds": 170,
+      "target_duration_seconds": 300
     },
     {
       "position": 3,
@@ -37,7 +41,9 @@
       "title": "No One Here Gets In Alive",
       "artist": "National Sweetheart",
       "source_filename": "No One Here Gets In Alive - National Sweetheart.mp3",
-      "status": "reserved_pending_remote_ingest"
+      "status": "reserved_pending_remote_ingest_and_300s_normalization",
+      "source_duration_seconds": 238.4,
+      "target_duration_seconds": 300
     },
     {
       "position": 4,
@@ -45,7 +51,9 @@
       "title": "Rinse Repeat",
       "artist": "DivKid",
       "source_filename": "Rinse Repeat - DivKid.mp3",
-      "status": "reserved_pending_remote_ingest"
+      "status": "reserved_pending_remote_ingest_and_300s_normalization",
+      "source_duration_seconds": 156,
+      "target_duration_seconds": 300
     },
     {
       "position": 5,
@@ -53,7 +61,9 @@
       "title": "Visions",
       "artist": "Patrick Patrikios",
       "source_filename": "Visions - Patrick Jordan Patrikios.mp3",
-      "status": "reserved_pending_remote_ingest"
+      "status": "reserved_pending_remote_ingest_and_300s_normalization",
+      "source_duration_seconds": 148,
+      "target_duration_seconds": 300
     },
     {
       "position": 6,
@@ -62,7 +72,8 @@
       "title": "Ocean Drive Heat",
       "duration_seconds": 300,
       "target_bpm": 112,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 7,
@@ -71,7 +82,8 @@
       "title": "Neon Palm Circuit",
       "duration_seconds": 300,
       "target_bpm": 114,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 8,
@@ -80,7 +92,8 @@
       "title": "Midnight Causeway",
       "duration_seconds": 300,
       "target_bpm": 113,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 9,
@@ -89,7 +102,8 @@
       "title": "Sunset Motel",
       "duration_seconds": 300,
       "target_bpm": 115,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 10,
@@ -98,7 +112,8 @@
       "title": "Vice Afterglow",
       "duration_seconds": 300,
       "target_bpm": 112,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 11,
@@ -107,7 +122,8 @@
       "title": "Coastal Static",
       "duration_seconds": 300,
       "target_bpm": 114,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 12,
@@ -116,7 +132,8 @@
       "title": "Pink Horizon",
       "duration_seconds": 300,
       "target_bpm": 113,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 13,
@@ -125,7 +142,8 @@
       "title": "Night Cruise FM",
       "duration_seconds": 300,
       "target_bpm": 115,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 14,
@@ -134,7 +152,8 @@
       "title": "Electric Marina",
       "duration_seconds": 300,
       "target_bpm": 112,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 15,
@@ -143,7 +162,8 @@
       "title": "South Beach Signal",
       "duration_seconds": 300,
       "target_bpm": 114,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 16,
@@ -152,7 +172,8 @@
       "title": "Chrome Palms",
       "duration_seconds": 300,
       "target_bpm": 113,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 17,
@@ -161,7 +182,8 @@
       "title": "Bayfront Motion",
       "duration_seconds": 300,
       "target_bpm": 115,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 18,
@@ -170,7 +192,8 @@
       "title": "Heatwave Boulevard",
       "duration_seconds": 300,
       "target_bpm": 112,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 19,
@@ -179,7 +202,8 @@
       "title": "Afterdark Skyline",
       "duration_seconds": 300,
       "target_bpm": 114,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 20,
@@ -188,7 +212,8 @@
       "title": "Turbo Sunset",
       "duration_seconds": 300,
       "target_bpm": 113,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 21,
@@ -197,7 +222,8 @@
       "title": "Glass Highway",
       "duration_seconds": 300,
       "target_bpm": 115,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 22,
@@ -206,7 +232,8 @@
       "title": "Neon Flamingo",
       "duration_seconds": 300,
       "target_bpm": 112,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 23,
@@ -215,7 +242,8 @@
       "title": "Moonlit Causeway",
       "duration_seconds": 300,
       "target_bpm": 114,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 24,
@@ -224,7 +252,8 @@
       "title": "Palmline Pulse",
       "duration_seconds": 300,
       "target_bpm": 113,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 25,
@@ -233,7 +262,8 @@
       "title": "Golden Overpass",
       "duration_seconds": 300,
       "target_bpm": 115,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 26,
@@ -242,7 +272,8 @@
       "title": "Electric Coastline",
       "duration_seconds": 300,
       "target_bpm": 112,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 27,
@@ -251,7 +282,8 @@
       "title": "Midnight Convertible",
       "duration_seconds": 300,
       "target_bpm": 114,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 28,
@@ -260,7 +292,8 @@
       "title": "Velvet Asphalt",
       "duration_seconds": 300,
       "target_bpm": 113,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 29,
@@ -269,7 +302,8 @@
       "title": "Ocean Neon",
       "duration_seconds": 300,
       "target_bpm": 115,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 30,
@@ -278,7 +312,8 @@
       "title": "City Heatline",
       "duration_seconds": 300,
       "target_bpm": 112,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 31,
@@ -287,7 +322,8 @@
       "title": "Nightwave District",
       "duration_seconds": 300,
       "target_bpm": 114,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 32,
@@ -296,7 +332,8 @@
       "title": "Sunset Frequency",
       "duration_seconds": 300,
       "target_bpm": 113,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 33,
@@ -305,7 +342,8 @@
       "title": "Coastal Voltage",
       "duration_seconds": 300,
       "target_bpm": 115,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 34,
@@ -314,7 +352,8 @@
       "title": "Palm Shadow Drive",
       "duration_seconds": 300,
       "target_bpm": 112,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 35,
@@ -323,7 +362,8 @@
       "title": "Neon Motel",
       "duration_seconds": 300,
       "target_bpm": 114,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 36,
@@ -332,7 +372,8 @@
       "title": "Mirage Avenue",
       "duration_seconds": 300,
       "target_bpm": 113,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 37,
@@ -341,7 +382,8 @@
       "title": "Heat Signature",
       "duration_seconds": 300,
       "target_bpm": 115,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 38,
@@ -350,7 +392,8 @@
       "title": "Blue Hour Boulevard",
       "duration_seconds": 300,
       "target_bpm": 112,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 39,
@@ -359,7 +402,8 @@
       "title": "Afterhours Coast",
       "duration_seconds": 300,
       "target_bpm": 114,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     },
     {
       "position": 40,
@@ -368,7 +412,10 @@
       "title": "Vice City Lights",
       "duration_seconds": 300,
       "target_bpm": 113,
-      "status": "queued"
+      "status": "queued",
+      "target_duration_seconds": 300
     }
-  ]
+  ],
+  "target_duration_seconds_per_track": 300,
+  "target_total_duration_seconds": 12000
 }
