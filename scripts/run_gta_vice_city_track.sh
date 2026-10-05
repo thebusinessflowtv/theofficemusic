@@ -2,12 +2,10 @@
 set -euo pipefail
 
 mkdir -p build
-if test -f "control/gta-vi-vice-city/$(printf '%02d' "${INDEX}").json"; then
-  echo "Track ${INDEX} already completed; skipping."
+if test -f "control/gta-vi-vice-city/$(printf '%02d' "$INDEX").json"; then
+  echo "Track $INDEX already completed; skipping."
   exit 0
 fi
-
-python scripts/build_gta_vice_city_profile.py --index "$INDEX" --out build/reference_profile.json
 
 SECRET_DIR="$(mktemp -d)"
 trap 'rm -rf "$SECRET_DIR"' EXIT
@@ -27,7 +25,7 @@ PY
 
 DATASET="$KAGGLE_USERNAME/$SECRET_DATASET_SLUG"
 if kaggle datasets status "$DATASET" >/dev/null 2>&1; then
-  kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token for GTA VI - Vice City" -q
+  kaggle datasets version -p "$SECRET_DIR" -m "Refresh HF token for GTA VI - Vice City revision 2" -q
 else
   kaggle datasets create -p "$SECRET_DIR" -q
 fi
@@ -43,12 +41,25 @@ done
 test "$READY" -eq 1
 kaggle datasets files "$DATASET" | grep -q hf_token.txt
 
-TMP="$(mktemp -d)"
-cp kaggle/runner_gta_vice_city.py "$TMP/runner.py"
-REQUEST_ID="gta-vc-${INDEX}-a${ATTEMPT}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-PROFILE_B64="$(base64 -w0 build/reference_profile.json)"
+APPROVED=0
+MAX_VARIANTS=4
 
-python - "$TMP/runner.py" "$REQUEST_ID" "$INDEX" "$ATTEMPT" "$PROFILE_B64" <<'PY'
+for VARIANT_ATTEMPT in $(seq 1 "$MAX_VARIANTS"); do
+  echo "=== GTA Vice City track $INDEX | diversity attempt $VARIANT_ATTEMPT/$MAX_VARIANTS ==="
+  rm -rf generated
+  rm -f build/reference_profile.json build/qc.json build/diversity.json build/approved.mp3
+
+  python scripts/build_gta_vice_city_profile.py \
+    --index "$INDEX" \
+    --variant-attempt "$VARIANT_ATTEMPT" \
+    --out build/reference_profile.json
+
+  TMP="$(mktemp -d)"
+  cp kaggle/runner_gta_vice_city.py "$TMP/runner.py"
+  REQUEST_ID="gta-vc-r2-$INDEX-v$VARIANT_ATTEMPT-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+  PROFILE_B64="$(base64 -w0 build/reference_profile.json)"
+
+  python - "$TMP/runner.py" "$REQUEST_ID" "$INDEX" "$VARIANT_ATTEMPT" "$PROFILE_B64" <<'PY'
 import pathlib,re,sys
 p=pathlib.Path(sys.argv[1])
 req=sys.argv[2]
@@ -63,8 +74,8 @@ t=re.sub(r'PROFILE_PAYLOAD_B64 = "[^"]*"', f'PROFILE_PAYLOAD_B64 = "{payload}"',
 p.write_text(t,encoding="utf-8")
 PY
 
-KERNEL_NAME="peter-lofi-gta-vc-${INDEX}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-python - "$TMP" "$KERNEL_NAME" <<'PY'
+  KERNEL_NAME="peter-lofi-gta-vc-r2-$INDEX-v$VARIANT_ATTEMPT-$GITHUB_RUN_ID"
+  python - "$TMP" "$KERNEL_NAME" <<'PY'
 import json,os,pathlib,sys
 d=pathlib.Path(sys.argv[1]); name=sys.argv[2]
 (d/"kernel-metadata.json").write_text(json.dumps({
@@ -83,57 +94,94 @@ d=pathlib.Path(sys.argv[1]); name=sys.argv[2]
 },indent=2))
 PY
 
-if ! PUSH_OUTPUT="$(kaggle kernels push -p "$TMP" --timeout 7200 --accelerator NvidiaTeslaT4 2>&1)"; then
+  if ! PUSH_OUTPUT="$(kaggle kernels push -p "$TMP" --timeout 7200 --accelerator NvidiaTeslaT4 2>&1)"; then
+    printf '%s\n' "$PUSH_OUTPUT"
+    rm -rf "$TMP"
+    continue
+  fi
   printf '%s\n' "$PUSH_OUTPUT"
-  exit 1
-fi
-printf '%s\n' "$PUSH_OUTPUT"
 
-KERNEL_REF="$(printf '%s\n' "$PUSH_OUTPUT" | python -c 'import re,sys; m=re.search(r"https://www[.]kaggle[.]com/code/([A-Za-z0-9_-]+/[A-Za-z0-9_-]+)",sys.stdin.read()); print(m.group(1) if m else "")')"
-test -n "$KERNEL_REF" || { echo 'Kaggle did not return a canonical kernel URL'; exit 1; }
-sleep 20
+  KERNEL_REF="$(printf '%s\n' "$PUSH_OUTPUT" | python -c 'import re,sys; m=re.search(r"https://www[.]kaggle[.]com/code/([A-Za-z0-9_-]+/[A-Za-z0-9_-]+)",sys.stdin.read()); print(m.group(1) if m else "")')"
+  if test -z "$KERNEL_REF"; then
+    rm -rf "$TMP"
+    continue
+  fi
+  sleep 20
 
-for i in $(seq 1 120); do
-  STATUS="$(kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
-  echo "$STATUS"
-  if echo "$STATUS" | grep -Eqi 'complete|completed'; then
-    break
+  COMPLETE=0
+  for i in $(seq 1 120); do
+    STATUS="$(kaggle kernels status "$KERNEL_REF" 2>&1 || true)"
+    echo "$STATUS"
+    if echo "$STATUS" | grep -Eqi 'complete|completed'; then
+      COMPLETE=1
+      break
+    fi
+    if echo "$STATUS" | grep -Eqi 'error|failed|cancel|denied|Cannot access|not found'; then
+      kaggle kernels logs "$KERNEL_REF" 2>&1 | tail -n 250 || true
+      break
+    fi
+    sleep 60
+  done
+  if test "$COMPLETE" -ne 1; then
+    rm -rf "$TMP"
+    continue
   fi
-  if echo "$STATUS" | grep -Eqi 'error|failed|cancel|denied|Cannot access|not found'; then
-    kaggle kernels logs "$KERNEL_REF" 2>&1 | tail -n 250 || true
-    exit 1
+
+  rm -rf generated
+  mkdir -p generated
+  if ! kaggle kernels output "$KERNEL_REF" -p generated; then
+    rm -rf "$TMP"
+    continue
   fi
-  if [ "$i" -eq 120 ]; then
-    kaggle kernels logs "$KERNEL_REF" 2>&1 | tail -n 250 || true
-    exit 1
+
+  MARKER="$(find generated -type f -name request_id.txt -print -quit)"
+  WAV="$(find generated -type f -name '*.wav' -print -quit)"
+  if test -z "$MARKER" || test -z "$WAV"; then
+    rm -rf "$TMP"
+    continue
   fi
-  sleep 60
+  if test "$(tr -d '\r\n ' < "$MARKER")" != "$REQUEST_ID"; then
+    rm -rf "$TMP"
+    continue
+  fi
+
+  if ! python scripts/quality_gate_audio.py "$WAV" \
+      --reference-profile build/reference_profile.json \
+      --out build/qc.json \
+      --normalized build/approved.mp3; then
+    echo "Technical QC rejected variant $VARIANT_ATTEMPT"
+    rm -rf "$TMP"
+    continue
+  fi
+
+  if ! python scripts/audio_diversity_gate.py build/approved.mp3 \
+      --library control/music-library.json \
+      --playlist-key gta-vi-vice-city \
+      --out build/diversity.json; then
+    echo "Diversity gate rejected variant $VARIANT_ATTEMPT; generating a structurally different replacement."
+    rm -rf "$TMP"
+    continue
+  fi
+
+  APPROVED=1
+  rm -rf "$TMP"
+  break
 done
 
-rm -rf generated
-mkdir -p generated
-kaggle kernels output "$KERNEL_REF" -p generated
-
-MARKER="$(find generated -type f -name request_id.txt -print -quit)"
-test -n "$MARKER"
-test "$(tr -d '\r\n ' < "$MARKER")" = "$REQUEST_ID"
-WAV="$(find generated -type f -name '*.wav' -print -quit)"
-test -n "$WAV"
-
-python scripts/quality_gate_audio.py "$WAV" \
-  --reference-profile build/reference_profile.json \
-  --out build/qc.json \
-  --normalized build/approved.mp3
+if test "$APPROVED" -ne 1; then
+  echo "Track $INDEX failed to produce a sufficiently distinct approved version after $MAX_VARIANTS attempts."
+  exit 1
+fi
 
 PAD="$(printf '%03d' "$INDEX")"
-MP3_NAME="peter-lofi-gta-vice-city-${PAD}.mp3"
+MP3_NAME="peter-lofi-gta-vice-city-r2-$PAD.mp3"
 mv build/approved.mp3 "build/$MP3_NAME"
-TAG="peter-lofi-gta-vice-city-${PAD}-${GITHUB_RUN_ID}"
+TAG="peter-lofi-gta-vice-city-r2-$PAD-$GITHUB_RUN_ID"
 
-gh release create "$TAG" "build/$MP3_NAME" build/qc.json build/reference_profile.json \
+gh release create "$TAG" "build/$MP3_NAME" build/qc.json build/diversity.json build/reference_profile.json \
   --repo "$GITHUB_REPOSITORY" --target main \
-  --title "GTA VI - Vice City — Original Track ${PAD}" \
-  --notes "Original 5-minute retro-futurist neon night-drive track. Pure text-to-audio; supplied reference recordings were not used as model input. Passed automated technical Quality Gate."
+  --title "GTA VI - Vice City R2 — Track $PAD" \
+  --notes "Revision 2. Original 5-minute Vice City track with mandatory structural variation. Passed technical QC and cross-track audio diversity gate."
 
 export RELEASE_TAG="$TAG"
 export MP3_NAME="$MP3_NAME"
@@ -143,7 +191,7 @@ for push_attempt in 1 2 3 4 5; do
   git reset --hard origin/main
   python scripts/publish_gta_vice_city.py
   git add control/music-library.json control/gta-vi-vice-city
-  git diff --cached --quiet || git commit -m "gta: append Vice City track $INDEX"
+  git diff --cached --quiet || git commit -m "gta: append diverse Vice City R2 track $INDEX"
   if git push origin HEAD:main; then
     exit 0
   fi
