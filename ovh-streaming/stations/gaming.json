@@ -256,6 +256,15 @@
       "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/36-06-s2-18-checkpoint-run.mp3",
       "position": 36,
       "duration_seconds": 300
+    },
+    {
+      "id": "gaming-twitch-dj-20261004-01",
+      "title": "Neon Horizon",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-001-37261069134/peter-lofi-gaming-dj30-001.mp3",
+      "duration_seconds": 300,
+      "source": "gaming-twitch-dj-30",
+      "quality_gate": "technical_checks_passed",
+      "position": 37
     }
   ]
 }

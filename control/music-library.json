@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T03:35:00Z",
+  "updated_at": "2026-10-05T03:58:04.349382+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -40,8 +40,8 @@
         "neon"
       ],
       "source": "ovh-station",
-      "track_count": 36,
-      "total_duration_seconds": 10800,
+      "track_count": 37,
+      "total_duration_seconds": 11100,
       "tracks": [
         {
           "id": "gaming-radio-01",
@@ -294,6 +294,15 @@
           "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-3h-v2-36956897081/36-06-s2-18-checkpoint-run.mp3",
           "duration_seconds": 300,
           "position": 36
+        },
+        {
+          "id": "gaming-twitch-dj-20261004-01",
+          "title": "Neon Horizon",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-001-37261069134/peter-lofi-gaming-dj30-001.mp3",
+          "duration_seconds": 300,
+          "source": "gaming-twitch-dj-30",
+          "quality_gate": "technical_checks_passed",
+          "position": 37
         }
       ]
     },
