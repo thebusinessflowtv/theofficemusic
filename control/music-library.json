@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T04:22:33.089418+00:00",
+  "updated_at": "2026-10-05T04:28:26.743372+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -40,8 +40,8 @@
         "neon"
       ],
       "source": "ovh-station",
-      "track_count": 41,
-      "total_duration_seconds": 12300,
+      "track_count": 42,
+      "total_duration_seconds": 12600,
       "tracks": [
         {
           "id": "gaming-radio-01",
@@ -339,6 +339,15 @@
           "source": "gaming-twitch-dj-30",
           "quality_gate": "technical_checks_passed",
           "position": 41
+        },
+        {
+          "id": "gaming-twitch-dj-20261004-06",
+          "title": "Electric Bloom",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-006-37261069134/peter-lofi-gaming-dj30-006.mp3",
+          "duration_seconds": 300,
+          "source": "gaming-twitch-dj-30",
+          "quality_gate": "technical_checks_passed",
+          "position": 42
         }
       ]
     },
