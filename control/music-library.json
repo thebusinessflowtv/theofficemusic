@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T09:27:35.942148+00:00",
+  "updated_at": "2026-10-05T09:33:18.443006+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3226,8 +3226,8 @@
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 25,
-      "total_duration_seconds": 7500,
+      "track_count": 26,
+      "total_duration_seconds": 7800,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3478,6 +3478,16 @@
           "source": "gta-vi-vice-city",
           "quality_gate": "technical_checks_passed",
           "target_bpm": 112
+        },
+        {
+          "id": "gta-vice-city-20261005-26",
+          "title": "Nightwave District",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-026-37261075361/peter-lofi-gta-vice-city-026.mp3",
+          "duration_seconds": 300,
+          "position": 31,
+          "source": "gta-vi-vice-city",
+          "quality_gate": "technical_checks_passed",
+          "target_bpm": 114
         }
       ],
       "planned_duration_seconds": 12000,
