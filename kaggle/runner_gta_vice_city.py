@@ -1,0 +1,141 @@
+import base64
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+
+from kaggle_secrets import UserSecretsClient
+
+REPO_URL = "https://github.com/thebusinessflowtv/theofficemusic.git"
+REPO_DIR = Path("/kaggle/working/theofficemusic")
+SA3_DIR = Path("/kaggle/working/stable-audio-3")
+OUTPUT_DIR = Path("/kaggle/working/output")
+REQUEST_ID = "UNSET"
+TRACK_INDEX = 0
+ATTEMPT = 1
+PROFILE_PAYLOAD_B64 = "UNSET"
+
+
+def run(cmd, cwd=None, env=None):
+    print("$", " ".join(map(str, cmd)), flush=True)
+    subprocess.run(cmd, cwd=cwd, env=env, check=True)
+
+
+def load_hf_token():
+    try:
+        token = UserSecretsClient().get_secret("HF_TOKEN")
+        if token:
+            return token.strip()
+    except Exception:
+        pass
+    root = Path("/kaggle/input")
+    if root.exists():
+        for p in root.rglob("hf_token.txt"):
+            token = p.read_text(encoding="utf-8").strip()
+            if token:
+                return token
+    raise RuntimeError("HF_TOKEN unavailable")
+
+
+def request_seed():
+    if REQUEST_ID == "UNSET" or TRACK_INDEX <= 0:
+        raise RuntimeError("Generation constants were not injected")
+    raw = f"{REQUEST_ID}:gta-vice-city:{TRACK_INDEX}:attempt:{ATTEMPT}:stable-audio-3-medium"
+    return int.from_bytes(hashlib.sha256(raw.encode()).digest()[:8], "big") % 2_000_000_000 + 1
+
+
+def main():
+    payload = json.loads(base64.b64decode(PROFILE_PAYLOAD_B64).decode("utf-8"))
+    profile = payload["profile"]
+
+    import torch
+    gpu_check = subprocess.run(
+        ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
+        capture_output=True,
+        text=True,
+    )
+    print("GPU allocation:", gpu_check.stdout.strip() or gpu_check.stderr.strip(), flush=True)
+    if gpu_check.returncode != 0 or not torch.cuda.is_available():
+        raise RuntimeError("GPU_ALLOCATION_FAILED: Kaggle session has no usable CUDA device")
+    capability = torch.cuda.get_device_capability(0)
+    if capability < (7, 5):
+        raise RuntimeError("GPU_INCOMPATIBLE: SDPA runtime requires T4 or newer")
+    print("GPU_PREFLIGHT_OK:", torch.cuda.get_device_name(0), capability, flush=True)
+
+    token = load_hf_token()
+    os.environ["HF_TOKEN"] = token
+    os.environ["HUGGING_FACE_HUB_TOKEN"] = token
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+    os.environ["SA3_TARGET_MODEL"] = "medium"
+    os.environ["SA3_ATTENTION_BACKEND"] = "sdpa"
+    os.environ["ENABLE_TORCH_COMPILE"] = "0"
+    os.environ["PYTHONUNBUFFERED"] = "1"
+
+    for p in (REPO_DIR, SA3_DIR, OUTPUT_DIR):
+        if p.exists():
+            shutil.rmtree(p, ignore_errors=True)
+
+    run(["git", "clone", "--depth", "1", REPO_URL, str(REPO_DIR)])
+
+    prompt_file = REPO_DIR / "src" / "prompt_engine.py"
+    text = prompt_file.read_text(encoding="utf-8")
+    text = text.replace(
+        "Elegant background music that remains interesting without demanding attention.",
+        "Driving original retro-futurist neon night music with a consistent dance pulse and cinematic coastal atmosphere.",
+    )
+    prompt_file.write_text(text, encoding="utf-8")
+
+    runtime = REPO_DIR / "config" / "runtime_gta_vice_city_profile.json"
+    runtime.write_text(json.dumps(profile, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    run(["bash", "scripts/bootstrap_gaming_dj30.sh"], cwd=REPO_DIR)
+    python_bin = SA3_DIR / ".venv" / "bin" / "python"
+    if not python_bin.exists():
+        raise RuntimeError("Stable Audio 3 runtime not found")
+
+    seed = request_seed()
+    batch = f"gta-vice-city-{TRACK_INDEX:03d}-a{ATTEMPT}-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(REPO_DIR / "src")
+
+    run([
+        str(python_bin),
+        str(REPO_DIR / "src" / "generate_tracks.py"),
+        "--config", str(runtime),
+        "--batch-name", batch,
+        "--tracks", "1",
+        "--duration-seconds", "300",
+        "--master-seed", str(seed),
+    ], cwd=REPO_DIR, env=env)
+
+    wavs = sorted(OUTPUT_DIR.glob("*.wav"))
+    if len(wavs) != 1:
+        raise RuntimeError(f"Expected exactly 1 WAV, got {len(wavs)}")
+
+    (OUTPUT_DIR / "request_id.txt").write_text(REQUEST_ID + "\n", encoding="utf-8")
+    (OUTPUT_DIR / "track_index.txt").write_text(str(TRACK_INDEX) + "\n", encoding="utf-8")
+    (OUTPUT_DIR / "generation_request.json").write_text(json.dumps({
+        "request_id": REQUEST_ID,
+        "track_index": TRACK_INDEX,
+        "attempt": ATTEMPT,
+        "playlist": "GTA VI - Vice City",
+        "model": "medium",
+        "attention_backend": "sdpa",
+        "gpu": torch.cuda.get_device_name(0),
+        "master_seed": seed,
+        "track_duration_seconds": 300,
+        "pure_text_to_audio": True,
+        "reference_audio_used": False,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    shutil.rmtree(SA3_DIR, ignore_errors=True)
+    shutil.rmtree(REPO_DIR, ignore_errors=True)
+    print(f"GTA VI - Vice City track {TRACK_INDEX}/35 attempt {ATTEMPT} complete")
+
+
+if __name__ == "__main__":
+    main()
