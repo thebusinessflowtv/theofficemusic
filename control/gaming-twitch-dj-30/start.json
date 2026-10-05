@@ -7,6 +7,7 @@
   "destination": "gaming-radio",
   "requested_by": "owner",
   "action": "start",
-  "retry": 2,
-  "correction": "canonical_kernel_identity_and_dataset_readiness"
+  "retry": 3,
+  "correction": "actual_t4_gpu_and_upstream_native_sdpa",
+  "requested_at": "2026-10-05T03:35:41.539Z"
 }
