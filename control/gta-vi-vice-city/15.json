@@ -1,0 +1,68 @@
+{
+  "index": 15,
+  "status": "generated",
+  "track": {
+    "id": "gta-vice-city-20261005-15",
+    "title": "Turbo Sunset",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-015-37375397083/peter-lofi-gta-vice-city-r2-015.mp3",
+    "duration_seconds": 300,
+    "position": 20,
+    "source": "gta-vi-vice-city",
+    "quality_gate": "technical_checks_passed",
+    "target_bpm": 115
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-05T21:44:15.473529Z",
+    "reference_index": 15,
+    "attempt": null,
+    "source_wav_sha256": "0efa9b1a31c46825c79aab15822948e6dff31724c9eb74883c39efdb2562f425",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -20.49,
+      "true_peak_db": -1.71,
+      "lra": 1.4,
+      "threshold_lufs": -30.79
+    },
+    "silence_seconds": 10.421,
+    "silence_ratio": 0.034735,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37375397083"
+}
