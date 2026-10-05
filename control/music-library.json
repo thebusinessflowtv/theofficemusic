@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T06:48:18.589049+00:00",
+  "updated_at": "2026-10-05T06:53:46.638165+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -40,8 +40,8 @@
         "neon"
       ],
       "source": "ovh-station",
-      "track_count": 65,
-      "total_duration_seconds": 19500,
+      "track_count": 66,
+      "total_duration_seconds": 19800,
       "tracks": [
         {
           "id": "gaming-radio-01",
@@ -555,6 +555,15 @@
           "source": "gaming-twitch-dj-30",
           "quality_gate": "technical_checks_passed",
           "position": 65
+        },
+        {
+          "id": "gaming-twitch-dj-20261004-30",
+          "title": "Final Sunrise",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-030-37261069134/peter-lofi-gaming-dj30-030.mp3",
+          "duration_seconds": 300,
+          "source": "gaming-twitch-dj-30",
+          "quality_gate": "technical_checks_passed",
+          "position": 66
         }
       ]
     },
