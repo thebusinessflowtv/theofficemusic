@@ -1,0 +1,70 @@
+name: Peter Lofi — GTA VI - Vice City Extra 15
+
+'on':
+  workflow_run:
+    workflows:
+      - Peter Lofi — GTA VI - Vice City
+    branches:
+      - main
+    types:
+      - completed
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gaming-twitch-dj-30-production
+  cancel-in-progress: false
+
+env:
+  SECRET_DATASET_SLUG: peter-lofi-gaming-dj30-secrets
+  KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  OVH_AGENT_TOKEN: ${{ secrets.OVH_AGENT_TOKEN }}
+
+jobs:
+  generate:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    name: Extra ${{ matrix.index }}/50 — 5 min — GTA reference family
+    runs-on: ubuntu-latest
+    timeout-minutes: 210
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        index: [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
+    env:
+      INDEX: ${{ matrix.index }}
+      ATTEMPT: ${{ github.run_attempt }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Install production runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip kaggle==2.2.4 requests numpy
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          test -n "$KAGGLE_USERNAME"
+          test -n "$KAGGLE_API_TOKEN"
+          test -n "$HF_TOKEN"
+
+      - name: Generate, diversity-check and publish
+        run: bash scripts/run_gta_extra_15_track.sh
+
+      - name: Keep diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gta-extra-15-${{ matrix.index }}
+          path: build/*.json
+          if-no-files-found: ignore
