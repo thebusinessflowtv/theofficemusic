@@ -1,0 +1,709 @@
+{
+  "version": 1,
+  "batch_id": "gta-vi-vice-city-20261005",
+  "playlist_key": "gta-vi-vice-city",
+  "playlist_name": "GTA VI - Vice City",
+  "total_playlist_tracks": 40,
+  "owner_library_tracks": 5,
+  "tracks_to_generate": 35,
+  "generated_track_duration_seconds": 300,
+  "generation_mode": "pure_text_to_audio",
+  "generation_rule": "Create original music from broad musical traits only. Do not feed reference recordings to the model and do not copy recognizable melodies, lyrics, stems or arrangements.",
+  "reference_audio_analysis": {
+    "core_direction": "retro synth/electronic, pulsing bass, arpeggiators, nocturnal neon/coastal atmosphere",
+    "generated_bpm_window": "112-115 BPM for consistency",
+    "supplied_detected_tempos_bpm": [
+      112.3,
+      161.5,
+      112.3,
+      103.4,
+      117.5
+    ],
+    "note": "The 161.5 BPM reference contributes arpeggio motion/energy rather than setting the core tempo."
+  },
+  "owner_library_reference_tracks": [
+    {
+      "position": 1,
+      "title": "Digifunk",
+      "artist": "DivKid",
+      "filename": "Digifunk - DivKid.mp3",
+      "duration_seconds": 192,
+      "detected_bpm": 112.3,
+      "status": "reserved_for_playlist",
+      "remote_ingest": "pending"
+    },
+    {
+      "position": 2,
+      "title": "Icelandic Arpeggios",
+      "artist": "DivKid",
+      "filename": "Icelandic Arpeggios - DivKid.mp3",
+      "duration_seconds": 170,
+      "detected_bpm": 161.5,
+      "note": "Used for arpeggio/energy reference; not as the core playlist BPM.",
+      "status": "reserved_for_playlist",
+      "remote_ingest": "pending"
+    },
+    {
+      "position": 3,
+      "title": "No One Here Gets In Alive",
+      "artist": "National Sweetheart",
+      "filename": "No One Here Gets In Alive - National Sweetheart.mp3",
+      "duration_seconds": 238.4,
+      "detected_bpm": 112.3,
+      "status": "reserved_for_playlist",
+      "remote_ingest": "pending"
+    },
+    {
+      "position": 4,
+      "title": "Rinse Repeat",
+      "artist": "DivKid",
+      "filename": "Rinse Repeat - DivKid.mp3",
+      "duration_seconds": 156,
+      "detected_bpm": 103.4,
+      "status": "reserved_for_playlist",
+      "remote_ingest": "pending"
+    },
+    {
+      "position": 5,
+      "title": "Visions",
+      "artist": "Patrick Patrikios",
+      "filename": "Visions - Patrick Jordan Patrikios.mp3",
+      "duration_seconds": 148,
+      "detected_bpm": 117.5,
+      "status": "reserved_for_playlist",
+      "remote_ingest": "pending"
+    }
+  ],
+  "generated_tracks": [
+    {
+      "index": 1,
+      "playlist_position": 6,
+      "id": "gta-vice-city-20261005-01",
+      "title": "Ocean Drive Heat",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 112,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 2,
+      "playlist_position": 7,
+      "id": "gta-vice-city-20261005-02",
+      "title": "Neon Palm Circuit",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 114,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 3,
+      "playlist_position": 8,
+      "id": "gta-vice-city-20261005-03",
+      "title": "Midnight Causeway",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 113,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 4,
+      "playlist_position": 9,
+      "id": "gta-vice-city-20261005-04",
+      "title": "Sunset Motel",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 115,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 5,
+      "playlist_position": 10,
+      "id": "gta-vice-city-20261005-05",
+      "title": "Vice Afterglow",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 112,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 6,
+      "playlist_position": 11,
+      "id": "gta-vice-city-20261005-06",
+      "title": "Coastal Static",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 114,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 7,
+      "playlist_position": 12,
+      "id": "gta-vice-city-20261005-07",
+      "title": "Pink Horizon",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 113,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 8,
+      "playlist_position": 13,
+      "id": "gta-vice-city-20261005-08",
+      "title": "Night Cruise FM",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 115,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 9,
+      "playlist_position": 14,
+      "id": "gta-vice-city-20261005-09",
+      "title": "Electric Marina",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 112,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 10,
+      "playlist_position": 15,
+      "id": "gta-vice-city-20261005-10",
+      "title": "South Beach Signal",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 114,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 11,
+      "playlist_position": 16,
+      "id": "gta-vice-city-20261005-11",
+      "title": "Chrome Palms",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 113,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 12,
+      "playlist_position": 17,
+      "id": "gta-vice-city-20261005-12",
+      "title": "Bayfront Motion",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 115,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 13,
+      "playlist_position": 18,
+      "id": "gta-vice-city-20261005-13",
+      "title": "Heatwave Boulevard",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 112,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 14,
+      "playlist_position": 19,
+      "id": "gta-vice-city-20261005-14",
+      "title": "Afterdark Skyline",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 114,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 15,
+      "playlist_position": 20,
+      "id": "gta-vice-city-20261005-15",
+      "title": "Turbo Sunset",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 113,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 16,
+      "playlist_position": 21,
+      "id": "gta-vice-city-20261005-16",
+      "title": "Glass Highway",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 115,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 17,
+      "playlist_position": 22,
+      "id": "gta-vice-city-20261005-17",
+      "title": "Neon Flamingo",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 112,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 18,
+      "playlist_position": 23,
+      "id": "gta-vice-city-20261005-18",
+      "title": "Moonlit Causeway",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 114,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 19,
+      "playlist_position": 24,
+      "id": "gta-vice-city-20261005-19",
+      "title": "Palmline Pulse",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 113,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 20,
+      "playlist_position": 25,
+      "id": "gta-vice-city-20261005-20",
+      "title": "Golden Overpass",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 115,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 21,
+      "playlist_position": 26,
+      "id": "gta-vice-city-20261005-21",
+      "title": "Electric Coastline",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 112,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 22,
+      "playlist_position": 27,
+      "id": "gta-vice-city-20261005-22",
+      "title": "Midnight Convertible",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 114,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 23,
+      "playlist_position": 28,
+      "id": "gta-vice-city-20261005-23",
+      "title": "Velvet Asphalt",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 113,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 24,
+      "playlist_position": 29,
+      "id": "gta-vice-city-20261005-24",
+      "title": "Ocean Neon",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 115,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 25,
+      "playlist_position": 30,
+      "id": "gta-vice-city-20261005-25",
+      "title": "City Heatline",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 112,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 26,
+      "playlist_position": 31,
+      "id": "gta-vice-city-20261005-26",
+      "title": "Nightwave District",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 114,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 27,
+      "playlist_position": 32,
+      "id": "gta-vice-city-20261005-27",
+      "title": "Sunset Frequency",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 113,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 28,
+      "playlist_position": 33,
+      "id": "gta-vice-city-20261005-28",
+      "title": "Coastal Voltage",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 115,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 29,
+      "playlist_position": 34,
+      "id": "gta-vice-city-20261005-29",
+      "title": "Palm Shadow Drive",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 112,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 30,
+      "playlist_position": 35,
+      "id": "gta-vice-city-20261005-30",
+      "title": "Neon Motel",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 114,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 31,
+      "playlist_position": 36,
+      "id": "gta-vice-city-20261005-31",
+      "title": "Mirage Avenue",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 113,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 32,
+      "playlist_position": 37,
+      "id": "gta-vice-city-20261005-32",
+      "title": "Heat Signature",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 115,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 33,
+      "playlist_position": 38,
+      "id": "gta-vice-city-20261005-33",
+      "title": "Blue Hour Boulevard",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 112,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 34,
+      "playlist_position": 39,
+      "id": "gta-vice-city-20261005-34",
+      "title": "Afterhours Coast",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 114,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    },
+    {
+      "index": 35,
+      "playlist_position": 40,
+      "id": "gta-vice-city-20261005-35",
+      "title": "Vice City Lights",
+      "status": "queued",
+      "duration_seconds": 300,
+      "style": "retro-futurist synthwave electro-funk with neon night-drive production",
+      "target_bpm": 113,
+      "instruments": [
+        "warm analog synth bass",
+        "punchy 1980s-style electronic drum machine",
+        "bright analog polysynth chords",
+        "hypnotic sequenced arpeggiator",
+        "short glossy synth lead accents"
+      ],
+      "mood": "neon, nocturnal, coastal, confident, cinematic, driving"
+    }
+  ]
+}
