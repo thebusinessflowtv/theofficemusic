@@ -1,4 +1,4 @@
-name: Peter Lofi — GTA VI Vice City Serial Resume
+name: Peter Lofi — GTA VI Vice City Live Queue
 
 'on':
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: gta-vice-city-serial-resume
+  group: gta-vice-city-live-queue-v2
   cancel-in-progress: false
 
 env:
@@ -22,6 +22,7 @@ env:
   HF_TOKEN: ${{ secrets.HF_TOKEN }}
   GH_TOKEN: ${{ github.token }}
   OVH_AGENT_TOKEN: ${{ secrets.OVH_AGENT_TOKEN }}
+  SERIAL_GENERATION_TOKEN: gta-live-20261005-v2
 
 jobs:
   serial-generate:
