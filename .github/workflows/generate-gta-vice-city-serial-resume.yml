@@ -1,0 +1,65 @@
+name: Peter Lofi — GTA VI Vice City Serial Resume
+
+'on':
+  push:
+    branches:
+      - main
+    paths:
+      - control/gta-vi-vice-city/serial-resume.json
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gta-vice-city-serial-resume
+  cancel-in-progress: false
+
+env:
+  SECRET_DATASET_SLUG: peter-lofi-gaming-dj30-secrets
+  KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  OVH_AGENT_TOKEN: ${{ secrets.OVH_AGENT_TOKEN }}
+
+jobs:
+  serial-generate:
+    name: Serial resume tracks 14-35
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Install production runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip kaggle==2.2.4 requests numpy
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          test -n "$KAGGLE_USERNAME"
+          test -n "$KAGGLE_API_TOKEN"
+          test -n "$HF_TOKEN"
+
+      - name: Generate tracks 14 through 35 sequentially
+        run: |
+          set -euo pipefail
+          for idx in $(seq 14 35); do
+            echo "===== SERIAL GTA VI R2 TRACK $idx/35 ====="
+            export INDEX="$idx"
+            export ATTEMPT="$GITHUB_RUN_ATTEMPT"
+            bash scripts/run_gta_vice_city_track.sh
+          done
+
+      - name: Keep final diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gta-vice-city-serial-resume-${{ github.run_attempt }}
+          path: build/*.json
+          if-no-files-found: ignore
