@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T05:22:35.042786+00:00",
+  "updated_at": "2026-10-05T05:29:17.417209+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -40,8 +40,8 @@
         "neon"
       ],
       "source": "ovh-station",
-      "track_count": 51,
-      "total_duration_seconds": 15300,
+      "track_count": 52,
+      "total_duration_seconds": 15600,
       "tracks": [
         {
           "id": "gaming-radio-01",
@@ -429,6 +429,15 @@
           "source": "gaming-twitch-dj-30",
           "quality_gate": "technical_checks_passed",
           "position": 51
+        },
+        {
+          "id": "gaming-twitch-dj-20261004-16",
+          "title": "Spectrum Glide",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-016-37261069134/peter-lofi-gaming-dj30-016.mp3",
+          "duration_seconds": 300,
+          "source": "gaming-twitch-dj-30",
+          "quality_gate": "technical_checks_passed",
+          "position": 52
         }
       ]
     },
