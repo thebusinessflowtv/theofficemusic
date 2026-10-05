@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T18:07:57.436542+00:00",
+  "updated_at": "2026-10-05T18:15:01.384912+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3226,8 +3226,8 @@
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 5,
-      "total_duration_seconds": 1500,
+      "track_count": 6,
+      "total_duration_seconds": 1800,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3278,6 +3278,16 @@
           "source": "gta-vi-vice-city",
           "quality_gate": "technical_checks_passed",
           "target_bpm": 114
+        },
+        {
+          "id": "gta-vice-city-20261005-06",
+          "title": "Coastal Static",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-006-37349889973/peter-lofi-gta-vice-city-r2-006.mp3",
+          "duration_seconds": 300,
+          "position": 11,
+          "source": "gta-vi-vice-city",
+          "quality_gate": "technical_checks_passed",
+          "target_bpm": 121
         }
       ],
       "planned_duration_seconds": 12000,
