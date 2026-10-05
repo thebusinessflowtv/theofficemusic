@@ -1,0 +1,66 @@
+{
+  "index": 17,
+  "status": "generated",
+  "track": {
+    "id": "gaming-twitch-dj-20261004-17",
+    "title": "Moonlit Arcade",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-017-37261069134/peter-lofi-gaming-dj30-017.mp3",
+    "duration_seconds": 300,
+    "source": "gaming-twitch-dj-30",
+    "quality_gate": "technical_checks_passed"
+  },
+  "delivery": "pending_local_sync",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-05T05:34:47.924798Z",
+    "reference_index": 17,
+    "attempt": 1,
+    "source_wav_sha256": "498524f799880b6fb94124a1fe74f15d62501e20a404495f9336ec0b3c36a29d",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -19.04,
+      "true_peak_db": -2.75,
+      "lra": 7.3,
+      "threshold_lufs": -29.14
+    },
+    "silence_seconds": 1.607,
+    "silence_ratio": 0.005356,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37261069134"
+}

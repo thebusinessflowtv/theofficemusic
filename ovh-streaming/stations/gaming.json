@@ -400,6 +400,15 @@
       "source": "gaming-twitch-dj-30",
       "quality_gate": "technical_checks_passed",
       "position": 52
+    },
+    {
+      "id": "gaming-twitch-dj-20261004-17",
+      "title": "Moonlit Arcade",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-017-37261069134/peter-lofi-gaming-dj30-017.mp3",
+      "duration_seconds": 300,
+      "source": "gaming-twitch-dj-30",
+      "quality_gate": "technical_checks_passed",
+      "position": 53
     }
   ]
 }
