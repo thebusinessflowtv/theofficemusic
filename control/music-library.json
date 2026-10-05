@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T05:58:51.230577+00:00",
+  "updated_at": "2026-10-05T06:05:32.473077+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -40,8 +40,8 @@
         "neon"
       ],
       "source": "ovh-station",
-      "track_count": 57,
-      "total_duration_seconds": 17100,
+      "track_count": 58,
+      "total_duration_seconds": 17400,
       "tracks": [
         {
           "id": "gaming-radio-01",
@@ -483,6 +483,15 @@
           "source": "gaming-twitch-dj-30",
           "quality_gate": "technical_checks_passed",
           "position": 57
+        },
+        {
+          "id": "gaming-twitch-dj-20261004-22",
+          "title": "Soft Collision",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-022-37261069134/peter-lofi-gaming-dj30-022.mp3",
+          "duration_seconds": 300,
+          "source": "gaming-twitch-dj-30",
+          "quality_gate": "technical_checks_passed",
+          "position": 58
         }
       ]
     },
