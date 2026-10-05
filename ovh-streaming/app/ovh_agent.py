@@ -28,6 +28,7 @@ AGENT_TOKEN=os.environ.get("MEDIAFORGE_AGENT_TOKEN","").strip()
 POLL=max(3,int(os.environ.get("OVH_AGENT_POLL_SECONDS","5")))
 LOCAL_STATUS_SECONDS=max(5,int(os.environ.get("OVH_LOCAL_STATUS_SECONDS","10")))
 REMOTE_STATUS_SECONDS=max(5,int(os.environ.get("OVH_REMOTE_STATUS_SECONDS","10")))
+GTA_PLAYLIST_SYNC_SECONDS=max(10,int(os.environ.get("OVH_GTA_PLAYLIST_SYNC_SECONDS","20")))
 GITHUB_RAW_BASE=os.environ.get("MEDIAFORGE_GITHUB_RAW_BASE","https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main").rstrip("/")
 GITHUB_FALLBACK_MAX_AGE_SECONDS=max(30,int(os.environ.get("OVH_GITHUB_FALLBACK_MAX_AGE_SECONDS","900")))
 SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy","youtube-ui-test")
@@ -1100,13 +1101,149 @@ def service_payload(slot):
     }
 
 
+
+def _gta_playlist_from_library(library):
+    if not isinstance(library,dict):
+        return {}
+    return next(
+        (p for p in (library.get("playlists") or []) if isinstance(p,dict) and p.get("key")=="gta-vi-vice-city"),
+        {},
+    )
+
+
+def _best_gta_catalog():
+    """Prefer OVH-local catalog; use GitHub only when it has a newer/larger GTA playlist.
+
+    Live playback never depends on either source once playlist.json is written.
+    """
+    candidates=[]
+    try:
+        local=fetch_json(API+"/api/ovh/agent/runtime-config?path=control/music-library.json&raw=1")
+        gta=_gta_playlist_from_library(local)
+        if gta:
+            candidates.append(("ovh-local",local,gta))
+    except Exception as exc:
+        print("GTA catalog local fetch failed:",exc,flush=True)
+
+    try:
+        remote=github_fetch_json("control/music-library.json")
+        gta=_gta_playlist_from_library(remote)
+        if gta:
+            candidates.append(("github-fallback",remote,gta))
+    except Exception as exc:
+        print("GTA catalog GitHub fallback failed:",exc,flush=True)
+
+    if not candidates:
+        return "",{}
+    # Choose the source with the greatest number of playable approved tracks.
+    def score(row):
+        gta=row[2]
+        tracks=[t for t in (gta.get("tracks") or []) if isinstance(t,dict) and t.get("url")]
+        return (len(tracks), str((row[1] or {}).get("updated_at") or ""))
+    source,library,gta=max(candidates,key=score)
+    return source,gta
+
+
+def sync_gta_runtime_playlists():
+    """Hot-sync GTA VI catalog into any active runtime using gta-vi-vice-city.
+
+    This only replaces /state/<slot>/playlist.json atomically. AudioEngine
+    notices the mtime change, keeps the current decoder/RTMP publisher alive,
+    and uses the expanded list for subsequent track choices.
+    """
+    source,gta=_best_gta_catalog()
+    if not gta:
+        return {"status":"no-catalog","updated_slots":[]}
+
+    canonical=[]
+    seen=set()
+    for row in gta.get("tracks") or []:
+        if not isinstance(row,dict):
+            continue
+        tid=str(row.get("id") or "").strip()
+        url=str(row.get("url") or "").strip()
+        if not tid or not url or tid in seen:
+            continue
+        try:
+            duration=float(row.get("duration_seconds") or 0)
+        except Exception:
+            duration=0
+        if duration and not 295 <= duration <= 305:
+            continue
+        seen.add(tid)
+        canonical.append({
+            "id":tid,
+            "title":str(row.get("title") or tid),
+            "url":url,
+            "source":str(row.get("source") or "gta-vi-vice-city"),
+            "artists":str(row.get("artists") or ""),
+            "duration_seconds":duration or 300,
+            "position":row.get("position"),
+            "target_bpm":row.get("target_bpm"),
+        })
+
+    if not canonical:
+        return {"status":"empty-catalog","source":source,"updated_slots":[]}
+
+    updated=[]
+    for slot in SLOTS:
+        st=STATE/slot
+        desired=read_json(st/"desired.json",{}) or {}
+        current=read_json(st/"playlist.json",{}) or {}
+        desired_key=str(desired.get("playlist_key") or "")
+        current_key=str(current.get("playlist_key") or "")
+        if "gta-vi-vice-city" not in {desired_key,current_key}:
+            continue
+
+        old_tracks=current.get("tracks") or []
+        old_ids=[str(t.get("id") or "") for t in old_tracks if isinstance(t,dict)]
+        new_ids=[t["id"] for t in canonical]
+        if old_ids==new_ids:
+            continue
+
+        payload={
+            **current,
+            "station":slot,
+            "playlist_key":"gta-vi-vice-city",
+            "name":"GTA VI - Vice City",
+            "shuffle":True,
+            "repeat":True,
+            "updated_at":iso_now(),
+            "catalog_source":source,
+            "auto_sync":True,
+            "tracks":canonical,
+        }
+        atomic_json(st/"playlist.json",payload)
+        updated.append({
+            "slot":slot,
+            "before":len(old_ids),
+            "after":len(new_ids),
+        })
+
+    result={
+        "status":"synced" if updated else "current",
+        "source":source,
+        "catalog_tracks":len(canonical),
+        "updated_slots":updated,
+        "checked_at":iso_now(),
+        "rtmp_restart":False,
+        "force_skip":False,
+    }
+    atomic_json(AGENT_DIR/"gta-playlist-sync.json",result)
+    if updated:
+        print("GTA runtime playlist hot-sync:",result,flush=True)
+    return result
+
+
+
 def status_payload(processed_count=0,last_command=None):
     payload={
         "agent_id":"ovh-main",
         "runtime":"ovh",
         "authority":"local",
         "cloudflare_required_for_live":False,
-        "github_runtime_polling":False,
+        "github_runtime_polling":"catalog-fallback-only",
+        "gta_playlist_auto_sync":read_json(AGENT_DIR/"gta-playlist-sync.json",{}),
         "gaming_dj30_mix_supported":True,
         "gaming_dj30_mix_version":2,
         "gaming_dj30_mix":read_json(AGENT_DIR/"gaming30-dj-mix.json",{}),
@@ -1230,6 +1367,7 @@ def main():
     last_local=0.0
     last_remote=0.0
     last_cmd=None
+    last_gta_sync=0.0
 
     while True:
         try:
@@ -1275,6 +1413,13 @@ def main():
             last_cmd=fallback_handled[-1]
 
         ts=time.time()
+        if ts-last_gta_sync>=GTA_PLAYLIST_SYNC_SECONDS:
+            try:
+                sync_gta_runtime_playlists()
+            except Exception as exc:
+                print("GTA runtime playlist sync failed:",exc,flush=True)
+            last_gta_sync=ts
+
         payload=None
         if ts-last_local>=LOCAL_STATUS_SECONDS:
             payload=write_local_status(len(processed),last_cmd)
