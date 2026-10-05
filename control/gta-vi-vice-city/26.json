@@ -1,0 +1,68 @@
+{
+  "index": 26,
+  "status": "generated",
+  "track": {
+    "id": "gta-vice-city-20261005-26",
+    "title": "Nightwave District",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-026-37375397083/peter-lofi-gta-vice-city-r2-026.mp3",
+    "duration_seconds": 300,
+    "position": 31,
+    "source": "gta-vi-vice-city",
+    "quality_gate": "technical_checks_passed",
+    "target_bpm": 123
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-05T23:49:12.268445Z",
+    "reference_index": 26,
+    "attempt": null,
+    "source_wav_sha256": "ce84c740f7f70c9d843d38768266842010d32827679adb2efd78898eb9565132",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -16.91,
+      "true_peak_db": -1.52,
+      "lra": 4.9,
+      "threshold_lufs": -27.0
+    },
+    "silence_seconds": 0,
+    "silence_ratio": 0.0,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37375397083"
+}
