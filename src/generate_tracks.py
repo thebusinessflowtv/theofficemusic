@@ -146,6 +146,7 @@ def main():
                 prompt=prompt,
                 negative_prompt=negative_prompt,
                 duration=duration,
+                sample_size=int(model.model_config["sample_size"]),
                 steps=int(generation.get("steps", 8)),
                 cfg_scale=float(generation.get("cfg_scale", 1.0)),
                 seed=seed,
@@ -160,8 +161,11 @@ def main():
         waveform = audio[0].detach().to(torch.float32).cpu()
         if os.getenv("SA3_ATTENTION_BACKEND") == "sdpa":
             target_samples = sample_rate * duration
-            if waveform.shape[-1] < target_samples or not torch.isfinite(waveform).all():
-                raise RuntimeError("Generated waveform is incomplete or contains non-finite samples.")
+            print(f"Generated samples: {waveform.shape[-1]} / {target_samples} requested", flush=True)
+            if waveform.shape[-1] < target_samples:
+                raise RuntimeError(f"Generated waveform is incomplete: {waveform.shape[-1] / sample_rate:.3f}s / {duration}s requested.")
+            if not torch.isfinite(waveform).all():
+                raise RuntimeError("Generated waveform contains non-finite samples.")
             # The codec pads its output to decoder blocks. Deliver exactly the
             # requested duration, with a short musical fade and peak headroom
             # before PCM encoding so the generated floats are never clipped.
