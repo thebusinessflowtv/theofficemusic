@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-05T05:04:37.357674+00:00",
+  "updated_at": "2026-10-05T05:10:17.455556+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -40,8 +40,8 @@
         "neon"
       ],
       "source": "ovh-station",
-      "track_count": 48,
-      "total_duration_seconds": 14400,
+      "track_count": 49,
+      "total_duration_seconds": 14700,
       "tracks": [
         {
           "id": "gaming-radio-01",
@@ -402,6 +402,15 @@
           "source": "gaming-twitch-dj-30",
           "quality_gate": "technical_checks_passed",
           "position": 48
+        },
+        {
+          "id": "gaming-twitch-dj-20261004-13",
+          "title": "Starlit Motion",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gaming-dj30-013-37261069134/peter-lofi-gaming-dj30-013.mp3",
+          "duration_seconds": 300,
+          "source": "gaming-twitch-dj-30",
+          "quality_gate": "technical_checks_passed",
+          "position": 49
         }
       ]
     },
