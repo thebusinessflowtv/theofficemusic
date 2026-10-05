@@ -30,6 +30,18 @@ def resolve_runtime(model_name: str) -> tuple[str, bool]:
             raise RuntimeError(
                 "Stable Audio 3 Medium requires a CUDA GPU. No CUDA device is available."
             )
+        if os.getenv("SA3_ATTENTION_BACKEND") == "sdpa":
+            if torch.cuda.get_device_capability(0) < (7, 5):
+                raise RuntimeError("The SDPA music runtime requires a T4 or newer CUDA GPU.")
+            from stable_audio_3.models import transformer
+            # Select the upstream memory-bounded native attention implementation.
+            # Avoid Flash Attention 2 and Triton/Flex kernels unsupported by T4.
+            transformer.flash_attn_func = None
+            transformer.flash_attn_varlen_func = None
+            transformer.flex_attention_available = False
+            transformer.flex_attention_compiled = None
+            print("Attention backend: native SDPA (T4 compatible)", flush=True)
+            return "cuda", True
         try:
             import flash_attn  # noqa: F401
         except Exception as exc:
