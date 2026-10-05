@@ -120,7 +120,7 @@ jobs:
         \ <<'PY'\nimport json,os,pathlib,sys\nd=pathlib.Path(sys.argv[1]); name=sys.argv[2]\n(d/\"kernel-metadata.json\"\
         ).write_text(json.dumps({\n    \"id\":f\"{os.environ['KAGGLE_USERNAME']}/{name}\",\n    \"title\":name,\n\
         \    \"code_file\":\"runner.py\",\n    \"language\":\"python\",\n    \"kernel_type\":\"script\",\n    \"\
-        is_private\":True,\n    \"enable_gpu\":True,\n    \"machine_shape\":\"NvidiaL4\",\n    \"enable_internet\"\
+        is_private\":True,\n    \"enable_gpu\":True,\n    \"machine_shape\":\"NvidiaTeslaT4\",\n    \"enable_internet\"\
         :True,\n    \"dataset_sources\":[f\"{os.environ['KAGGLE_USERNAME']}/peter-lofi-gaming-dj30-secrets\"],\n\
         \    \"competition_sources\":[],\n    \"kernel_sources\":[]\n},indent=2))\nPY\n\necho \"KERNEL_NAME=$KERNEL_NAME\"\
         \ >> \"$GITHUB_ENV\"\necho \"REQUEST_ID=$REQUEST_ID\" >> \"$GITHUB_ENV\"\necho \"KERNEL_DIR=$TMP\" >> \"\
@@ -128,7 +128,7 @@ jobs:
     - name: Generate one coherent 5-minute track
       if: env.SKIP_REST != '1'
       run: "set -euo pipefail\nif ! PUSH_OUTPUT=\"$(kaggle kernels push -p \"$KERNEL_DIR\" --timeout 7200 --accelerator\
-        \ NvidiaL4 2>&1)\"; then\n  printf '%s\\n' \"$PUSH_OUTPUT\"\n  exit 1\nfi\nprintf '%s\\n' \"$PUSH_OUTPUT\"\
+        \ NvidiaTeslaT4 2>&1)\"; then\n  printf '%s\\n' \"$PUSH_OUTPUT\"\n  exit 1\nfi\nprintf '%s\\n' \"$PUSH_OUTPUT\"\
         \nKERNEL_REF=\"$(printf '%s\\n' \"$PUSH_OUTPUT\" | python -c 'import re,sys; m=re.search(r\"https://www[.]kaggle[.]com/code/([A-Za-z0-9_-]+/[A-Za-z0-9_-]+)\"\
         ,sys.stdin.read()); print(m.group(1) if m else \"\")')\"\ntest -n \"$KERNEL_REF\" || { echo 'Kaggle did\
         \ not return a canonical kernel URL'; exit 1; }\necho \"KERNEL_REF=$KERNEL_REF\" >> \"$GITHUB_ENV\"\nsleep\
@@ -168,3 +168,4 @@ jobs:
         name: gaming-dj30-${{ matrix.index }}-${{ github.run_attempt }}
         path: build/*.json
         if-no-files-found: ignore
+
