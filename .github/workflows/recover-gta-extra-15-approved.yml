@@ -1,0 +1,170 @@
+name: Peter Lofi — Recover GTA VI Extra 15 Approved Audio
+
+'on':
+  push:
+    branches:
+      - main
+    paths:
+      - control/gta-vi-extra-15/recover-approved.json
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gta-extra15-approved-recovery
+  cancel-in-progress: false
+
+env:
+  KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+  KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+  GH_TOKEN: ${{ github.token }}
+  OVH_AGENT_TOKEN: ${{ secrets.OVH_AGENT_TOKEN }}
+  SOURCE_RUN_ID: '37416684072'
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Install validation runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg jq
+          python -m pip install --upgrade pip kaggle==2.2.4 requests numpy
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          test -n "$KAGGLE_USERNAME"
+          test -n "$KAGGLE_API_TOKEN"
+
+      - name: Wait briefly for track 36 from corrected queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          for N in $(seq 1 60); do
+            git fetch origin main
+            if git cat-file -e origin/main:control/gta-vi-extra-15/36.json 2>/dev/null; then
+              echo "Track 36 is published; recovery can continue with 37-50."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Track 36 was not published in the wait window; recovery will continue and revalidate against the latest available playlist."
+
+      - name: Recover, revalidate and publish tracks 37-50
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+
+          for INDEX in $(seq 37 50); do
+            export INDEX
+            PAD="$(printf '%03d' "$INDEX")"
+            MARKER="control/gta-vi-extra-15/$(printf '%02d' "$INDEX").json"
+
+            git fetch origin main
+            if git cat-file -e "origin/main:$MARKER" 2>/dev/null; then
+              echo "Track $INDEX already published; skipping."
+              continue
+            fi
+
+            APPROVED=0
+            for VARIANT_ATTEMPT in 1 2 3 4; do
+              echo "=== RECOVER EXTRA $INDEX variant $VARIANT_ATTEMPT ==="
+              rm -rf generated
+              mkdir -p generated
+              rm -f build/reference_profile.json build/qc.json build/diversity.json build/approved.mp3
+
+              KERNEL="$KAGGLE_USERNAME/peter-lofi-gta-extra15-$INDEX-v$VARIANT_ATTEMPT-$SOURCE_RUN_ID"
+              if ! kaggle kernels output "$KERNEL" -p generated; then
+                echo "Could not download $KERNEL"
+                continue
+              fi
+
+              WAV="$(find generated -type f -name '*.wav' -print -quit)"
+              INDEX_FILE="$(find generated -type f -name 'track_index.txt' -print -quit)"
+              if test -z "$WAV" || test -z "$INDEX_FILE"; then
+                echo "Missing WAV/index marker for $KERNEL"
+                continue
+              fi
+              if test "$(tr -d '\r\n ' < "$INDEX_FILE")" != "$INDEX"; then
+                echo "Index mismatch for $KERNEL"
+                continue
+              fi
+
+              git fetch origin main
+              git reset --hard origin/main
+
+              python scripts/build_gta_extra_15_profile.py                 --index "$INDEX"                 --variant-attempt "$VARIANT_ATTEMPT"                 --out build/reference_profile.json
+
+              if ! python scripts/quality_gate_audio.py "$WAV"                   --reference-profile build/reference_profile.json                   --out build/qc.json                   --normalized build/approved.mp3; then
+                echo "Recovered candidate $INDEX/$VARIANT_ATTEMPT failed technical QC."
+                continue
+              fi
+
+              git show origin/main:control/music-library.json > build/current-music-library.json
+              if ! python scripts/audio_diversity_gate.py build/approved.mp3                   --library build/current-music-library.json                   --playlist-key gta-vi-vice-city                   --out build/diversity.json; then
+                echo "Recovered candidate $INDEX/$VARIANT_ATTEMPT conflicts with current playlist."
+                continue
+              fi
+
+              APPROVED=1
+              break
+            done
+
+            if test "$APPROVED" -ne 1; then
+              echo "No previously generated candidate for track $INDEX passed against the CURRENT playlist."
+              echo "Leaving track $INDEX for the corrected generator workflow."
+              continue
+            fi
+
+            MP3_NAME="peter-lofi-gta-extra15-$PAD.mp3"
+            mv build/approved.mp3 "build/$MP3_NAME"
+            TAG="peter-lofi-gta-extra15-$PAD-recovered-$SOURCE_RUN_ID"
+
+            if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+              gh release upload "$TAG" "build/$MP3_NAME" build/qc.json build/diversity.json build/reference_profile.json                 --repo "$GITHUB_REPOSITORY" --clobber
+            else
+              gh release create "$TAG" "build/$MP3_NAME" build/qc.json build/diversity.json build/reference_profile.json                 --repo "$GITHUB_REPOSITORY" --target main                 --title "GTA VI - Vice City Extra — Track $PAD"                 --notes "Recovered from the already-generated 2026-10-06 candidate after fixing the inverted diversity-gate control flow. Revalidated against the current GTA VI playlist before publication."
+            fi
+
+            export RELEASE_TAG="$TAG"
+            export MP3_NAME
+
+            PUBLISHED=0
+            for PUSH_ATTEMPT in 1 2 3 4 5; do
+              git fetch origin main
+              git reset --hard origin/main
+
+              if test -f "$MARKER"; then
+                echo "Track $INDEX was published concurrently; preserving existing marker."
+                PUBLISHED=1
+                break
+              fi
+
+              python scripts/publish_gta_extra_15.py
+              git add control/music-library.json control/gta-vi-extra-15
+              git diff --cached --quiet || git commit -m "gta: recover approved Vice City Extra track $INDEX"
+              if git push origin HEAD:main; then
+                PUBLISHED=1
+                break
+              fi
+              sleep $((PUSH_ATTEMPT*3))
+            done
+            test "$PUBLISHED" -eq 1
+          done
+
+      - name: Final playlist count
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git show origin/main:control/music-library.json > /tmp/library.json
+          jq '{playlist:(.playlists[] | select(.key=="gta-vi-vice-city") | {key,name,track_count,total_duration_seconds,status,extra_count:([.tracks[] | select(.source=="gta-vi-extra-15")]|length)})}' /tmp/library.json
