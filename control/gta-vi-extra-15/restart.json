@@ -1,0 +1,13 @@
+{
+  "action": "run_now",
+  "from_track": 36,
+  "to_track": 50,
+  "playlist_key": "gta-vi-vice-city",
+  "preserve_existing_tracks": "1-35",
+  "quality_gate": true,
+  "diversity_gate": true,
+  "requested_by": "owner",
+  "requested_at": "2026-10-06T13:49:00Z",
+  "reason": "retry after fixing inverted diversity gate control flow",
+  "trigger_nonce": "extra15-fixed-20261006-1049-bbrt"
+}
