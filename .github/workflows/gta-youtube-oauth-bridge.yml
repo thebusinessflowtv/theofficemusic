@@ -264,7 +264,7 @@ jobs:
           OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
           test -n "$OIDC_TOKEN"
 
-          BOOT_CODE="$(curl -ksS -o /tmp/ovh-bootstrap.json -w '%{http_code}' -X POST "https://146.59.156.224:8443/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data-binary @/tmp/gta-ovh-command.json)"
+          BOOT_CODE="$(curl -ksS -o /tmp/ovh-bootstrap.json -w '%{http_code}' -X POST "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data-binary @/tmp/gta-ovh-command.json)"
           echo "OVH_BOOTSTRAP_HTTP=$BOOT_CODE"
           cat /tmp/ovh-bootstrap.json
           test "$BOOT_CODE" = "202"
