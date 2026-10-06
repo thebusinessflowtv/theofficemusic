@@ -1235,17 +1235,26 @@ def repair_gta_runtime():
     run(["docker","cp",str(OVH/"app"/"visual_engine.py"),f"{container}:/app/visual_engine.py"],timeout=30)
     run(["docker","cp",str(OVH/"app"/"audio_engine.py"),f"{container}:/app/audio_engine.py"],timeout=30)
 
-    # Restart only the GTA StreamCore parent. The OVH agent's local watchdog
-    # respawns it from the refreshed files using the existing ingest secret,
-    # playlist and desired visual.
-    run([
+    # Restart only the GTA StreamCore parent. Resolve it from the live FFmpeg
+    # encoder PID instead of matching a command string, which can miss the
+    # process inside the container.
+    old_pid=(before.get("health") or {}).get("encoder_pid")
+    if not old_pid:
+        raise RuntimeError(f"GTA encoder PID unavailable before repair: {before.get('health')}")
+    parent_text=run([
         "docker","exec",container,"sh","-lc",
-        "pkill -TERM -f 'stream_core.py --platform youtube-gta-vi' || true"
-    ],timeout=20)
+        f"ps -o ppid= -p {int(old_pid)} | tr -d ' '"
+    ],timeout=20).strip()
+    try:
+        stream_core_pid=int(parent_text.splitlines()[-1])
+    except Exception:
+        raise RuntimeError(f"Could not resolve GTA StreamCore parent from encoder {old_pid}: {parent_text}")
+    if stream_core_pid<=1:
+        raise RuntimeError(f"Unsafe GTA StreamCore PID resolved: {stream_core_pid}")
+    run(["docker","exec",container,"kill","-TERM",str(stream_core_pid)],timeout=20)
 
     end=time.time()+120
     last={}
-    old_pid=(before.get("health") or {}).get("encoder_pid")
     while time.time()<end:
         last=health(slot)
         if (
