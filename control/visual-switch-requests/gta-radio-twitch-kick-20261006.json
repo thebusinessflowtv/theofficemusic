@@ -1,0 +1,18 @@
+{
+  "id": "gta-radio-visual-20261006-a",
+  "mode": "hot_swap_only",
+  "runtime_slots": [
+    "twitch",
+    "kick"
+  ],
+  "asset_title": "VÍDEO RADIO GTA VI",
+  "requested_at": "2026-10-06T00:40:00Z",
+  "source": "mediaforge-visual-switch",
+  "requirements": {
+    "preserve_encoder_pid": true,
+    "preserve_generation": true,
+    "preserve_restart_counter": true,
+    "publisher_container_restart": false,
+    "rtmp_restart": false
+  }
+}
