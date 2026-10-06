@@ -394,26 +394,77 @@ class StreamCore:
                     self.target(),
                 ]
         else:
-            youtube_av = common + [
-                "-map",
-                "0:v:0",
-                "-map",
-                "1:a:0",
-                "-c:v",
-                "copy",
-                "-tag:v",
-                "7",
-                "-c:a",
-                "aac",
-                "-b:a",
-                f"{self.abitrate}k",
-                "-ar",
-                "48000",
-                "-ac",
-                "2",
-                "-max_interleave_delta",
-                "1000000",
-            ]
+            if self.platform == "youtube-gta-vi":
+                # GTA VI receives its visual through a local MPEG-TS/UDP hot-swap
+                # feed. Re-encode at the final publisher boundary so transient
+                # packet loss or late SPS/PPS on the internal feed can never leak
+                # into the FLV/RTMP stream sent to YouTube.
+                youtube_av = common + [
+                    "-filter_complex",
+                    f"[0:v]setpts=PTS-STARTPTS,fps={self.fps},format=yuv420p[v];"
+                    "[1:a]asetpts=N/SR/TB,aresample=async=1000:min_hard_comp=0.100:first_pts=0[a]",
+                    "-map",
+                    "[v]",
+                    "-map",
+                    "[a]",
+                    "-c:v",
+                    "libx264",
+                    "-preset",
+                    self.vpreset,
+                    "-tune",
+                    "zerolatency",
+                    "-profile:v",
+                    self.vprofile,
+                    "-bf",
+                    "0",
+                    "-b:v",
+                    f"{self.vbitrate}k",
+                    "-minrate",
+                    f"{self.vbitrate}k",
+                    "-maxrate",
+                    f"{self.vbitrate}k",
+                    "-bufsize",
+                    f"{self.bufsize}k",
+                    "-g",
+                    str(self.fps * 2),
+                    "-keyint_min",
+                    str(self.fps * 2),
+                    "-sc_threshold",
+                    "0",
+                    "-x264-params",
+                    "nal-hrd=cbr:force-cfr=1:repeat-headers=1",
+                    "-c:a",
+                    "aac",
+                    "-b:a",
+                    f"{self.abitrate}k",
+                    "-ar",
+                    "48000",
+                    "-ac",
+                    "2",
+                    "-max_interleave_delta",
+                    "1000000",
+                ]
+            else:
+                youtube_av = common + [
+                    "-map",
+                    "0:v:0",
+                    "-map",
+                    "1:a:0",
+                    "-c:v",
+                    "copy",
+                    "-tag:v",
+                    "7",
+                    "-c:a",
+                    "aac",
+                    "-b:a",
+                    f"{self.abitrate}k",
+                    "-ar",
+                    "48000",
+                    "-ac",
+                    "2",
+                    "-max_interleave_delta",
+                    "1000000",
+                ]
             if self.platform == "youtube-ui-test":
                 # Test slot: use the same simple direct FLV transport already
                 # proven by the production GitHub YouTube encoder. This makes
