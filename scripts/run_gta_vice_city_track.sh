@@ -186,10 +186,16 @@ MP3_NAME="peter-lofi-gta-vice-city-r2-$PAD.mp3"
 mv build/approved.mp3 "build/$MP3_NAME"
 TAG="peter-lofi-gta-vice-city-r2-$PAD-$GITHUB_RUN_ID"
 
-gh release create "$TAG" "build/$MP3_NAME" build/qc.json build/diversity.json build/reference_profile.json \
-  --repo "$GITHUB_REPOSITORY" --target main \
-  --title "GTA VI - Vice City R2 — Track $PAD" \
-  --notes "Revision 2. Original 5-minute Vice City track with mandatory structural variation. Passed technical QC and cross-track audio diversity gate."
+if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+  echo "Release $TAG already exists; refreshing assets instead of failing the queue."
+  gh release upload "$TAG" "build/$MP3_NAME" build/qc.json build/diversity.json build/reference_profile.json \
+    --repo "$GITHUB_REPOSITORY" --clobber
+else
+  gh release create "$TAG" "build/$MP3_NAME" build/qc.json build/diversity.json build/reference_profile.json \
+    --repo "$GITHUB_REPOSITORY" --target main \
+    --title "GTA VI - Vice City R2 — Track $PAD" \
+    --notes "Revision 2. Original 5-minute Vice City track with mandatory structural variation. Passed technical QC and cross-track audio diversity gate."
+fi
 
 export RELEASE_TAG="$TAG"
 export MP3_NAME="$MP3_NAME"
