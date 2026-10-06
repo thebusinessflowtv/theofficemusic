@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-06T14:09:20.771520+00:00",
+  "updated_at": "2026-10-06T14:10:22.447587+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3226,8 +3226,8 @@
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 44,
-      "total_duration_seconds": 13200,
+      "track_count": 45,
+      "total_duration_seconds": 13500,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3686,6 +3686,18 @@
           "reference_title": "Love Is A Long Road",
           "quality_gate": "technical_and_diversity_checks_passed",
           "target_bpm": 112
+        },
+        {
+          "id": "gta-vice-city-extra-20261005-45",
+          "title": "Atlantic Roadline",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-extra15-045-recovered-37416684072/peter-lofi-gta-extra15-045.mp3",
+          "duration_seconds": 300,
+          "position": 50,
+          "source": "gta-vi-extra-15",
+          "family": "long-road-family",
+          "reference_title": "Love Is A Long Road",
+          "quality_gate": "technical_and_diversity_checks_passed",
+          "target_bpm": 114
         }
       ],
       "planned_duration_seconds": 16500,
