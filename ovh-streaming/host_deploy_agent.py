@@ -1242,8 +1242,8 @@ def repair_gta_runtime():
     if not old_pid:
         raise RuntimeError(f"GTA encoder PID unavailable before repair: {before.get('health')}")
     parent_text=run([
-        "docker","exec",container,"sh","-lc",
-        f"ps -o ppid= -p {int(old_pid)} | tr -d ' '"
+        "docker","exec",container,"python","-c",
+        f"import pathlib; s=pathlib.Path('/proc/{int(old_pid)}/stat').read_text().split(); print(s[3])"
     ],timeout=20).strip()
     try:
         stream_core_pid=int(parent_text.splitlines()[-1])
