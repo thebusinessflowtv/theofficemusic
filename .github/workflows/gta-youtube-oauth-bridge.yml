@@ -283,31 +283,21 @@ jobs:
         run: |
           set -euo pipefail
           SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=15"
+          REMOTE_TMP="/tmp/gta-ovh-command-$SESSION_ID.json"
+          REMOTE_DST="/home/ubuntu/theofficemusic/ovh-streaming/state/agent/local-inbox/gta-youtube-start-$SESSION_ID.json"
+
           if [ "$OVH_AUTH_MODE" = "key" ]; then
-            SSH_CMD=(ssh $SSH_OPTS -i ~/.ssh/id_ovh "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED")
+            scp $SSH_OPTS -i ~/.ssh/id_ovh /tmp/gta-ovh-command.json "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED:$REMOTE_TMP"
+            ssh $SSH_OPTS -i ~/.ssh/id_ovh "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED" \
+              "sudo mkdir -p /home/ubuntu/theofficemusic/ovh-streaming/state/agent/local-inbox && sudo install -m 600 '$REMOTE_TMP' '$REMOTE_DST' && rm -f '$REMOTE_TMP'"
           else
-            SSH_CMD=(sshpass -p "$OVH_PASSWORD_RESOLVED" ssh $SSH_OPTS "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED")
+            sshpass -p "$OVH_PASSWORD_RESOLVED" scp $SSH_OPTS /tmp/gta-ovh-command.json "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED:$REMOTE_TMP"
+            sshpass -p "$OVH_PASSWORD_RESOLVED" ssh $SSH_OPTS "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED" \
+              "sudo mkdir -p /home/ubuntu/theofficemusic/ovh-streaming/state/agent/local-inbox && sudo install -m 600 '$REMOTE_TMP' '$REMOTE_DST' && rm -f '$REMOTE_TMP'"
           fi
 
-          cat /tmp/gta-ovh-command.json | "${SSH_CMD[@]}" 'sudo python3 -c '"'"'
-import json,pathlib,sys,time
-cmd=json.load(sys.stdin)
-if str(cmd.get("action") or "")!="start":
-    raise SystemExit("invalid action")
-if str(cmd.get("runtime_slot") or "")!="youtube-gta-vi":
-    raise SystemExit("invalid runtime slot")
-root=pathlib.Path("/home/ubuntu/theofficemusic/ovh-streaming/state/agent/local-inbox")
-root.mkdir(parents=True,exist_ok=True)
-cid="gta-youtube-start-"+str(cmd.get("session_id") or int(time.time()))
-safe="".join(ch for ch in cid if ch.isalnum() or ch in "-_")[:120]
-tmp=root/(safe+".tmp")
-dst=root/(safe+".json")
-tmp.write_text(json.dumps(cmd,separators=(",",":")),encoding="utf-8")
-tmp.chmod(0o600)
-tmp.replace(dst)
-print("GTA_OVH_COMMAND_QUEUED")
-'"'"''
           rm -f /tmp/gta-ovh-command.json
+          echo "GTA_OVH_COMMAND_QUEUED"
 
       - name: Publish sanitized YouTube state
         shell: bash
