@@ -1,0 +1,189 @@
+name: Peter Lofi — SEO Metadata Refresh (Public Non-Live Only)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'control/peterlofi-youtube-metadata-update/*.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: peterlofi-youtube-metadata-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      EXPECTED_CHANNEL_ID: UCxO4Cl7xCdcTsWkmxD_6Wfg
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Resolve metadata plan
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if git cat-file -e "${BEFORE_SHA}^{commit}" 2>/dev/null; then
+            CHANGED="$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA")"
+          else
+            CHANGED="$(git diff-tree --no-commit-id --name-only -r "$AFTER_SHA")"
+          fi
+          FILE="$(printf '%s\n' "$CHANGED" | grep -E '^control/peterlofi-youtube-metadata-update/[^/]+\.json$' | tail -1)"
+          test -s "$FILE"
+          jq -e '.scope=="public_non_live_only" and .live_streams_must_not_be_modified==true and (.updates|length>0)' "$FILE" >/dev/null
+          echo "PLAN_FILE=$FILE" >> "$GITHUB_ENV"
+
+      - name: Update titles and descriptions only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p control/peterlofi-youtube-metadata-results
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          plan=json.loads(Path(os.environ['PLAN_FILE']).read_text(encoding='utf-8'))
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube'],
+          )
+          creds.refresh(Request())
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+
+          channels=yt.channels().list(part='id,snippet',mine=True,maxResults=1).execute().get('items') or []
+          if not channels:
+              raise SystemExit('No authenticated YouTube channel')
+          ch=channels[0]
+          actual=str(ch['id'])
+          channel_title=str((ch.get('snippet') or {}).get('title') or '')
+          if actual != os.environ['EXPECTED_CHANNEL_ID'] or 'peter' not in channel_title.lower():
+              raise SystemExit(f'SAFETY BLOCK: authenticated channel is {channel_title} ({actual}), not Peter Lofi')
+
+          updates=plan['updates']
+          ids=[str(x['video_id']) for x in updates]
+          if len(ids) != len(set(ids)):
+              raise SystemExit('Duplicate video id in metadata plan')
+
+          # Preflight every target BEFORE making any write.
+          preflight={}
+          for i in range(0,len(ids),50):
+              resp=yt.videos().list(
+                  part='snippet,status,contentDetails,liveStreamingDetails',
+                  id=','.join(ids[i:i+50])
+              ).execute()
+              for v in (resp.get('items') or []):
+                  preflight[v['id']]=v
+
+          if set(preflight) != set(ids):
+              raise SystemExit('SAFETY BLOCK: one or more target videos were not found')
+
+          for item in updates:
+              vid=str(item['video_id'])
+              v=preflight[vid]
+              sn=v.get('snippet') or {}
+              st=v.get('status') or {}
+              if str(sn.get('channelId') or '') != actual:
+                  raise SystemExit(f'SAFETY BLOCK: {vid} belongs to another channel')
+              if st.get('privacyStatus') != 'public':
+                  raise SystemExit(f'SAFETY BLOCK: {vid} is not public')
+              if 'liveStreamingDetails' in v:
+                  raise SystemExit(f'SAFETY BLOCK: {vid} is/was a livestream')
+              if sn.get('liveBroadcastContent') in ('live','upcoming'):
+                  raise SystemExit(f'SAFETY BLOCK: {vid} is live/upcoming')
+              title=str(item.get('title') or '').strip()
+              description=str(item.get('description') or '').strip()
+              if not title or len(title) > 100:
+                  raise SystemExit(f'Invalid title length for {vid}: {len(title)}')
+              if not description or len(description) > 5000:
+                  raise SystemExit(f'Invalid description length for {vid}: {len(description)}')
+
+          results=[]
+          allowed=('tags','categoryId','defaultLanguage','defaultAudioLanguage')
+          for item in updates:
+              vid=str(item['video_id'])
+              before=preflight[vid]
+              old=before.get('snippet') or {}
+              snippet={
+                  'title':str(item['title']).strip(),
+                  'description':str(item['description']).strip(),
+              }
+              for key in allowed:
+                  if old.get(key) is not None:
+                      snippet[key]=old[key]
+
+              yt.videos().update(
+                  part='snippet',
+                  body={'id':vid,'snippet':snippet}
+              ).execute()
+
+              verify=(yt.videos().list(part='snippet,status,liveStreamingDetails',id=vid).execute().get('items') or [None])[0]
+              if not verify:
+                  raise SystemExit(f'Could not verify {vid}')
+              vs=verify.get('snippet') or {}
+              if vs.get('title') != snippet['title'] or vs.get('description') != snippet['description']:
+                  raise SystemExit(f'Verification mismatch for {vid}')
+              if (verify.get('status') or {}).get('privacyStatus') != 'public' or 'liveStreamingDetails' in verify:
+                  raise SystemExit(f'SAFETY BLOCK after update for {vid}')
+              results.append({
+                  'video_id':vid,
+                  'before_title':old.get('title'),
+                  'after_title':vs.get('title'),
+                  'description_updated':True,
+                  'privacy_status':(verify.get('status') or {}).get('privacyStatus'),
+                  'category_id_preserved':vs.get('categoryId'),
+                  'tags_preserved':vs.get('tags') or [],
+              })
+
+          stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+          result={
+              'channel_id':actual,
+              'channel_title':channel_title,
+              'scope':'public_non_live_only',
+              'live_streams_modified':False,
+              'updated_count':len(results),
+              'completed_at':datetime.now(timezone.utc).isoformat(),
+              'updates':results,
+          }
+          out=Path(f'control/peterlofi-youtube-metadata-results/{stamp}.json')
+          out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          Path('/tmp/result_path').write_text(str(out),encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Persist verification result
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESULT_PATH="$(cat /tmp/result_path)"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$RESULT_PATH"
+          git commit -m "youtube: verify Peter Lofi SEO metadata refresh"
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((N*2))
+          done
+          exit 1
