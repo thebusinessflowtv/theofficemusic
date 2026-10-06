@@ -56,6 +56,7 @@ class StreamCore:
         self.audio_feeder = None
         self.visual_feeder = None
         self.audio_fd = None
+        self.video_fd = None
         self.ffmpeg_log = None
         self.running = True
         self.restarts = 0
@@ -145,6 +146,19 @@ class StreamCore:
             self.audio_fd = os.open(fifo, os.O_RDWR)
         return fifo
 
+    def ensure_video_fifo(self):
+        fifo = self.state / "video.ts"
+        if fifo.exists() and not fifo.is_fifo():
+            fifo.unlink()
+        if not fifo.exists():
+            os.mkfifo(fifo)
+        if self.video_fd is None:
+            # Keep one RDWR descriptor open so visual hot-swaps never deliver EOF
+            # to the persistent publisher. A new visual sender can attach to the
+            # same pipe without dropping the RTMP session.
+            self.video_fd = os.open(fifo, os.O_RDWR)
+        return fifo
+
     def stop_proc(self, proc, timeout=1.5):
         if not proc or proc.poll() is not None:
             return
@@ -186,6 +200,12 @@ class StreamCore:
             except Exception:
                 pass
             self.audio_fd = None
+        if self.video_fd is not None:
+            try:
+                os.close(self.video_fd)
+            except Exception:
+                pass
+            self.video_fd = None
 
     def start_audio(self):
         fifo = self.ensure_audio_fifo()
@@ -210,6 +230,8 @@ class StreamCore:
     def start_visual(self):
         if self.visual_feeder and self.visual_feeder.poll() is None:
             return
+        if self.platform == "youtube-gta-vi":
+            self.ensure_video_fifo()
         self.visual_feeder = subprocess.Popen(
             [
                 sys.executable,
