@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-06T14:14:34.633995+00:00",
+  "updated_at": "2026-10-06T14:15:39.055734+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3226,8 +3226,8 @@
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 49,
-      "total_duration_seconds": 14700,
+      "track_count": 50,
+      "total_duration_seconds": 15000,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3746,6 +3746,18 @@
           "reference_title": "Se Me Nota (Agarrame)",
           "quality_gate": "technical_and_diversity_checks_passed",
           "target_bpm": 127
+        },
+        {
+          "id": "gta-vice-city-extra-20261005-50",
+          "title": "Biscayne Bounce",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-extra15-050-recovered-37416684072/peter-lofi-gta-extra15-050.mp3",
+          "duration_seconds": 300,
+          "position": 55,
+          "source": "gta-vi-extra-15",
+          "family": "se-me-nota-family",
+          "reference_title": "Se Me Nota (Agarrame)",
+          "quality_gate": "technical_and_diversity_checks_passed",
+          "target_bpm": 129
         }
       ],
       "planned_duration_seconds": 16500,
