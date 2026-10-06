@@ -2,7 +2,7 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-06T04:20:42.458866+00:00",
+  "generated_at": "2026-10-06T05:19:24.795117+00:00",
   "playlist_count": 5,
   "playlists": [
     {
@@ -10,7 +10,7 @@
       "title": "Late Night Lofi 🌙 | Peter Lofi",
       "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
       "thumbnail_url": "https://i.ytimg.com/vi/2nyGIYs7ixA/mqdefault_live.jpg",
-      "item_count": 1,
+      "item_count": 2,
       "privacy_status": "public",
       "items": [
         {
@@ -19,6 +19,14 @@
           "title": "[24/7] Deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
           "position": 0,
           "thumbnail_url": "https://i.ytimg.com/vi/2nyGIYs7ixA/mqdefault_live.jpg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExiSzRqTGRYc2RlNC4yODlGNEE0NkRGMEEzMEQy",
+          "video_id": "_XpJTdzUoHE",
+          "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA 6 Music & Night Drive Vibes | Peter Lofi 🎧",
+          "position": 1,
+          "thumbnail_url": "https://i.ytimg.com/vi/_XpJTdzUoHE/mqdefault_live.jpg",
           "privacy_status": "public"
         }
       ]
@@ -86,7 +94,7 @@
           "video_id": "u-Ocp29k1_0",
           "title": "1 hour lofi for work 💻 beats for focus & productivity | Peter Lofi",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CPDtkdYG&rs=AOn4CLAzhzVKY95DHfs6n7CaGjp5w3RZ1A",
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CNSHktYG&rs=AOn4CLAYffzi93_xFch94KCaI5M3ChXaig",
           "privacy_status": "private"
         }
       ]
@@ -126,7 +134,7 @@
         {
           "playlist_item_id": "UExjUlRDWlNYWTIxdy5DRUQwODMxQzUyRTlGRkY3",
           "video_id": "tsBeo7eejPI",
-          "title": "gaming lofi 🎮 3 hours of chill beats to play, focus & code | Peter Lofi 🎧",
+          "title": "gaming lofi 🎮 3 hours of chill beats to play, focus & code | Peter Lofi",
           "position": 3,
           "thumbnail_url": "https://i.ytimg.com/vi/tsBeo7eejPI/mqdefault.jpg",
           "privacy_status": "public"
