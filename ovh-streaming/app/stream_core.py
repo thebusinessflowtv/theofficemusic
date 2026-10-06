@@ -292,10 +292,16 @@ class StreamCore:
         fifo = self.ensure_audio_fifo()
         self.wait_visual_ready()
         self.wait_audio_ready()
-        video_input = (
-            f"udp://127.0.0.1:{self.video_udp_port}"
-            "?fifo_size=1000000&overrun_nonfatal=1"
-        )
+        if self.platform == "youtube-gta-vi":
+            video_input = str(self.ensure_video_fifo())
+            video_input_args = ["-f", "mpegts", "-i", video_input]
+        else:
+            video_input = (
+                f"udp://127.0.0.1:{self.video_udp_port}"
+                "?fifo_size=1000000&overrun_nonfatal=1"
+            )
+            video_input_args = ["-i", video_input]
+
         common = [
             "ffmpeg",
             "-hide_banner",
@@ -314,8 +320,7 @@ class StreamCore:
             "3000000",
             "-probesize",
             "8000000",
-            "-i",
-            video_input,
+            *video_input_args,
             "-thread_queue_size",
             "8192",
             "-f",
