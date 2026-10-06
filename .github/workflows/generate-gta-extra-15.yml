@@ -1,6 +1,11 @@
 name: Peter Lofi — GTA VI - Vice City Extra 15
 
 'on':
+  push:
+    branches:
+      - main
+    paths:
+      - control/gta-vi-extra-15/restart.json
   workflow_run:
     workflows:
       - Peter Lofi — GTA VI Vice City Live Queue
