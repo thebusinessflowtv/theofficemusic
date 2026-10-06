@@ -4,7 +4,7 @@
   "track": {
     "id": "gta-vice-city-extra-20261005-37",
     "title": "Midnight Current",
-    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-extra15-037-recovered-37416684072/peter-lofi-gta-extra15-037.mp3",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-extra15-037-37474386527/peter-lofi-gta-extra15-037.mp3",
     "duration_seconds": 300,
     "position": 42,
     "source": "gta-vi-extra-15",
@@ -16,10 +16,10 @@
   "delivery": "pending_ovh_credentials",
   "quality_gate": {
     "approved": true,
-    "checked_at": "2026-10-06T14:00:57.869580Z",
+    "checked_at": "2026-10-06T14:08:06.093497Z",
     "reference_index": 37,
     "attempt": null,
-    "source_wav_sha256": "f21bb89a1f5b4fd2d72962eac02682cece10deca43c50542fd226cfe69063d33",
+    "source_wav_sha256": "2cbb5de972aa8a1ec560555cf347bdafa7ab82df340531b075f84bb6f02f48d5",
     "audio": {
       "duration": 300.0,
       "size": 52920078,
@@ -29,13 +29,13 @@
       "codec": "pcm_s16le"
     },
     "loudness": {
-      "integrated_lufs": -16.52,
+      "integrated_lufs": -17.5,
       "true_peak_db": -2.99,
-      "lra": 14.6,
-      "threshold_lufs": -27.64
+      "lra": 8.0,
+      "threshold_lufs": -27.75
     },
-    "silence_seconds": 20.174,
-    "silence_ratio": 0.067248,
+    "silence_seconds": 6.515,
+    "silence_ratio": 0.021715,
     "checks": {
       "duration_5min": true,
       "stereo": true,
@@ -69,297 +69,345 @@
   "diversity_gate": {
     "approved": true,
     "rule": "Reject if first-45s spectral/envelope/rhythm signatures are excessively close to any already-approved playlist track.",
-    "compared_against": 36,
+    "compared_against": 42,
     "comparisons": [
       {
         "id": "gta-vice-city-20261005-01",
         "title": "Ocean Drive Heat",
-        "intro_spectral_similarity": 0.807673,
-        "intro_envelope_correlation": 0.214294,
-        "rhythm_signature_correlation": 0.207086,
+        "intro_spectral_similarity": 0.831678,
+        "intro_envelope_correlation": 0.042605,
+        "rhythm_signature_correlation": 0.175479,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-02",
         "title": "Neon Palm Circuit",
-        "intro_spectral_similarity": 0.530136,
-        "intro_envelope_correlation": 0.371743,
-        "rhythm_signature_correlation": 0.262026,
+        "intro_spectral_similarity": 0.484769,
+        "intro_envelope_correlation": 0.131312,
+        "rhythm_signature_correlation": 0.203775,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-03",
         "title": "Midnight Causeway",
-        "intro_spectral_similarity": 0.746357,
-        "intro_envelope_correlation": 0.127892,
-        "rhythm_signature_correlation": 0.571698,
+        "intro_spectral_similarity": 0.745045,
+        "intro_envelope_correlation": -0.028462,
+        "rhythm_signature_correlation": 0.554012,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-04",
         "title": "Sunset Motel",
-        "intro_spectral_similarity": 0.789196,
-        "intro_envelope_correlation": -0.026002,
-        "rhythm_signature_correlation": 0.143763,
+        "intro_spectral_similarity": 0.845134,
+        "intro_envelope_correlation": 0.016687,
+        "rhythm_signature_correlation": 0.187788,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-05",
         "title": "Vice Afterglow",
-        "intro_spectral_similarity": 0.785464,
-        "intro_envelope_correlation": 0.27452,
-        "rhythm_signature_correlation": 0.228008,
+        "intro_spectral_similarity": 0.757211,
+        "intro_envelope_correlation": -0.057236,
+        "rhythm_signature_correlation": 0.251637,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-06",
         "title": "Coastal Static",
-        "intro_spectral_similarity": 0.843897,
-        "intro_envelope_correlation": 0.073958,
-        "rhythm_signature_correlation": 0.825664,
+        "intro_spectral_similarity": 0.821967,
+        "intro_envelope_correlation": -0.168527,
+        "rhythm_signature_correlation": 0.831897,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-07",
         "title": "Pink Horizon",
-        "intro_spectral_similarity": 0.716734,
-        "intro_envelope_correlation": 0.040412,
-        "rhythm_signature_correlation": 0.125297,
+        "intro_spectral_similarity": 0.770752,
+        "intro_envelope_correlation": -0.007614,
+        "rhythm_signature_correlation": 0.091604,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-08",
         "title": "Night Cruise FM",
-        "intro_spectral_similarity": 0.721322,
-        "intro_envelope_correlation": 0.148598,
-        "rhythm_signature_correlation": 0.202857,
+        "intro_spectral_similarity": 0.811624,
+        "intro_envelope_correlation": -0.003958,
+        "rhythm_signature_correlation": 0.168055,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-09",
         "title": "Electric Marina",
-        "intro_spectral_similarity": 0.585175,
-        "intro_envelope_correlation": 0.003762,
-        "rhythm_signature_correlation": 0.679853,
+        "intro_spectral_similarity": 0.585933,
+        "intro_envelope_correlation": 0.178125,
+        "rhythm_signature_correlation": 0.608642,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-10",
         "title": "South Beach Signal",
-        "intro_spectral_similarity": 0.706221,
-        "intro_envelope_correlation": 0.129879,
-        "rhythm_signature_correlation": 0.140659,
+        "intro_spectral_similarity": 0.715694,
+        "intro_envelope_correlation": 0.089439,
+        "rhythm_signature_correlation": 0.148717,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-11",
         "title": "Chrome Palms",
-        "intro_spectral_similarity": 0.651725,
-        "intro_envelope_correlation": 0.26933,
-        "rhythm_signature_correlation": 0.12975,
+        "intro_spectral_similarity": 0.585784,
+        "intro_envelope_correlation": 0.1172,
+        "rhythm_signature_correlation": 0.103034,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-12",
         "title": "Bayfront Motion",
-        "intro_spectral_similarity": 0.792302,
-        "intro_envelope_correlation": -0.073598,
-        "rhythm_signature_correlation": 0.326099,
+        "intro_spectral_similarity": 0.809433,
+        "intro_envelope_correlation": -0.102492,
+        "rhythm_signature_correlation": 0.157317,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-13",
         "title": "Heatwave Boulevard",
-        "intro_spectral_similarity": 0.781497,
-        "intro_envelope_correlation": 0.124971,
-        "rhythm_signature_correlation": 0.480563,
+        "intro_spectral_similarity": 0.864673,
+        "intro_envelope_correlation": 0.224793,
+        "rhythm_signature_correlation": 0.375685,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-14",
         "title": "Afterdark Skyline",
-        "intro_spectral_similarity": 0.718684,
-        "intro_envelope_correlation": 0.334428,
-        "rhythm_signature_correlation": 0.209095,
+        "intro_spectral_similarity": 0.677459,
+        "intro_envelope_correlation": 0.198074,
+        "rhythm_signature_correlation": 0.222923,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-15",
         "title": "Turbo Sunset",
-        "intro_spectral_similarity": 0.793651,
-        "intro_envelope_correlation": -0.046101,
-        "rhythm_signature_correlation": 0.149847,
+        "intro_spectral_similarity": 0.807825,
+        "intro_envelope_correlation": -0.027789,
+        "rhythm_signature_correlation": 0.146519,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-16",
         "title": "Glass Highway",
-        "intro_spectral_similarity": 0.63965,
-        "intro_envelope_correlation": 0.397472,
-        "rhythm_signature_correlation": 0.652826,
+        "intro_spectral_similarity": 0.624589,
+        "intro_envelope_correlation": 0.229466,
+        "rhythm_signature_correlation": 0.661414,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-17",
         "title": "Neon Flamingo",
-        "intro_spectral_similarity": 0.787388,
-        "intro_envelope_correlation": 0.024524,
-        "rhythm_signature_correlation": 0.238477,
+        "intro_spectral_similarity": 0.79953,
+        "intro_envelope_correlation": 0.03734,
+        "rhythm_signature_correlation": 0.233797,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-18",
         "title": "Moonlit Causeway",
-        "intro_spectral_similarity": 0.742614,
-        "intro_envelope_correlation": 0.45024,
-        "rhythm_signature_correlation": 0.23941,
+        "intro_spectral_similarity": 0.694546,
+        "intro_envelope_correlation": 0.2176,
+        "rhythm_signature_correlation": 0.251645,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-19",
         "title": "Palmline Pulse",
-        "intro_spectral_similarity": 0.63346,
-        "intro_envelope_correlation": -0.032256,
-        "rhythm_signature_correlation": 0.819027,
+        "intro_spectral_similarity": 0.613481,
+        "intro_envelope_correlation": 0.010175,
+        "rhythm_signature_correlation": 0.843792,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-20",
         "title": "Golden Overpass",
-        "intro_spectral_similarity": 0.745125,
-        "intro_envelope_correlation": -0.044533,
-        "rhythm_signature_correlation": 0.159162,
+        "intro_spectral_similarity": 0.762092,
+        "intro_envelope_correlation": 0.043684,
+        "rhythm_signature_correlation": 0.149058,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-21",
         "title": "Electric Coastline",
-        "intro_spectral_similarity": 0.785275,
-        "intro_envelope_correlation": -0.007389,
-        "rhythm_signature_correlation": 0.172557,
+        "intro_spectral_similarity": 0.810281,
+        "intro_envelope_correlation": 0.029314,
+        "rhythm_signature_correlation": 0.159928,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-22",
         "title": "Midnight Convertible",
-        "intro_spectral_similarity": 0.739098,
-        "intro_envelope_correlation": 0.201528,
-        "rhythm_signature_correlation": 0.558282,
+        "intro_spectral_similarity": 0.717747,
+        "intro_envelope_correlation": 0.006524,
+        "rhythm_signature_correlation": 0.402343,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-23",
         "title": "Velvet Asphalt",
-        "intro_spectral_similarity": 0.809656,
-        "intro_envelope_correlation": -0.007739,
-        "rhythm_signature_correlation": 0.096601,
+        "intro_spectral_similarity": 0.806905,
+        "intro_envelope_correlation": 0.014334,
+        "rhythm_signature_correlation": 0.125826,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-24",
         "title": "Ocean Neon",
-        "intro_spectral_similarity": 0.8391,
-        "intro_envelope_correlation": 0.208418,
-        "rhythm_signature_correlation": 0.234186,
+        "intro_spectral_similarity": 0.853941,
+        "intro_envelope_correlation": 0.125102,
+        "rhythm_signature_correlation": 0.224843,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-25",
         "title": "City Heatline",
-        "intro_spectral_similarity": 0.788307,
-        "intro_envelope_correlation": 0.202244,
-        "rhythm_signature_correlation": 0.332519,
+        "intro_spectral_similarity": 0.754253,
+        "intro_envelope_correlation": 0.212054,
+        "rhythm_signature_correlation": 0.290067,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-26",
         "title": "Nightwave District",
-        "intro_spectral_similarity": 0.718088,
-        "intro_envelope_correlation": -0.0601,
-        "rhythm_signature_correlation": 0.58164,
+        "intro_spectral_similarity": 0.694679,
+        "intro_envelope_correlation": -0.104102,
+        "rhythm_signature_correlation": 0.566624,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-27",
         "title": "Sunset Frequency",
-        "intro_spectral_similarity": 0.672359,
-        "intro_envelope_correlation": 0.23718,
-        "rhythm_signature_correlation": 0.162725,
+        "intro_spectral_similarity": 0.67681,
+        "intro_envelope_correlation": 0.064874,
+        "rhythm_signature_correlation": 0.160969,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-28",
         "title": "Coastal Voltage",
-        "intro_spectral_similarity": 0.748674,
-        "intro_envelope_correlation": 0.276177,
-        "rhythm_signature_correlation": 0.219648,
+        "intro_spectral_similarity": 0.776894,
+        "intro_envelope_correlation": 0.120168,
+        "rhythm_signature_correlation": 0.216485,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-29",
         "title": "Palm Shadow Drive",
-        "intro_spectral_similarity": 0.786566,
-        "intro_envelope_correlation": 0.244069,
-        "rhythm_signature_correlation": 0.879394,
+        "intro_spectral_similarity": 0.792314,
+        "intro_envelope_correlation": 0.239835,
+        "rhythm_signature_correlation": 0.938535,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-30",
         "title": "Neon Motel",
-        "intro_spectral_similarity": 0.810906,
-        "intro_envelope_correlation": 0.065978,
-        "rhythm_signature_correlation": 0.141383,
+        "intro_spectral_similarity": 0.866835,
+        "intro_envelope_correlation": -0.022724,
+        "rhythm_signature_correlation": 0.104133,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-31",
         "title": "Mirage Avenue",
-        "intro_spectral_similarity": 0.799055,
-        "intro_envelope_correlation": 0.015168,
-        "rhythm_signature_correlation": 0.162017,
+        "intro_spectral_similarity": 0.815216,
+        "intro_envelope_correlation": 0.098765,
+        "rhythm_signature_correlation": 0.126387,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-32",
         "title": "Heat Signature",
-        "intro_spectral_similarity": 0.649142,
-        "intro_envelope_correlation": 0.256292,
-        "rhythm_signature_correlation": 0.779224,
+        "intro_spectral_similarity": 0.557992,
+        "intro_envelope_correlation": 0.116671,
+        "rhythm_signature_correlation": 0.789832,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-33",
         "title": "Blue Hour Boulevard",
-        "intro_spectral_similarity": 0.738108,
-        "intro_envelope_correlation": 0.004842,
-        "rhythm_signature_correlation": 0.132402,
+        "intro_spectral_similarity": 0.792987,
+        "intro_envelope_correlation": -0.037422,
+        "rhythm_signature_correlation": 0.165162,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-34",
         "title": "Afterhours Coast",
-        "intro_spectral_similarity": 0.729208,
-        "intro_envelope_correlation": 0.069381,
-        "rhythm_signature_correlation": 0.182625,
+        "intro_spectral_similarity": 0.748656,
+        "intro_envelope_correlation": 0.103837,
+        "rhythm_signature_correlation": 0.144886,
         "too_close": false
       },
       {
         "id": "gta-vice-city-20261005-35",
         "title": "Vice City Lights",
-        "intro_spectral_similarity": 0.685952,
-        "intro_envelope_correlation": 0.092927,
-        "rhythm_signature_correlation": 0.320118,
+        "intro_spectral_similarity": 0.643911,
+        "intro_envelope_correlation": -0.045864,
+        "rhythm_signature_correlation": 0.14811,
         "too_close": false
       },
       {
         "id": "gta-vice-city-extra-20261005-36",
         "title": "Afterglow Motion",
-        "intro_spectral_similarity": 0.752736,
-        "intro_envelope_correlation": 0.102104,
-        "rhythm_signature_correlation": 0.793764,
+        "intro_spectral_similarity": 0.766798,
+        "intro_envelope_correlation": -0.076825,
+        "rhythm_signature_correlation": 0.82055,
+        "too_close": false
+      },
+      {
+        "id": "gta-vice-city-extra-20261005-37",
+        "title": "Midnight Current",
+        "intro_spectral_similarity": 0.83247,
+        "intro_envelope_correlation": 0.352837,
+        "rhythm_signature_correlation": 0.924966,
+        "too_close": false
+      },
+      {
+        "id": "gta-vice-city-extra-20261005-38",
+        "title": "Glass Horizon",
+        "intro_spectral_similarity": 0.564734,
+        "intro_envelope_correlation": 0.315562,
+        "rhythm_signature_correlation": 0.681535,
+        "too_close": false
+      },
+      {
+        "id": "gta-vice-city-extra-20261005-39",
+        "title": "Electric Dusk",
+        "intro_spectral_similarity": 0.625451,
+        "intro_envelope_correlation": 0.405229,
+        "rhythm_signature_correlation": 0.556969,
+        "too_close": false
+      },
+      {
+        "id": "gta-vice-city-extra-20261005-40",
+        "title": "Neon Undertow",
+        "intro_spectral_similarity": 0.795826,
+        "intro_envelope_correlation": 0.178225,
+        "rhythm_signature_correlation": 0.715797,
+        "too_close": false
+      },
+      {
+        "id": "gta-vice-city-extra-20261005-41",
+        "title": "Long Way South",
+        "intro_spectral_similarity": 0.806378,
+        "intro_envelope_correlation": 0.027632,
+        "rhythm_signature_correlation": 0.315019,
+        "too_close": false
+      },
+      {
+        "id": "gta-vice-city-extra-20261005-42",
+        "title": "Coastal Runaway",
+        "intro_spectral_similarity": 0.832927,
+        "intro_envelope_correlation": 0.49957,
+        "rhythm_signature_correlation": 0.169856,
         "too_close": false
       }
     ]
   },
-  "run_id": "37475186907"
+  "run_id": "37474386527"
 }
