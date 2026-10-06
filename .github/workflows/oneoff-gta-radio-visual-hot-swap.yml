@@ -1,0 +1,126 @@
+name: One-off — GTA Radio Visual Hot Swap
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/oneoff-gta-radio-visual-hot-swap.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  swap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate OVH host-agent patch
+        run: |
+          set -euo pipefail
+          python -m py_compile ovh-streaming/host_deploy_agent.py
+          jq -e . control/visual-switch-requests/gta-radio-twitch-kick-20261006.json >/dev/null
+
+      - name: Capture pre-swap public health
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          curl -fsS "$BASE/api/ovh/public-health" > /tmp/before.json
+          jq '{reported_at,services:{twitch:.services.twitch,kick:.services.kick}}' /tmp/before.json
+
+      - name: Request safe OVH host-agent reload
+        id: trigger
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          REQUEST_ID="ops-gta-radio-visual-20261006-a"
+          curl -fsS -X POST "$BASE/api/ops/20261003-live-stability/host-agent?id=$REQUEST_ID&v=12" \
+            -H "content-type: application/json" \
+            --data "{\"id\":\"$REQUEST_ID\",\"version\":12,\"source\":\"gta-radio-visual-hot-swap\"}" \
+            > /tmp/request.json
+          cat /tmp/request.json
+          RETURNED_ID="$(jq -r '.command.id // empty' /tmp/request.json)"
+          echo "returned_id=$RETURNED_ID" >> "$GITHUB_OUTPUT"
+          if [ "$RETURNED_ID" != "$REQUEST_ID" ]; then
+            echo "The public operations endpoint did not create the requested unique host-agent command."
+            exit 2
+          fi
+
+      - name: Wait for zero-drop visual switch
+        run: |
+          set -euo pipefail
+          BASE="https://mediaforge-api.guilhermeodsgn.workers.dev"
+          TW_BEFORE="$(jq -r '.services.twitch.visual_revision // 0' /tmp/before.json)"
+          KI_BEFORE="$(jq -r '.services.kick.visual_revision // 0' /tmp/before.json)"
+          TW_RESTARTS="$(jq -r '.services.twitch.restarts // 0' /tmp/before.json)"
+          KI_RESTARTS="$(jq -r '.services.kick.restarts // 0' /tmp/before.json)"
+          OK=0
+          for I in $(seq 1 120); do
+            curl -fsS "$BASE/api/ovh/public-health" > /tmp/after.json
+            TW_STATUS="$(jq -r '.services.twitch.status // empty' /tmp/after.json)"
+            KI_STATUS="$(jq -r '.services.kick.status // empty' /tmp/after.json)"
+            TW_HOT="$(jq -r '.services.twitch.hot_swap // false' /tmp/after.json)"
+            KI_HOT="$(jq -r '.services.kick.hot_swap // false' /tmp/after.json)"
+            TW_REV="$(jq -r '.services.twitch.visual_revision // 0' /tmp/after.json)"
+            KI_REV="$(jq -r '.services.kick.visual_revision // 0' /tmp/after.json)"
+            TW_R="$(jq -r '.services.twitch.restarts // 0' /tmp/after.json)"
+            KI_R="$(jq -r '.services.kick.restarts // 0' /tmp/after.json)"
+            echo "try=$I twitch=$TW_STATUS rev=$TW_REV restarts=$TW_R kick=$KI_STATUS rev=$KI_REV restarts=$KI_R"
+            if [ "$TW_R" != "$TW_RESTARTS" ] || [ "$KI_R" != "$KI_RESTARTS" ]; then
+              echo "Restart counter changed; refusing to call this a zero-drop switch."
+              exit 3
+            fi
+            if [ "$TW_STATUS" = "live" ] && [ "$KI_STATUS" = "live" ] \
+               && [ "$TW_HOT" = "true" ] && [ "$KI_HOT" = "true" ] \
+               && [ "$TW_REV" -gt "$TW_BEFORE" ] && [ "$KI_REV" -gt "$KI_BEFORE" ]; then
+              OK=1
+              break
+            fi
+            sleep 3
+          done
+          [ "$OK" = "1" ]
+          sleep 8
+          curl -fsS "$BASE/api/ovh/public-health" > /tmp/after.json
+
+      - name: Persist sanitized proof
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p control/diagnostics
+          python - <<'PY'
+          import json, pathlib, datetime
+          def load(path):
+              try:return json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+              except Exception:return {}
+          before=load("/tmp/before.json")
+          after=load("/tmp/after.json")
+          request=load("/tmp/request.json")
+          def slim(s):
+              return {
+                  "status":s.get("status"),
+                  "hot_swap":s.get("hot_swap"),
+                  "restarts":s.get("restarts"),
+                  "visual_revision":s.get("visual_revision"),
+                  "updated_at":s.get("updated_at"),
+                  "fps":s.get("fps"),
+                  "video_bitrate_kbps":s.get("video_bitrate_kbps"),
+              }
+          out={
+              "checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "requested_command_id":"ops-gta-radio-visual-20261006-a",
+              "returned_command_id":(request.get("command") or {}).get("id"),
+              "before":{"twitch":slim((before.get("services") or {}).get("twitch") or {}),"kick":slim((before.get("services") or {}).get("kick") or {})},
+              "after":{"twitch":slim((after.get("services") or {}).get("twitch") or {}),"kick":slim((after.get("services") or {}).get("kick") or {})},
+          }
+          pathlib.Path("control/diagnostics/gta-radio-visual-hot-swap.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          print(json.dumps(out,ensure_ascii=False,indent=2))
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/gta-radio-visual-hot-swap.json
+          git commit -m "ops: record GTA radio visual hot-swap" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
