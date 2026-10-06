@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-06T14:09:00.044184+00:00",
+  "updated_at": "2026-10-06T14:09:20.771520+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3226,8 +3226,8 @@
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 43,
-      "total_duration_seconds": 12900,
+      "track_count": 44,
+      "total_duration_seconds": 13200,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3674,6 +3674,18 @@
           "reference_title": "Love Is A Long Road",
           "quality_gate": "technical_and_diversity_checks_passed",
           "target_bpm": 117
+        },
+        {
+          "id": "gta-vice-city-extra-20261005-44",
+          "title": "Sunset Overdrive",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-extra15-044-recovered-37416684072/peter-lofi-gta-extra15-044.mp3",
+          "duration_seconds": 300,
+          "position": 49,
+          "source": "gta-vi-extra-15",
+          "family": "long-road-family",
+          "reference_title": "Love Is A Long Road",
+          "quality_gate": "technical_and_diversity_checks_passed",
+          "target_bpm": 112
         }
       ],
       "planned_duration_seconds": 16500,
