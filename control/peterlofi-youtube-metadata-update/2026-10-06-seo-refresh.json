@@ -1,0 +1,37 @@
+{
+  "requested_at": "2026-10-06T00:08:00-03:00",
+  "scope": "public_non_live_only",
+  "live_streams_must_not_be_modified": true,
+  "fields_to_modify": [
+    "title",
+    "description"
+  ],
+  "strategy": "intent-first titles and concise use-case descriptions based on validated lofi benchmark channels",
+  "updates": [
+    {
+      "video_id": "EQrlzc_IR2M",
+      "title": "coffee shop lofi ☕ 3 hours of chill beats to work, study & focus | Peter Lofi",
+      "description": "Coffee shop lofi for work, studying and deep focus ☕ Three hours of original chill beats by Peter Lofi for long work sessions, reading, coding and calm background listening.\n\nSettle into a warm café atmosphere, put on your headphones and let the music play while you focus on what matters.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#Lofi #CoffeeShopLofi #StudyMusic #FocusMusic #PeterLofi"
+    },
+    {
+      "video_id": "tsBeo7eejPI",
+      "title": "gaming lofi 🎮 3 hours of chill beats to play, focus & code | Peter Lofi",
+      "description": "Gaming lofi for playing, coding and staying focused 🎮 Three hours of original chill beats by Peter Lofi built for long gaming sessions, late-night grinds, creative work and concentration.\n\nKeep it in the background while you play, code, work or study — smooth enough to stay focused without getting in the way.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#GamingLofi #Lofi #GamingMusic #FocusMusic #PeterLofi"
+    },
+    {
+      "video_id": "YTT9UM1M1SY",
+      "title": "lofi beats to study 📚 1 hour of chill music for focus & work | Peter Lofi",
+      "description": "Lofi beats to study, focus and work 📚 One hour of original chill music by Peter Lofi for reading, studying, coding, deep work and quiet background listening.\n\nUse this mix when you need a calm soundtrack that helps you stay in the flow without demanding your attention.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#Lofi #StudyLofi #StudyMusic #FocusMusic #PeterLofi"
+    },
+    {
+      "video_id": "OPqTdiiXPY0",
+      "title": "lounge house music ☕ 1 hour of chill beats for work & focus | Peter Lofi",
+      "description": "Lounge house music for work and focus ☕ One hour of smooth original beats by Peter Lofi for the office, home office, design, reading and productive background listening.\n\nA polished café-and-office atmosphere with relaxed grooves made to keep your workspace moving without breaking concentration.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#LoungeHouse #OfficeMusic #WorkMusic #FocusMusic #PeterLofi"
+    },
+    {
+      "video_id": "teQ-pW_20uk",
+      "title": "gaming lofi 🎮 1 hour of chill beats to play, focus & code | Peter Lofi",
+      "description": "Gaming lofi for playing, focusing and coding 🎮 One hour of original chill beats by Peter Lofi for gaming sessions, studying, creative work and late-night concentration.\n\nPress play and keep the music in the background while you game, build, code or grind through your next task.\n\n🎧 Subscribe to Peter Lofi:\nhttps://www.youtube.com/@PeterLofiSounds\n\nOriginal music by Peter Lofi.\n© 2026 Peter Lofi. All rights reserved.\n\n#GamingLofi #Lofi #GamingMusic #FocusMusic #PeterLofi"
+    }
+  ]
+}
