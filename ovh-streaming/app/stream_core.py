@@ -294,7 +294,10 @@ class StreamCore:
         self.wait_audio_ready()
         if self.platform == "youtube-gta-vi":
             video_input = str(self.ensure_video_fifo())
-            video_input_args = ["-f", "mpegts", "-i", video_input]
+            # Pace the prepared 60fps stream by its media timestamps. FIFO
+            # buffers can release short bursts after backpressure; readrate=1
+            # prevents those bursts from reaching YouTube as an excessive FPS.
+            video_input_args = ["-readrate", "1", "-f", "mpegts", "-i", video_input]
         else:
             video_input = (
                 f"udp://127.0.0.1:{self.video_udp_port}"
@@ -311,7 +314,7 @@ class StreamCore:
             "-fflags",
             "+genpts+discardcorrupt",
         ]
-        if self.platform.startswith("youtube"):
+        if self.platform.startswith("youtube") and self.platform != "youtube-gta-vi":
             common += ["-use_wallclock_as_timestamps", "1"]
         common += [
             "-thread_queue_size",
