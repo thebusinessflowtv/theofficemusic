@@ -37,6 +37,7 @@ WATCHDOG_WINDOW=max(20,int(os.environ.get("MEDIAFORGE_WATCHDOG_WINDOW_SECONDS","
 WATCHDOG_THRESHOLD=max(3,int(os.environ.get("MEDIAFORGE_WATCHDOG_ERROR_THRESHOLD","5")))
 WATCHDOG_COOLDOWN=max(30,int(os.environ.get("MEDIAFORGE_WATCHDOG_COOLDOWN_SECONDS","120")))
 SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy")
+DIAGNOSTIC_STATE_SLOTS=SLOTS+("youtube-gta-vi","youtube-ui-test")
 SERVICES=("ovh-agent","control-api")+SLOTS
 CONTAINERS={
     "ovh-agent":"peter-lofi-ovh-agent",
@@ -150,7 +151,7 @@ def git_sync():
 
 
 def health(slot):
-    if slot in SLOTS:
+    if slot in DIAGNOSTIC_STATE_SLOTS:
         p=OVH/"state"/slot/"health.json"
         desired_path=OVH/"state"/slot/"desired.json"
         try:
@@ -1118,10 +1119,11 @@ def _redact_stream_log(text):
 
 
 def diagnose_stream_service(slot):
-    if slot not in SLOTS:
+    if slot not in DIAGNOSTIC_STATE_SLOTS:
         raise ValueError("diagnose target not allowed")
     h=health(slot)
     log=OVH/"state"/slot/"ffmpeg.log"
+    controller_log=OVH/"state"/slot/"controller.log"
     visual_log=OVH/"state"/slot/"visual-ffmpeg.log"
     tail=""
     try:
@@ -1132,6 +1134,15 @@ def diagnose_stream_service(slot):
             tail=fh.read().decode("utf-8","ignore")
     except Exception as exc:
         tail="log_read_error:"+str(exc)[:180]
+    controller_tail=""
+    try:
+        with open(controller_log,"rb") as fh:
+            fh.seek(0,2)
+            size=fh.tell()
+            fh.seek(max(0,size-24000))
+            controller_tail=fh.read().decode("utf-8","ignore")
+    except Exception as exc:
+        controller_tail="controller_log_read_error:"+str(exc)[:180]
     visual_tail=""
     try:
         with open(visual_log,"rb") as fh:
@@ -1155,7 +1166,11 @@ def diagnose_stream_service(slot):
     try: visual_health=json.loads((OVH/"state"/slot/"visual-health.json").read_text(encoding="utf-8"))
     except Exception: pass
     try:
-        docker_stats=run(["docker","stats","--no-stream","--format","{{.CPUPerc}}|{{.MemUsage}}|{{.NetIO}}|{{.BlockIO}}",CONTAINERS[slot]],timeout=20).strip()
+        container_name=CONTAINERS.get(slot) or ("peter-lofi-ovh-agent" if slot in ("youtube-gta-vi","youtube-ui-test") else "")
+        if container_name:
+            docker_stats=run(["docker","stats","--no-stream","--format","{{.CPUPerc}}|{{.MemUsage}}|{{.NetIO}}|{{.BlockIO}}",container_name],timeout=20).strip()
+        else:
+            docker_stats="stats_unavailable"
     except Exception as exc:
         docker_stats="stats_error:"+str(exc)[:180]
     return {
@@ -1172,6 +1187,7 @@ def diagnose_stream_service(slot):
         "visual_health":visual_health,
         "docker_stats":docker_stats,
         "ffmpeg_log_tail":_redact_stream_log(tail),
+        "controller_log_tail":_redact_stream_log(controller_tail),
         "visual_ffmpeg_log_tail":_redact_stream_log(visual_tail),
     }
 
