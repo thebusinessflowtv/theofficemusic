@@ -662,10 +662,11 @@ def ui_test_status_snapshot():
 
 
 def bootstrap_ui_test_control_agent():
-    """One-time safe refresh of the non-publisher OVH control container.
+    """Safely refresh the non-publisher control agent and bridge local commands.
 
-    This is intentionally limited to the ovh-agent container. It never recreates
-    or signals Kick/Twitch/YouTube publisher containers.
+    The publisher containers are never restarted or signalled here. Production
+    visual changes are staged locally and delivered as set_visual commands so
+    stream_core keeps the RTMP publisher PID and generation intact.
     """
     marker=REPO/"control"/"ui-test-control-agent-refresh.json"
     if not marker.exists():
@@ -677,17 +678,32 @@ def bootstrap_ui_test_control_agent():
     version=str(cfg.get("version") or "")
     if not version:
         raise RuntimeError("ui-test control-agent marker has no version")
+
+    visual_request_path=REPO/"control"/"visual-switch-requests"/"gta-radio-twitch-kick-20261006.json"
+    visual_request=None
+    if visual_request_path.exists():
+        try:
+            visual_request=json.loads(visual_request_path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            raise RuntimeError(f"invalid visual-switch request: {exc}")
+
     st=read_state()
-    if str(st.get("ui_test_control_agent_version") or "")==version:
-        return {"status":"already_applied","version":version}
+    ui_applied=str(st.get("ui_test_control_agent_version") or "")==version
+    visual_request_id=str((visual_request or {}).get("id") or "")
+    visual_applied=bool(visual_request_id) and str(st.get("last_visual_switch_request_id") or "")==visual_request_id
+    if ui_applied and (not visual_request or visual_applied):
+        return {
+            "status":"already_applied",
+            "version":version,
+            "visual_switch":{"status":"already_applied","request_id":visual_request_id} if visual_applied else None,
+        }
 
     name=CONTAINERS.get("ovh-agent","peter-lofi-ovh-agent")
     for filename in ("ovh_agent.py","stream_core.py","audio_engine.py","visual_engine.py"):
         run(["docker","cp",str(OVH/"app"/filename),f"{name}:/app/{filename}"],timeout=30)
 
     # Bridge the newest isolated test command from the local repository into a
-    # host-local inbox. This avoids any dependency on Cloudflare or GitHub HTTP
-    # polling for the private test while keeping production publishers untouched.
+    # host-local inbox. This keeps the existing private UI-test mechanism intact.
     queued_command_id=None
     try:
         idx_path=REPO/"control"/"ovh-commands"/"index.json"
@@ -714,11 +730,232 @@ def bootstrap_ui_test_control_agent():
     except Exception as exc:
         raise RuntimeError(f"failed to bridge ui-test local command: {exc}")
 
+    visual_plan=None
+    if visual_request and not visual_applied:
+        if not visual_request_id:
+            raise RuntimeError("visual-switch request has no id")
+        if str(visual_request.get("mode") or "")!="hot_swap_only":
+            raise RuntimeError("visual-switch request must use hot_swap_only mode")
+        slots=[str(x) for x in (visual_request.get("runtime_slots") or [])]
+        if slots!=["twitch","kick"]:
+            raise RuntimeError(f"visual-switch request slots must be exactly twitch,kick: {slots}")
+
+        before={}
+        for slot in slots:
+            h=read_json(OVH/"state"/slot/"health.json") or {}
+            d=read_json(OVH/"state"/slot/"desired.json") or {}
+            if str(h.get("status") or "")!="live":
+                raise RuntimeError(f"{slot} is not live; refusing visual change")
+            if h.get("hot_swap") is not True:
+                raise RuntimeError(f"{slot} hot_swap is not ready; refusing visual change")
+            if not h.get("encoder_pid"):
+                raise RuntimeError(f"{slot} encoder PID is missing; refusing visual change")
+            before[slot]={
+                "encoder_pid":h.get("encoder_pid"),
+                "generation":d.get("generation"),
+                "visual_revision":int(d.get("visual_revision") or 0),
+                "restarts":int(h.get("restarts") or 0),
+                "loop_url":str(d.get("loop_url") or h.get("loop_url") or ""),
+            }
+
+        token=AGENT_TOKEN
+        if not token:
+            secrets_file=CONTROL_ROOT/"worker.dev.vars"
+            if secrets_file.exists():
+                for line in secrets_file.read_text(encoding="utf-8").splitlines():
+                    if line.startswith("OVH_AGENT_TOKEN="):
+                        raw=line.split("=",1)[1].strip()
+                        try:
+                            token=str(json.loads(raw))
+                        except Exception:
+                            token=raw.strip().strip('"')
+                        break
+        if not token:
+            raise RuntimeError("local OVH agent token is unavailable")
+
+        export_req=urllib.request.Request(
+            "http://127.0.0.1:8790/api/migration/export",
+            headers={"User-Agent":"MediaForge-Host-Deploy-Agent","x-ovh-agent-token":token},
+        )
+        with urllib.request.urlopen(export_req,timeout=60) as response:
+            snapshot=json.loads(response.read().decode("utf-8"))
+        assets=list(((snapshot.get("tables") or {}).get("assets") or []))
+        candidates=[]
+        requested_title=str(visual_request.get("asset_title") or "").casefold()
+        for asset in assets:
+            if str(asset.get("status") or "")!="ready":
+                continue
+            if str(asset.get("asset_type") or "")!="loop":
+                continue
+            if not str(asset.get("mime_type") or "").lower().startswith("video/"):
+                continue
+            title=str(asset.get("title") or "")
+            folded=title.casefold()
+            score=0
+            if requested_title and folded==requested_title:
+                score+=100
+            if all(token_word in folded for token_word in ("gta","vi","radio")):
+                score+=20
+            if "video" in folded or "vídeo" in folded:
+                score+=5
+            if score:
+                candidates.append((score,str(asset.get("created_at") or ""),asset))
+        if not candidates:
+            raise RuntimeError("ready MediaForge GTA VI Radio loop asset was not found")
+        candidates.sort(key=lambda item:(item[0],item[1]),reverse=True)
+        asset=candidates[0][2]
+        asset_id=str(asset.get("id") or "")
+        download_token=str(asset.get("download_token") or "")
+        expected_size=int(asset.get("size_bytes") or 0)
+        if not asset_id or not download_token:
+            raise RuntimeError("selected MediaForge asset is missing local media identifiers")
+
+        target_dir=OVH/"state"/"shared-visuals"
+        target_dir.mkdir(parents=True,exist_ok=True)
+        target=target_dir/"video-radio-gta-vi.mp4"
+        temp=target.with_suffix(".mp4.part")
+        media_url=f"http://127.0.0.1:8790/media/{asset_id}/{download_token}"
+        req=urllib.request.Request(media_url,headers={"User-Agent":"MediaForge-Host-Deploy-Agent"})
+        with urllib.request.urlopen(req,timeout=180) as response, open(temp,"wb") as fh:
+            while True:
+                chunk=response.read(1024*1024)
+                if not chunk:
+                    break
+                fh.write(chunk)
+        actual_size=temp.stat().st_size if temp.exists() else 0
+        if actual_size<1024*1024:
+            temp.unlink(missing_ok=True)
+            raise RuntimeError(f"staged visual is unexpectedly small: {actual_size} bytes")
+        if expected_size and actual_size!=expected_size:
+            temp.unlink(missing_ok=True)
+            raise RuntimeError(f"staged visual size mismatch: {actual_size} != {expected_size}")
+        temp.replace(target)
+
+        # Validate the staged file from both existing publisher containers before
+        # asking either visual engine to switch.
+        for slot in slots:
+            run([
+                "docker","exec",CONTAINERS[slot],
+                "ffprobe","-v","error","-select_streams","v:0",
+                "-show_entries","stream=codec_name,width,height,r_frame_rate",
+                "-of","json","/state/shared-visuals/video-radio-gta-vi.mp4",
+            ],timeout=90)
+
+        loop_url="file:///state/shared-visuals/video-radio-gta-vi.mp4"
+        inbox=OVH/"state"/"agent"/"local-inbox"
+        inbox.mkdir(parents=True,exist_ok=True)
+        command_ids=[]
+        for slot in slots:
+            cid=f"{visual_request_id}-{slot}-v1"
+            cmd={
+                "id":cid,
+                "runtime":"ovh",
+                "runtime_slot":slot,
+                "platform":slot,
+                "action":"set_visual",
+                "loop_url":loop_url,
+                "requested_at":now(),
+                "source":"mediaforge-visual-switch",
+            }
+            atomic_json(inbox/(cid+".json"),cmd)
+            command_ids.append(cid)
+        visual_plan={
+            "request_id":visual_request_id,
+            "asset_id":asset_id,
+            "asset_title":str(asset.get("title") or ""),
+            "asset_size_bytes":actual_size,
+            "loop_url":loop_url,
+            "before":before,
+            "command_ids":command_ids,
+        }
+
+    # Only the non-publisher command agent is restarted. It carries no RTMP
+    # connection and cannot drop Twitch or Kick.
     run(["docker","restart",name],timeout=60)
     time.sleep(4)
     running=run(["docker","inspect","-f","{{.State.Running}}",name],timeout=20).strip().lower()
     if running!="true":
-        raise RuntimeError("ovh-agent did not return after ui-test control refresh")
+        raise RuntimeError("ovh-agent did not return after control refresh")
+
+    visual_result=None
+    if visual_plan:
+        deadline=time.time()+240
+        slots=["twitch","kick"]
+        last={}
+        while time.time()<deadline:
+            complete=True
+            for slot in slots:
+                h=read_json(OVH/"state"/slot/"health.json") or {}
+                d=read_json(OVH/"state"/slot/"desired.json") or {}
+                v=read_json(OVH/"state"/slot/"visual-health.json") or {}
+                last[slot]={"health":h,"desired":d,"visual":v}
+                before=visual_plan["before"][slot]
+                if h.get("encoder_pid")!=before.get("encoder_pid"):
+                    raise RuntimeError(f"{slot} encoder PID changed during visual hot-swap")
+                if d.get("generation")!=before.get("generation"):
+                    raise RuntimeError(f"{slot} generation changed during visual hot-swap")
+                if int(h.get("restarts") or 0)!=int(before.get("restarts") or 0):
+                    raise RuntimeError(f"{slot} restart counter changed during visual hot-swap")
+                ok=(
+                    str(h.get("status") or "")=="live"
+                    and h.get("hot_swap") is True
+                    and str(d.get("loop_url") or "")==visual_plan["loop_url"]
+                    and int(d.get("visual_revision") or 0)>int(before.get("visual_revision") or 0)
+                    and str(v.get("status") or "")=="streaming"
+                    and str(v.get("loop_url") or "")==visual_plan["loop_url"]
+                )
+                complete=complete and ok
+            if complete:
+                break
+            time.sleep(2)
+        else:
+            # Roll desired visual back without touching RTMP/publisher processes.
+            inbox=OVH/"state"/"agent"/"local-inbox"
+            for slot in slots:
+                old_url=str(visual_plan["before"][slot].get("loop_url") or "")
+                if old_url:
+                    cid=f"{visual_plan['request_id']}-{slot}-rollback"
+                    atomic_json(inbox/(cid+".json"),{
+                        "id":cid,
+                        "runtime":"ovh",
+                        "runtime_slot":slot,
+                        "platform":slot,
+                        "action":"set_visual",
+                        "loop_url":old_url,
+                        "requested_at":now(),
+                        "source":"mediaforge-visual-switch",
+                    })
+            raise RuntimeError("visual hot-swap timed out; rollback was queued without restarting publishers")
+
+        after={}
+        for slot in slots:
+            h=last[slot]["health"]
+            d=last[slot]["desired"]
+            v=last[slot]["visual"]
+            before=visual_plan["before"][slot]
+            after[slot]={
+                "status":h.get("status"),
+                "hot_swap":h.get("hot_swap"),
+                "encoder_pid_preserved":h.get("encoder_pid")==before.get("encoder_pid"),
+                "generation_preserved":d.get("generation")==before.get("generation"),
+                "restart_counter_preserved":int(h.get("restarts") or 0)==int(before.get("restarts") or 0),
+                "visual_revision_before":before.get("visual_revision"),
+                "visual_revision_after":d.get("visual_revision"),
+                "visual_status":v.get("status"),
+            }
+        visual_result={
+            "status":"completed",
+            "request_id":visual_plan["request_id"],
+            "asset_id":visual_plan["asset_id"],
+            "asset_title":visual_plan["asset_title"],
+            "asset_size_bytes":visual_plan["asset_size_bytes"],
+            "rtmp_restart":False,
+            "publisher_containers_touched":False,
+            "services":after,
+        }
+        st["last_visual_switch_request_id"]=visual_plan["request_id"]
+        st["last_visual_switch_completed_at"]=now()
+
     st["ui_test_control_agent_version"]=version
     st["ui_test_control_agent_refreshed_at"]=now()
     write_state(st)
@@ -728,6 +965,7 @@ def bootstrap_ui_test_control_agent():
         "version":version,
         "publisher_containers_touched":False,
         "queued_command_id":queued_command_id,
+        "visual_switch":visual_result,
         "ui_test":ui_test_status_snapshot(),
     }
 
