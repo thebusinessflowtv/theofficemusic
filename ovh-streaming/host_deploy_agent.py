@@ -138,6 +138,13 @@ def atomic_json(path,data):
     tmp.replace(path)
 
 
+def read_json(path,default=None):
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return default
+
+
 def git_head():
     return run(["runuser","-u","ubuntu","--","git","-C",str(REPO),"rev-parse","HEAD"],timeout=30).strip().splitlines()[-1]
 
