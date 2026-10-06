@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 concurrency:
   group: gta-youtube-oauth-bridge
@@ -21,18 +22,6 @@ jobs:
       YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
       YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
       YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
-      KEY_A: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
-      KEY_B: ${{ secrets.OVH_SSH_KEY }}
-      KEY_C: ${{ secrets.SSH_PRIVATE_KEY }}
-      KEY_D: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-      KEY_E: ${{ secrets.VPS_SSH_KEY }}
-      KEY_F: ${{ secrets.SSH_KEY }}
-      KEY_G: ${{ secrets.OVH_PRIVATE_KEY }}
-      PASS_A: ${{ secrets.OVH_SSH_PASSWORD }}
-      PASS_B: ${{ secrets.OVH_PASSWORD }}
-      PASS_C: ${{ secrets.VPS_PASSWORD }}
-      OVH_HOST_SECRET: ${{ secrets.OVH_HOST }}
-      OVH_USER_SECRET: ${{ secrets.OVH_USER }}
 
     steps:
       - uses: actions/checkout@v4
@@ -78,39 +67,6 @@ jobs:
                   marker="MF_"+key+"_EOF"
                   fh.write(f"{key}<<{marker}\n{val}\n{marker}\n")
           PY
-
-      - name: Prepare OVH SSH authentication
-        shell: bash
-        run: |
-          set -euo pipefail
-          HOST="${OVH_HOST_SECRET:-146.59.156.224}"
-          USER="${OVH_USER_SECRET:-ubuntu}"
-          echo "OVH_HOST_RESOLVED=$HOST" >> "$GITHUB_ENV"
-          echo "OVH_USER_RESOLVED=$USER" >> "$GITHUB_ENV"
-          KEY=""
-          for n in KEY_A KEY_B KEY_C KEY_D KEY_E KEY_F KEY_G; do
-            if [ -n "${!n:-}" ]; then KEY="${!n}"; break; fi
-          done
-          PASS=""
-          for n in PASS_A PASS_B PASS_C; do
-            if [ -n "${!n:-}" ]; then PASS="${!n}"; break; fi
-          done
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          if [ -n "$KEY" ]; then
-            printf '%s\n' "$KEY" > ~/.ssh/id_ovh
-            chmod 600 ~/.ssh/id_ovh
-            echo "OVH_AUTH_MODE=key" >> "$GITHUB_ENV"
-          elif [ -n "$PASS" ]; then
-            sudo apt-get update -qq
-            sudo apt-get install -y -qq sshpass
-            echo "::add-mask::$PASS"
-            echo "OVH_PASSWORD_RESOLVED=$PASS" >> "$GITHUB_ENV"
-            echo "OVH_AUTH_MODE=password" >> "$GITHUB_ENV"
-          else
-            echo "No OVH SSH credential alias is present."
-            exit 2
-          fi
 
       - name: Install YouTube client
         run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
@@ -160,6 +116,14 @@ jobs:
           )
           creds.refresh(Request())
           yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+
+          channel_items=yt.channels().list(part="id,snippet",mine=True,maxResults=1).execute().get("items") or []
+          if not channel_items:
+              raise SystemExit("No YouTube channel found for authenticated Peter Lofi OAuth")
+          channel_title=str((channel_items[0].get("snippet") or {}).get("title") or "")
+          print("Authenticated YouTube channel:",channel_title)
+          if "peter" not in channel_title.lower():
+              raise SystemExit("OAuth belongs to the wrong YouTube channel: "+channel_title)
 
           stream=None
           stream_id=str(station.get("youtube_stream_id") or "")
@@ -278,26 +242,20 @@ jobs:
           print("YouTube broadcast prepared for OVH GTA runtime")
           PY
 
-      - name: Send start command directly to OVH local inbox
+      - name: Send start command to OVH using GitHub Actions OIDC
         shell: bash
         run: |
           set -euo pipefail
-          SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=15"
-          REMOTE_TMP="/tmp/gta-ovh-command-$SESSION_ID.json"
-          REMOTE_DST="/home/ubuntu/theofficemusic/ovh-streaming/state/agent/local-inbox/gta-youtube-start-$SESSION_ID.json"
+          OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN"             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
+          test -n "$OIDC_TOKEN"
 
-          if [ "$OVH_AUTH_MODE" = "key" ]; then
-            scp $SSH_OPTS -i ~/.ssh/id_ovh /tmp/gta-ovh-command.json "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED:$REMOTE_TMP"
-            ssh $SSH_OPTS -i ~/.ssh/id_ovh "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED" \
-              "sudo mkdir -p /home/ubuntu/theofficemusic/ovh-streaming/state/agent/local-inbox && sudo install -m 600 '$REMOTE_TMP' '$REMOTE_DST' && rm -f '$REMOTE_TMP'"
-          else
-            sshpass -p "$OVH_PASSWORD_RESOLVED" scp $SSH_OPTS /tmp/gta-ovh-command.json "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED:$REMOTE_TMP"
-            sshpass -p "$OVH_PASSWORD_RESOLVED" ssh $SSH_OPTS "$OVH_USER_RESOLVED@$OVH_HOST_RESOLVED" \
-              "sudo mkdir -p /home/ubuntu/theofficemusic/ovh-streaming/state/agent/local-inbox && sudo install -m 600 '$REMOTE_TMP' '$REMOTE_DST' && rm -f '$REMOTE_TMP'"
-          fi
+          curl -kfsS -X POST "https://146.59.156.224:8443/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data-binary @/tmp/gta-ovh-command.json > /tmp/ovh-bootstrap.json
 
+          jq '{ok,authenticated_repository,runtime_slot,playlist_key,playlist_track_count,command}' /tmp/ovh-bootstrap.json
+          jq -e '.ok==true' /tmp/ovh-bootstrap.json >/dev/null
           rm -f /tmp/gta-ovh-command.json
-          echo "GTA_OVH_COMMAND_QUEUED"
+          echo "GTA_OVH_COMMAND_QUEUED_VIA_OIDC"
 
       - name: Publish sanitized YouTube state
         shell: bash
