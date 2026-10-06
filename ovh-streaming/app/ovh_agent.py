@@ -19,6 +19,7 @@ import signal
 import urllib.request
 import uuid
 import zipfile
+import visual_rotation
 from datetime import datetime, timezone
 
 STATE=pathlib.Path("/state")
@@ -49,6 +50,7 @@ NON_INTERRUPT_SOURCES=(
     "mediaforge-visual-switch",
     "mediaforge-playlist-switch",
     "library-sync",
+    "mediaforge-visual-rotation",
 )
 
 
@@ -1398,6 +1400,7 @@ def status_payload(processed_count=0,last_command=None):
         "gaming_dj30_mix_supported":True,
         "gaming_dj30_mix_version":2,
         "gaming_dj30_mix":read_json(AGENT_DIR/"gaming30-dj-mix.json",{}),
+        "visual_rotation":read_json(AGENT_DIR/"visual-rotation-status.json",{}),
         "reported_at":iso_now(),
         "host":host_metrics(),
         "services":{s:service_payload(s) for s in SLOTS},
@@ -1521,6 +1524,11 @@ def main():
     last_gta_sync=0.0
 
     while True:
+        try:
+            visual_rotation.tick(STATE,read_json,atomic_json,apply_command)
+        except Exception as exc:
+            print("visual rotation failed:",exc,flush=True)
+
         try:
             ensure_gta_process()
         except Exception as exc:
