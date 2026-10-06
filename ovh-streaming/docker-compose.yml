@@ -116,6 +116,9 @@ services:
     command: ["python", "/app/ovh_agent.py"]
     restart: unless-stopped
     network_mode: host
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     environment:
       MEDIAFORGE_API_URL: ${MEDIAFORGE_API_URL:-http://127.0.0.1:8790}
       MEDIAFORGE_AGENT_TOKEN: ${MEDIAFORGE_AGENT_TOKEN:-}
