@@ -78,7 +78,7 @@ jobs:
           OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN"             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
           OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
           test -n "$OIDC_TOKEN"
-          CODE="$(curl -ksS -o /tmp/oidc-preflight.json -w '%{http_code}' -X POST             "https://146.59.156.224:8443/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data '{"runtime_slot":"youtube-gta-vi"}')"
+          CODE="$(curl -ksS -o /tmp/oidc-preflight.json -w '%{http_code}' -X POST             "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data '{"runtime_slot":"youtube-gta-vi"}')"
           echo "OIDC_PREFLIGHT_HTTP=$CODE"
           cat /tmp/oidc-preflight.json
           test "$CODE" = "400"
