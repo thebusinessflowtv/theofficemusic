@@ -1224,6 +1224,51 @@ def recover_stream_publisher(slot):
     raise RuntimeError(f"{slot} publisher did not recover: before={before} after={after}")
 
 
+def repair_gta_runtime():
+    slot="youtube-gta-vi"
+    container="peter-lofi-ovh-agent"
+    before=diagnose_stream_service(slot)
+
+    # Refresh only child-process code inside the existing OVH agent container.
+    # Other publishers/containers are untouched.
+    run(["docker","cp",str(OVH/"app"/"stream_core.py"),f"{container}:/app/stream_core.py"],timeout=30)
+    run(["docker","cp",str(OVH/"app"/"visual_engine.py"),f"{container}:/app/visual_engine.py"],timeout=30)
+    run(["docker","cp",str(OVH/"app"/"audio_engine.py"),f"{container}:/app/audio_engine.py"],timeout=30)
+
+    # Restart only the GTA StreamCore parent. The OVH agent's local watchdog
+    # respawns it from the refreshed files using the existing ingest secret,
+    # playlist and desired visual.
+    run([
+        "docker","exec",container,"sh","-lc",
+        "pkill -TERM -f 'stream_core.py --platform youtube-gta-vi' || true"
+    ],timeout=20)
+
+    end=time.time()+120
+    last={}
+    old_pid=(before.get("health") or {}).get("encoder_pid")
+    while time.time()<end:
+        last=health(slot)
+        if (
+            last.get("status")=="live"
+            and last.get("encoder_pid")
+            and last.get("encoder_pid")!=old_pid
+            and last.get("visual_status")=="streaming"
+            and last.get("audio_status") in {"running","playing","encoder_backpressure_buffering"}
+        ):
+            diag=diagnose_stream_service(slot)
+            return {
+                "service":slot,
+                "old_encoder_pid":old_pid,
+                "new_encoder_pid":last.get("encoder_pid"),
+                "status":last.get("status"),
+                "visual_status":last.get("visual_status"),
+                "audio_status":last.get("audio_status"),
+                "diagnostic":diag,
+            }
+        time.sleep(3)
+    raise RuntimeError(f"GTA runtime did not recover after media-pipeline repair: {last}")
+
+
 def execute(cmd):
     action=str(cmd.get("action") or "")
     target=str(cmd.get("target") or "")
@@ -1251,6 +1296,8 @@ def execute(cmd):
         st.update({"previous_head":old,"last_good_head":new,"last_deploy_at":now()})
         write_state(st)
 
+    if action=="repair_gta_runtime":
+        return {"old_head":old,"new_head":new,**repair_gta_runtime()},False
     if action=="deploy_service":
         return {"old_head":old,"new_head":new,**deploy_service(target)},False
     if action=="deploy_all":
