@@ -1,5 +1,5 @@
 name: Incident — Live Runtime Probe 2026-10-03
-# gta-oauth-recovery-probe: 2026-10-05T23:12-03:00-current-youtube-state
+# gta-oauth-recovery-probe: 2026-10-05T23:20-03:00-final-live-confirmation
 
 on:
   push:
