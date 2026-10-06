@@ -1,0 +1,45 @@
+{
+  "checked_at": "2026-10-06T00:45:01.926225+00:00",
+  "requested_command_id": "ops-gta-radio-visual-20261006-a",
+  "returned_command_id": "ops-20261003-host-agent-v2",
+  "before": {
+    "twitch": {
+      "status": "live",
+      "hot_swap": true,
+      "restarts": 1,
+      "visual_revision": 4,
+      "updated_at": "2026-10-03T18:22:25.477549Z",
+      "fps": 30,
+      "video_bitrate_kbps": 4500
+    },
+    "kick": {
+      "status": "live",
+      "hot_swap": true,
+      "restarts": 1,
+      "visual_revision": 5,
+      "updated_at": "2026-10-03T18:22:25.580618Z",
+      "fps": 30,
+      "video_bitrate_kbps": 5000
+    }
+  },
+  "after": {
+    "twitch": {
+      "status": null,
+      "hot_swap": null,
+      "restarts": null,
+      "visual_revision": null,
+      "updated_at": null,
+      "fps": null,
+      "video_bitrate_kbps": null
+    },
+    "kick": {
+      "status": null,
+      "hot_swap": null,
+      "restarts": null,
+      "visual_revision": null,
+      "updated_at": null,
+      "fps": null,
+      "video_bitrate_kbps": null
+    }
+  }
+}
