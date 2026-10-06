@@ -1,0 +1,6 @@
+{
+  "requested_at": "2026-10-05T23:59:30-03:00",
+  "scope": "public_non_live_only",
+  "purpose": "title_and_description_seo_refresh",
+  "live_streams_must_not_be_modified": true
+}
