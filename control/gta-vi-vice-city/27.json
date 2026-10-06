@@ -15,10 +15,10 @@
   "quality_gate": {
     "approved": true,
     "duration": 300,
-    "lufs": -16.38,
-    "true_peak": -2.11,
+    "lufs": -16.07,
+    "true_peak": -1.43,
     "silence_ratio": 0,
-    "sha256": "b05dae93adeff704e5209e0d72f9fcd9fb065a9d2fdc1f6be62ff3851c5eacb4"
+    "sha256": "f49dff67ab3c3e8cb37afe5e7c9f5ef7af1d615ce456cfb031b14a4704c001e2"
   },
   "diversity_gate": {
     "approved": true,
@@ -26,5 +26,6 @@
   },
   "recovered_from_failed_publish": true,
   "original_run_id": "37375397083",
-  "recovered_at": "2026-10-06T04:14:00Z"
+  "recovered_at": "2026-10-06T04:14:00Z",
+  "recovery_note": "Recovered the already-approved release created during run attempt 1; original push of the library/marker failed with GitHub Internal Server Error."
 }
