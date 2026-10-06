@@ -53,7 +53,7 @@ jobs:
           set -euo pipefail
           mkdir -p control/peterlofi-youtube-metadata-results
           python - <<'PY'
-          import json, os
+          import json, os, time
           from datetime import datetime, timezone
           from pathlib import Path
           from google.oauth2.credentials import Credentials
@@ -138,12 +138,21 @@ jobs:
                   body={'id':vid,'snippet':snippet}
               ).execute()
 
-              verify=(yt.videos().list(part='snippet,status,liveStreamingDetails',id=vid).execute().get('items') or [None])[0]
+              verify=None
+              vs={}
+              for attempt in range(10):
+                  if attempt:
+                      time.sleep(1)
+                  verify=(yt.videos().list(part='snippet,status,liveStreamingDetails',id=vid).execute().get('items') or [None])[0]
+                  if not verify:
+                      continue
+                  vs=verify.get('snippet') or {}
+                  if vs.get('title') == snippet['title'] and vs.get('description') == snippet['description']:
+                      break
               if not verify:
                   raise SystemExit(f'Could not verify {vid}')
-              vs=verify.get('snippet') or {}
               if vs.get('title') != snippet['title'] or vs.get('description') != snippet['description']:
-                  raise SystemExit(f'Verification mismatch for {vid}')
+                  raise SystemExit(f'Verification mismatch after retries for {vid}')
               if (verify.get('status') or {}).get('privacyStatus') != 'public' or 'liveStreamingDetails' in verify:
                   raise SystemExit(f'SAFETY BLOCK after update for {vid}')
               results.append({
