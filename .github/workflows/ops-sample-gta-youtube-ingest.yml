@@ -1,0 +1,69 @@
+name: Ops — Sample GTA YouTube Ingest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ops-sample-gta-youtube-ingest.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+      - name: Sample current GTA VI ingest health
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,time
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          cfg=json.load(open("control/youtube-stations.json",encoding="utf-8"))
+          st=next(x for x in cfg["stations"] if x.get("key")=="gta-vi")
+          sid=str(st.get("youtube_stream_id") or "")
+          if not sid:
+              raise SystemExit("GTA YouTube stream id missing")
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"],
+          )
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+
+          for i in range(1,7):
+              s=(yt.liveStreams().list(part="status,cdn",id=sid).execute().get("items") or [None])[0] or {}
+              status=s.get("status") or {}
+              health=status.get("healthStatus") or {}
+              issues=health.get("configurationIssues") or []
+              bitrate=[]
+              for issue in issues:
+                  if issue.get("type")=="bitrateLow":
+                      bitrate.append(issue.get("description") or "")
+              print(json.dumps({
+                  "sample":i,
+                  "stream_status":status.get("streamStatus"),
+                  "health_status":health.get("status"),
+                  "resolution":(s.get("cdn") or {}).get("resolution"),
+                  "frame_rate":(s.get("cdn") or {}).get("frameRate"),
+                  "issues":issues,
+                  "bitrate_low":bitrate,
+              },ensure_ascii=False))
+              if i<6: time.sleep(15)
+          PY
