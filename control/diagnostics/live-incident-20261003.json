@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-06T02:08:13.854222+00:00",
+  "checked_at": "2026-10-06T02:19:54.755426+00:00",
   "ovh": {
     "runtime": "ovh",
     "reported_at": "2026-10-03T18:22:25.725543Z",
@@ -310,17 +310,17 @@
       }
     },
     "gta-vi": {
-      "broadcast_id": "0McHnnZDuVk",
+      "broadcast_id": "_XpJTdzUoHE",
       "stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1791248187979918",
-      "title": null,
-      "actual_start_time": null,
+      "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA VI Inspired Soundtrack",
+      "actual_start_time": "2026-10-06T02:19:15Z",
       "actual_end_time": null,
-      "lifecycle": null,
-      "privacy": null,
-      "enable_auto_start": null,
-      "enable_auto_stop": null,
-      "bound_stream_id": null,
-      "stream_status": "ready",
+      "lifecycle": "live",
+      "privacy": "public",
+      "enable_auto_start": true,
+      "enable_auto_stop": false,
+      "bound_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1791248187979918",
+      "stream_status": "inactive",
       "health_status": "noData",
       "configuration_issues": [],
       "cdn": {
@@ -343,6 +343,6 @@
     "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA VI Inspired Soundtrack",
     "created_at": "2026-10-05 19:20:54",
     "id": 130776308,
-    "viewer_count": 3
+    "viewer_count": 1
   }
 }
