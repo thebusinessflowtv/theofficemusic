@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import argparse
+import hashlib
 import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -99,14 +101,24 @@ def main():
     comparisons=[]
     rejected=False
 
-    with tempfile.TemporaryDirectory() as td:
-        for i,t in enumerate(previous):
+    # Persist downloaded references for the lifetime of a CI job. Recovery/publish
+    # workflows validate many candidates against the same playlist; re-downloading
+    # every 12 MB reference for every candidate is wasteful and does not improve QC.
+    cache_env=os.environ.get("DIVERSITY_CACHE_DIR","").strip()
+    cache_root=Path(cache_env) if cache_env else Path(tempfile.gettempdir())/"peter-lofi-diversity-cache"
+    cache_root.mkdir(parents=True,exist_ok=True)
+
+    for i,t in enumerate(previous):
             url=t.get("url")
             if not url:
                 continue
-            dest=Path(td)/f"ref-{i:03d}.mp3"
+            cache_key=hashlib.sha256(url.encode("utf-8")).hexdigest()[:24]
+            dest=cache_root/f"{cache_key}.mp3"
             try:
-                urlretrieve(url,dest)
+                if not dest.is_file() or dest.stat().st_size < 1024:
+                    tmp=dest.with_suffix(".tmp")
+                    urlretrieve(url,tmp)
+                    tmp.replace(dest)
                 spectral,envelope,rhythm=compare(args.audio,dest)
                 too_close = (
                     (spectral >= 0.985 and envelope >= 0.92)
