@@ -71,6 +71,20 @@ jobs:
       - name: Install YouTube client
         run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
 
+      - name: Validate GitHub OIDC with OVH before creating broadcast
+        shell: bash
+        run: |
+          set -euo pipefail
+          OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN"             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
+          test -n "$OIDC_TOKEN"
+          CODE="$(curl -ksS -o /tmp/oidc-preflight.json -w '%{http_code}' -X POST             "https://146.59.156.224:8443/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data '{"runtime_slot":"youtube-gta-vi"}')"
+          echo "OIDC_PREFLIGHT_HTTP=$CODE"
+          cat /tmp/oidc-preflight.json
+          test "$CODE" = "400"
+          jq -e '.error=="youtube_ingest_required"' /tmp/oidc-preflight.json >/dev/null
+          echo "OIDC_PREFLIGHT_OK"
+
       - name: Create public GTA VI broadcast and prepare OVH command
         shell: bash
         run: |
@@ -250,8 +264,10 @@ jobs:
           OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
           test -n "$OIDC_TOKEN"
 
-          curl -kfsS -X POST "https://146.59.156.224:8443/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data-binary @/tmp/gta-ovh-command.json > /tmp/ovh-bootstrap.json
-
+          BOOT_CODE="$(curl -ksS -o /tmp/ovh-bootstrap.json -w '%{http_code}' -X POST "https://146.59.156.224:8443/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data-binary @/tmp/gta-ovh-command.json)"
+          echo "OVH_BOOTSTRAP_HTTP=$BOOT_CODE"
+          cat /tmp/ovh-bootstrap.json
+          test "$BOOT_CODE" = "202"
           jq '{ok,authenticated_repository,runtime_slot,playlist_key,playlist_track_count,command}' /tmp/ovh-bootstrap.json
           jq -e '.ok==true' /tmp/ovh-bootstrap.json >/dev/null
           rm -f /tmp/gta-ovh-command.json
