@@ -1,16 +1,17 @@
 {
   "action": "run_now",
   "mode": "exclusive_live_queue",
-  "from_track": 14,
+  "from_track": 27,
   "to_track": 35,
-  "preserve_completed": "1-13",
+  "preserve_completed": "1-26",
   "skip_completed_markers": true,
   "quality_gate": true,
   "diversity_gate": true,
   "requested_by": "owner",
-  "token": "serial-resume-14-35-v1",
+  "token": "serial-resume-27-35-v2",
   "workflow": "Peter Lofi — GTA VI Vice City Live Queue",
   "serial_generation_token": "gta-live-20261005-v2",
   "priority": "live_launch",
-  "trigger_nonce": "live-queue-v2"
+  "trigger_nonce": "resume-27-35-after-idempotent-release-fix-20261006T0409Z",
+  "requested_at": "2026-10-06T04:09:00Z"
 }
