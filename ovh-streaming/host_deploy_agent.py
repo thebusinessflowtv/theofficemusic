@@ -1183,10 +1183,11 @@ def diagnose_stream_service(slot):
 
         if slot=="youtube-gta-vi" and container_name:
             probe_script=(
-                "import json,pathlib;"
+                "import json,pathlib,os;"
+                "me=os.getpid();"
                 "o={'stream_core_count':0,'visual_engine_count':0,'ffmpeg_count':0,'uses_video_fifo':False,'uses_udp_19160':False};"
                 "\nfor p in pathlib.Path('/proc').iterdir():"
-                "\n if not p.name.isdigit(): continue"
+                "\n if not p.name.isdigit() or int(p.name)==me: continue"
                 "\n try: c=(p/'cmdline').read_bytes().replace(b'\\x00',b' ').decode('utf-8','ignore')"
                 "\n except Exception: continue"
                 "\n if 'stream_core.py --platform youtube-gta-vi' in c: o['stream_core_count']+=1"
