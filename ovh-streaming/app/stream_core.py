@@ -470,14 +470,16 @@ class StreamCore:
                     "-max_interleave_delta",
                     "1000000",
                 ]
-            if self.platform == "youtube-ui-test":
-                # Test slot: use the same simple direct FLV transport already
-                # proven by the production GitHub YouTube encoder. This makes
-                # connection failures visible instead of being hidden inside
-                # the fifo recovery child.
+            if self.platform in {"youtube-gta-vi", "youtube-ui-test"}:
+                # GTA VI uses direct FLV so the output cannot silently discard
+                # H.264 packets when an intermediate fifo queue fills. The
+                # StreamCore watchdog reconnects the publisher if RTMP itself
+                # fails, while the local visual FIFO preserves hot-swap safety.
                 cmd = youtube_av + [
                     "-flvflags",
                     "no_duration_filesize",
+                    "-flush_packets",
+                    "1",
                     "-f",
                     "flv",
                     self.target(),
@@ -505,7 +507,7 @@ class StreamCore:
                     "1000000",
                     self.target(),
                 ]
-        self.ffmpeg_log = open(self.state / "ffmpeg.log", "ab", buffering=0)
+        self.ffmpeg_log = open(self.state / "ffmpeg.log", "wb" if self.platform == "youtube-gta-vi" else "ab", buffering=0)
         self.encoder = subprocess.Popen(cmd, stdout=self.ffmpeg_log, stderr=self.ffmpeg_log)
         self.connected_since = time.time()
 
