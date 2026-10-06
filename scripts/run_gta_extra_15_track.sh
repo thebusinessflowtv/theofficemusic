@@ -154,10 +154,14 @@ PY
     continue
   fi
 
-  if ! git fetch origin main
+  if ! git fetch origin main; then
+    echo "Could not refresh current GTA VI library before diversity check."
+    rm -rf "$TMP"
+    continue
+  fi
   git show origin/main:control/music-library.json > build/current-music-library.json
 
-  python scripts/audio_diversity_gate.py build/approved.mp3 \
+  if ! python scripts/audio_diversity_gate.py build/approved.mp3 \
       --library build/current-music-library.json \
       --playlist-key gta-vi-vice-city \
       --out build/diversity.json; then
@@ -166,6 +170,7 @@ PY
     continue
   fi
 
+  echo "Diversity gate approved variant $VARIANT_ATTEMPT."
   APPROVED=1
   rm -rf "$TMP"
   break
