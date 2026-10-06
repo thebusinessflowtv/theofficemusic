@@ -254,7 +254,15 @@ class VisualEngine:
 
     def start_sender(self, path, loop_url):
         self.stop_sender()
-        target = f"udp://127.0.0.1:{self.udp_port}?pkt_size=1316"
+        if self.platform == "youtube-gta-vi":
+            fifo = self.state / "video.ts"
+            if fifo.exists() and not fifo.is_fifo():
+                fifo.unlink()
+            if not fifo.exists():
+                os.mkfifo(fifo)
+            target = str(fifo)
+        else:
+            target = f"udp://127.0.0.1:{self.udp_port}?pkt_size=1316"
         if self.platform == "youtube-ui-test":
             self.sync_ui_test_text()
             assets = pathlib.Path("/state/ui-test-assets")
@@ -338,7 +346,7 @@ class VisualEngine:
             )
             gop = self.fps * 2
             cmd = [
-                "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin",
+                "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin", "-y",
                 "-re", "-stream_loop", "-1", "-i", str(path),
                 "-loop", "1", "-i", header,
                 "-loop", "1", "-i", web,
@@ -357,7 +365,7 @@ class VisualEngine:
             ]
         else:
             cmd = [
-                "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin",
+                "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin", "-y",
                 "-re", "-stream_loop", "-1", "-i", str(path),
                 "-map", "0:v:0", "-an", "-c:v", "copy",
                 "-bsf:v", "h264_mp4toannexb,dump_extra=freq=keyframe",
