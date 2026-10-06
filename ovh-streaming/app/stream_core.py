@@ -395,44 +395,20 @@ class StreamCore:
                 ]
         else:
             if self.platform == "youtube-gta-vi":
-                # GTA VI receives its visual through a local MPEG-TS/UDP hot-swap
-                # feed. Re-encode at the final publisher boundary so transient
-                # packet loss or late SPS/PPS on the internal feed can never leak
-                # into the FLV/RTMP stream sent to YouTube.
+                # The visual engine already prepares a compliant H.264 1080p60
+                # CBR stream with fixed GOPs and repeated headers. Re-encoding it
+                # a second time at the publisher boundary can fall behind,
+                # overflow the local MPEG-TS/UDP buffer and produce H.264
+                # discontinuities. Copy the prepared video and encode only audio.
                 youtube_av = common + [
-                    "-filter_complex",
-                    f"[0:v]setpts=PTS-STARTPTS,fps={self.fps},format=yuv420p[v];"
-                    "[1:a]asetpts=N/SR/TB,aresample=async=1000:min_hard_comp=0.100:first_pts=0[a]",
                     "-map",
-                    "[v]",
+                    "0:v:0",
                     "-map",
-                    "[a]",
+                    "1:a:0",
                     "-c:v",
-                    "libx264",
-                    "-preset",
-                    self.vpreset,
-                    "-tune",
-                    "zerolatency",
-                    "-profile:v",
-                    self.vprofile,
-                    "-bf",
-                    "0",
-                    "-b:v",
-                    f"{self.vbitrate}k",
-                    "-minrate",
-                    f"{self.vbitrate}k",
-                    "-maxrate",
-                    f"{self.vbitrate}k",
-                    "-bufsize",
-                    f"{self.bufsize}k",
-                    "-g",
-                    str(self.fps * 2),
-                    "-keyint_min",
-                    str(self.fps * 2),
-                    "-sc_threshold",
-                    "0",
-                    "-x264-params",
-                    "nal-hrd=cbr:force-cfr=1:repeat-headers=1",
+                    "copy",
+                    "-tag:v",
+                    "7",
                     "-c:a",
                     "aac",
                     "-b:a",
@@ -441,6 +417,8 @@ class StreamCore:
                     "48000",
                     "-ac",
                     "2",
+                    "-af",
+                    "asetpts=N/SR/TB,aresample=async=1000:min_hard_comp=0.100:first_pts=0",
                     "-max_interleave_delta",
                     "1000000",
                 ]
