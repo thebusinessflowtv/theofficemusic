@@ -566,9 +566,12 @@ def hot_patch_av(target="all"):
 
 
 def reload_control_agent():
-    # Control-plane only: this container does not carry audio/video/RTMP.
+    # Control-plane only: this container does not carry production RTMP publishers.
+    # Copy the supervisor and child engine code so isolated dynamic YouTube slots
+    # can be introduced without recreating Deep House/Rainy publisher containers.
     name=CONTAINERS.get("ovh-agent","peter-lofi-ovh-agent")
-    run(["docker","cp",str(OVH/"app"/"ovh_agent.py"),f"{name}:/app/ovh_agent.py"],timeout=30)
+    for filename in ("ovh_agent.py","stream_core.py","audio_engine.py","visual_engine.py"):
+        run(["docker","cp",str(OVH/"app"/filename),f"{name}:/app/{filename}"],timeout=30)
     run(["docker","restart",name],timeout=60)
     time.sleep(3)
     out=run(["docker","inspect","-f","{{.State.Running}}",name],timeout=20).strip().lower()
@@ -992,15 +995,30 @@ def execute(cmd):
     if action=="deploy_all":
         return {"old_head":old,"new_head":new,"services":deploy_all()},False
     if action=="deploy_host_agent":
-        # Refreshing this host agent never recreates publisher containers. When
-        # a new UI-test marker is present, refresh only the non-publisher
-        # control container and include its isolated state in the ACK.
+        # Refreshing this host agent never recreates publisher containers.
         bootstrap=bootstrap_ui_test_control_agent()
+        control_plane=None
+        marker=REPO/"control"/"publish-control-plane-on-host-deploy.json"
+        if marker.exists():
+            try:
+                cfg=json.loads(marker.read_text(encoding="utf-8"))
+                version=str(cfg.get("version") or "")
+            except Exception as exc:
+                raise RuntimeError(f"invalid control-plane publish marker: {exc}")
+            st=read_state()
+            if version and str(st.get("control_plane_publish_version") or "")!=version:
+                control_plane=publish_mediaforge_control_plane()
+                st["control_plane_publish_version"]=version
+                st["control_plane_published_at"]=now()
+                write_state(st)
+            elif version:
+                control_plane={"status":"already_applied","version":version}
         return {
             "old_head":old,
             "new_head":new,
             "host_agent":"reloading",
             "ui_test_bootstrap":bootstrap,
+            "control_plane_publish":control_plane,
             "ui_test":ui_test_status_snapshot(),
         },True
     if action=="run_twitch_dj_balance":
