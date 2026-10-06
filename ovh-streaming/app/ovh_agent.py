@@ -31,13 +31,15 @@ REMOTE_STATUS_SECONDS=max(5,int(os.environ.get("OVH_REMOTE_STATUS_SECONDS","10")
 GTA_PLAYLIST_SYNC_SECONDS=max(10,int(os.environ.get("OVH_GTA_PLAYLIST_SYNC_SECONDS","20")))
 GITHUB_RAW_BASE=os.environ.get("MEDIAFORGE_GITHUB_RAW_BASE","https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main").rstrip("/")
 GITHUB_FALLBACK_MAX_AGE_SECONDS=max(30,int(os.environ.get("OVH_GITHUB_FALLBACK_MAX_AGE_SECONDS","900")))
-SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy","youtube-ui-test")
+SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy","youtube-gta-vi","youtube-ui-test")
 AGENT_DIR=STATE/"agent"
 PROCESSED=AGENT_DIR/"processed.json"
 LOCAL_STATUS=AGENT_DIR/"status.json"
 LOCAL_INBOX=AGENT_DIR/"local-inbox"
 AGENT_DIR.mkdir(parents=True,exist_ok=True)
 LOCAL_INBOX.mkdir(parents=True,exist_ok=True)
+GTA_PROC=None
+GTA_LOG=None
 UI_TEST_PROC=None
 UI_TEST_LOG=None
 
@@ -771,6 +773,69 @@ def add_approved_gaming30_to_dj_mix(cmd):
     return result
 
 
+def _gta_secret_path():
+    return STATE/"youtube-gta-vi"/"runtime-secret.json"
+
+
+def ensure_gta_process():
+    global GTA_PROC, GTA_LOG
+    st=STATE/"youtube-gta-vi"
+    desired=read_json(st/"desired.json",{}) or {}
+    wants_live=str(desired.get("desired") or "stopped").lower() not in {"stopped","stop","offline"}
+    if not wants_live:
+        if GTA_PROC and GTA_PROC.poll() is None:
+            try:
+                GTA_PROC.send_signal(signal.SIGTERM)
+                GTA_PROC.wait(timeout=8)
+            except Exception:
+                try: GTA_PROC.kill()
+                except Exception: pass
+        GTA_PROC=None
+        if GTA_LOG:
+            try: GTA_LOG.close()
+            except Exception: pass
+        GTA_LOG=None
+        return
+
+    if GTA_PROC and GTA_PROC.poll() is None:
+        return
+
+    secret=read_json(_gta_secret_path(),{}) or {}
+    stream_url=str(secret.get("stream_url") or "").strip()
+    stream_key=str(secret.get("stream_key") or "").strip()
+    if not stream_url or not stream_key:
+        return
+
+    playlist=st/"playlist.json"
+    if not playlist.exists():
+        return
+
+    env=os.environ.copy()
+    env.update({
+        "STREAM_URL":stream_url,
+        "STREAM_KEY":stream_key,
+        "LOOP_URL":str(desired.get("loop_url") or ""),
+        "PLAYLIST_FILE":"/config/youtube-deep-house.json",
+        "VIDEO_FPS":"60",
+        "VIDEO_BITRATE_KBPS":"8000",
+        "VIDEO_BUFSIZE_KBPS":"16000",
+        "AUDIO_BITRATE_KBPS":"192",
+        "VIDEO_PROFILE":"main",
+        "VIDEO_PRESET":"superfast",
+        "STREAM_PROFILE_VERSION":"gta-vi-v1",
+        "STARTUP_PREROLL_SECONDS":"1.5",
+        "AUDIO_READY_TIMEOUT_SECONDS":"90",
+        "VIDEO_UDP_PORT":"19160",
+        "BOOTSTRAP_SESSION_ID":str(desired.get("session_id") or "gta-vi"),
+        "BOOTSTRAP_TITLE":str(desired.get("title") or "GTA VI - Vice City"),
+    })
+    GTA_LOG=open(st/"controller.log","ab",buffering=0)
+    GTA_PROC=subprocess.Popen(
+        ["python","/app/stream_core.py","--platform","youtube-gta-vi"],
+        env=env,stdout=GTA_LOG,stderr=GTA_LOG,
+    )
+
+
 def _ui_test_secret_path():
     return STATE/"youtube-ui-test"/"runtime-secret.json"
 
@@ -846,6 +911,54 @@ def apply_command(cmd):
     desired_path=st/"desired.json"
     desired=read_json(desired_path,{}) or {}
     action=str(cmd.get("action") or "start").lower()
+
+    if slot=="youtube-gta-vi":
+        if action in {"start","resume","restart"}:
+            stream_url=str(cmd.get("stream_url") or "").strip()
+            stream_key=str(cmd.get("stream_key") or "").strip()
+            secret_path=_gta_secret_path()
+            if stream_url and stream_key:
+                atomic_json(secret_path,{"stream_url":stream_url,"stream_key":stream_key,"updated_at":iso_now()})
+                try: os.chmod(secret_path,0o600)
+                except Exception: pass
+            elif not secret_path.exists():
+                raise ValueError("stream_url and stream_key are required for first youtube-gta-vi start")
+
+            tracks=cmd.get("tracks")
+            if isinstance(tracks,list) and tracks:
+                atomic_json(st/"playlist.json",{
+                    "station":"youtube-gta-vi",
+                    "playlist_key":str(cmd.get("playlist_key") or "gta-vi-vice-city"),
+                    "shuffle":bool(cmd.get("shuffle",True)),
+                    "repeat":bool(cmd.get("repeat",True)),
+                    "updated_at":iso_now(),
+                    "tracks":tracks,
+                })
+
+            desired.update({
+                "runtime":"ovh",
+                "runtime_slot":"youtube-gta-vi",
+                "session_id":str(cmd.get("session_id") or desired.get("session_id") or "gta-vi"),
+                "title":str(cmd.get("title") or desired.get("title") or "GTA VI - Vice City"),
+                "loop_url":str(cmd.get("loop_url") or desired.get("loop_url") or ""),
+                "playlist_key":str(cmd.get("playlist_key") or desired.get("playlist_key") or "gta-vi-vice-city"),
+                "desired":"live",
+                "generation":next_generation(desired),
+                "visual_revision":next_visual_revision(desired),
+                "updated_at":iso_now(),
+            })
+            atomic_json(desired_path,desired)
+            ensure_gta_process()
+            return
+        if action=="stop":
+            desired.update({
+                "desired":"stopped",
+                "generation":next_generation(desired),
+                "updated_at":iso_now(),
+            })
+            atomic_json(desired_path,desired)
+            ensure_gta_process()
+            return
 
     if slot=="youtube-ui-test":
         if action in {"start","resume","restart"}:
@@ -1408,6 +1521,11 @@ def main():
     last_gta_sync=0.0
 
     while True:
+        try:
+            ensure_gta_process()
+        except Exception as exc:
+            print("GTA YouTube supervisor failed:",exc,flush=True)
+
         try:
             ensure_ui_test_process()
         except Exception as exc:
