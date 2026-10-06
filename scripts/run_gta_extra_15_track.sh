@@ -44,6 +44,50 @@ kaggle datasets files "$DATASET" | grep -q hf_token.txt
 APPROVED=0
 MAX_VARIANTS=4
 
+# Recover the already-generated first approved candidate from the failed 2026-10-06
+# Extra 15 run. That run produced technically valid/diverse audio, but an inverted
+# shell condition mislabeled exit code 0 as rejection. Revalidate against the
+# CURRENT playlist so recovered extras are also checked against extras inserted
+# earlier in this corrected run.
+RECOVERY_RUN_ID="37416684072"
+RECOVERY_KERNEL="$KAGGLE_USERNAME/peter-lofi-gta-extra15-$INDEX-v1-$RECOVERY_RUN_ID"
+echo "Trying approved-audio recovery from $RECOVERY_KERNEL"
+rm -rf generated
+mkdir -p generated
+if kaggle kernels output "$RECOVERY_KERNEL" -p generated >/tmp/gta-extra-recovery.log 2>&1; then
+  cat /tmp/gta-extra-recovery.log
+  RECOVERY_WAV="$(find generated -type f -name '*.wav' -print -quit)"
+  RECOVERY_INDEX_FILE="$(find generated -type f -name 'track_index.txt' -print -quit)"
+  if test -n "$RECOVERY_WAV" && test -n "$RECOVERY_INDEX_FILE" && test "$(tr -d '\r\n ' < "$RECOVERY_INDEX_FILE")" = "$INDEX"; then
+    rm -f build/reference_profile.json build/qc.json build/diversity.json build/approved.mp3
+    python scripts/build_gta_extra_15_profile.py \
+      --index "$INDEX" \
+      --variant-attempt 1 \
+      --out build/reference_profile.json
+
+    if python scripts/quality_gate_audio.py "$RECOVERY_WAV" \
+        --reference-profile build/reference_profile.json \
+        --out build/qc.json \
+        --normalized build/approved.mp3; then
+      if git fetch origin main; then
+        git show origin/main:control/music-library.json > build/current-music-library.json
+        if python scripts/audio_diversity_gate.py build/approved.mp3 \
+            --library build/current-music-library.json \
+            --playlist-key gta-vi-vice-city \
+            --out build/diversity.json; then
+          echo "Recovered candidate for track $INDEX passed current QC + diversity gates."
+          APPROVED=1
+        else
+          echo "Recovered candidate for track $INDEX is too close to the updated playlist; generate a fresh replacement."
+        fi
+      fi
+    fi
+  fi
+else
+  cat /tmp/gta-extra-recovery.log || true
+fi
+
+if test "$APPROVED" -ne 1; then
 for VARIANT_ATTEMPT in $(seq 1 "$MAX_VARIANTS"); do
   echo "=== GTA extra family track $INDEX | diversity attempt $VARIANT_ATTEMPT/$MAX_VARIANTS ==="
   rm -rf generated
@@ -175,6 +219,7 @@ PY
   rm -rf "$TMP"
   break
 done
+fi
 
 if test "$APPROVED" -ne 1; then
   echo "Track $INDEX failed to produce a sufficiently distinct approved version after $MAX_VARIANTS attempts."
