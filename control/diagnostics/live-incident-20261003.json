@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-06T02:25:32.674074+00:00",
+  "checked_at": "2026-10-06T02:28:41.883236+00:00",
   "ovh": {
     "runtime": "ovh",
     "reported_at": "2026-10-03T18:22:25.725543Z",
@@ -320,9 +320,16 @@
       "enable_auto_start": true,
       "enable_auto_stop": false,
       "bound_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1791248187979918",
-      "stream_status": "inactive",
-      "health_status": "noData",
-      "configuration_issues": [],
+      "stream_status": "active",
+      "health_status": "bad",
+      "configuration_issues": [
+        {
+          "type": "videoIngestionStarved",
+          "severity": "error",
+          "reason": "Video output low",
+          "description": "YouTube is not receiving enough video to maintain smooth streaming. As such, viewers will experience buffering."
+        }
+      ],
       "cdn": {
         "ingestionType": "rtmp",
         "resolution": "1080p",
