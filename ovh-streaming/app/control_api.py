@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 STATE = pathlib.Path("/state")
-PLATFORMS = ("kick", "twitch", "youtube-deep-house", "youtube-rainy")
+PLATFORMS = ("kick", "twitch", "youtube-deep-house", "youtube-rainy", "youtube-gta-vi")
 
 
 def iso_now():
