@@ -1114,11 +1114,15 @@ def _gta_playlist_from_library(library):
 def _best_gta_catalog():
     """Prefer OVH-local catalog; use GitHub only when it has a newer/larger GTA playlist.
 
-    Live playback never depends on either source once playlist.json is written.
+    Returns source, chosen GTA playlist, local library and remote library so the
+    local MediaForge selector can be repaired without overwriting unrelated
+    local-only playlists.
     """
+    local={}
+    remote={}
     candidates=[]
     try:
-        local=fetch_json(API+"/api/ovh/agent/runtime-config?path=control/music-library.json&raw=1")
+        local=fetch_json(API+"/api/ovh/agent/runtime-config?path=control/music-library.json&raw=1") or {}
         gta=_gta_playlist_from_library(local)
         if gta:
             candidates.append(("ovh-local",local,gta))
@@ -1126,7 +1130,7 @@ def _best_gta_catalog():
         print("GTA catalog local fetch failed:",exc,flush=True)
 
     try:
-        remote=github_fetch_json("control/music-library.json")
+        remote=github_fetch_json("control/music-library.json") or {}
         gta=_gta_playlist_from_library(remote)
         if gta:
             candidates.append(("github-fallback",remote,gta))
@@ -1134,14 +1138,40 @@ def _best_gta_catalog():
         print("GTA catalog GitHub fallback failed:",exc,flush=True)
 
     if not candidates:
-        return "",{}
-    # Choose the source with the greatest number of playable approved tracks.
+        return "",{},local,remote
     def score(row):
         gta=row[2]
         tracks=[t for t in (gta.get("tracks") or []) if isinstance(t,dict) and t.get("url")]
         return (len(tracks), str((row[1] or {}).get("updated_at") or ""))
     source,library,gta=max(candidates,key=score)
-    return source,gta
+    return source,gta,local,remote
+
+
+def _sync_gta_into_local_music_library(local,remote):
+    """Mirror only the GTA playlist into OVH local_config, preserving all other local playlists."""
+    remote_gta=_gta_playlist_from_library(remote)
+    if not remote_gta:
+        return False
+    local=local if isinstance(local,dict) else {}
+    current=_gta_playlist_from_library(local)
+    old_tracks=[t for t in (current.get("tracks") or []) if isinstance(t,dict) and t.get("url")] if current else []
+    new_tracks=[t for t in (remote_gta.get("tracks") or []) if isinstance(t,dict) and t.get("url")]
+    if current and len(old_tracks)>=len(new_tracks):
+        return False
+
+    playlists=[p for p in (local.get("playlists") or []) if isinstance(p,dict) and p.get("key")!="gta-vi-vice-city"]
+    merged={
+        **local,
+        "version":local.get("version") or remote.get("version") or 1,
+        "updated_at":remote.get("updated_at") or iso_now(),
+        "playlists":[*playlists,remote_gta],
+    }
+    post_json(API+"/api/ovh/agent/runtime-config",{
+        "path":"control/music-library.json",
+        "payload":merged,
+    })
+    print("GTA playlist mirrored into OVH local music library:",len(new_tracks),flush=True)
+    return True
 
 
 def sync_gta_runtime_playlists():
@@ -1151,9 +1181,16 @@ def sync_gta_runtime_playlists():
     notices the mtime change, keeps the current decoder/RTMP publisher alive,
     and uses the expanded list for subsequent track choices.
     """
-    source,gta=_best_gta_catalog()
+    source,gta,local_library,remote_library=_best_gta_catalog()
     if not gta:
         return {"status":"no-catalog","updated_slots":[]}
+
+    local_library_synced=False
+    if remote_library:
+        try:
+            local_library_synced=_sync_gta_into_local_music_library(local_library,remote_library)
+        except Exception as exc:
+            print("GTA local music-library mirror failed:",exc,flush=True)
 
     canonical=[]
     seen=set()
@@ -1228,6 +1265,7 @@ def sync_gta_runtime_playlists():
         "checked_at":iso_now(),
         "rtmp_restart":False,
         "force_skip":False,
+        "local_music_library_synced":local_library_synced,
     }
     atomic_json(AGENT_DIR/"gta-playlist-sync.json",result)
     if updated:
