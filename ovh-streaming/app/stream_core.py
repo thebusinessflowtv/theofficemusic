@@ -401,6 +401,8 @@ class StreamCore:
                 "1:a:0",
                 "-c:v",
                 "copy",
+                "-tag:v",
+                "7",
                 "-c:a",
                 "aac",
                 "-b:a",
