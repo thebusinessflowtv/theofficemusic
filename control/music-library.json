@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-06T04:58:22.269759+00:00",
+  "updated_at": "2026-10-06T05:03:50.054561+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3226,8 +3226,8 @@
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
       ],
-      "track_count": 34,
-      "total_duration_seconds": 10200,
+      "track_count": 35,
+      "total_duration_seconds": 10500,
       "tracks": [
         {
           "id": "gta-vice-city-20261005-01",
@@ -3568,6 +3568,16 @@
           "source": "gta-vi-vice-city",
           "quality_gate": "technical_checks_passed",
           "target_bpm": 110
+        },
+        {
+          "id": "gta-vice-city-20261005-35",
+          "title": "Vice City Lights",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-035-37412609926/peter-lofi-gta-vice-city-r2-035.mp3",
+          "duration_seconds": 300,
+          "position": 40,
+          "source": "gta-vi-vice-city",
+          "quality_gate": "technical_checks_passed",
+          "target_bpm": 117
         }
       ],
       "planned_duration_seconds": 16500,

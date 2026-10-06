@@ -1,0 +1,68 @@
+{
+  "index": 35,
+  "status": "generated",
+  "track": {
+    "id": "gta-vice-city-20261005-35",
+    "title": "Vice City Lights",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-035-37412609926/peter-lofi-gta-vice-city-r2-035.mp3",
+    "duration_seconds": 300,
+    "position": 40,
+    "source": "gta-vi-vice-city",
+    "quality_gate": "technical_checks_passed",
+    "target_bpm": 117
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-06T05:03:05.001184Z",
+    "reference_index": 35,
+    "attempt": null,
+    "source_wav_sha256": "2cd14469f14fd1cce9a492951a4bd8953daaf9b057c50600945f1436b531da12",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -16.55,
+      "true_peak_db": -2.34,
+      "lra": 3.5,
+      "threshold_lufs": -26.65
+    },
+    "silence_seconds": 0,
+    "silence_ratio": 0.0,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "run_id": "37412609926"
+}
