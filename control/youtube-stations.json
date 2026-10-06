@@ -29,7 +29,18 @@
       "youtube_broadcast_id": "C9Et10tejC8",
       "current_session_id": "72fcb955-bbb3-41d1-b8d0-fd90427c57a5",
       "status": "live"
+    },
+    {
+      "key": "gta-vi",
+      "name": "GTA VI - Vice City",
+      "enabled": true,
+      "runtime": "ovh",
+      "ovh_slot": "youtube-gta-vi",
+      "youtube_stream_id": null,
+      "youtube_broadcast_id": null,
+      "current_session_id": null,
+      "status": "stopped"
     }
   ],
-  "updated_at": "2026-10-03T16:56:13.731146+00:00"
+  "updated_at": "2026-10-06T00:32:23.743Z"
 }
