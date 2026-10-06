@@ -1,0 +1,142 @@
+name: Peter Lofi — Inspect Public Non-Live Catalog
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'control/peterlofi-youtube-catalog-request/*.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: peterlofi-youtube-catalog-inspect
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+      YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      EXPECTED_CHANNEL_ID: UCxO4Cl7xCdcTsWkmxD_6Wfg
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+
+      - name: Fetch complete catalog (read only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p control/peterlofi-youtube-catalog
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+
+          creds=Credentials(
+              token=None,
+              refresh_token=os.environ['YOUTUBE_REFRESH_TOKEN'],
+              token_uri='https://oauth2.googleapis.com/token',
+              client_id=os.environ['YOUTUBE_CLIENT_ID'],
+              client_secret=os.environ['YOUTUBE_CLIENT_SECRET'],
+              scopes=['https://www.googleapis.com/auth/youtube'],
+          )
+          creds.refresh(Request())
+          yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+
+          channels=yt.channels().list(part='id,snippet,contentDetails',mine=True,maxResults=1).execute().get('items') or []
+          if not channels:
+              raise SystemExit('No authenticated YouTube channel')
+          ch=channels[0]
+          actual=str(ch['id'])
+          title=str((ch.get('snippet') or {}).get('title') or '')
+          if actual != os.environ['EXPECTED_CHANNEL_ID'] or 'peter' not in title.lower():
+              raise SystemExit(f'SAFETY BLOCK: authenticated channel is {title} ({actual}), not Peter Lofi')
+
+          uploads=ch['contentDetails']['relatedPlaylists']['uploads']
+          ids=[]
+          token=None
+          while True:
+              resp=yt.playlistItems().list(
+                  part='contentDetails', playlistId=uploads, maxResults=50, pageToken=token
+              ).execute()
+              ids.extend([x['contentDetails']['videoId'] for x in (resp.get('items') or [])])
+              token=resp.get('nextPageToken')
+              if not token:
+                  break
+
+          rows=[]
+          for i in range(0,len(ids),50):
+              resp=yt.videos().list(
+                  part='snippet,status,contentDetails,liveStreamingDetails,statistics',
+                  id=','.join(ids[i:i+50])
+              ).execute()
+              for v in (resp.get('items') or []):
+                  sn=v.get('snippet') or {}
+                  st=v.get('status') or {}
+                  stats=v.get('statistics') or {}
+                  was_or_is_live='liveStreamingDetails' in v
+                  rows.append({
+                    'video_id':v['id'],
+                    'title':sn.get('title') or '',
+                    'description':sn.get('description') or '',
+                    'tags':sn.get('tags') or [],
+                    'category_id':sn.get('categoryId') or '',
+                    'default_language':sn.get('defaultLanguage'),
+                    'default_audio_language':sn.get('defaultAudioLanguage'),
+                    'published_at':sn.get('publishedAt'),
+                    'privacy_status':st.get('privacyStatus'),
+                    'duration':(v.get('contentDetails') or {}).get('duration'),
+                    'views':int(stats.get('viewCount') or 0),
+                    'likes':int(stats.get('likeCount') or 0),
+                    'comments':int(stats.get('commentCount') or 0),
+                    'live_broadcast_content':sn.get('liveBroadcastContent'),
+                    'was_or_is_live':was_or_is_live,
+                    'eligible_public_non_live':st.get('privacyStatus')=='public' and not was_or_is_live,
+                  })
+
+          rows.sort(key=lambda x:x.get('published_at') or '',reverse=True)
+          eligible=[x for x in rows if x['eligible_public_non_live']]
+          out={
+            'channel_id':actual,
+            'channel_title':title,
+            'total_uploads':len(rows),
+            'eligible_public_non_live_count':len(eligible),
+            'eligible_public_non_live':eligible,
+            'all_uploads':rows,
+          }
+          Path('control/peterlofi-youtube-catalog/latest.json').write_text(
+              json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8'
+          )
+          print(json.dumps({
+            'channel_id':actual,
+            'channel_title':title,
+            'total_uploads':len(rows),
+            'eligible_public_non_live_count':len(eligible),
+            'eligible_ids':[x['video_id'] for x in eligible],
+          },ensure_ascii=False,indent=2))
+          PY
+
+      - name: Persist sanitized snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/peterlofi-youtube-catalog/latest.json
+          git commit -m "youtube: snapshot Peter Lofi public non-live catalog" || exit 0
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((N*2))
+          done
+          exit 1
