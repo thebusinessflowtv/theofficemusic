@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-06T02:31:54.900726+00:00",
+  "checked_at": "2026-10-06T02:53:52.475806+00:00",
   "ovh": {
     "runtime": "ovh",
     "reported_at": "2026-10-03T18:22:25.725543Z",
@@ -320,9 +320,22 @@
       "enable_auto_start": true,
       "enable_auto_stop": false,
       "bound_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1791248187979918",
-      "stream_status": "inactive",
-      "health_status": "noData",
-      "configuration_issues": [],
+      "stream_status": "active",
+      "health_status": "ok",
+      "configuration_issues": [
+        {
+          "type": "bitrateLow",
+          "severity": "warning",
+          "reason": "Video output low",
+          "description": "The stream's current bitrate (703.70 Kbps) is lower than the recommended bitrate. We recommend that you use a stream bitrate of 6800 Kbps."
+        },
+        {
+          "type": "bitrateLow",
+          "severity": "warning",
+          "reason": "Video output low",
+          "description": "The stream's current bitrate (703.70 Kbps) is lower than the recommended bitrate. We recommend that you use a stream bitrate of 6800 Kbps."
+        }
+      ],
       "cdn": {
         "ingestionType": "rtmp",
         "resolution": "1080p",
@@ -343,6 +356,6 @@
     "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA VI Inspired Soundtrack",
     "created_at": "2026-10-05 19:20:54",
     "id": 130776308,
-    "viewer_count": 1
+    "viewer_count": 2
   }
 }
