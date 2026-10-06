@@ -1172,14 +1172,43 @@ def diagnose_stream_service(slot):
     except Exception: pass
     try: visual_health=json.loads((OVH/"state"/slot/"visual-health.json").read_text(encoding="utf-8"))
     except Exception: pass
+    pipeline_probe={}
+    visual_probe={}
     try:
         container_name=CONTAINERS.get(slot) or ("peter-lofi-ovh-agent" if slot in ("youtube-gta-vi","youtube-ui-test") else "")
         if container_name:
             docker_stats=run(["docker","stats","--no-stream","--format","{{.CPUPerc}}|{{.MemUsage}}|{{.NetIO}}|{{.BlockIO}}",container_name],timeout=20).strip()
         else:
             docker_stats="stats_unavailable"
+
+        if slot=="youtube-gta-vi" and container_name:
+            probe_script=(
+                "import json,pathlib;"
+                "o={'stream_core_count':0,'visual_engine_count':0,'ffmpeg_count':0,'uses_video_fifo':False,'uses_udp_19160':False};"
+                "\nfor p in pathlib.Path('/proc').iterdir():"
+                "\n if not p.name.isdigit(): continue"
+                "\n try: c=(p/'cmdline').read_bytes().replace(b'\\x00',b' ').decode('utf-8','ignore')"
+                "\n except Exception: continue"
+                "\n if 'stream_core.py --platform youtube-gta-vi' in c: o['stream_core_count']+=1"
+                "\n if 'visual_engine.py --platform youtube-gta-vi' in c: o['visual_engine_count']+=1"
+                "\n if 'ffmpeg' in c: o['ffmpeg_count']+=1"
+                "\n if '/state/youtube-gta-vi/video.ts' in c: o['uses_video_fifo']=True"
+                "\n if 'udp://127.0.0.1:19160' in c: o['uses_udp_19160']=True"
+                "\nprint(json.dumps(o))"
+            )
+            pipeline_probe=json.loads(run(["docker","exec",container_name,"python","-c",probe_script],timeout=20))
+            prepared=str(visual_health.get("prepared_file") or "").strip()
+            if prepared:
+                visual_probe=json.loads(run([
+                    "docker","exec",container_name,"ffprobe","-v","error",
+                    "-select_streams","v:0",
+                    "-show_entries","stream=codec_name,width,height,r_frame_rate,avg_frame_rate,bit_rate",
+                    "-of","json",prepared
+                ],timeout=30))
     except Exception as exc:
-        docker_stats="stats_error:"+str(exc)[:180]
+        if not docker_stats:
+            docker_stats="stats_error:"+str(exc)[:180]
+        pipeline_probe={"error":str(exc)[:240]}
     return {
         "service":slot,
         "health":h,
@@ -1193,6 +1222,8 @@ def diagnose_stream_service(slot):
         "audio_health":audio_health,
         "visual_health":visual_health,
         "docker_stats":docker_stats,
+        "pipeline_probe":pipeline_probe,
+        "visual_probe":visual_probe,
         "ffmpeg_log_tail":_redact_stream_log(tail),
         "controller_log_tail":_redact_stream_log(controller_tail),
         "visual_ffmpeg_log_tail":_redact_stream_log(visual_tail),
