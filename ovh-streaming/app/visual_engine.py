@@ -94,7 +94,7 @@ class VisualEngine:
 
     def cache_path(self, url):
         token = hashlib.sha256(
-            f"{url}|{self.fps}|{self.vbitrate}|{self.bufsize}|{self.vprofile}|{self.vpreset}|v2".encode()
+            f"{url}|{self.fps}|{self.vbitrate}|{self.bufsize}|{self.vprofile}|{self.vpreset}|v3-repeat-headers".encode()
         ).hexdigest()[:24]
         return self.cache_dir / f"{token}.mp4"
 
@@ -153,7 +153,7 @@ class VisualEngine:
             "-g", str(gop),
             "-keyint_min", str(gop),
             "-sc_threshold", "0",
-            "-x264-params", "nal-hrd=cbr:force-cfr=1",
+            "-x264-params", "nal-hrd=cbr:force-cfr=1:repeat-headers=1",
             "-movflags", "+faststart",
             str(temp),
         ]
@@ -360,7 +360,8 @@ class VisualEngine:
                 "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin",
                 "-re", "-stream_loop", "-1", "-i", str(path),
                 "-map", "0:v:0", "-an", "-c:v", "copy",
-                "-bsf:v", "h264_mp4toannexb",
+                "-bsf:v", "h264_mp4toannexb,dump_extra=freq=keyframe",
+                "-mpegts_flags", "+resend_headers",
                 "-muxdelay", "0", "-muxpreload", "0",
                 "-f", "mpegts", target,
             ]
