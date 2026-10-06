@@ -1,4 +1,4 @@
 {
-  "version": "figma-ui-test-v3",
-  "purpose": "Refresh only OVH control code and bridge latest private youtube-ui-test command through local state. Never recreate production publishers."
+  "version": "figma-ui-test-v4-gta-radio-visual",
+  "purpose": "Refresh only OVH control code, preserve all publisher containers, and bridge approved local hot-swap visual requests without RTMP restart."
 }
