@@ -1,0 +1,28 @@
+{
+  "id": "twitch-kick-30m-two-video-v1",
+  "enabled": true,
+  "interval_seconds": 1800,
+  "runtime_slots": [
+    "twitch",
+    "kick"
+  ],
+  "assets": [
+    {
+      "asset_id": "0ace0e7e-0613-4cce-b138-a218f23ba3ca",
+      "title": "VÍDEO RADIO GTA VI.mp4",
+      "size_bytes": 78955796,
+      "local_name": "rotation-gta-radio.mp4"
+    },
+    {
+      "title": "VÍDEO YOUTUBE 4K.mp4",
+      "size_bytes": 73674717,
+      "local_name": "rotation-youtube-4k.mp4"
+    }
+  ],
+  "behavior": {
+    "hot_swap_only": true,
+    "preserve_generation": true,
+    "preserve_encoder_pid": true,
+    "synchronized_slots": true
+  }
+}
