@@ -37,12 +37,12 @@
       "runtime": "ovh",
       "ovh_slot": "youtube-gta-vi",
       "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1791248187979918",
-      "youtube_broadcast_id": "0McHnnZDuVk",
-      "current_session_id": "7d2ced45-8d2e-485d-90f7-aebba8e7f916",
+      "youtube_broadcast_id": "_XpJTdzUoHE",
+      "current_session_id": "4b0b49d2-f1c3-4e2c-89e7-4ecff6b90e61",
       "status": "starting",
       "stream_provisioned_at": "2026-10-06T00:56:28.406935+00:00",
-      "last_started_at": "2026-10-06T00:56:28.406951+00:00"
+      "last_started_at": "2026-10-06T02:18:45.150727+00:00"
     }
   ],
-  "updated_at": "2026-10-06T00:56:28.406951+00:00"
+  "updated_at": "2026-10-06T02:18:45.150727+00:00"
 }
