@@ -1,0 +1,230 @@
+{
+  "action": "start",
+  "platform": "youtube",
+  "runtime_slot": "youtube-gta-vi",
+  "session_id": "4b0b49d2-f1c3-4e2c-89e7-4ecff6b90e61",
+  "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA VI Inspired Soundtrack",
+  "description": "Welcome to GTA 6 Radio — LIVE 24/7 🌴🌅\n\nA nonstop music experience inspired by the neon lights, beaches, nightlife, fast cars and unmistakable atmosphere of Vice City and Leonida.\n\n🎧 24/7 GTA VI inspired music\n🌴 Vice City vibes\n🚘 Night drives & cruising\n🌅 Sunset and beach atmosphere\n🌃 Neon nightlife energy\n🎮 Music for gaming, studying, working or just chilling\n\nWhether you're counting down to Grand Theft Auto VI, exploring the world of Jason and Lucia, or just looking for the perfect Vice City soundtrack for your day, this radio is always playing.\n\n🔴 LIVE 24 HOURS A DAY — 7 DAYS A WEEK\n\nTurn up the volume, take a drive and enjoy the sound of Vice City.\n\n🎵 All music featured in this stream is original / independently produced music inspired by the atmosphere and aesthetic of GTA VI and Vice City.\n\nThis is a fan-made music stream and is not affiliated with, endorsed by, or sponsored by Rockstar Games or Take-Two Interactive. This stream does not contain the official GTA VI soundtrack unless explicitly stated.\n\nSubscribe and keep the radio running. 🌴\n\n#GTA6 #GTAVI #GTA6Radio #GTAVIRadio #ViceCity #GTA6Music #GTAVIMusic #GTA6Soundtrack #ViceCityRadio #GTA6Live #GamingMusic #GrandTheftAutoVI #Leonida #ViceCityVibes #LiveRadio",
+  "duration_minutes": 0,
+  "loop_url": "http://127.0.0.1:8790/media/0ace0e7e-0613-4cce-b138-a218f23ba3ca/c27cee7ec1ed464faa25783f1bbd9747d669133182a74b96b6f4bd6d7a6b15f6",
+  "playlist_key": "gta-vi-vice-city",
+  "tracks": [
+    {
+      "id": "gta-vice-city-20261005-01",
+      "title": "Ocean Drive Heat",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-001-37261075361/peter-lofi-gta-vice-city-001.mp3",
+      "duration_seconds": 300,
+      "position": 6,
+      "target_bpm": 112
+    },
+    {
+      "id": "gta-vice-city-20261005-02",
+      "title": "Neon Palm Circuit",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-002-37349889973/peter-lofi-gta-vice-city-r2-002.mp3",
+      "duration_seconds": 300,
+      "position": 7,
+      "target_bpm": 116
+    },
+    {
+      "id": "gta-vice-city-20261005-03",
+      "title": "Midnight Causeway",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-003-37349889973/peter-lofi-gta-vice-city-r2-003.mp3",
+      "duration_seconds": 300,
+      "position": 8,
+      "target_bpm": 123
+    },
+    {
+      "id": "gta-vice-city-20261005-04",
+      "title": "Sunset Motel",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-004-37349889973/peter-lofi-gta-vice-city-r2-004.mp3",
+      "duration_seconds": 300,
+      "position": 9,
+      "target_bpm": 107
+    },
+    {
+      "id": "gta-vice-city-20261005-05",
+      "title": "Vice Afterglow",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-005-37349889973/peter-lofi-gta-vice-city-r2-005.mp3",
+      "duration_seconds": 300,
+      "position": 10,
+      "target_bpm": 114
+    },
+    {
+      "id": "gta-vice-city-20261005-06",
+      "title": "Coastal Static",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-006-37349889973/peter-lofi-gta-vice-city-r2-006.mp3",
+      "duration_seconds": 300,
+      "position": 11,
+      "target_bpm": 121
+    },
+    {
+      "id": "gta-vice-city-20261005-07",
+      "title": "Pink Horizon",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-007-37349889973/peter-lofi-gta-vice-city-r2-007.mp3",
+      "duration_seconds": 300,
+      "position": 12,
+      "target_bpm": 105
+    },
+    {
+      "id": "gta-vice-city-20261005-08",
+      "title": "Night Cruise FM",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-008-37349889973/peter-lofi-gta-vice-city-r2-008.mp3",
+      "duration_seconds": 300,
+      "position": 13,
+      "target_bpm": 112
+    },
+    {
+      "id": "gta-vice-city-20261005-09",
+      "title": "Electric Marina",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-009-37349889973/peter-lofi-gta-vice-city-r2-009.mp3",
+      "duration_seconds": 300,
+      "position": 14,
+      "target_bpm": 119
+    },
+    {
+      "id": "gta-vice-city-20261005-10",
+      "title": "South Beach Signal",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-010-37349889973/peter-lofi-gta-vice-city-r2-010.mp3",
+      "duration_seconds": 300,
+      "position": 15,
+      "target_bpm": 103
+    },
+    {
+      "id": "gta-vice-city-20261005-11",
+      "title": "Chrome Palms",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-011-37349889973/peter-lofi-gta-vice-city-r2-011.mp3",
+      "duration_seconds": 300,
+      "position": 16,
+      "target_bpm": 110
+    },
+    {
+      "id": "gta-vice-city-20261005-12",
+      "title": "Bayfront Motion",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-012-37349889973/peter-lofi-gta-vice-city-r2-012.mp3",
+      "duration_seconds": 300,
+      "position": 17,
+      "target_bpm": 117
+    },
+    {
+      "id": "gta-vice-city-20261005-13",
+      "title": "Heatwave Boulevard",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-013-37349889973/peter-lofi-gta-vice-city-r2-013.mp3",
+      "duration_seconds": 300,
+      "position": 18,
+      "target_bpm": 124
+    },
+    {
+      "id": "gta-vice-city-20261005-14",
+      "title": "Afterdark Skyline",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-014-37375397083/peter-lofi-gta-vice-city-r2-014.mp3",
+      "duration_seconds": 300,
+      "position": 19,
+      "target_bpm": 108
+    },
+    {
+      "id": "gta-vice-city-20261005-15",
+      "title": "Turbo Sunset",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-015-37375397083/peter-lofi-gta-vice-city-r2-015.mp3",
+      "duration_seconds": 300,
+      "position": 20,
+      "target_bpm": 115
+    },
+    {
+      "id": "gta-vice-city-20261005-16",
+      "title": "Glass Highway",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-016-37375397083/peter-lofi-gta-vice-city-r2-016.mp3",
+      "duration_seconds": 300,
+      "position": 21,
+      "target_bpm": 122
+    },
+    {
+      "id": "gta-vice-city-20261005-17",
+      "title": "Neon Flamingo",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-017-37375397083/peter-lofi-gta-vice-city-r2-017.mp3",
+      "duration_seconds": 300,
+      "position": 22,
+      "target_bpm": 106
+    },
+    {
+      "id": "gta-vice-city-20261005-18",
+      "title": "Moonlit Causeway",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-018-37375397083/peter-lofi-gta-vice-city-r2-018.mp3",
+      "duration_seconds": 300,
+      "position": 23,
+      "target_bpm": 113
+    },
+    {
+      "id": "gta-vice-city-20261005-19",
+      "title": "Palmline Pulse",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-019-37375397083/peter-lofi-gta-vice-city-r2-019.mp3",
+      "duration_seconds": 300,
+      "position": 24,
+      "target_bpm": 120
+    },
+    {
+      "id": "gta-vice-city-20261005-20",
+      "title": "Golden Overpass",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-020-37375397083/peter-lofi-gta-vice-city-r2-020.mp3",
+      "duration_seconds": 300,
+      "position": 25,
+      "target_bpm": 104
+    },
+    {
+      "id": "gta-vice-city-20261005-21",
+      "title": "Electric Coastline",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-021-37375397083/peter-lofi-gta-vice-city-r2-021.mp3",
+      "duration_seconds": 300,
+      "position": 26,
+      "target_bpm": 111
+    },
+    {
+      "id": "gta-vice-city-20261005-22",
+      "title": "Midnight Convertible",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-022-37375397083/peter-lofi-gta-vice-city-r2-022.mp3",
+      "duration_seconds": 300,
+      "position": 27,
+      "target_bpm": 118
+    },
+    {
+      "id": "gta-vice-city-20261005-23",
+      "title": "Velvet Asphalt",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-023-37375397083/peter-lofi-gta-vice-city-r2-023.mp3",
+      "duration_seconds": 300,
+      "position": 28,
+      "target_bpm": 102
+    },
+    {
+      "id": "gta-vice-city-20261005-24",
+      "title": "Ocean Neon",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-024-37375397083/peter-lofi-gta-vice-city-r2-024.mp3",
+      "duration_seconds": 300,
+      "position": 29,
+      "target_bpm": 109
+    },
+    {
+      "id": "gta-vice-city-20261005-25",
+      "title": "City Heatline",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-025-37375397083/peter-lofi-gta-vice-city-r2-025.mp3",
+      "duration_seconds": 300,
+      "position": 30,
+      "target_bpm": 116
+    },
+    {
+      "id": "gta-vice-city-20261005-26",
+      "title": "Nightwave District",
+      "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-gta-vice-city-r2-026-37375397083/peter-lofi-gta-vice-city-r2-026.mp3",
+      "duration_seconds": 300,
+      "position": 31,
+      "target_bpm": 123
+    }
+  ],
+  "shuffle": true,
+  "repeat": true,
+  "stream_url": "rtmps://a.rtmps.youtube.com/live2",
+  "stream_key": "13tj-vuer-arcr-bqab-1z75",
+  "source": "github-actions-oidc-youtube-bridge",
+  "github_run_id": "37403491302",
+  "id": "1c97a435-18da-4c55-8a9f-fc0382bfe5db",
+  "runtime": "ovh",
+  "requested_at": "2026-10-06T02:18:54.370Z"
+}
