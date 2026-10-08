@@ -1,6 +1,6 @@
 {
   "id": "twitch-kick-30m-two-video-v1",
-  "enabled": true,
+  "enabled": false,
   "interval_seconds": 1800,
   "runtime_slots": [
     "twitch",
@@ -24,5 +24,10 @@
     "preserve_generation": true,
     "preserve_encoder_pid": true,
     "synchronized_slots": true
+  },
+  "incident": {
+    "date": "2026-10-08",
+    "status": "suspended_until_zero_drop_verified",
+    "reason": "30m transitions coincide with Twitch and Kick ingest drops; preserve RTMP sessions"
   }
 }
