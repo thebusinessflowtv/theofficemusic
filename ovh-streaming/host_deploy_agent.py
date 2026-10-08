@@ -36,6 +36,9 @@ WATCHDOG_INTERVAL=max(2,int(os.environ.get("MEDIAFORGE_WATCHDOG_SECONDS","5")))
 WATCHDOG_WINDOW=max(20,int(os.environ.get("MEDIAFORGE_WATCHDOG_WINDOW_SECONDS","60")))
 WATCHDOG_THRESHOLD=max(3,int(os.environ.get("MEDIAFORGE_WATCHDOG_ERROR_THRESHOLD","5")))
 WATCHDOG_COOLDOWN=max(30,int(os.environ.get("MEDIAFORGE_WATCHDOG_COOLDOWN_SECONDS","120")))
+# Incident 2026-10-08: observe RTMP errors, never kill active publishers automatically.
+# Manual recovery remains possible after diagnosing the affected platform.
+WATCHDOG_PUBLISHER_KILL_ENABLED=os.environ.get("MEDIAFORGE_WATCHDOG_PUBLISHER_KILL_ENABLED","0")=="1"
 SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy")
 DIAGNOSTIC_STATE_SLOTS=SLOTS+("youtube-gta-vi","youtube-ui-test")
 SERVICES=("ovh-agent","control-api")+SLOTS
@@ -1025,6 +1028,7 @@ def watchdog_tick():
         "mode":"local-ovh",
         "cloudflare_required":False,
         "container_restarts_allowed":False,
+        "publisher_auto_kill_enabled":WATCHDOG_PUBLISHER_KILL_ENABLED,
         "control_plane":ensure_control_plane_containers(),
         "services":{},
     }
@@ -1065,7 +1069,8 @@ def watchdog_tick():
         # Never recreate a container automatically. Recover only the publisher
         # child after a sustained burst of NEW network errors.
         if (
-            recent_errors>=WATCHDOG_THRESHOLD
+            WATCHDOG_PUBLISHER_KILL_ENABLED
+            and recent_errors>=WATCHDOG_THRESHOLD
             and h.get("encoder_pid")
             and h.get("status") in {"live","starting","restarting"}
             and now_ts-st["last_recovery"]>=WATCHDOG_COOLDOWN
