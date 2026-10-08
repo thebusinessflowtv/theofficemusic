@@ -337,56 +337,24 @@ class StreamCore:
         ]
 
         if self.platform in {"twitch", "kick"}:
-            # Twitch/Kick use a fresh CFR A/V clock inside the publisher.
-            # Audio timestamps are rebuilt from sample count so a track change
-            # cannot reset the mux clock. Keep the muxer from waiting forever
-            # for audio if one decoder is briefly late.
+            # Twitch/Kick visual_engine already encodes a 1080p30 H.264
+            # CBR stream, with repeated SPS/PPS and 2s keyframes.
+            # A second libx264 pass in the RTMP publisher was falling behind
+            # the 30fps UDP sender, corrupting TS packets and starving RTMP.
+            # Copy the prepared stream; only the independent PCM audio needs
+            # AAC encoding. This reduces publisher CPU/memory substantially.
+            # Automatic video rotation remains disabled during the incident.
             av_cmd = common + [
-                "-filter_complex",
-                f"[0:v]setpts=PTS-STARTPTS,fps={self.fps},format=yuv420p[v];"
-                "[1:a]asetpts=N/SR/TB,aresample=async=1000:min_hard_comp=0.100:first_pts=0[a]",
-                "-map",
-                "[v]",
-                "-map",
-                "[a]",
-                "-c:v",
-                "libx264",
-                "-preset",
-                self.vpreset,
-                "-tune",
-                "zerolatency",
-                "-profile:v",
-                self.vprofile,
-                "-bf",
-                "0",
-                "-b:v",
-                f"{self.vbitrate}k",
-                "-minrate",
-                f"{self.vbitrate}k",
-                "-maxrate",
-                f"{self.vbitrate}k",
-                "-bufsize",
-                f"{self.bufsize}k",
-                "-g",
-                str(self.fps * 2),
-                "-keyint_min",
-                str(self.fps * 2),
-                "-sc_threshold",
-                "0",
-                "-x264-params",
-                "nal-hrd=cbr:force-cfr=1",
-                "-c:a",
-                "aac",
-                "-b:a",
-                f"{self.abitrate}k",
-                "-ar",
-                "48000",
-                "-ac",
-                "2",
-                "-max_interleave_delta",
-                "250000",
-                "-flush_packets",
-                "1",
+                "-map", "0:v:0",
+                "-map", "1:a:0",
+                "-c:v", "copy",
+                "-c:a", "aac",
+                "-b:a", f"{self.abitrate}k",
+                "-ar", "48000",
+                "-ac", "2",
+                "-af", "asetpts=N/SR/TB,aresample=async=1000:min_hard_comp=0.100:first_pts=0",
+                "-max_interleave_delta", "250000",
+                "-flush_packets", "1",
             ]
             if self.platform == "twitch":
                 # Keep the encoder alive through short ingest/network hiccups.
