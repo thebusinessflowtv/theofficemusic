@@ -54,6 +54,30 @@ def deep_merge(base, override):
 
 
 def prepare_profile() -> Path:
+    # Dedicated original Lofi Hip Hop production job; all other generation stays unchanged.
+    if REQUEST_ID == "d0a8c876-127e-4d5e-971f-701703680036":
+        queue = json.loads((REPO_DIR / "control" / "lofi-hip-hop" / "queue.json").read_text(encoding="utf-8"))
+        if TRACK_COUNT != 36 or TRACK_DURATION_SECONDS != 300:
+            raise RuntimeError("Lofi Hip Hop batch must be exactly 36 original five-minute tracks")
+        base = json.loads((REPO_DIR / "config" / "peter_lofi_series.json").read_text(encoding="utf-8"))["defaults"]
+        base["channel"] = {"name": "Peter Lofi", "concept": "36 original Lofi Hip Hop instrumentals"}
+        base["music_dna"].update({
+            "instrumental_only": True, "bpm_min": 72, "bpm_max": 94,
+            "style_pool": ["warm instrumental jazzy lofi hip hop with mellow boom bap rhythms"],
+            "mood": ["warm", "jazzy", "cozy", "mellow", "focused"],
+            "percussion": "swung original hip-hop backbeat with soft snare and dusty kick",
+            "bass": "rounded jazz electric bass or upright bass",
+            "arrangement": "300 seconds; varied intro and independent evolving original melody",
+            "production": "warm cassette-flavored original lofi hip hop, tasteful stereo and rounded highs",
+        })
+        base["generation"]["track_duration_seconds"] = 300
+        base["generation"]["tracks_per_batch"] = 36
+        base["lofi_hip_hop_batch"] = queue
+        path = REPO_DIR / "config" / "runtime_lofi_hip_hop_profile.json"
+        path.write_text(json.dumps(base, ensure_ascii=False, indent=2), encoding="utf-8")
+        os.environ["SA3_ATTENTION_BACKEND"] = "sdpa"
+        print("Dedicated Lofi Hip Hop 36x300s production profile selected", flush=True)
+        return path
     if not SERIES_KEY:
         return REPO_DIR / "config" / "channel_profile.yaml"
     plan_path = REPO_DIR / "config" / "peter_lofi_series.json"
