@@ -19,6 +19,43 @@ TITLE_RIGHT = [
 
 
 def build_prompt(profile: dict, track_index: int, rng: random.Random) -> tuple[str, str, dict]:
+    if "lofi_hip_hop_batch" in profile:
+        queue=profile["lofi_hip_hop_batch"]
+        if len(queue.get("tracks",[]))!=36 or not 1<=track_index<=36:
+            raise RuntimeError("Lofi Hip Hop batch contract invalid")
+        track=queue["tracks"][track_index-1]
+        if track["index"]!=track_index:
+            raise RuntimeError("Lofi Hip Hop index mismatch")
+        prompt=(
+            "TrackType: Music, VocalType: Instrumental. Original Lofi Hip Hop exclusively, "
+            "classic laid-back jazzy boom bap and rich warm harmonic texture. "
+            f"Compose a fresh unique 300-second hip-hop instrumental at {track['target_bpm']} BPM. "
+            "The opening 30 seconds must be immediately recognizable and distinct from all other tracks: "
+            f"{track['intro_identity']}. "
+            f"Primary groove: {track['groove_identity']}. "
+            f"New original harmonic progression and chord voicings: {track['harmonic_identity']}. "
+            f"Melodic hook identity: {track['lead_identity']}. "
+            f"Bass arrangement: {track['bass_identity']}. "
+            f"Production tone: {track['texture_identity']}. "
+            "Musical instrumentation includes warm Rhodes electric piano, restrained boom-bap kick and snare, "
+            "jazzy electric bass, soft humanized swung hats, and an intimate original melodic accent. "
+            "Create a coherent five-minute A/B instrumental form with a fresh bridge, evolving chord inversions, "
+            "melody development, clear transitions, and a thoughtful musical outro. "
+            "Be consistent with Lofi Hip Hop, not house, techno, trap, EDM or cinematic scoring. "
+            "No singing, no talking, no existing samples or recognizable copyrighted melodies."
+        )
+        negative=_join([
+            "existing-song samples","identical introductions","identical one-bar drum loops",
+            "vocals","rap","speech","hard trap","house beat","EDM","clipping",
+            "long silence","abrupt cut"
+        ])
+        metadata={
+            "track_index":track_index,"title":track["title"],"style":"Lofi Hip Hop",
+            "bpm":track["target_bpm"],"instruments":["warm Rhodes","jazzy bass",track["lead_identity"],"boom bap drums"],
+            "mood":["mellow","jazzy","cozy"],"series":"Lofi Hip Hop",
+            "intro_identity":track["intro_identity"],"duration_seconds":300
+        }
+        return prompt,negative,metadata
     dna = deepcopy(profile["music_dna"])
     generation = profile["generation"]
 
