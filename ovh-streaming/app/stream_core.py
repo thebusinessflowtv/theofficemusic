@@ -357,28 +357,17 @@ class StreamCore:
                 "-flush_packets", "1",
             ]
             if self.platform == "twitch":
-                # Keep the encoder alive through short ingest/network hiccups.
-                # The fifo muxer reconnects the FLV publisher instead of making
-                # StreamCore tear down the whole A/V pipeline.
+                # Incident 2026-10-08: the fifo muxer kept the FFmpeg PID up
+                # while Twitch rejected every RTMPS connection (TLS EOF),
+                # silently dropping video and reporting LIVE for hours.
+                # The MPEG-TS H264 codec tag [27,0,0,0] is incompatible
+                # with FLV and must be remapped to the FLV H264 tag 7.
+                # Direct FLV guarantees a failed ingest terminates FFmpeg
+                # and triggers a visible publisher reconnect by StreamCore.
                 cmd = av_cmd + [
-                    "-f",
-                    "fifo",
-                    "-fifo_format",
-                    "flv",
-                    "-queue_size",
-                    "1200",
-                    "-attempt_recovery",
-                    "1",
-                    "-recover_any_error",
-                    "1",
-                    "-recovery_wait_time",
-                    "1",
-                    "-drop_pkts_on_overflow",
-                    "1",
-                    "-restart_with_keyframe",
-                    "1",
-                    "-max_recovery_attempts",
-                    "1000000",
+                    "-tag:v", "7",
+                    "-flvflags", "no_duration_filesize",
+                    "-f", "flv",
                     self.target(),
                 ]
             else:
