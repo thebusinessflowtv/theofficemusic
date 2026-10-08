@@ -1524,10 +1524,15 @@ def main():
     last_gta_sync=0.0
 
     while True:
-        try:
-            visual_rotation.tick(STATE,read_json,atomic_json,apply_command)
-        except Exception as exc:
-            print("visual rotation failed:",exc,flush=True)
+        # Incident safeguard: the legacy 30-minute sender replacement can
+        # disrupt MPEG-TS timestamps and drop the live RTMP ingest.
+        # Manual set_visual remains available; automatic rotation is opt-in
+        # only after a zero-drop transition has been verified in production.
+        if os.environ.get("OVH_ENABLE_30M_VISUAL_ROTATION", "0") == "1":
+            try:
+                visual_rotation.tick(STATE,read_json,atomic_json,apply_command)
+            except Exception as exc:
+                print("visual rotation failed:",exc,flush=True)
 
         try:
             ensure_gta_process()
