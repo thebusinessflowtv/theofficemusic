@@ -1,0 +1,25 @@
+{
+  "workflow": "office-music-publish.yml",
+  "inputs": {
+    "job_id": "d0a8c876-127e-4d5e-971f-701703680036",
+    "duration_minutes": "180",
+    "track_count": "36",
+    "track_seconds": "300",
+    "publish": "false",
+    "privacy": "private",
+    "title": "Lofi Hip Hop — 3 Hours Original Beats | Peter Lofi",
+    "loop_url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/office-assets-v1/office-music-master-loop.mp4",
+    "thumbnail_url": "",
+    "visual_mode": "video",
+    "visual_image_url": ""
+  },
+  "requested_at": "2026-10-08T22:08:00Z",
+  "source": "Peter Lofi 36 original Lofi Hip Hop instrumentals requested by owner",
+  "production_policy": {
+    "playlist_key": "lofi-hip-hop",
+    "count": 36,
+    "duration_each_seconds": 300,
+    "distinct_intros": true,
+    "do_not_modify_live_streams": true
+  }
+}
