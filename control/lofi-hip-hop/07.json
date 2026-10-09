@@ -1,0 +1,125 @@
+{
+  "index": 7,
+  "status": "generated",
+  "track": {
+    "id": "lofi-hip-hop-20261008-07",
+    "title": "City Library",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-007-37991966107/peter-lofi-lofi-hip-hop-007.mp3",
+    "duration_seconds": 300,
+    "position": 7,
+    "source": "lofi-hip-hop-original",
+    "target_bpm": 92,
+    "intro_identity": "A short tape-stop, then a clear electric-piano motif with delayed drum entrance",
+    "quality_gate": "technical_and_45s_intro_diversity_passed"
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-09T21:53:33.312518Z",
+    "reference_index": 7,
+    "attempt": null,
+    "source_wav_sha256": "752ecefbb837cd71f8d258655a1de54a22867269b944cecb3f089d341bb2c936",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -18.88,
+      "true_peak_db": -3.09,
+      "lra": 2.8,
+      "threshold_lufs": -29.28
+    },
+    "silence_seconds": 0,
+    "silence_ratio": 0.0,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "diversity_gate": {
+    "approved": true,
+    "rule": "Reject if first-45s spectral/envelope/rhythm signatures are excessively close to any already-approved playlist track.",
+    "compared_against": 6,
+    "comparisons": [
+      {
+        "id": "lofi-hip-hop-20261008-01",
+        "title": "Window Seat",
+        "intro_spectral_similarity": 0.714816,
+        "intro_envelope_correlation": -0.037632,
+        "rhythm_signature_correlation": 0.281675,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-02",
+        "title": "Faded Polaroid",
+        "intro_spectral_similarity": 0.746227,
+        "intro_envelope_correlation": 0.00996,
+        "rhythm_signature_correlation": 0.216017,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-03",
+        "title": "Afterglow Avenue",
+        "intro_spectral_similarity": 0.801265,
+        "intro_envelope_correlation": 0.026235,
+        "rhythm_signature_correlation": 0.15762,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-04",
+        "title": "Cafe Balcony",
+        "intro_spectral_similarity": 0.819001,
+        "intro_envelope_correlation": -0.132345,
+        "rhythm_signature_correlation": 0.212491,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-05",
+        "title": "Midnight Notebook",
+        "intro_spectral_similarity": 0.790823,
+        "intro_envelope_correlation": -0.038963,
+        "rhythm_signature_correlation": 0.257144,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-06",
+        "title": "Dusty Hallway",
+        "intro_spectral_similarity": 0.797628,
+        "intro_envelope_correlation": -0.010738,
+        "rhythm_signature_correlation": 0.235569,
+        "too_close": false
+      }
+    ]
+  },
+  "github_run_id": "37991966107",
+  "generated_at": "2026-10-09T21:53:58.314654+00:00"
+}

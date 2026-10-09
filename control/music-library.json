@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-09T21:47:59.487630+00:00",
+  "updated_at": "2026-10-09T21:53:58.311372+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3853,10 +3853,21 @@
           "target_bpm": 85,
           "intro_identity": "Start with a soft upright-bass pickup and isolated vibraphone note before the snare",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-07",
+          "title": "City Library",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-007-37991966107/peter-lofi-lofi-hip-hop-007.mp3",
+          "duration_seconds": 300,
+          "position": 7,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 92,
+          "intro_identity": "A short tape-stop, then a clear electric-piano motif with delayed drum entrance",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 6,
-      "total_duration_seconds": 1800,
+      "track_count": 7,
+      "total_duration_seconds": 2100,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
