@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-09T23:32:03.399741+00:00",
+  "updated_at": "2026-10-09T23:38:04.674876+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3985,10 +3985,21 @@
           "target_bpm": 81,
           "intro_identity": "Start with tremolo electric piano notes behind offbeat hats; kick after two bars",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-19",
+          "title": "Velvet Courtyard",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-019-37991966107/peter-lofi-lofi-hip-hop-019.mp3",
+          "duration_seconds": 300,
+          "position": 19,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 88,
+          "intro_identity": "Finger-played bass harmonics and a distant bell accent, followed by Rhodes chords",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 18,
-      "total_duration_seconds": 5400,
+      "track_count": 19,
+      "total_duration_seconds": 5700,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
