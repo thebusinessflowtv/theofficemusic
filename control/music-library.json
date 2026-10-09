@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-09T23:38:04.674876+00:00",
+  "updated_at": "2026-10-09T23:44:55.249963+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3996,10 +3996,21 @@
           "target_bpm": 88,
           "intro_identity": "Finger-played bass harmonics and a distant bell accent, followed by Rhodes chords",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-20",
+          "title": "Late Bus Home",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-020-37991966107/peter-lofi-lofi-hip-hop-020.mp3",
+          "duration_seconds": 300,
+          "position": 20,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 73,
+          "intro_identity": "A soft rain-on-window texture punctuated by a lone minor ninth piano chord",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 19,
-      "total_duration_seconds": 5700,
+      "track_count": 20,
+      "total_duration_seconds": 6000,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
