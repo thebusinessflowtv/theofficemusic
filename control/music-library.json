@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-09T22:06:20.238232+00:00",
+  "updated_at": "2026-10-09T22:13:51.581397+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3886,10 +3886,21 @@
           "target_bpm": 84,
           "intro_identity": "Walking double bass begins alone and the first snare arrives after a two-bar bass phrase",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-10",
+          "title": "Tape Letters",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-010-37991966107/peter-lofi-lofi-hip-hop-010.mp3",
+          "duration_seconds": 300,
+          "position": 10,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 91,
+          "intro_identity": "Two clipped Hammond-organ chord stabs answer a quiet shaker before any kick",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 9,
-      "total_duration_seconds": 2700,
+      "track_count": 10,
+      "total_duration_seconds": 3000,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
