@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-09T22:43:02.158562+00:00",
+  "updated_at": "2026-10-09T23:02:47.171422+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3941,10 +3941,21 @@
           "target_bpm": 75,
           "intro_identity": "Four simple upper-register piano notes spaced with silences, followed by brush drums",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-15",
+          "title": "Sidewalk Sketches",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-015-37991966107/peter-lofi-lofi-hip-hop-015.mp3",
+          "duration_seconds": 300,
+          "position": 15,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 82,
+          "intro_identity": "Start with a vibraphone call-and-response phrase above a silent rhythm section",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 14,
-      "total_duration_seconds": 4200,
+      "track_count": 15,
+      "total_duration_seconds": 4500,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
