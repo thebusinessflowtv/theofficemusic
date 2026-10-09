@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-06T14:15:39.055734+00:00",
+  "updated_at": "2026-10-09T21:17:28.490650+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3772,6 +3772,40 @@
         "tracks_per_family": 5,
         "trigger": "after current GTA VI - Vice City R2 workflow completes successfully"
       }
+    },
+    {
+      "key": "lofi-hip-hop",
+      "name": "Lofi Hip Hop",
+      "category": "Live Radio",
+      "series": "Lofi Hip Hop",
+      "genre": "Instrumental Lofi Hip Hop / Jazzy Boom Bap",
+      "moods": [
+        "warm",
+        "jazzy",
+        "chill",
+        "relaxed",
+        "focused"
+      ],
+      "source": "peter-lofi-lofi-hip-hop-production",
+      "tracks": [
+        {
+          "id": "lofi-hip-hop-20261008-01",
+          "title": "Window Seat",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-001-37991966107/peter-lofi-lofi-hip-hop-001.mp3",
+          "duration_seconds": 300,
+          "position": 1,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 72,
+          "intro_identity": "An isolated Rhodes ninth chord with no beat for two bars, then a dry rimshot pickup",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
+        }
+      ],
+      "track_count": 1,
+      "total_duration_seconds": 300,
+      "planned_track_count": 36,
+      "planned_duration_seconds": 10800,
+      "target_duration_seconds_per_track": 300,
+      "status": "generating"
     }
   ]
 }
