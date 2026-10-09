@@ -1,0 +1,28 @@
+{
+  "workflow": "office-music-publish.yml",
+  "inputs": {
+    "job_id": "1bea0b7f-f8aa-489b-9f55-fb7e0b8edc41",
+    "duration_minutes": "180",
+    "track_count": "36",
+    "track_seconds": "300",
+    "publish": "false",
+    "privacy": "private",
+    "title": "Lofi Hip Hop — Peter Lofi Original 36 Tracks",
+    "loop_url": "",
+    "thumbnail_url": "",
+    "visual_mode": "video",
+    "visual_image_url": ""
+  },
+  "source": "owner-direct-request-to-correct-and-run-lofi-hip-hop",
+  "production": {
+    "playlist_key": "lofi-hip-hop",
+    "playlist_name": "Lofi Hip Hop",
+    "planned_tracks": 36,
+    "seconds_each": 300,
+    "track_diversity": "first_45s_unique",
+    "engine": "stable-audio-3-medium-sdpa-t4",
+    "execution": "dedicated_36_independent_kaggle_jobs",
+    "publish_youtube": false,
+    "modify_lives": false
+  }
+}
