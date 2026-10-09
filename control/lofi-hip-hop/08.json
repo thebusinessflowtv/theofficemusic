@@ -1,0 +1,133 @@
+{
+  "index": 8,
+  "status": "generated",
+  "track": {
+    "id": "lofi-hip-hop-20261008-08",
+    "title": "Golden Vinyl",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-008-37991966107/peter-lofi-lofi-hip-hop-008.mp3",
+    "duration_seconds": 300,
+    "position": 8,
+    "source": "lofi-hip-hop-original",
+    "target_bpm": 77,
+    "intro_identity": "Begin with two reversed original Rhodes chords, resolve into a warm normal-played chord",
+    "quality_gate": "technical_and_45s_intro_diversity_passed"
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-09T21:59:09.112895Z",
+    "reference_index": 8,
+    "attempt": null,
+    "source_wav_sha256": "8ecbeff690464adb521697c448cfdd8ef35576dd3d2f7da466e59b49d3d2b3c6",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -18.36,
+      "true_peak_db": -3.09,
+      "lra": 3.1,
+      "threshold_lufs": -28.47
+    },
+    "silence_seconds": 0,
+    "silence_ratio": 0.0,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "diversity_gate": {
+    "approved": true,
+    "rule": "Reject if first-45s spectral/envelope/rhythm signatures are excessively close to any already-approved playlist track.",
+    "compared_against": 7,
+    "comparisons": [
+      {
+        "id": "lofi-hip-hop-20261008-01",
+        "title": "Window Seat",
+        "intro_spectral_similarity": 0.648243,
+        "intro_envelope_correlation": 0.138132,
+        "rhythm_signature_correlation": 0.370524,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-02",
+        "title": "Faded Polaroid",
+        "intro_spectral_similarity": 0.752074,
+        "intro_envelope_correlation": -0.03996,
+        "rhythm_signature_correlation": 0.724575,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-03",
+        "title": "Afterglow Avenue",
+        "intro_spectral_similarity": 0.768222,
+        "intro_envelope_correlation": 0.117962,
+        "rhythm_signature_correlation": 0.343383,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-04",
+        "title": "Cafe Balcony",
+        "intro_spectral_similarity": 0.699275,
+        "intro_envelope_correlation": -0.009644,
+        "rhythm_signature_correlation": 0.523694,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-05",
+        "title": "Midnight Notebook",
+        "intro_spectral_similarity": 0.787786,
+        "intro_envelope_correlation": 0.102665,
+        "rhythm_signature_correlation": 0.765487,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-06",
+        "title": "Dusty Hallway",
+        "intro_spectral_similarity": 0.715272,
+        "intro_envelope_correlation": 0.025887,
+        "rhythm_signature_correlation": 0.414431,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-07",
+        "title": "City Library",
+        "intro_spectral_similarity": 0.733213,
+        "intro_envelope_correlation": 0.013628,
+        "rhythm_signature_correlation": 0.225418,
+        "too_close": false
+      }
+    ]
+  },
+  "github_run_id": "37991966107",
+  "generated_at": "2026-10-09T21:59:26.640194+00:00"
+}
