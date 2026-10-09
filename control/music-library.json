@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-09T22:35:05.898901+00:00",
+  "updated_at": "2026-10-09T22:43:02.158562+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3930,10 +3930,21 @@
           "target_bpm": 90,
           "intro_identity": "Open with a soft original muted trumpet melody and a brief syncopated drum answer",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-14",
+          "title": "Dawn Espresso",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-014-37991966107/peter-lofi-lofi-hip-hop-014.mp3",
+          "duration_seconds": 300,
+          "position": 14,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 75,
+          "intro_identity": "Four simple upper-register piano notes spaced with silences, followed by brush drums",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 13,
-      "total_duration_seconds": 3900,
+      "track_count": 14,
+      "total_duration_seconds": 4200,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
