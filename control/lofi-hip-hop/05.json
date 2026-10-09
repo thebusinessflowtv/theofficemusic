@@ -1,0 +1,109 @@
+{
+  "index": 5,
+  "status": "generated",
+  "track": {
+    "id": "lofi-hip-hop-20261008-05",
+    "title": "Midnight Notebook",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-005-37991966107/peter-lofi-lofi-hip-hop-005.mp3",
+    "duration_seconds": 300,
+    "position": 5,
+    "source": "lofi-hip-hop-original",
+    "target_bpm": 78,
+    "intro_identity": "An original descending upright-piano run in rubato, then locked swung drums",
+    "quality_gate": "technical_and_45s_intro_diversity_passed"
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-09T21:41:50.269812Z",
+    "reference_index": 5,
+    "attempt": null,
+    "source_wav_sha256": "dc52199b5150d43d6aa5aeb034265c3a9dde54d70ba5434c9b77c04edf952359",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -17.01,
+      "true_peak_db": -2.62,
+      "lra": 2.0,
+      "threshold_lufs": -27.14
+    },
+    "silence_seconds": 0,
+    "silence_ratio": 0.0,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "diversity_gate": {
+    "approved": true,
+    "rule": "Reject if first-45s spectral/envelope/rhythm signatures are excessively close to any already-approved playlist track.",
+    "compared_against": 4,
+    "comparisons": [
+      {
+        "id": "lofi-hip-hop-20261008-01",
+        "title": "Window Seat",
+        "intro_spectral_similarity": 0.732393,
+        "intro_envelope_correlation": 0.090853,
+        "rhythm_signature_correlation": 0.31948,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-02",
+        "title": "Faded Polaroid",
+        "intro_spectral_similarity": 0.820102,
+        "intro_envelope_correlation": 0.302285,
+        "rhythm_signature_correlation": 0.743136,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-03",
+        "title": "Afterglow Avenue",
+        "intro_spectral_similarity": 0.845221,
+        "intro_envelope_correlation": -0.010772,
+        "rhythm_signature_correlation": 0.285109,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-04",
+        "title": "Cafe Balcony",
+        "intro_spectral_similarity": 0.824482,
+        "intro_envelope_correlation": -0.022083,
+        "rhythm_signature_correlation": 0.472457,
+        "too_close": false
+      }
+    ]
+  },
+  "github_run_id": "37991966107",
+  "generated_at": "2026-10-09T21:42:14.461009+00:00"
+}
