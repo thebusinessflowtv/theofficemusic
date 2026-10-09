@@ -1,0 +1,117 @@
+{
+  "index": 6,
+  "status": "generated",
+  "track": {
+    "id": "lofi-hip-hop-20261008-06",
+    "title": "Dusty Hallway",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-006-37991966107/peter-lofi-lofi-hip-hop-006.mp3",
+    "duration_seconds": 300,
+    "position": 6,
+    "source": "lofi-hip-hop-original",
+    "target_bpm": 85,
+    "intro_identity": "Start with a soft upright-bass pickup and isolated vibraphone note before the snare",
+    "quality_gate": "technical_and_45s_intro_diversity_passed"
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-09T21:47:35.183840Z",
+    "reference_index": 6,
+    "attempt": null,
+    "source_wav_sha256": "f4fe126daa015a7ccc7c9effb22c16f2ea2bc05d406d978b4af0d96ec01b4039",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -20.44,
+      "true_peak_db": -3.08,
+      "lra": 3.3,
+      "threshold_lufs": -30.54
+    },
+    "silence_seconds": 2.828,
+    "silence_ratio": 0.009428,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "diversity_gate": {
+    "approved": true,
+    "rule": "Reject if first-45s spectral/envelope/rhythm signatures are excessively close to any already-approved playlist track.",
+    "compared_against": 5,
+    "comparisons": [
+      {
+        "id": "lofi-hip-hop-20261008-01",
+        "title": "Window Seat",
+        "intro_spectral_similarity": 0.77205,
+        "intro_envelope_correlation": 0.000891,
+        "rhythm_signature_correlation": 0.264592,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-02",
+        "title": "Faded Polaroid",
+        "intro_spectral_similarity": 0.821665,
+        "intro_envelope_correlation": -0.133775,
+        "rhythm_signature_correlation": 0.284248,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-03",
+        "title": "Afterglow Avenue",
+        "intro_spectral_similarity": 0.840453,
+        "intro_envelope_correlation": 0.235477,
+        "rhythm_signature_correlation": 0.698844,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-04",
+        "title": "Cafe Balcony",
+        "intro_spectral_similarity": 0.864377,
+        "intro_envelope_correlation": 0.059907,
+        "rhythm_signature_correlation": 0.281922,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-05",
+        "title": "Midnight Notebook",
+        "intro_spectral_similarity": 0.820721,
+        "intro_envelope_correlation": -0.037351,
+        "rhythm_signature_correlation": 0.374776,
+        "too_close": false
+      }
+    ]
+  },
+  "github_run_id": "37991966107",
+  "generated_at": "2026-10-09T21:47:59.490957+00:00"
+}
