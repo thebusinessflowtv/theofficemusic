@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-09T22:20:30.324902+00:00",
+  "updated_at": "2026-10-09T22:27:23.810652+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3908,10 +3908,21 @@
           "target_bpm": 76,
           "intro_identity": "Start on barely audible brushed-snare ghost notes then introduce a jazzy chord on beat three",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-12",
+          "title": "Paper Lantern",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-012-37991966107/peter-lofi-lofi-hip-hop-012.mp3",
+          "duration_seconds": 300,
+          "position": 12,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 83,
+          "intro_identity": "Three stereo finger snaps and a warm bass slide lead into the beat",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 11,
-      "total_duration_seconds": 3300,
+      "track_count": 12,
+      "total_duration_seconds": 3600,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
