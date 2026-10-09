@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-09T23:02:47.171422+00:00",
+  "updated_at": "2026-10-09T23:15:13.221917+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3952,10 +3952,21 @@
           "target_bpm": 82,
           "intro_identity": "Start with a vibraphone call-and-response phrase above a silent rhythm section",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-16",
+          "title": "Quiet Turntable",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-016-37991966107/peter-lofi-lofi-hip-hop-016.mp3",
+          "duration_seconds": 300,
+          "position": 16,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 89,
+          "intro_identity": "A one-beat pause then a textured scratch-like transition into a syncopated boom-bap fill",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 15,
-      "total_duration_seconds": 4500,
+      "track_count": 16,
+      "total_duration_seconds": 4800,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
