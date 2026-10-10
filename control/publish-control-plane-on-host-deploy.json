@@ -1,5 +1,5 @@
 {
-  "version": "youtube-lofi-independent-runtime-20261010-v1",
-  "purpose": "Deploy MediaForge YouTube Lofi Hip Hop isolated host publisher control and keep all existing stream containers untouched.",
+  "version": "lofi-auth-and-orphan-recovery-20261010-v1",
+  "purpose": "Deploy real PeterLofi production backend with authenticated independent Lofi YouTube bridge and safe orphaned STARTING recovery.",
   "media_publishers_touched": false
 }
