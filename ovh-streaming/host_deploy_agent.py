@@ -1227,6 +1227,20 @@ def diagnose_stream_service(slot):
             isolated_container_probe["docker_errors"]=_redact_stream_log(docker_log)[-9000:]
         except Exception as exc:
             isolated_container_probe["docker_log_error"]=str(exc)[:170]
+        try:
+            check_script=(
+                "import pathlib,sys,json;"
+                "sys.path.insert(0,'/app');"
+                "import audio_engine;"
+                "from chat_requests import clear_freeze_after_track_change;"
+                "p=pathlib.Path('/state/youtube-lofi-hip-hop/playlist.json');"
+                "x=json.loads(p.read_text());"
+                "print(json.dumps({'module_import':'passed','playlist_key':x.get('playlist_key'),'count':len(x.get('tracks') or []),'python':sys.version_info.major}))"
+            )
+            isolated_container_probe["audio_import_probe"]=json.loads(
+                run(["docker","exec",name,"python","-c",check_script],timeout=16))
+        except Exception as exc:
+            isolated_container_probe["audio_import_error"]=_redact_stream_log(str(exc))[-1500:]
     try: desired=json.loads((OVH/"state"/slot/"desired.json").read_text(encoding="utf-8"))
     except Exception: pass
     try: now_playing=json.loads((OVH/"state"/slot/"now-playing.json").read_text(encoding="utf-8"))
