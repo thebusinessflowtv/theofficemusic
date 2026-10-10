@@ -1,5 +1,5 @@
 {
-  "version": "lofi-async-status-reconciliation-20261010-v1",
-  "purpose": "Ensure any failed Lofi YouTube launch is marked failed and does not reserve capacity indefinitely; preserve all active encoders.",
+  "version": "lofi-youtube-oauth-start-retry-20261010-v2",
+  "purpose": "Reload OVH host-deploy agent with isolated Lofi encoder health recognition and preserve all active Twitch Kick YouTube publishers",
   "media_publishers_touched": false
 }
