@@ -1422,6 +1422,46 @@ def launch_isolated_lofi_youtube(cmd):
             "existing_streams_restarted":False,"checked_at":now()}
 
 
+
+def relay_lofi_youtube_oauth(cmd):
+    """Use authenticated OVH host egress to reach GitHub bridge; no RTMP changes."""
+    import urllib.error
+    action=str(cmd.get("action") or "")
+    endpoint="https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/agent/youtube-github-bridge"
+    if action=="probe_lofi_youtube_oauth":
+        try:
+            post_json(endpoint,{"session_id":"","playlist_key":"lofi-hip-hop"})
+        except urllib.error.HTTPError as exc:
+            try: data=json.loads(exc.read().decode("utf-8","replace")[:700])
+            except Exception: data={}
+            if exc.code==400 and data.get("error")=="bridge_payload_incomplete":
+                return {"status":"ready","bridge_authenticated":True,
+                        "broadcast_created":False,"other_publishers_preserved":True}
+            raise RuntimeError("Remote OAuth bridge preflight rejected: HTTP "+str(exc.code))
+        raise RuntimeError("Unexpected remote OAuth bridge response: invalid probe accepted")
+    if action!="relay_lofi_youtube_oauth":
+        raise ValueError("Unsupported Lofi bridge operation")
+    sid=str(cmd.get("session_id") or "")
+    playlist=str(cmd.get("playlist_key") or "")
+    slot=str(cmd.get("runtime_slot") or "")
+    loop=str(cmd.get("loop_url") or "")
+    if (not re.fullmatch(r"[0-9a-f-]{36}",sid,re.I) or
+        playlist!="lofi-hip-hop" or slot!="youtube-lofi-hip-hop" or
+        not loop.startswith("http")):
+        raise ValueError("Invalid isolated Lofi launch request")
+    result=post_json(endpoint,{
+        "session_id":sid,"title":str(cmd.get("title") or "Lofi Hip Hop Radio"),
+        "description":str(cmd.get("description") or ""),
+        "loop_url":loop,"thumbnail_url":str(cmd.get("thumbnail_url") or ""),
+        "playlist_key":"lofi-hip-hop","runtime_slot":slot,
+        "source":"authenticated-ovh-host-agent",
+    })
+    if result.get("ok") is not True or result.get("queued") is not True:
+        raise RuntimeError("Remote YouTube bridge did not confirm dispatch")
+    return {"status":"queued","runtime_slot":slot,"session_id":sid,
+            "source":"authenticated-ovh-host-agent","other_publishers_preserved":True,
+            "new_broadcast_pending":True}
+
 def execute(cmd):
     action=str(cmd.get("action") or "")
     target=str(cmd.get("target") or "")
@@ -1436,6 +1476,8 @@ def execute(cmd):
         return rollback_service(target),False
 
     old,new=git_sync()
+    if action in ("relay_lofi_youtube_oauth","probe_lofi_youtube_oauth"):
+        return {"old_head":old,"new_head":new,**relay_lofi_youtube_oauth(cmd)},False
     if action=="launch_isolated_lofi_youtube":
         return {"old_head":old,"new_head":new,**launch_isolated_lofi_youtube(cmd)},False
     if action=="hot_patch_streaming":
@@ -1504,31 +1546,32 @@ def main():
     threading.Thread(target=watchdog_loop,name="mediaforge-watchdog",daemon=True).start()
 
     while True:
-        try:
-            batch=fetch_json(API+"/api/ovh/deploy-agent/commands?limit=3")
-            for cmd in batch.get("commands") or []:
-                cid=str(cmd.get("id") or "")
-                if not cid:continue
-                reload_self=False
-                try:
-                    result,reload_self=execute(cmd)
-                    post_json(API+"/api/ovh/deploy-agent/ack",{"id":cid,"status":"completed","result":result})
-                    print("deploy completed",cid,cmd.get("action"),cmd.get("target"),flush=True)
-                except Exception as exc:
-                    err=str(exc)[:1200]
+        for inbox_api in dict.fromkeys((API,"http://127.0.0.1:8790")):
+            try:
+                batch=fetch_json(inbox_api+"/api/ovh/deploy-agent/commands?limit=3")
+                for cmd in batch.get("commands") or []:
+                    cid=str(cmd.get("id") or "")
+                    if not cid:continue
+                    reload_self=False
                     try:
-                        head=""
-                        try: head=git_head() if REPO.exists() else ""
-                        except Exception: pass
-                        post_json(API+"/api/ovh/deploy-agent/ack",{"id":cid,"status":"failed","error":err,"result":{"git_head":head}})
-                    except Exception:pass
-                    print("deploy failed",cid,err,flush=True)
-                if reload_self:
-                    os.execv(sys.executable,[sys.executable,str(pathlib.Path(__file__).resolve())])
-        except Exception as exc:
-            # Cloudflare is only a deploy/control channel. A failure here does
-            # not touch local publishers or the watchdog.
-            print("deploy poll failed:",str(exc)[:800],flush=True)
+                        result,reload_self=execute(cmd)
+                        post_json(inbox_api+"/api/ovh/deploy-agent/ack",{"id":cid,"status":"completed","result":result})
+                        print("deploy completed",cid,cmd.get("action"),cmd.get("target"),flush=True)
+                    except Exception as exc:
+                        err=str(exc)[:1200]
+                        try:
+                            head=""
+                            try: head=git_head() if REPO.exists() else ""
+                            except Exception: pass
+                            post_json(inbox_api+"/api/ovh/deploy-agent/ack",{"id":cid,"status":"failed","error":err,"result":{"git_head":head}})
+                        except Exception:pass
+                        print("deploy failed",cid,err,flush=True)
+                    if reload_self:
+                        os.execv(sys.executable,[sys.executable,str(pathlib.Path(__file__).resolve())])
+            except Exception as exc:
+                # Cloudflare is only a deploy/control channel. A failure here does
+                # not touch local publishers or the watchdog.
+                print("deploy poll failed:",str(exc)[:800],flush=True)
         time.sleep(POLL)
 
 
