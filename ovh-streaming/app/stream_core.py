@@ -295,7 +295,7 @@ class StreamCore:
         fifo = self.ensure_audio_fifo()
         self.wait_visual_ready()
         self.wait_audio_ready()
-        if self.platform in {"youtube-gta-vi", "twitch", "kick"}:
+        if self.platform in {"youtube-gta-vi", "youtube-lofi-hip-hop", "twitch", "kick"}:
             # Replace localhost UDP with a named FIFO for Twitch and Kick:
             # UDP packet loss produced corrupt H264 frames on both platforms.
             # A FIFO applies kernel backpressure instead of dropping packets.
