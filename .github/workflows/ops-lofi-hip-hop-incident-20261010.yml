@@ -123,3 +123,5 @@ jobs:
           git push origin HEAD:main
 
 # post isolated Lofi A/V recovery ingest verification: 2026-10-10
+
+# last-check yt ingest during isolated FIFO A/V recovery
