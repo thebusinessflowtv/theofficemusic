@@ -16,6 +16,9 @@ on:
       - 'ovh-streaming/app/visual_engine.py'
       - 'ovh-streaming/tests/test_chat_requests.py'
       - 'ovh-streaming/tests/test_bot_conversation.py'
+      - 'ovh-streaming/tests/test_visual_overlay_freeze.py'
+      - 'ovh-streaming/scripts/activate-twitch-live-overlay.py'
+      - 'ovh-streaming/Dockerfile'
   workflow_dispatch:
 
 permissions:
@@ -35,6 +38,7 @@ jobs:
           python -m pip install --quiet websockets==15.0.1
           python ovh-streaming/scripts/overlay-twitch-commands.py --help >/dev/null
           python ovh-streaming/scripts/activate-twitch-live-overlay.py --help >/dev/null
+          python ovh-streaming/scripts/activate-twitch-live-overlay.py --help | grep -- --refresh >/dev/null
           cd ovh-streaming
           python -m unittest discover -s tests -v
           python - <<'PY'
