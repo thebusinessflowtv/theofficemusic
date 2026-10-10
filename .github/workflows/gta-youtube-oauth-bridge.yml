@@ -84,7 +84,7 @@ jobs:
           OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN"             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
           OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
           test -n "$OIDC_TOKEN"
-          CODE="$(curl -ksS -o /tmp/oidc-preflight.json -w '%{http_code}' -X POST             "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data '{"runtime_slot":os.environ["RUNTIME_SLOT"]}')"
+          CODE="$(curl -ksS -o /tmp/oidc-preflight.json -w '%{http_code}' -X POST             "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data "$(jq -nc --arg slot "$RUNTIME_SLOT" '{runtime_slot:$slot}')")"
           echo "OIDC_PREFLIGHT_HTTP=$CODE"
           cat /tmp/oidc-preflight.json
           test "$CODE" = "400"
@@ -358,7 +358,7 @@ jobs:
           result["status"]="live"
           result["live_at"]=datetime.datetime.now(datetime.timezone.utc).isoformat()
           result["updated_at"]=result["live_at"]
-          result_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+          result_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+chr(10),encoding="utf-8")
           stations=root/"youtube-stations.json"
           cfg=json.loads(stations.read_text(encoding="utf-8"))
           for station in cfg.get("stations",[]):
@@ -366,7 +366,7 @@ jobs:
                   station["status"]="live"
                   station["updated_at"]=result["updated_at"]
           cfg["updated_at"]=result["updated_at"]
-          stations.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+          stations.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+chr(10),encoding="utf-8")
           PY
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
