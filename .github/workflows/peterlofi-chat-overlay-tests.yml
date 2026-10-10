@@ -5,6 +5,9 @@ on:
     paths:
       - '.github/workflows/peterlofi-chat-overlay-tests.yml'
       - 'ovh-streaming/app/chat_requests.py'
+      - 'ovh-streaming/app/twitch_chatbot.py'
+      - 'ovh-streaming/Dockerfile.chatbot'
+      - 'ovh-streaming/docker-compose.yml'
       - 'ovh-streaming/app/bot_conversation.py'
       - 'ovh-streaming/app/visual_engine.py'
       - 'ovh-streaming/tests/test_chat_requests.py'
@@ -24,9 +27,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m py_compile ovh-streaming/app/chat_requests.py ovh-streaming/app/bot_conversation.py ovh-streaming/app/visual_engine.py
+          python -m py_compile ovh-streaming/app/chat_requests.py ovh-streaming/app/bot_conversation.py ovh-streaming/app/visual_engine.py ovh-streaming/app/twitch_chatbot.py
+          python -m pip install --quiet websockets==15.0.1
           cd ovh-streaming
           python -m unittest discover -s tests -v
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,'app')
+          from twitch_chatbot import valid_websocket_uri
+          assert valid_websocket_uri('wss://eventsub.wss.twitch.tv/ws')
+          assert not valid_websocket_uri('wss://evil.example/ws')
+          assert not valid_websocket_uri('ws://eventsub.wss.twitch.tv/ws')
+          print('Twitch WebSocket destination validation passed')
+          PY
       - name: Verify overlay is gated off by default
         shell: bash
         run: |
