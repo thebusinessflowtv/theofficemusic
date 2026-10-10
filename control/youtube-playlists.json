@@ -2,30 +2,22 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-09T23:17:51.630456+00:00",
-  "playlist_count": 5,
+  "generated_at": "2026-10-10T00:30:01.798359+00:00",
+  "playlist_count": 4,
   "playlists": [
     {
       "id": "PLbK4jLdXsde4",
       "title": "Late Night Lofi 🌙 | Peter Lofi",
       "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
-      "thumbnail_url": "https://i.ytimg.com/vi/2nyGIYs7ixA/mqdefault_live.jpg",
-      "item_count": 2,
+      "thumbnail_url": "https://i.ytimg.com/vi/_XpJTdzUoHE/mqdefault_live.jpg",
+      "item_count": 1,
       "privacy_status": "public",
       "items": [
-        {
-          "playlist_item_id": "UExiSzRqTGRYc2RlNC41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "2nyGIYs7ixA",
-          "title": "[24/7] Deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-          "position": 0,
-          "thumbnail_url": "https://i.ytimg.com/vi/2nyGIYs7ixA/mqdefault_live.jpg",
-          "privacy_status": "public"
-        },
         {
           "playlist_item_id": "UExiSzRqTGRYc2RlNC4yODlGNEE0NkRGMEEzMEQy",
           "video_id": "_XpJTdzUoHE",
           "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA 6 Music & Night Drive Vibes | Peter Lofi 🎧",
-          "position": 1,
+          "position": 0,
           "thumbnail_url": "https://i.ytimg.com/vi/_XpJTdzUoHE/mqdefault_live.jpg",
           "privacy_status": "public"
         }
@@ -94,7 +86,7 @@
           "video_id": "u-Ocp29k1_0",
           "title": "1 hour lofi for work 💻 beats for focus & productivity | Peter Lofi",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CPTqpdYG&rs=AOn4CLBdRbLsdBM1GkwRsaqi3cSzWFLk_w",
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CIiOptYG&rs=AOn4CLBoM_2mD50pqeJyfouU5_25sBMyaQ",
           "privacy_status": "private"
         }
       ]
@@ -104,7 +96,7 @@
       "title": "Peter Lofi — All Music 🎧",
       "description": "Every public Peter Lofi release in one place — original lofi music, chill beats, focus mixes and late-night sounds for study, work and relaxing.",
       "thumbnail_url": "https://i.ytimg.com/vi/teQ-pW_20uk/mqdefault.jpg",
-      "item_count": 8,
+      "item_count": 6,
       "privacy_status": "public",
       "items": [
         {
@@ -140,26 +132,10 @@
           "privacy_status": "public"
         },
         {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy41MzY4MzcwOUFFRUU3QzEx",
-          "video_id": "C9Et10tejC8",
-          "title": "[24/7] Rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-          "position": 4,
-          "thumbnail_url": "https://i.ytimg.com/vi/C9Et10tejC8/mqdefault_live.jpg",
-          "privacy_status": "public"
-        },
-        {
-          "playlist_item_id": "UExjUlRDWlNYWTIxdy4yQUJFNUVCMzVDNjcxRTlF",
-          "video_id": "2nyGIYs7ixA",
-          "title": "[24/7] Deep house radio 💻 music to work/study/focus to | Peter Lofi 🎧",
-          "position": 5,
-          "thumbnail_url": "https://i.ytimg.com/vi/2nyGIYs7ixA/mqdefault_live.jpg",
-          "privacy_status": "public"
-        },
-        {
           "playlist_item_id": "UExjUlRDWlNYWTIxdy40QzRDOEU0QUYwNUIxN0M1",
           "video_id": "EQrlzc_IR2M",
           "title": "coffee shop lofi ☕ 3 hours of chill beats to work, study & focus | Peter Lofi 🎧",
-          "position": 6,
+          "position": 4,
           "thumbnail_url": "https://i.ytimg.com/vi/EQrlzc_IR2M/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -167,26 +143,8 @@
           "playlist_item_id": "UExjUlRDWlNYWTIxdy41RTNBREYwMkI5QzU3RkY2",
           "video_id": "_XpJTdzUoHE",
           "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA 6 Music & Night Drive Vibes | Peter Lofi 🎧",
-          "position": 7,
+          "position": 5,
           "thumbnail_url": "https://i.ytimg.com/vi/_XpJTdzUoHE/mqdefault_live.jpg",
-          "privacy_status": "public"
-        }
-      ]
-    },
-    {
-      "id": "PLT0hbJFvnftc",
-      "title": "Rainy & Cozy Lofi 🌧️ | Peter Lofi",
-      "description": "Rainy-night and cozy-window lofi by Peter Lofi for calm focus, reading and relaxing.",
-      "thumbnail_url": "https://i.ytimg.com/vi/C9Et10tejC8/mqdefault_live.jpg",
-      "item_count": 1,
-      "privacy_status": "public",
-      "items": [
-        {
-          "playlist_item_id": "UExUMGhiSkZ2bmZ0Yy41NkI0NEY2RDEwNTU3Q0M2",
-          "video_id": "C9Et10tejC8",
-          "title": "[24/7] Rainy lofi radio 🌧️ beats to study/work/relax to | Peter Lofi 🎧",
-          "position": 0,
-          "thumbnail_url": "https://i.ytimg.com/vi/C9Et10tejC8/mqdefault_live.jpg",
           "privacy_status": "public"
         }
       ]
