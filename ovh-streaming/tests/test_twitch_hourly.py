@@ -1,4 +1,4 @@
-"""PeterLofi Twitch bot hourly interaction regression tests."""
+"""PeterLofi Twitch bot 90-minute interaction regression tests."""
 import asyncio
 import json
 import sys
@@ -25,40 +25,40 @@ class TestTwitchHourly(unittest.IsolatedAsyncioTestCase):
         self.local.stop()
         self.temp.cleanup()
 
-    async def test_first_hour_delayed_and_persisted(self):
+    async def test_first_90_minutes_delayed_and_persisted(self):
         with patch.object(bot,"send",new_callable=AsyncMock,return_value=True) as sent:
             self.assertEqual(await bot.hourly_interaction_tick(now=1000),"scheduled")
             sent.assert_not_called()
-            self.assertEqual(await bot.hourly_interaction_tick(now=4599),"waiting")
+            self.assertEqual(await bot.hourly_interaction_tick(now=6399),"waiting")
             sent.assert_not_called()
-            self.assertEqual(await bot.hourly_interaction_tick(now=4600),"sent")
+            self.assertEqual(await bot.hourly_interaction_tick(now=6400),"sent")
             self.assertEqual(sent.call_count,1)
-            self.assertEqual(await bot.hourly_interaction_tick(now=4600),"waiting")
-            self.assertEqual(await bot.hourly_interaction_tick(now=8200),"sent")
+            self.assertEqual(await bot.hourly_interaction_tick(now=6400),"waiting")
+            self.assertEqual(await bot.hourly_interaction_tick(now=11800),"sent")
             self.assertEqual(sent.call_count,2)
             last=json.loads((self.path/"twitch"/"chat-hourly-interaction.json").read_text())
             self.assertEqual(last["next_message_index"],2)
             # Verify new process sees persisted time and doesn't announce on boot.
-            self.assertEqual(await bot.hourly_interaction_tick(now=8201),"waiting")
+            self.assertEqual(await bot.hourly_interaction_tick(now=11801),"waiting")
 
     async def test_offline_no_messages(self):
         with patch.object(bot,"send",new_callable=AsyncMock,return_value=True) as sent:
             self.assertEqual(await bot.hourly_interaction_tick(now=1000),"scheduled")
             (self.path/"twitch"/"health.json").write_text('{"status":"offline"}')
-            self.assertEqual(await bot.hourly_interaction_tick(now=5000),"offline")
+            self.assertEqual(await bot.hourly_interaction_tick(now=7000),"offline")
             sent.assert_not_called()
             (self.path/"twitch"/"health.json").write_text('{"status":"live"}')
-            self.assertEqual(await bot.hourly_interaction_tick(now=5000),"sent")
+            self.assertEqual(await bot.hourly_interaction_tick(now=7000),"sent")
             sent.assert_awaited_once()
 
-    async def test_send_failure_does_not_consume_hour(self):
+    async def test_send_failure_does_not_consume_interval(self):
         with patch.object(bot,"send",new_callable=AsyncMock,return_value=False) as sent:
             await bot.hourly_interaction_tick(now=1000)
-            self.assertEqual(await bot.hourly_interaction_tick(now=4600),"retry")
-            self.assertEqual(await bot.hourly_interaction_tick(now=4615),"retry")
+            self.assertEqual(await bot.hourly_interaction_tick(now=6400),"retry")
+            self.assertEqual(await bot.hourly_interaction_tick(now=6415),"retry")
             self.assertEqual(sent.await_count,2)
         with patch.object(bot,"send",new_callable=AsyncMock,return_value=True):
-            self.assertEqual(await bot.hourly_interaction_tick(now=4630),"sent")
+            self.assertEqual(await bot.hourly_interaction_tick(now=6430),"sent")
 
     def test_english_and_no_180_second_bot_prompts(self):
         for i in range(12):
