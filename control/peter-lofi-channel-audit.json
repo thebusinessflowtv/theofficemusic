@@ -1,8 +1,8 @@
 {
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-10T04:19:24.944463+00:00",
-  "public_video_count": 6,
+  "generated_at": "2026-10-10T05:18:35.935508+00:00",
+  "public_video_count": 7,
   "active_managed_playlists": {
     "all_music": {
       "id": "PLcRTCZSXY21w",
@@ -10,6 +10,14 @@
       "description": "Every public Peter Lofi release in one place — original lofi music, chill beats, focus mixes and late-night sounds for study, work and relaxing.",
       "legacy": [
         "All Songs 🎧 | The Office Music"
+      ]
+    },
+    "focus_study": {
+      "id": "PLOQIhOV1vH8A",
+      "title": "Focus & Study 📚 | Peter Lofi",
+      "description": "Peter Lofi music for studying, working, coding, concentrating and staying in the zone.",
+      "legacy": [
+        "Chill Office 🎧 | The Office Music"
       ]
     },
     "late_night": {
@@ -30,6 +38,14 @@
     }
   },
   "videos": [
+    {
+      "video_id": "W89tRiluh_Y",
+      "title": "lofi hip hop radio 📚 beats to study, work & focus to | Peter Lofi 24/7 🎧",
+      "related_playlist_key": "focus_study",
+      "related_playlist_title": "Focus & Study 📚 | Peter Lofi",
+      "duration_seconds": 0,
+      "published_at": "2026-10-10T05:04:15Z"
+    },
     {
       "video_id": "_XpJTdzUoHE",
       "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA 6 Music & Night Drive Vibes | Peter Lofi 🎧",

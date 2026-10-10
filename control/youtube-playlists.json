@@ -2,9 +2,18 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-10T04:19:24.944463+00:00",
-  "playlist_count": 4,
+  "generated_at": "2026-10-10T05:18:35.935508+00:00",
+  "playlist_count": 5,
   "playlists": [
+    {
+      "id": "PLOQIhOV1vH8A",
+      "title": "Focus & Study 📚 | Peter Lofi",
+      "description": "Peter Lofi music for studying, working, coding, concentrating and staying in the zone.",
+      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
+      "item_count": 0,
+      "privacy_status": "public",
+      "items": []
+    },
     {
       "id": "PLbK4jLdXsde4",
       "title": "Late Night Lofi 🌙 | Peter Lofi",
@@ -86,7 +95,7 @@
           "video_id": "u-Ocp29k1_0",
           "title": "1 hour lofi for work 💻 beats for focus & productivity | Peter Lofi",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CMT3ptYG&rs=AOn4CLBxgIgATtbdQY17spRbOFmiqTJOCA",
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CNSTp9YG&rs=AOn4CLAAREu0dwgDlsShriLT0stvaex4fw",
           "privacy_status": "private"
         }
       ]
@@ -96,7 +105,7 @@
       "title": "Peter Lofi — All Music 🎧",
       "description": "Every public Peter Lofi release in one place — original lofi music, chill beats, focus mixes and late-night sounds for study, work and relaxing.",
       "thumbnail_url": "https://i.ytimg.com/vi/teQ-pW_20uk/mqdefault.jpg",
-      "item_count": 6,
+      "item_count": 7,
       "privacy_status": "public",
       "items": [
         {
@@ -145,6 +154,14 @@
           "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA 6 Music & Night Drive Vibes | Peter Lofi 🎧",
           "position": 5,
           "thumbnail_url": "https://i.ytimg.com/vi/_XpJTdzUoHE/mqdefault_live.jpg",
+          "privacy_status": "public"
+        },
+        {
+          "playlist_item_id": "UExjUlRDWlNYWTIxdy5ENjI1QUI0MDI5NEQzODFE",
+          "video_id": "W89tRiluh_Y",
+          "title": "lofi hip hop radio 📚 beats to study, work & focus to | Peter Lofi 24/7 🎧",
+          "position": 6,
+          "thumbnail_url": "https://i.ytimg.com/vi/W89tRiluh_Y/mqdefault_live.jpg",
           "privacy_status": "public"
         }
       ]
