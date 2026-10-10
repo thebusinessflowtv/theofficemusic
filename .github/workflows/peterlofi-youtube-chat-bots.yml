@@ -1,0 +1,36 @@
+name: PeterLofi YouTube Chat Bots Tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ovh-streaming/app/youtube_chatbot.py'
+      - 'ovh-streaming/app/youtube_stream_list.proto'
+      - 'ovh-streaming/app/chat_requests.py'
+      - 'ovh-streaming/app/bot_conversation.py'
+      - 'ovh-streaming/Dockerfile.youtube-chatbot'
+      - 'ovh-streaming/docker-compose.yml'
+      - 'ovh-streaming/scripts/activate-peterlofi-youtube-chatbots.py'
+      - 'ovh-streaming/tests/test_youtube_chatbot.py'
+      - '.github/workflows/peterlofi-youtube-chat-bots.yml'
+  workflow_dispatch:
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check Python syntax
+        run: |
+          python -m py_compile ovh-streaming/app/youtube_chatbot.py ovh-streaming/app/chat_requests.py ovh-streaming/app/bot_conversation.py ovh-streaming/scripts/activate-peterlofi-youtube-chatbots.py
+      - name: Install gRPC and Google client runtime
+        run: pip install --quiet grpcio==1.75.1 grpcio-tools==1.75.1 google-auth==2.41.1 requests==2.32.5
+      - name: Build minimal official live-chat gRPC protobuf
+        run: |
+          python -m grpc_tools.protoc -Iovh-streaming/app --python_out=ovh-streaming/app --grpc_python_out=ovh-streaming/app ovh-streaming/app/youtube_stream_list.proto
+      - name: Test authenticated stream and isolated commands
+        env:
+          PYTHONPATH: ovh-streaming/app
+        run: python -m unittest discover -v -s ovh-streaming/tests -p test_youtube_chatbot.py
