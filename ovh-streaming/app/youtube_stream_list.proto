@@ -1,0 +1,26 @@
+syntax = "proto2";
+package youtube.api.v3;
+// Minimal official liveChatMessages.streamList wire contract.
+// Field numbers are defined by https://developers.google.com/youtube/v3/live/streaming-live-chat
+service V3DataLiveChatMessageService {
+  rpc StreamList(LiveChatMessageListRequest) returns (stream LiveChatMessageListResponse) {}
+}
+message LiveChatMessageListRequest {
+  optional string live_chat_id = 1;
+  optional string page_token = 99;
+  repeated string part = 100;
+}
+message LiveChatMessageListResponse {
+  optional string offline_at = 2;
+  optional string next_page_token = 100602;
+  repeated LiveChatMessage items = 1007;
+}
+message LiveChatMessage {
+  optional string id = 101;
+  optional LiveChatMessageSnippet snippet = 2;
+}
+message LiveChatMessageSnippet {
+  optional int32 type = 1;
+  optional string display_message = 16;
+  optional string author_channel_id = 301;
+}
