@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T07:23:38.163748+00:00",
+  "updated_at": "2026-10-10T07:29:31.542351+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4291,10 +4291,22 @@
           "intro_identity": "Single analog keys pulse with silence between phrases and a wide bass entrance",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-46",
+          "title": "Static Funk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-046-38030239136/peter-lofi-lofi-hip-hop-046.mp3",
+          "duration_seconds": 300,
+          "position": 46,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 90,
+          "intro_identity": "A three-hit snare introduction, low tom pickup and melodic synth-bell answer",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 45,
-      "total_duration_seconds": 13500,
+      "track_count": 46,
+      "total_duration_seconds": 13800,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
