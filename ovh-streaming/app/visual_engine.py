@@ -400,7 +400,12 @@ class VisualEngine:
                 f"drawtext=fontfile={font}:text='NOW PLAYING':"
                 "fontcolor=white@0.8:fontsize=23:x=56:y=h-120,"
                 f"drawtext=fontfile={font}:textfile={title_file}:reload=30:"
-                "fontcolor=white:fontsize=34:x=56:y=h-82"
+                "fontcolor=white:fontsize=34:x=56:y=h-82,"
+                # Four commands on a single horizontal line, bottom right.
+                "drawbox=x=iw-680:y=ih-113:w=648:h=80:color=black@0.52:t=fill,"
+                f"drawtext=fontfile={font}:"
+                "text='!skip    !song    !back    !freeze':"
+                "fontcolor=white:fontsize=30:x=w-text_w-55:y=h-86"
             )
             gop = self.fps * 2
             cmd = [
