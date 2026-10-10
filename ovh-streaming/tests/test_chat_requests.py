@@ -34,11 +34,17 @@ class TestChatRequests(unittest.TestCase):
         self.assertEqual(self.req()["status"], "duplicate")
         self.assertEqual(len(list((self.root / "twitch" / "audio-commands").glob("*.json"))), 1)
 
-    def test_user_180s_for_all_commands(self):
+    def test_twitch_no_additional_user_cooldown(self):
         self.assertEqual(self.req()["status"], "accepted")
-        self.assertEqual(self.req(mid="m2", msg="!song", t=1179)["status"], "cooldown")
-        self.assertEqual(self.req(mid="m3", msg="!song", t=1180)["status"], "now_playing")
-        self.assertEqual(self.req(mid="m4", msg="!back", t=1181)["status"], "cooldown")
+        self.assertEqual(self.req(mid="m2", msg="!song", t=1001)["status"], "now_playing")
+        self.assertEqual(self.req(mid="m3", msg="!freeze", t=1002)["status"], "frozen_now")
+        # The frozen song still protects against a skip from anyone.
+        self.assertEqual(self.req(mid="m4", msg="!skip", t=1003)["status"], "frozen")
+
+    def test_kick_retains_cooldown_until_kick_chat_is_configured(self):
+        self.assertEqual(self.req(plat="kick")["status"], "accepted")
+        self.assertEqual(self.req(plat="kick", mid="m2", msg="!song", t=1179)["status"], "cooldown")
+        self.assertEqual(self.req(plat="kick", mid="m3", msg="!song", t=1180)["status"], "now_playing")
 
     def test_global_60s_for_skip_and_back(self):
         self.assertEqual(self.req()["status"], "accepted")
@@ -52,14 +58,14 @@ class TestChatRequests(unittest.TestCase):
         self.assertEqual(self.req(user="bob", mid="d", t=1010, msg="!freeze")["status"], "already_frozen")
         self.assertFalse(list((self.root / "twitch").glob("audio-commands/*.json")))
 
-    def test_freeze_expires_on_natural_song_end_no_cooldown_reset(self):
+    def test_freeze_expires_on_natural_song_end_no_twitch_bot_cooldown(self):
         self.assertEqual(self.req(msg="!freeze")["status"], "frozen_now")
         self.change_song("twitch")
         self.assertTrue(clear_freeze_after_track_change(self.root, "twitch", "t1"))
         self.assertFalse(clear_freeze_after_track_change(self.root, "twitch", "t1"))
-        self.assertEqual(self.req(msg="!freeze", mid="f2", t=1010)["status"], "cooldown")
+        self.assertEqual(self.req(msg="!freeze", mid="f2", t=1010)["status"], "frozen_now")
         self.assertEqual(self.req(msg="!skip", user="bob", mid="sk2", t=1010)["status"], "accepted")
-        self.assertEqual(self.req(msg="!freeze", mid="f3", t=1180)["status"], "frozen_now")
+        self.assertEqual(self.req(msg="!freeze", mid="f3", t=1180)["status"], "already_frozen")
 
     def test_stale_freeze_auto_expires_when_song_changes(self):
         self.req(msg="!freeze")
