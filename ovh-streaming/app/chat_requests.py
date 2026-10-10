@@ -178,3 +178,27 @@ def clear_freeze_after_track_change(
         state.pop("freeze", None)
         _atomic_json(state_path, state)
         return True
+
+
+def english_chat_reply(result: dict) -> str:
+    """Short English responses suitable for either broadcaster chat adapter."""
+    status = str(result.get("status") or "")
+    title = str(result.get("title") or "Unknown track")[:100]
+    if status == "accepted":
+        return "Next song requested! 🎵" if result.get("action") == "skip" else "Going back to the previous song! 🎵"
+    if status == "now_playing":
+        artists = str(result.get("artists") or "")[:80]
+        return f"Now playing: {title}" + (f" — {artists}" if artists else "")
+    if status == "frozen_now":
+        return f"Song frozen: {title}. No skipping or going back until it ends. 🔒"
+    if status in ("frozen", "already_frozen"):
+        return "This song is frozen. Wait until it finishes. 🔒"
+    if status == "cooldown":
+        return f"You can use another command in {int(result.get('retry_after') or 0)} seconds."
+    if status == "station_cooldown":
+        return f"Please wait {int(result.get('retry_after') or 0)} seconds before another song change."
+    if status == "not_live":
+        return "The radio isn't live right now."
+    if status == "no_song":
+        return "No song information is available yet."
+    return ""
