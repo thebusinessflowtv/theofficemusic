@@ -1,5 +1,5 @@
 {
-  "version": "lofi-youtube-oauth-start-retry-20261010-v2",
-  "purpose": "Reload OVH host-deploy agent with isolated Lofi encoder health recognition and preserve all active Twitch Kick YouTube publishers",
+  "version": "lofi-filtered-remote-queue-20261010-v3",
+  "purpose": "Safely consume only the remote Lofi YouTube launch command while preserving old remote deploy backlog and all existing publishers.",
   "media_publishers_touched": false
 }
