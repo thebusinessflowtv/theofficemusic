@@ -49,12 +49,14 @@
       "enabled": true,
       "runtime": "ovh",
       "ovh_slot": "youtube-lofi-hip-hop",
-      "youtube_stream_id": null,
-      "youtube_broadcast_id": null,
-      "current_session_id": null,
-      "status": "stopped",
-      "purpose": "Independent encoder for Peter Lofi Lofi Hip Hop, no interruption of other lives"
+      "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1791608654748078",
+      "youtube_broadcast_id": "W89tRiluh_Y",
+      "current_session_id": "1dd4373d-351c-40cc-aa67-774a540fd991",
+      "status": "starting",
+      "purpose": "Independent encoder for Peter Lofi Lofi Hip Hop, no interruption of other lives",
+      "stream_provisioned_at": "2026-10-10T05:04:15.253927+00:00",
+      "last_started_at": "2026-10-10T05:04:15.253946+00:00"
     }
   ],
-  "updated_at": "2026-10-10T04:27:15.662Z"
+  "updated_at": "2026-10-10T05:04:15.253946+00:00"
 }
