@@ -19,6 +19,32 @@ jobs:
       # Recheck chat protection and isolated audio-agent syntax before deployment
       - name: Syntax check non-disruptive host telemetry and isolated audio controls
         run: python3 -m py_compile ovh-streaming/host_deploy_agent.py
+      - name: Validate 30 upbeat Lofi profiles and original 36 unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/build_lofi_hip_hop_profile.py scripts/publish_lofi_hip_hop.py ovh-streaming/host_deploy_agent.py
+          bash -n scripts/run_lofi_hip_hop_track.sh
+          python3 scripts/build_lofi_hip_hop_profile.py --index 37 --out /tmp/lofi-37.json
+          python3 scripts/build_lofi_hip_hop_profile.py --index 66 --out /tmp/lofi-66.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path("control/lofi-hip-hop/queue.json").read_text())
+          assert len(q["tracks"])==66
+          assert [x["index"] for x in q["tracks"]]==list(range(1,67))
+          assert len(set(x["title"] for x in q["tracks"]))==66
+          assert all(84<=x["target_bpm"]<=102 for x in q["tracks"][36:])
+          for i in (37,66):
+              p=json.loads(Path(f"/tmp/lofi-{i}.json").read_text())["profile"]
+              style=" ".join(p["music_dna"]["style_pool"]).lower()
+              assert "boom bap" in style or "boom-bap" in style
+              assert "saxophone" in " ".join(p["negative_prompt"])
+              assert p["music_dna"]["energy"]>=6
+          assert all(Path(f"control/lofi-hip-hop/{i:02d}.json").exists() for i in range(1,37))
+          print("LOFI_30_UPBEAT_QC_PROFILES_READY; EXISTING_36_PRESERVED; HOST_AUTOSYNC_PYTHON_VALID",flush=True)
+          PY
+
       - name: Validate GitHub Actions OIDC against OVH
         shell: bash
         run: |
