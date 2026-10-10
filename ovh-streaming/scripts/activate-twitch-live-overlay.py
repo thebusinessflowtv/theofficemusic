@@ -56,7 +56,8 @@ def check_platform():
         raise RuntimeError("Run with sudo on the OVH server.")
     if not (ROOT/"app"/"visual_engine.py").is_file():
         raise RuntimeError("Updated visual engine not found locally. Run git pull --ff-only.")
-    docker("inspect","-f","{{.State.Running}}",CONTAINER)
+    if docker("inspect","-f","{{.State.Running}}",CONTAINER).stdout.strip()!="true":
+        raise RuntimeError("Twitch container is not running; refusing activation.")
     d=load(DESIRED)
     h=load(PUBLISH)
     v=load(VISUAL)
@@ -163,17 +164,26 @@ def activate():
              "sender_pid":visual.get("sender_pid")}
     # Do not change generation, visual_revision, stream metadata or music queue.
     docker("cp",str(updated),CONTAINER+":"+TARGET,timeout=30)
+    reload_started=False
     try:
         docker("exec",CONTAINER,"python","-m","py_compile",TARGET)
         atomic(SWITCH,{"enabled":True,"updated_at":datetime.now(timezone.utc).isoformat(),
                        "source":"twitch-dynamic-overlay-hot-visual-reload"})
+        reload_started=True
         reload_visual()
         monitor(initial,"dynamic_now_playing",seconds=45)
         print("OVERLAY_ACTIVE Twitch now-playing (left) and !skip !song !back !freeze (right).",flush=True)
         print("RTMP ENCODER UNCHANGED. Check picture, audio and track-title updates in Twitch preview.",flush=True)
     except Exception as exc:
         try:
-            rollback(initial,str(exc)[:200])
+            if reload_started:
+                rollback(initial,str(exc)[:200])
+            else:
+                # Source verification failed before reload; preserve the old
+                # visual process and publisher with no interruption at all.
+                docker("cp",str(BACKUP),CONTAINER+":"+TARGET,timeout=30)
+                atomic(SWITCH,{"enabled":False,"reason":"pre-reload-check-failed"})
+                print("No visual restart occurred; original script restored.",flush=True)
         except Exception as rescue:
             print("ROLLBACK_ATTEMPT_FAILED:",str(rescue)[:250],file=sys.stderr)
         raise
