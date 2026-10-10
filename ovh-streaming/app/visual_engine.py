@@ -254,7 +254,8 @@ class VisualEngine:
 
     def start_sender(self, path, loop_url):
         self.stop_sender()
-        if self.platform == "youtube-gta-vi":
+        if self.platform in {"youtube-gta-vi", "twitch", "kick"}:
+            # Publisher reads from the same named pipe; no UDP packet loss.
             fifo = self.state / "video.ts"
             if fifo.exists() and not fifo.is_fifo():
                 fifo.unlink()
