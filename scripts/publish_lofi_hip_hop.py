@@ -16,8 +16,8 @@ def append_track(library,track):
     if playlist is None:
         playlist={
             "key":PLAYLIST_KEY,"name":"Lofi Hip Hop","category":"Live Radio","series":"Lofi Hip Hop",
-            "genre":"Instrumental Lofi Hip Hop / Jazzy Boom Bap",
-            "moods":["warm","jazzy","chill","relaxed","focused"],
+            "genre":"Instrumental Lofi Hip Hop / Upbeat Boom Bap",
+            "moods":["warm","rhythmic","groovy","head-nod","focused"],
             "source":"peter-lofi-lofi-hip-hop-production",
             "tracks":[]
         }
@@ -28,10 +28,12 @@ def append_track(library,track):
     tracks.sort(key=lambda x:int(x.get("position",9999)))
     playlist["track_count"]=len(tracks)
     playlist["total_duration_seconds"]=sum(int(x.get("duration_seconds",0)) for x in tracks)
-    playlist["planned_track_count"]=36
-    playlist["planned_duration_seconds"]=10800
+    playlist["genre"]="Instrumental Lofi Hip Hop / Upbeat Boom Bap"
+    playlist["moods"]=["warm","head-nod","groovy","relaxed","focused"]
+    playlist["planned_track_count"]=66
+    playlist["planned_duration_seconds"]=19800
     playlist["target_duration_seconds_per_track"]=300
-    playlist["status"]="complete" if len(tracks)>=36 else "generating"
+    playlist["status"]="complete" if len(tracks)>=66 else "expansion_generating"
     library["updated_at"]=datetime.now(timezone.utc).isoformat()
     return library
 
@@ -50,6 +52,7 @@ def main():
         "duration_seconds":300,"position":item["playlist_position"],
         "source":"lofi-hip-hop-original","target_bpm":item["target_bpm"],
         "intro_identity":item["intro_identity"],
+        "style_version":item.get("style_version","classic-lofi-hip-hop"),
         "quality_gate":"technical_and_45s_intro_diversity_passed"
     }
     file=Path("control/music-library.json")
