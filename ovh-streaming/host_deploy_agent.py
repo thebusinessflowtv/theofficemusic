@@ -1519,6 +1519,81 @@ def repair_lofi_video_transport(cmd):
             "other_publishers_preserved":True,"other_publishers_restarted":False,
             "lofi_health":{key:ready.get(key) for key in ("status","audio_status","visual_status","restarts")}}
 
+
+def recover_isolated_lofi_audio(cmd):
+    """Restore only the muted audio feeder while preserving the RTMP video PID."""
+    slot="youtube-lofi-hip-hop"
+    container="peter-lofi-youtube-lofi-hip-hop"
+    st=OVH/"state"/slot
+    desired=read_json(st/"desired.json",{}) or {}
+    h=health(slot)
+    old_audio=read_json(st/"audio-health.json",{}) or {}
+    old_track=read_json(st/"now-playing.json",{}) or {}
+    if cmd.get("target")!=slot or str(cmd.get("session_id") or "")!=str(desired.get("session_id") or ""):
+        raise RuntimeError("Lofi-only audio recovery session mismatch")
+    encoder_pid=int(h.get("encoder_pid") or 0)
+    audio_pid=int(h.get("audio_pid") or 0)
+    if h.get("status")!="live" or encoder_pid<2 or audio_pid<2 or desired.get("desired")!="live":
+        raise RuntimeError("Refusing to affect a stopped or unexpected RTMP live")
+    if str(old_audio.get("state") or "")!="source_stalled_pcm_clock_preserved" or int(old_audio.get("stalls") or 0)<5:
+        return {"status":"audio_not_stalled_no_changes","encoder_pid_preserved":True,
+                "track_count":len((read_json(st/"playlist.json",{}) or {}).get("tracks") or [])}
+    playlist=read_json(st/"playlist.json",{}) or {}
+    tracks=playlist.get("tracks") or []
+    if playlist.get("playlist_key")!="lofi-hip-hop" or not isinstance(tracks,list) or len(tracks)!=66:
+        raise RuntimeError("Expected all 66 approved Lofi tracks in the isolated live playlist")
+    other_pids={name:health(name).get("encoder_pid") for name in DIAGNOSTIC_STATE_SLOTS
+                if name!=slot}
+    image_file=OVH/"app"/"audio_engine.py"
+    run(["python3","-m","py_compile",str(image_file)],timeout=20)
+    run(["docker","cp",str(image_file),container+":/app/audio_engine.py"],timeout=30)
+    run(["docker","exec",container,"python3","-m","py_compile","/app/audio_engine.py"],timeout=20)
+    # Confirm PID identity before signalling; NEVER signal FFmpeg or StreamCore.
+    identity=run(["docker","exec",container,"python3","-c",
+        "import pathlib; print(pathlib.Path('/proc/%s/cmdline').read_bytes().replace(b'\\x00',b' ').decode())" % audio_pid
+    ],timeout=15)
+    if "audio_engine.py" not in identity or "youtube-lofi-hip-hop" not in identity:
+        raise RuntimeError("Audio PID did not match dedicated Lofi feeder, no signal sent")
+    run(["docker","exec",container,"python3","-c",
+        "import os,signal; os.kill(%s,signal.SIGTERM)" % audio_pid],timeout=15)
+    stable_since=None
+    last={}
+    for attempt in range(55):
+        time.sleep(2)
+        current=health(slot)
+        new_audio=read_json(st/"audio-health.json",{}) or {}
+        if int(current.get("encoder_pid") or 0)!=encoder_pid:
+            raise RuntimeError("RTMP encoder PID changed unexpectedly; no further signals")
+        pid=int(current.get("audio_pid") or 0)
+        non_silent=int(new_audio.get("non_silent_pcm_frames") or 0)
+        if pid and pid!=audio_pid and new_audio.get("state")=="playing" and non_silent>=100:
+            if stable_since is None:stable_since=time.monotonic()
+            if time.monotonic()-stable_since>=12 and int(new_audio.get("stalls") or 0)==0:
+                last={"health":current,"audio":new_audio}
+                break
+        else:
+            stable_since=None
+    else:
+        raise RuntimeError("Audio feeder reloaded but non-silent PCM playback was not verified within 110 seconds")
+    changed=[name for name,pid in other_pids.items() if pid and health(name).get("encoder_pid")!=pid]
+    if changed:
+        raise RuntimeError("Other encoder PID changed unexpectedly: "+",".join(changed))
+    current_playlist=read_json(st/"playlist.json",{}) or {}
+    return {
+        "status":"audio_restored","playlist_key":"lofi-hip-hop",
+        "playlist_track_count":len(current_playlist.get("tracks") or []),
+        "old_track_id":old_track.get("track_id"),
+        "current_track_id":(read_json(st/"now-playing.json",{}) or {}).get("track_id"),
+        "encoder_pid_preserved":True,"old_audio_pid":audio_pid,
+        "new_audio_pid":last["health"].get("audio_pid"),
+        "pcm_frames_emitted":last["audio"].get("pcm_frames_emitted"),
+        "non_silent_pcm_frames":last["audio"].get("non_silent_pcm_frames"),
+        "audio_stalls":last["audio"].get("stalls"),
+        "other_publishers_preserved":True,
+        "rtmp_restart":False,
+    }
+
+
 def execute(cmd):
     action=str(cmd.get("action") or "")
     target=str(cmd.get("target") or "")
@@ -1535,6 +1610,8 @@ def execute(cmd):
     old,new=git_sync()
     if action in ("relay_lofi_youtube_oauth","probe_lofi_youtube_oauth"):
         return {"old_head":old,"new_head":new,**relay_lofi_youtube_oauth(cmd)},False
+    if action=="recover_isolated_lofi_audio":
+        return {"old_head":old,"new_head":new,**recover_isolated_lofi_audio(cmd)},False
     if action=="repair_lofi_video_transport":
         return {"old_head":old,"new_head":new,**repair_lofi_video_transport(cmd)},False
     if action=="launch_isolated_lofi_youtube":
