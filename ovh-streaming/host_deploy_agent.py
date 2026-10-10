@@ -1674,7 +1674,7 @@ def sync_isolated_lofi_approved_expansion():
                            if isinstance(p,dict) and p.get("key")=="lofi-hip-hop"),{})
             for track in playlist.get("tracks") or []:
                 if not isinstance(track,dict):continue
-                match=re.fullmatch(r"lofi-hip-hop-20261008-(\\d{2})",str(track.get("id") or ""))
+                match=re.fullmatch(r"lofi-hip-hop-20261008-(\d{2})",str(track.get("id") or ""))
                 if not match or not 37<=int(match.group(1))<=66:continue
                 address=str(track.get("url") or "")
                 if not address.startswith(
