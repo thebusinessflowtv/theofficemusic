@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-09T23:59:45.135623+00:00",
+  "updated_at": "2026-10-10T00:06:54.856693+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4029,10 +4029,21 @@
           "target_bpm": 87,
           "intro_identity": "An original harp-like pluck motif with sparse brushed percussion before bass",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-23",
+          "title": "Cocoa Rain",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-023-37991966107/peter-lofi-lofi-hip-hop-023.mp3",
+          "duration_seconds": 300,
+          "position": 23,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 72,
+          "intro_identity": "A tiny kalimba melody played twice, then a mellow snare and Rhodes harmony",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 22,
-      "total_duration_seconds": 6600,
+      "track_count": 23,
+      "total_duration_seconds": 6900,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
