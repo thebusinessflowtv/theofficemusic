@@ -28,7 +28,17 @@ COMMANDS_ENABLED=os.environ.get("TWITCH_BOT_COMMANDS_ENABLED","0")=="1"
 CONVERSATION_ENABLED=os.environ.get("TWITCH_BOT_CONVERSATION_ENABLED","1")=="1"
 WS_URI="wss://eventsub.wss.twitch.tv/ws"
 MIN_REPLY_INTERVAL=8.0
+HOURLY_INTERACTION_SECONDS=3600
 _last_reply=0.0
+_send_lock=asyncio.Lock()
+HOURLY_MESSAGES=(
+    "Hey everyone! 🎮 What are you playing or working on right now? Drop it in chat!",
+    "How are the vibes tonight? 🎧 Type !song to see what's playing, or tell us how your day is going!",
+    "Quick check-in! 🌙 Are you gaming, studying, or just relaxing with PeterLofi Radio?",
+    "Your soundtrack, your vibe! 🎵 What's one game or project you want to finish today?",
+    "Thanks for hanging out with PeterLofi! ❤️ Where are you tuning in from?",
+    "It's music break time! 🎶 What's your favorite late-night gaming memory?",
+)
 
 
 def bridge(endpoint,payload):
@@ -80,23 +90,66 @@ async def send(text):
     global _last_reply
     msg=" ".join(str(text or "").split())[:430]
     if not msg:
-        return
-    remaining=MIN_REPLY_INTERVAL-(time.monotonic()-_last_reply)
-    if remaining>0:
-        await asyncio.sleep(remaining)
-    # Sending through the bridge never writes tokens to logs or disk here.
-    result=await api("send",{"message":msg})
-    _last_reply=time.monotonic()
-    if not result.get("ok"):
-        print("TWITCH_BOT_SEND_REJECTED",flush=True)
+        return False
+    # Serialize replies with hourly announcements to respect Twitch chat limits.
+    async with _send_lock:
+        remaining=MIN_REPLY_INTERVAL-(time.monotonic()-_last_reply)
+        if remaining>0:
+            await asyncio.sleep(remaining)
+        result=await api("send",{"message":msg})
+        _last_reply=time.monotonic()
+        if not result.get("ok"):
+            print("TWITCH_BOT_SEND_REJECTED",flush=True)
+            return False
+        return True
+
+
+def hour_state():
+    return STATE/"twitch"/"chat-hourly-interaction.json"
+
+
+def choose_hourly_message(index):
+    return HOURLY_MESSAGES[index % len(HOURLY_MESSAGES)]
+
+
+def live_for_interaction():
+    health=_read_json(STATE/"twitch"/"health.json")
+    desired=_read_json(STATE/"twitch"/"desired.json")
+    return health.get("status")=="live" and desired.get("desired")=="live"
+
+
+async def hourly_interactions():
+    """One English engagement message per hour while live.
+
+    Persist last sent time so container or WebSocket reconnects do not
+    produce duplicate announcements. No separate scheduling service.
+    """
+    path=hour_state()
+    path.parent.mkdir(parents=True,exist_ok=True)
+    stored=_read_json(path)
+    if not isinstance(stored.get("last_sent_at"),(float,int)):
+        _atomic_json(path,{"last_sent_at":time.time(),"next_message_index":0})
+    while True:
+        await asyncio.sleep(15)
+        if not live_for_interaction():
+            continue
+        stored=_read_json(path)
+        now=time.time()
+        last=float(stored.get("last_sent_at") or now)
+        if now-last < HOURLY_INTERACTION_SECONDS:
+            continue
+        index=int(stored.get("next_message_index") or 0)
+        # An unsuccessful send is retried after the following poll.
+        delivered=await send(choose_hourly_message(index))
+        if delivered:
+            _atomic_json(path,{"last_sent_at":time.time(),"next_message_index":index+1})
+            print("TWITCH_BOT_HOURLY_INTERACTION_SENT",flush=True)
 
 
 def allow_command_notice(platform,user_id,now=None):
-    """Prevent spammy cooldown replies (one per viewer each 60 seconds).
+    """Limit repeated rejection notices; Twitch uses its own chat Slow Mode.
 
     Accepted commands, current song, and freeze confirmations always reply.
-    Rejected-command notices are separately throttled, without affecting the
-    user's 180-second music-command cooldown.
     """
     now=time.time() if now is None else float(now)
     folder=STATE/platform
@@ -160,6 +213,7 @@ async def connected_loop():
     # Twitch can redirect sessions during network maintenance. The temporary
     # reconnect URL must be authenticated to the official EventSub hostname.
     while True:
+        interaction_task=None
         try:
             # When Twitch asks to reconnect, EventSub migrates subscriptions
             # to the new session. We must not create a duplicate subscription.
@@ -190,6 +244,8 @@ async def connected_loop():
                             broadcaster_id=str(result["broadcaster_id"])
                         runtime_info("subscribed",subscription_active=True)
                         print("TWITCH_BOT_EVENTSUB_SUBSCRIBED",flush=True)
+                        if interaction_task is None or interaction_task.done():
+                            interaction_task=asyncio.create_task(hourly_interactions())
                     elif typ=="notification" and broadcaster_id:
                         sub=payload.get("subscription") or {}
                         if sub.get("type")!="channel.chat.message":
@@ -218,6 +274,13 @@ async def connected_loop():
             print("TWITCH_BOT_RECONNECTING",type(exc).__name__,flush=True)
             url=WS_URI
             await asyncio.sleep(5+random.random()*5)
+        finally:
+            if interaction_task is not None:
+                interaction_task.cancel()
+                try:
+                    await interaction_task
+                except asyncio.CancelledError:
+                    pass
 
 
 if __name__=="__main__":
