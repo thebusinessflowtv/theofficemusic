@@ -1,5 +1,5 @@
 {
-  "version": "ovh-dynamic-real-live-controls-20261010-v2",
-  "purpose": "Publish independent Lofi heartbeat and authenticated next/previous host queue into exact OVH VPS dashboard while preserving all publisher PIDs",
+  "version": "ovh-dynamic-real-live-controls-20261010-v3",
+  "purpose": "Publish chat-protected track indication and honest blocked next/previous responses on real OVH dashboard; keep all active RTMP publishers unchanged",
   "media_publishers_touched": false
 }
