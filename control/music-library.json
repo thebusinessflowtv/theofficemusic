@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T10:36:02.412055+00:00",
+  "updated_at": "2026-10-10T10:42:33.334281+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4531,14 +4531,26 @@
           "intro_identity": "A layered percussion count-in, bass slide, and short pentatonic synth hook on bar three",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-66",
+          "title": "Momentum Outro",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-066-38030239136/peter-lofi-lofi-hip-hop-066.mp3",
+          "duration_seconds": 300,
+          "position": 66,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 97,
+          "intro_identity": "A chopped mallet and guitar duet with an immediate head-nod kick and clean snare",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 65,
-      "total_duration_seconds": 19500,
+      "track_count": 66,
+      "total_duration_seconds": 19800,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
-      "status": "expansion_generating",
+      "status": "complete",
       "expansion": {
         "phase": "generating",
         "batch_id": "lofi-hip-hop-upbeat-20261010",
