@@ -86,9 +86,7 @@ jobs:
             creds=Credentials(token=None,refresh_token=env['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=env['YOUTUBE_CLIENT_ID'],client_secret=env['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
             creds.refresh(Request())
             yt=build('youtube','v3',credentials=creds,cache_discovery=False)
-            batches={}
-            for category in ['active','upcoming']:
-              batches[category]=yt.liveBroadcasts().list(part='snippet,status,contentDetails',broadcastStatus=category,mine=True,maxResults=50).execute().get('items') or []
+            batches={'mine':yt.liveBroadcasts().list(part='snippet,status,contentDetails',mine=True,maxResults=50).execute().get('items') or []}
             result=[]
             for category,bs in batches.items():
               for b in bs:
@@ -105,7 +103,7 @@ jobs:
                  'lifeCycleStatus':status.get('lifeCycleStatus'),'actualStartTime':(b.get('snippet') or {}).get('actualStartTime'),
                  'boundStreamId':sid,'streamStatus':ss.get('streamStatus'),
                  'healthStatus':hs.get('status'),'configurationIssues':hs.get('configurationIssues') or []})
-            out['youtube']={'matching_broadcasts':result,'active_checked':len(batches['active']),'upcoming_checked':len(batches['upcoming'])}
+            out['youtube']={'matching_broadcasts':result,'broadcasts_checked':len(batches['mine'])}
           except Exception as e: out['youtube']={'error':type(e).__name__+': '+str(e)[:350]}
           out['extended_checked_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
           p.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
