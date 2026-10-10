@@ -424,7 +424,9 @@ class VisualEngine:
                 "-re", "-stream_loop", "-1", "-i", str(path),
                 "-map", "0:v:0", "-an",
                 "-vf", overlay,
-                "-c:v", "libx264", "-preset", self.vpreset, "-tune", "zerolatency",
+                # CPU cap: this live sender must not starve the other stations.
+                "-filter_threads", "1",
+                "-c:v", "libx264", "-preset", self.vpreset, "-threads", "2", "-tune", "zerolatency",
                 "-profile:v", self.vprofile, "-bf", "0",
                 "-b:v", f"{self.vbitrate}k",
                 "-minrate", f"{self.vbitrate}k", "-maxrate", f"{self.vbitrate}k",
