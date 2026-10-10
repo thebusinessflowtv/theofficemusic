@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-10T16:52:10.766256+00:00",
+  "checked_at": "2026-10-10T16:53:50.634649+00:00",
   "routes": {
     "cloudflare": {
       "reachable": true,
@@ -49,28 +49,23 @@
     },
     "ovh_direct": {
       "reachable": true,
-      "reported_at": "2026-10-10T16:52:10.475598Z",
+      "reported_at": "2026-10-10T16:53:46.796115Z",
       "lofi": {
-        "status": "live",
+        "status": "unknown",
         "runtime_slot": null,
         "session_id": null,
         "title": null,
-        "updated_at": "2026-10-10T16:51:45.469247Z",
-        "fps": 60,
-        "video_bitrate_kbps": 8000,
+        "updated_at": null,
+        "fps": null,
+        "video_bitrate_kbps": null,
         "encoder_pid": null,
         "audio_pid": null,
         "visual_pid": null,
         "audio_status": null,
         "audio_stalls": null,
         "visual_status": null,
-        "playlist_track_count": 66,
-        "now_playing": {
-          "state": "playing",
-          "track_id": "lofi-hip-hop-20261008-33",
-          "title": "Grey September",
-          "started_at": "2026-10-10T08:57:06.310464Z"
-        },
+        "playlist_track_count": 0,
+        "now_playing": null,
         "restarts": 0,
         "last_error": null,
         "last_command": null
@@ -78,50 +73,45 @@
       "other_streams": {
         "kick": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:09.685505Z"
+          "updated_at": "2026-10-10T16:53:45.750907Z"
         },
         "twitch": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:08.668818Z"
+          "updated_at": "2026-10-10T16:53:46.745781Z"
         },
         "youtube-deep-house": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:08.554806Z"
+          "updated_at": "2026-10-10T16:53:46.619343Z"
         },
         "youtube-rainy": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:09.220933Z"
+          "updated_at": "2026-10-10T16:53:45.273952Z"
         },
         "youtube-gta-vi": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:08.589965Z"
+          "updated_at": "2026-10-10T16:53:46.662782Z"
         }
       }
     },
     "panel": {
       "reachable": true,
-      "reported_at": "2026-10-10T16:52:10.475598Z",
+      "reported_at": "2026-10-10T16:53:46.796115Z",
       "lofi": {
-        "status": "live",
+        "status": "unknown",
         "runtime_slot": null,
         "session_id": null,
         "title": null,
-        "updated_at": "2026-10-10T16:51:45.469247Z",
-        "fps": 60,
-        "video_bitrate_kbps": 8000,
+        "updated_at": null,
+        "fps": null,
+        "video_bitrate_kbps": null,
         "encoder_pid": null,
         "audio_pid": null,
         "visual_pid": null,
         "audio_status": null,
         "audio_stalls": null,
         "visual_status": null,
-        "playlist_track_count": 66,
-        "now_playing": {
-          "state": "playing",
-          "track_id": "lofi-hip-hop-20261008-33",
-          "title": "Grey September",
-          "started_at": "2026-10-10T08:57:06.310464Z"
-        },
+        "playlist_track_count": 0,
+        "now_playing": null,
         "restarts": 0,
         "last_error": null,
         "last_command": null
@@ -129,23 +119,23 @@
       "other_streams": {
         "kick": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:09.685505Z"
+          "updated_at": "2026-10-10T16:53:45.750907Z"
         },
         "twitch": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:08.668818Z"
+          "updated_at": "2026-10-10T16:53:46.745781Z"
         },
         "youtube-deep-house": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:08.554806Z"
+          "updated_at": "2026-10-10T16:53:46.619343Z"
         },
         "youtube-rainy": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:09.220933Z"
+          "updated_at": "2026-10-10T16:53:45.273952Z"
         },
         "youtube-gta-vi": {
           "status": "live",
-          "updated_at": "2026-10-10T16:52:08.589965Z"
+          "updated_at": "2026-10-10T16:53:46.662782Z"
         }
       }
     }
@@ -165,21 +155,16 @@
       "visual_revision"
     ],
     "service": {
-      "status": "live",
-      "playlist_track_count": 66,
-      "fps": 60,
-      "video_bitrate_kbps": 8000,
-      "updated_at": "2026-10-10T16:51:45.469247Z",
-      "visual_revision": 1,
+      "status": "unknown",
+      "playlist_track_count": 0,
+      "fps": null,
+      "video_bitrate_kbps": null,
+      "updated_at": null,
+      "visual_revision": null,
       "restarts": 0,
-      "now_playing": {
-        "state": "playing",
-        "track_id": "lofi-hip-hop-20261008-33",
-        "title": "Grey September",
-        "started_at": "2026-10-10T08:57:06.310464Z"
-      }
+      "now_playing": null
     },
-    "reported_at": "2026-10-10T16:52:10.475598Z"
+    "reported_at": "2026-10-10T16:53:46.796115Z"
   },
   "youtube": {
     "matching_broadcasts": [
@@ -197,5 +182,5 @@
     ],
     "broadcasts_checked": 11
   },
-  "extended_checked_at": "2026-10-10T16:52:17.071085+00:00"
+  "extended_checked_at": "2026-10-10T16:53:58.729515+00:00"
 }
