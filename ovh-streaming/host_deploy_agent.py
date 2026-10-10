@@ -1194,6 +1194,39 @@ def diagnose_stream_service(slot):
     audio_health={}
     visual_health={}
     docker_stats=""
+    isolated_container_probe={}
+    if slot=="youtube-lofi-hip-hop":
+        # Read-only Docker introspection: the isolated container is intentionally
+        # not in the generic Compose SERVICES/CONTAINERS mapping.
+        name="peter-lofi-youtube-lofi-hip-hop"
+        try:
+            state=run(["docker","inspect","-f","{{.State.Status}}|{{.State.Restarting}}|{{.State.ExitCode}}",name],timeout=12)
+            isolated_container_probe["docker_state"]=state.strip()[:200]
+        except Exception as exc:
+            isolated_container_probe["inspect_error"]=str(exc)[:170]
+        try:
+            proc_script=("import json,pathlib,os;"
+              "o={'audio_engine':0,'stream_core':0,'visual_engine':0,'ffmpeg':0,'video_fifo':False,'audio_fifo':False};"
+              "\nfor p in pathlib.Path('/proc').iterdir():"
+              "\n if not p.name.isdigit() or int(p.name)==os.getpid(): continue"
+              "\n try: c=(p/'cmdline').read_bytes().replace(b'\\x00',b' ').decode('utf-8','ignore')"
+              "\n except Exception: continue"
+              "\n if '/app/audio_engine.py' in c: o['audio_engine']+=1"
+              "\n if '/app/stream_core.py' in c: o['stream_core']+=1"
+              "\n if '/app/visual_engine.py' in c: o['visual_engine']+=1"
+              "\n if 'ffmpeg' in c: o['ffmpeg']+=1"
+              "\no['video_fifo']=pathlib.Path('/state/youtube-lofi-hip-hop/video.ts').is_fifo()"
+              "\no['audio_fifo']=pathlib.Path('/state/youtube-lofi-hip-hop/audio.pcm').is_fifo()"
+              "\nprint(json.dumps(o))")
+            isolated_container_probe["processes"]=json.loads(
+                run(["docker","exec",name,"python","-c",proc_script],timeout=15))
+        except Exception as exc:
+            isolated_container_probe["process_error"]=str(exc)[:170]
+        try:
+            docker_log=run(["docker","logs","--tail","80",name],timeout=15)
+            isolated_container_probe["docker_errors"]=_redact_stream_log(docker_log)[-9000:]
+        except Exception as exc:
+            isolated_container_probe["docker_log_error"]=str(exc)[:170]
     try: desired=json.loads((OVH/"state"/slot/"desired.json").read_text(encoding="utf-8"))
     except Exception: pass
     try: now_playing=json.loads((OVH/"state"/slot/"now-playing.json").read_text(encoding="utf-8"))
@@ -1254,6 +1287,7 @@ def diagnose_stream_service(slot):
         "visual_health":visual_health,
         "docker_stats":docker_stats,
         "pipeline_probe":pipeline_probe,
+        "isolated_container_probe":isolated_container_probe,
         "visual_probe":visual_probe,
         "ffmpeg_log_tail":_redact_stream_log(tail),
         "controller_log_tail":_redact_stream_log(controller_tail),
