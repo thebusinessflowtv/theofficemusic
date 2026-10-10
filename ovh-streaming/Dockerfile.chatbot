@@ -6,6 +6,6 @@ RUN apt-get update \
     && pip install --no-cache-dir websockets==15.0.1
 
 WORKDIR /app
-COPY app/twitch_chatbot.py app/chat_requests.py app/bot_conversation.py /app/
+COPY app/twitch_chatbot.py app/kick_chatbot.py app/chat_requests.py app/bot_conversation.py /app/
 ENV PYTHONUNBUFFERED=1
 CMD ["python", "/app/twitch_chatbot.py"]
