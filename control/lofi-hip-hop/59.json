@@ -1,0 +1,542 @@
+{
+  "index": 59,
+  "status": "generated",
+  "track": {
+    "id": "lofi-hip-hop-20261008-59",
+    "title": "Vinyl Sneakers",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-059-38030239136/peter-lofi-lofi-hip-hop-059.mp3",
+    "duration_seconds": 300,
+    "position": 59,
+    "source": "lofi-hip-hop-original",
+    "target_bpm": 86,
+    "intro_identity": "A reversed electric guitar chord rising into a tight boom-bap backbeat and short bass walk",
+    "style_version": "upbeat-hip-hop-vol2",
+    "quality_gate": "technical_and_45s_intro_diversity_passed"
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-10T09:30:50.250053Z",
+    "reference_index": 59,
+    "attempt": null,
+    "source_wav_sha256": "6781e4508cfc21eff54bb5b225bb21c0d27980d89b880d6a9fd338ce5ed635d1",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -20.4,
+      "true_peak_db": -3.04,
+      "lra": 3.5,
+      "threshold_lufs": -30.59
+    },
+    "silence_seconds": 0,
+    "silence_ratio": 0.0,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "diversity_gate": {
+    "approved": true,
+    "rule": "Reject if first-45s spectral/envelope/rhythm signatures are excessively close to any already-approved playlist track.",
+    "compared_against": 58,
+    "comparisons": [
+      {
+        "id": "lofi-hip-hop-20261008-01",
+        "title": "Window Seat",
+        "intro_spectral_similarity": 0.630743,
+        "intro_envelope_correlation": 0.030317,
+        "rhythm_signature_correlation": 0.199161,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-02",
+        "title": "Faded Polaroid",
+        "intro_spectral_similarity": 0.698987,
+        "intro_envelope_correlation": -0.056007,
+        "rhythm_signature_correlation": 0.208536,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-03",
+        "title": "Afterglow Avenue",
+        "intro_spectral_similarity": 0.726086,
+        "intro_envelope_correlation": 0.029453,
+        "rhythm_signature_correlation": 0.800769,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-04",
+        "title": "Cafe Balcony",
+        "intro_spectral_similarity": 0.710281,
+        "intro_envelope_correlation": 0.005315,
+        "rhythm_signature_correlation": 0.214211,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-05",
+        "title": "Midnight Notebook",
+        "intro_spectral_similarity": 0.722383,
+        "intro_envelope_correlation": 0.053073,
+        "rhythm_signature_correlation": 0.267991,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-06",
+        "title": "Dusty Hallway",
+        "intro_spectral_similarity": 0.709336,
+        "intro_envelope_correlation": 0.258966,
+        "rhythm_signature_correlation": 0.809867,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-07",
+        "title": "City Library",
+        "intro_spectral_similarity": 0.6884,
+        "intro_envelope_correlation": -0.04383,
+        "rhythm_signature_correlation": 0.128332,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-08",
+        "title": "Golden Vinyl",
+        "intro_spectral_similarity": 0.685915,
+        "intro_envelope_correlation": 0.208777,
+        "rhythm_signature_correlation": 0.331638,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-09",
+        "title": "Amber Skyline",
+        "intro_spectral_similarity": 0.611288,
+        "intro_envelope_correlation": -0.15641,
+        "rhythm_signature_correlation": 0.647443,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-10",
+        "title": "Tape Letters",
+        "intro_spectral_similarity": 0.769977,
+        "intro_envelope_correlation": 0.218375,
+        "rhythm_signature_correlation": 0.350467,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-11",
+        "title": "Sunday Train",
+        "intro_spectral_similarity": 0.682791,
+        "intro_envelope_correlation": -0.015264,
+        "rhythm_signature_correlation": 0.284929,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-12",
+        "title": "Paper Lantern",
+        "intro_spectral_similarity": 0.723326,
+        "intro_envelope_correlation": 0.034659,
+        "rhythm_signature_correlation": 0.514669,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-13",
+        "title": "Neon Margins",
+        "intro_spectral_similarity": 0.710322,
+        "intro_envelope_correlation": 0.232745,
+        "rhythm_signature_correlation": 0.421217,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-14",
+        "title": "Dawn Espresso",
+        "intro_spectral_similarity": 0.705933,
+        "intro_envelope_correlation": 0.031112,
+        "rhythm_signature_correlation": 0.302186,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-15",
+        "title": "Sidewalk Sketches",
+        "intro_spectral_similarity": 0.713361,
+        "intro_envelope_correlation": 0.028549,
+        "rhythm_signature_correlation": 0.47691,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-16",
+        "title": "Quiet Turntable",
+        "intro_spectral_similarity": 0.719543,
+        "intro_envelope_correlation": 0.229483,
+        "rhythm_signature_correlation": 0.598523,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-17",
+        "title": "Blue Pen",
+        "intro_spectral_similarity": 0.71783,
+        "intro_envelope_correlation": 0.053328,
+        "rhythm_signature_correlation": 0.309166,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-18",
+        "title": "Clouded Glass",
+        "intro_spectral_similarity": 0.68011,
+        "intro_envelope_correlation": 0.084758,
+        "rhythm_signature_correlation": 0.220176,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-19",
+        "title": "Velvet Courtyard",
+        "intro_spectral_similarity": 0.726916,
+        "intro_envelope_correlation": 0.083431,
+        "rhythm_signature_correlation": 0.515785,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-20",
+        "title": "Late Bus Home",
+        "intro_spectral_similarity": 0.700249,
+        "intro_envelope_correlation": 0.220519,
+        "rhythm_signature_correlation": 0.276489,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-21",
+        "title": "Warm Static",
+        "intro_spectral_similarity": 0.719103,
+        "intro_envelope_correlation": 0.027136,
+        "rhythm_signature_correlation": 0.250661,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-22",
+        "title": "Paperback Dreams",
+        "intro_spectral_similarity": 0.712474,
+        "intro_envelope_correlation": 0.134362,
+        "rhythm_signature_correlation": 0.809132,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-23",
+        "title": "Cocoa Rain",
+        "intro_spectral_similarity": 0.723155,
+        "intro_envelope_correlation": 0.162454,
+        "rhythm_signature_correlation": 0.247301,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-24",
+        "title": "Sunlit Concrete",
+        "intro_spectral_similarity": 0.713757,
+        "intro_envelope_correlation": -0.115905,
+        "rhythm_signature_correlation": 0.277836,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-25",
+        "title": "Rooftop Pages",
+        "intro_spectral_similarity": 0.645872,
+        "intro_envelope_correlation": 0.178239,
+        "rhythm_signature_correlation": 0.829195,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-26",
+        "title": "Moonlit Receipt",
+        "intro_spectral_similarity": 0.700064,
+        "intro_envelope_correlation": -0.012301,
+        "rhythm_signature_correlation": 0.265668,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-27",
+        "title": "Soft Signal",
+        "intro_spectral_similarity": 0.583029,
+        "intro_envelope_correlation": 0.218686,
+        "rhythm_signature_correlation": 0.277944,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-28",
+        "title": "Maple Steps",
+        "intro_spectral_similarity": 0.689831,
+        "intro_envelope_correlation": 0.199139,
+        "rhythm_signature_correlation": 0.888325,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-29",
+        "title": "Corner Store Lights",
+        "intro_spectral_similarity": 0.710493,
+        "intro_envelope_correlation": 0.123305,
+        "rhythm_signature_correlation": 0.424239,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-30",
+        "title": "Underpass Echoes",
+        "intro_spectral_similarity": 0.62529,
+        "intro_envelope_correlation": 0.016561,
+        "rhythm_signature_correlation": 0.234504,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-31",
+        "title": "Dusty Postcards",
+        "intro_spectral_similarity": 0.703428,
+        "intro_envelope_correlation": 0.030123,
+        "rhythm_signature_correlation": 0.588004,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-32",
+        "title": "Trainline Daydream",
+        "intro_spectral_similarity": 0.754544,
+        "intro_envelope_correlation": 0.230513,
+        "rhythm_signature_correlation": 0.359763,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-33",
+        "title": "Grey September",
+        "intro_spectral_similarity": 0.736898,
+        "intro_envelope_correlation": 0.093121,
+        "rhythm_signature_correlation": 0.276168,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-34",
+        "title": "Coffeehouse Radio",
+        "intro_spectral_similarity": 0.711455,
+        "intro_envelope_correlation": 0.144938,
+        "rhythm_signature_correlation": 0.56535,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-35",
+        "title": "Lunar Side Street",
+        "intro_spectral_similarity": 0.695034,
+        "intro_envelope_correlation": 0.122084,
+        "rhythm_signature_correlation": 0.434437,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-36",
+        "title": "Last Page",
+        "intro_spectral_similarity": 0.695188,
+        "intro_envelope_correlation": 0.010178,
+        "rhythm_signature_correlation": 0.107354,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-37",
+        "title": "Sunset Cypher",
+        "intro_spectral_similarity": 0.663846,
+        "intro_envelope_correlation": -0.073882,
+        "rhythm_signature_correlation": 0.668826,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-38",
+        "title": "Metro Bounce",
+        "intro_spectral_similarity": 0.63389,
+        "intro_envelope_correlation": -0.043669,
+        "rhythm_signature_correlation": 0.295931,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-39",
+        "title": "Backbeat Boulevard",
+        "intro_spectral_similarity": 0.719436,
+        "intro_envelope_correlation": 0.051132,
+        "rhythm_signature_correlation": 0.204047,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-40",
+        "title": "Skate Tape",
+        "intro_spectral_similarity": 0.690122,
+        "intro_envelope_correlation": 0.515707,
+        "rhythm_signature_correlation": 0.924171,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-41",
+        "title": "Pocket Rhythm",
+        "intro_spectral_similarity": 0.715651,
+        "intro_envelope_correlation": 0.048432,
+        "rhythm_signature_correlation": 0.222499,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-42",
+        "title": "Skyline Breaks",
+        "intro_spectral_similarity": 0.641643,
+        "intro_envelope_correlation": -0.029346,
+        "rhythm_signature_correlation": 0.195876,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-43",
+        "title": "After Class",
+        "intro_spectral_similarity": 0.701216,
+        "intro_envelope_correlation": -0.099725,
+        "rhythm_signature_correlation": 0.626494,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-44",
+        "title": "Sidewalk Drums",
+        "intro_spectral_similarity": 0.744103,
+        "intro_envelope_correlation": 0.110138,
+        "rhythm_signature_correlation": 0.132485,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-45",
+        "title": "City Pass",
+        "intro_spectral_similarity": 0.668169,
+        "intro_envelope_correlation": 0.084187,
+        "rhythm_signature_correlation": 0.273616,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-46",
+        "title": "Static Funk",
+        "intro_spectral_similarity": 0.734897,
+        "intro_envelope_correlation": 0.093401,
+        "rhythm_signature_correlation": 0.181688,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-47",
+        "title": "Sunday Sneakers",
+        "intro_spectral_similarity": 0.685168,
+        "intro_envelope_correlation": -0.045492,
+        "rhythm_signature_correlation": 0.198459,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-48",
+        "title": "Late Bus Bounce",
+        "intro_spectral_similarity": 0.716265,
+        "intro_envelope_correlation": 0.378024,
+        "rhythm_signature_correlation": 0.629326,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-49",
+        "title": "Block Party Light",
+        "intro_spectral_similarity": 0.711272,
+        "intro_envelope_correlation": 0.131534,
+        "rhythm_signature_correlation": 0.335851,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-50",
+        "title": "Arcade Walk",
+        "intro_spectral_similarity": 0.708366,
+        "intro_envelope_correlation": 0.135747,
+        "rhythm_signature_correlation": 0.209612,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-51",
+        "title": "Concrete Sunrise",
+        "intro_spectral_similarity": 0.66113,
+        "intro_envelope_correlation": 0.089628,
+        "rhythm_signature_correlation": 0.68128,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-52",
+        "title": "Cassette Momentum",
+        "intro_spectral_similarity": 0.655701,
+        "intro_envelope_correlation": 0.109254,
+        "rhythm_signature_correlation": 0.305922,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-53",
+        "title": "Roller Wheels",
+        "intro_spectral_similarity": 0.759891,
+        "intro_envelope_correlation": 0.266602,
+        "rhythm_signature_correlation": 0.253408,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-54",
+        "title": "Neon Crosswalk",
+        "intro_spectral_similarity": 0.667334,
+        "intro_envelope_correlation": -0.053688,
+        "rhythm_signature_correlation": 0.444653,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-55",
+        "title": "Corner Store Loop",
+        "intro_spectral_similarity": 0.668408,
+        "intro_envelope_correlation": 0.049215,
+        "rhythm_signature_correlation": 0.178292,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-56",
+        "title": "Uptown Shortcut",
+        "intro_spectral_similarity": 0.721127,
+        "intro_envelope_correlation": -0.011805,
+        "rhythm_signature_correlation": 0.403348,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-57",
+        "title": "Headnod Express",
+        "intro_spectral_similarity": 0.707884,
+        "intro_envelope_correlation": -0.011904,
+        "rhythm_signature_correlation": 0.298483,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-58",
+        "title": "Midnight Basketball",
+        "intro_spectral_similarity": 0.660608,
+        "intro_envelope_correlation": -0.149537,
+        "rhythm_signature_correlation": 0.318652,
+        "too_close": false
+      }
+    ]
+  },
+  "github_run_id": "38030239136",
+  "generated_at": "2026-10-10T09:31:38.861481+00:00"
+}
