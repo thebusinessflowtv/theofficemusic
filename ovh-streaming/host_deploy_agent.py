@@ -1342,7 +1342,7 @@ def launch_isolated_lofi_youtube(cmd):
         raise ValueError("Unexpected Lofi track in playlist")
     if any(not isinstance(t,dict) for t in tracks):
         raise ValueError("Malformed Lofi playlist")
-    baseline={name:health(name).get("encoder_pid") for name in SLOTS}
+    baseline={name:health(name).get("encoder_pid") for name in DIAGNOSTIC_STATE_SLOTS if name!=slot}
     state_path=OVH/"state"/slot
     state_path.mkdir(parents=True,exist_ok=True)
     existing=read_json(state_path/"desired.json",{}) or {}
@@ -1392,14 +1392,30 @@ def launch_isolated_lofi_youtube(cmd):
     running=run(["docker","inspect","-f","{{.State.Running}}",container],timeout=20).strip().lower()
     if running!="true":
         raise RuntimeError("Dedicated Lofi encoder failed to start")
+    encoder_health={}
+    for attempt in range(48):
+        encoder_health=health(slot)
+        if (encoder_health.get("status")=="live" and encoder_health.get("encoder_pid")):
+            break
+        try:
+            is_running=run(["docker","inspect","-f","{{.State.Running}}",container],timeout=10).strip().lower()
+        except Exception:
+            is_running="false"
+        if is_running!="true":
+            raise RuntimeError("Isolated YouTube encoder exited before reaching live state")
+        time.sleep(4)
+    else:
+        raise RuntimeError("Dedicated YouTube encoder did not confirm RTMP live within 192 seconds: "+
+                           str(encoder_health.get("status") or "unknown"))
     changed=[]
     for name,pid in baseline.items():
         if pid is not None and health(name).get("encoder_pid")!=pid:
             changed.append(name)
     if changed:
         raise RuntimeError("Existing RTMP publisher PID changed unexpectedly: "+",".join(changed))
-    return {"status":"starting","runtime_slot":slot,"session_id":sid,
+    return {"status":"live","runtime_slot":slot,"session_id":sid,
             "playlist_key":"lofi-hip-hop","track_count":len(tracks),
+            "encoder_pid":encoder_health.get("encoder_pid"),
             "publisher_container":container,"other_publishers_preserved":True,
             "existing_streams_restarted":False,"checked_at":now()}
 
