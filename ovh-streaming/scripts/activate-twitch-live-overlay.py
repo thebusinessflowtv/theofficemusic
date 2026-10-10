@@ -189,11 +189,61 @@ def activate():
         raise
 
 
+
+# The refresh path is distinct from --activate: the latter correctly refuses
+# to make changes once the dynamic overlay is already active.
+REFRESH_BACKUP=BACKUPS/"visual_engine.before_last_refresh.py"
+
+
+def refresh(undo=False):
+    desired,base,visual=check_platform()
+    if visual.get("overlay_mode")!="dynamic_now_playing" or not load(SWITCH).get("enabled"):
+        raise RuntimeError("Dynamic Twitch overlay must already be active.")
+    if undo and not REFRESH_BACKUP.is_file():
+        raise RuntimeError("No previous overlay-layout backup exists.")
+    updated=REFRESH_BACKUP if undo else ROOT/"app"/"visual_engine.py"
+    if not updated.is_file():
+        raise RuntimeError("Updated overlay script not available.")
+    subprocess.run([sys.executable,"-m","py_compile",str(updated)],check=True,timeout=20)
+    BACKUPS.mkdir(parents=True,exist_ok=True)
+    if not undo:
+        # Always capture the ACTIVE source before replacing it. This lets a
+        # failed refresh restore the working overlay, not the pre-overlay copy.
+        docker("cp",CONTAINER+":"+TARGET,str(REFRESH_BACKUP),timeout=30)
+        os.chmod(REFRESH_BACKUP,0o600)
+    old_snapshot=BACKUPS/"visual_engine.before_this_operation.py"
+    docker("cp",CONTAINER+":"+TARGET,str(old_snapshot),timeout=30)
+    initial={"encoder_pid":base["encoder_pid"],"restarts":base.get("restarts",0),
+             "sender_pid":visual.get("sender_pid")}
+    reload_started=False
+    try:
+        docker("cp",str(updated),CONTAINER+":"+TARGET,timeout=30)
+        docker("exec",CONTAINER,"python","-m","py_compile",TARGET)
+        reload_started=True
+        reload_visual()
+        monitor(initial,"dynamic_now_playing",seconds=45)
+        print("OVERLAY_"+("PREVIOUS_STYLE_RESTORED" if undo else "STYLE_UPDATED"),flush=True)
+        print("Twitch RTMP, audio, chatbot, Kick, and YouTube were not intentionally restarted.",flush=True)
+    except Exception as exc:
+        try:
+            docker("cp",str(old_snapshot),CONTAINER+":"+TARGET,timeout=30)
+            if reload_started:
+                reload_visual()
+            print("VISUAL_STYLE_ROLLBACK_REQUESTED; check Twitch live preview.",flush=True)
+        except Exception as rescue:
+            print("VISUAL_STYLE_ROLLBACK_FAILED",str(rescue)[:230],file=sys.stderr)
+        raise
+    finally:
+        old_snapshot.unlink(missing_ok=True)
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--activate",action="store_true",help="Hot-reload only Twitch visual child")
     parser.add_argument("--status",action="store_true",help="Read-only Twitch overlay state")
     parser.add_argument("--rollback",action="store_true",help="Restore original visual child, without restarting publisher")
+    parser.add_argument("--refresh",action="store_true",help="Refresh the active dynamic overlay style; visual child only")
+    parser.add_argument("--undo-refresh",action="store_true",help="Restore the last overlay style if the new layout is unwanted")
     args=parser.parse_args()
     if args.status:
         print("Publisher:",load(PUBLISH).get("status"))
@@ -211,8 +261,11 @@ def main():
             return
         rollback(load(PUBLISH),"manual")
         return
+    if args.refresh or args.undo_refresh:
+        refresh(undo=args.undo_refresh)
+        return
     if not args.activate:
-        parser.error("Select --status, --activate or --rollback.")
+        parser.error("Select --status, --activate, --refresh, --undo-refresh or --rollback.")
     activate()
 
 
