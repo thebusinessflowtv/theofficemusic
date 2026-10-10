@@ -118,32 +118,34 @@ def live_for_interaction():
     return health.get("status")=="live" and desired.get("desired")=="live"
 
 
-async def hourly_interactions():
-    """One English engagement message per hour while live.
-
-    Persist last sent time so container or WebSocket reconnects do not
-    produce duplicate announcements. No separate scheduling service.
-    """
+async def hourly_interaction_tick(now=None):
+    """Send at most one hourly message when Twitch is actually live."""
+    if not live_for_interaction():
+        return "offline"
+    now=time.time() if now is None else float(now)
     path=hour_state()
     path.parent.mkdir(parents=True,exist_ok=True)
     stored=_read_json(path)
-    if not isinstance(stored.get("last_sent_at"),(float,int)):
-        _atomic_json(path,{"last_sent_at":time.time(),"next_message_index":0})
+    if not isinstance(stored.get("last_sent_at"),(int,float)):
+        _atomic_json(path,{"last_sent_at":now,"next_message_index":0})
+        return "scheduled"
+    if now-float(stored["last_sent_at"])<HOURLY_INTERACTION_SECONDS:
+        return "waiting"
+    index=int(stored.get("next_message_index") or 0)
+    # Unsuccessful sends are not recorded and are retried at the next check.
+    if await send(choose_hourly_message(index)):
+        _atomic_json(path,{"last_sent_at":time.time() if now is None else now,
+                           "next_message_index":index+1})
+        print("TWITCH_BOT_HOURLY_INTERACTION_SENT",flush=True)
+        return "sent"
+    return "retry"
+
+
+async def hourly_interactions():
+    """Persist delivery time across WebSocket reconnects and container restarts."""
     while True:
+        await hourly_interaction_tick()
         await asyncio.sleep(15)
-        if not live_for_interaction():
-            continue
-        stored=_read_json(path)
-        now=time.time()
-        last=float(stored.get("last_sent_at") or now)
-        if now-last < HOURLY_INTERACTION_SECONDS:
-            continue
-        index=int(stored.get("next_message_index") or 0)
-        # An unsuccessful send is retried after the following poll.
-        delivered=await send(choose_hourly_message(index))
-        if delivered:
-            _atomic_json(path,{"last_sent_at":time.time(),"next_message_index":index+1})
-            print("TWITCH_BOT_HOURLY_INTERACTION_SENT",flush=True)
 
 
 def allow_command_notice(platform,user_id,now=None):
