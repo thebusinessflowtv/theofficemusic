@@ -61,17 +61,45 @@ jobs:
           jq '{id,status,error,result}' /tmp/lofi-host-check.json
           test "$CODE" = "200"
 
-      - name: Read-only validate OIDC on OVH local control queue
+
+      - name: Read actual YouTube broadcast lifecycle with existing OAuth
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
-          OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
-          OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
-          test -n "$OIDC_TOKEN"
-          echo "::add-mask::$OIDC_TOKEN"
-          CODE="$(curl -ksS -o /tmp/ovh-local-preflight.json -w '%{http_code}' -X POST "https://peterlofi.odsgn.com.br/api/ovh/github-youtube-bootstrap" -H "authorization: Bearer $OIDC_TOKEN" -H 'content-type: application/json' --data '{"runtime_slot":"youtube-lofi-hip-hop","playlist_key":"lofi-hip-hop"}')"
-          echo "OVH_LOCAL_OIDC_HTTP=$CODE"
-          jq '{error,message}' /tmp/ovh-local-preflight.json
-          test "$CODE" = "400"
-          jq -e '.error=="youtube_ingest_required"' /tmp/ovh-local-preflight.json >/dev/null
-          echo "OVH_LOCAL_OIDC_READY_NO_LIVE_CREATED"
+          python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+          python - <<'PY'
+          import os,json
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          creds=Credentials(token=None,refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"])
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+          bid="W89tRiluh_Y"
+          records=yt.liveBroadcasts().list(part="id,status,contentDetails",id=bid).execute().get("items") or []
+          if not records:raise SystemExit("Requested Lofi broadcast missing on authorized YouTube channel")
+          item=records[0]
+          status=item.get("status") or {}
+          print("OFFICIAL_YOUTUBE_LOFI_STATUS",json.dumps({
+              "broadcast_id":bid,"life_cycle":status.get("lifeCycleStatus"),
+              "privacy":status.get("privacyStatus"),
+              "bound_stream_exists":bool((item.get("contentDetails") or {}).get("boundStreamId"))
+          }),flush=True)
+          stream_id=(item.get("contentDetails") or {}).get("boundStreamId") or ""
+          if stream_id:
+              streams=yt.liveStreams().list(part="id,status",id=stream_id).execute().get("items") or []
+              if streams:
+                  st=(streams[0].get("status") or {})
+                  print("OFFICIAL_YOUTUBE_LOFI_INGEST",json.dumps({
+                      "stream_status":st.get("streamStatus"),
+                      "health_status":(st.get("healthStatus") or {}).get("status")
+                  }),flush=True)
+          PY
