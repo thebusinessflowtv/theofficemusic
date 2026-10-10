@@ -231,7 +231,7 @@ class StreamCore:
     def start_visual(self):
         if self.visual_feeder and self.visual_feeder.poll() is None:
             return
-        if self.platform in {"youtube-gta-vi", "twitch", "kick"}:
+        if self.platform in {"youtube-gta-vi", "youtube-lofi-hip-hop", "twitch", "kick"}:
             # Keep the local MPEG-TS pipe open throughout sender reconnects;
             # this does not restart the RTMP publisher on visual changes.
             self.ensure_video_fifo()
@@ -320,7 +320,7 @@ class StreamCore:
             "-fflags",
             "+genpts+discardcorrupt",
         ]
-        if self.platform.startswith("youtube") and self.platform != "youtube-gta-vi":
+        if self.platform.startswith("youtube") and self.platform not in {"youtube-gta-vi", "youtube-lofi-hip-hop"}:
             common += ["-use_wallclock_as_timestamps", "1"]
         common += [
             "-thread_queue_size",
