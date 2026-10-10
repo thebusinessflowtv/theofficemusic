@@ -1,5 +1,5 @@
 {
-  "version": "lofi-release-verified-orphan-20261010-v1",
-  "purpose": "Release the verified stuck Lofi STARTING session after GitHub absence check, without changing any active live.",
+  "version": "lofi-async-status-reconciliation-20261010-v1",
+  "purpose": "Ensure any failed Lofi YouTube launch is marked failed and does not reserve capacity indefinitely; preserve all active encoders.",
   "media_publishers_touched": false
 }
