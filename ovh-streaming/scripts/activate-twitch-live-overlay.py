@@ -193,6 +193,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--activate",action="store_true",help="Hot-reload only Twitch visual child")
     parser.add_argument("--status",action="store_true",help="Read-only Twitch overlay state")
+    parser.add_argument("--rollback",action="store_true",help="Restore original visual child, without restarting publisher")
     args=parser.parse_args()
     if args.status:
         print("Publisher:",load(PUBLISH).get("status"))
@@ -200,8 +201,18 @@ def main():
         print("Overlay:",load(VISUAL).get("overlay_mode","unreported"))
         print("Toggle enabled:",load(SWITCH).get("enabled",False))
         return
+    if args.rollback:
+        if os.geteuid()!=0:
+            raise RuntimeError("Run with sudo on the OVH server.")
+        if not BACKUP.is_file():
+            raise RuntimeError("No visual engine backup exists, so rollback is unsafe.")
+        if not load(SWITCH).get("enabled"):
+            print("OVERLAY_TOGGLE_ALREADY_DISABLED. Check video preview.")
+            return
+        rollback(load(PUBLISH),"manual")
+        return
     if not args.activate:
-        parser.error("Select --status or --activate.")
+        parser.error("Select --status, --activate or --rollback.")
     activate()
 
 
