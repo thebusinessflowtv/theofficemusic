@@ -1,5 +1,5 @@
 {
-  "version": "gta-youtube-slot-v1",
-  "purpose": "Publish MediaForge local API/UI with GTA playlist visibility and third YouTube slot support.",
+  "version": "lofi-hip-hop-selector-v1",
+  "purpose": "Publish authenticated Lofi Hip Hop local-catalog import endpoint to MediaForge OVH without restarting RTMP publisher containers.",
   "media_publishers_touched": false
 }
