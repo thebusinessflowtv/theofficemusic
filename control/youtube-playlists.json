@@ -2,32 +2,23 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-10T05:18:35.935508+00:00",
-  "playlist_count": 5,
+  "generated_at": "2026-10-10T06:23:50.471398+00:00",
+  "playlist_count": 4,
   "playlists": [
-    {
-      "id": "PLOQIhOV1vH8A",
-      "title": "Focus & Study 📚 | Peter Lofi",
-      "description": "Peter Lofi music for studying, working, coding, concentrating and staying in the zone.",
-      "thumbnail_url": "https://i.ytimg.com/img/no_thumbnail.jpg",
-      "item_count": 0,
-      "privacy_status": "public",
-      "items": []
-    },
     {
       "id": "PLbK4jLdXsde4",
       "title": "Late Night Lofi 🌙 | Peter Lofi",
       "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
-      "thumbnail_url": "https://i.ytimg.com/vi/_XpJTdzUoHE/mqdefault_live.jpg",
+      "thumbnail_url": "https://i.ytimg.com/vi/W89tRiluh_Y/mqdefault_live.jpg",
       "item_count": 1,
       "privacy_status": "public",
       "items": [
         {
-          "playlist_item_id": "UExiSzRqTGRYc2RlNC4yODlGNEE0NkRGMEEzMEQy",
-          "video_id": "_XpJTdzUoHE",
-          "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA 6 Music & Night Drive Vibes | Peter Lofi 🎧",
+          "playlist_item_id": "UExiSzRqTGRYc2RlNC4wMTcyMDhGQUE4NTIzM0Y5",
+          "video_id": "W89tRiluh_Y",
+          "title": "lofi hip hop radio 📚 beats to study, work & focus to | Peter Lofi 24/7 🎧",
           "position": 0,
-          "thumbnail_url": "https://i.ytimg.com/vi/_XpJTdzUoHE/mqdefault_live.jpg",
+          "thumbnail_url": "https://i.ytimg.com/vi/W89tRiluh_Y/mqdefault_live.jpg",
           "privacy_status": "public"
         }
       ]
@@ -37,14 +28,22 @@
       "title": "Lofi Mixes 🎧 | Peter Lofi",
       "description": "Long-form Peter Lofi mixes for uninterrupted focus, study, work, reading and relaxing.",
       "thumbnail_url": "https://i.ytimg.com/vi/EQrlzc_IR2M/mqdefault.jpg",
-      "item_count": 5,
+      "item_count": 6,
       "privacy_status": "public",
       "items": [
+        {
+          "playlist_item_id": "UExaRjZyemJSQjBFQS41QTY1Q0UxMTVCODczNThE",
+          "video_id": "_XpJTdzUoHE",
+          "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA 6 Music & Night Drive Vibes | Peter Lofi 🎧",
+          "position": 0,
+          "thumbnail_url": "https://i.ytimg.com/vi/_XpJTdzUoHE/mqdefault_live.jpg",
+          "privacy_status": "public"
+        },
         {
           "playlist_item_id": "UExaRjZyemJSQjBFQS5EQUE1NTFDRjcwMDg0NEMz",
           "video_id": "EQrlzc_IR2M",
           "title": "coffee shop lofi ☕ 3 hours of chill beats to work, study & focus | Peter Lofi 🎧",
-          "position": 0,
+          "position": 1,
           "thumbnail_url": "https://i.ytimg.com/vi/EQrlzc_IR2M/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -52,7 +51,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS5EMEEwRUY5M0RDRTU3NDJC",
           "video_id": "tsBeo7eejPI",
           "title": "gaming lofi 🎮 3 hours of chill beats to play, focus & code | Peter Lofi 🎧",
-          "position": 1,
+          "position": 2,
           "thumbnail_url": "https://i.ytimg.com/vi/tsBeo7eejPI/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -60,7 +59,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS41MzJCQjBCNDIyRkJDN0VD",
           "video_id": "YTT9UM1M1SY",
           "title": "lofi beats to study 📚 1 hour of chill music for focus & work | Peter Lofi 🎧",
-          "position": 2,
+          "position": 3,
           "thumbnail_url": "https://i.ytimg.com/vi/YTT9UM1M1SY/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -68,7 +67,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS5DQUNERDQ2NkIzRUQxNTY1",
           "video_id": "OPqTdiiXPY0",
           "title": "lounge house music ☕ 1 hour of chill beats for work & focus | Peter Lofi 🎧",
-          "position": 3,
+          "position": 4,
           "thumbnail_url": "https://i.ytimg.com/vi/OPqTdiiXPY0/mqdefault.jpg",
           "privacy_status": "public"
         },
@@ -76,7 +75,7 @@
           "playlist_item_id": "UExaRjZyemJSQjBFQS4xMkVGQjNCMUM1N0RFNEUx",
           "video_id": "teQ-pW_20uk",
           "title": "gaming lofi 🎮 1 hour of chill beats to play, focus & code | Peter Lofi 🎧",
-          "position": 4,
+          "position": 5,
           "thumbnail_url": "https://i.ytimg.com/vi/teQ-pW_20uk/mqdefault.jpg",
           "privacy_status": "public"
         }
@@ -95,7 +94,7 @@
           "video_id": "u-Ocp29k1_0",
           "title": "1 hour lofi for work 💻 beats for focus & productivity | Peter Lofi",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CNSTp9YG&rs=AOn4CLAAREu0dwgDlsShriLT0stvaex4fw",
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CJCyp9YG&rs=AOn4CLBOx_0GlokUkbQsN-oymzYdcVrIWQ",
           "privacy_status": "private"
         }
       ]
