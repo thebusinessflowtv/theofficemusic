@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T08:23:51.830142+00:00",
+  "updated_at": "2026-10-10T08:32:58.460821+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4387,10 +4387,22 @@
           "intro_identity": "Percussive muted nylon-string rhythm, sparse shaker and swinging kick filling the gaps",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-54",
+          "title": "Neon Crosswalk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-054-38030239136/peter-lofi-lofi-hip-hop-054.mp3",
+          "duration_seconds": 300,
+          "position": 54,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 89,
+          "intro_identity": "A shimmering mallet accent and a snare-roll crescendo into a low-key hip-hop groove",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 53,
-      "total_duration_seconds": 15900,
+      "track_count": 54,
+      "total_duration_seconds": 16200,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
