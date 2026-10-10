@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-10T06:37:38.264Z",
+  "updated_at": "2026-10-10T16:25:40.561Z",
   "commands": [
     {
       "id": "bootstrap-kick-ovh",
@@ -188,6 +188,12 @@
       "id": "ccb75bf9-a5e8-45d6-a6d7-5408fdbdffbc",
       "path": "control/ovh-commands/ccb75bf9-a5e8-45d6-a6d7-5408fdbdffbc.json",
       "created_at": "2026-10-10T06:37:38.264Z",
+      "realtime": false
+    },
+    {
+      "id": "lofi-hip-hop-66-hot-playlist-20261010-1322brt",
+      "path": "control/ovh-commands/lofi-hip-hop-66-hot-playlist-20261010-1322brt.json",
+      "created_at": "2026-10-10T16:25:40.561Z",
       "realtime": false
     }
   ]
