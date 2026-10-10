@@ -38,6 +38,22 @@ services:
     volumes:
       - ./state:/state
 
+  kick-chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile.chatbot
+    container_name: peter-lofi-kick-chatbot
+    command: ["python", "/app/kick_chatbot.py"]
+    restart: unless-stopped
+    network_mode: host
+    mem_limit: 192m
+    cpus: 0.20
+    env_file:
+      - path: /etc/peterlofi-kick-chatbot.env
+        required: false
+    volumes:
+      - ./state:/state
+
   twitch:
     build: .
     container_name: peter-lofi-twitch
