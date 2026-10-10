@@ -1,0 +1,20 @@
+{
+  "session_id": "84e64b26-24e7-4eb5-8827-a912786a7849",
+  "runtime_slot": "youtube-gta-vi",
+  "playlist_key": "gta-vi-vice-city",
+  "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA VI Inspired Soundtrack",
+  "description": "Welcome to GTA 6 Radio — LIVE 24/7 🌴🌅\n\nA nonstop music experience inspired by the neon lights, beaches, nightlife, fast cars and unmistakable atmosphere of Vice City and Leonida.\n\n🎧 24/7 GTA VI inspired music\n🌴 Vice City vibes\n🚘 Night drives & cruising\n🌅 Sunset and beach atmosphere\n🌃 Neon nightlife energy\n🎮 Music for gaming, studying, working or just chilling\n\nWhether you're counting down to Grand Theft Auto VI, exploring the world of Jason and Lucia, or just looking for the perfect Vice City soundtrack for your day, this radio is always playing.\n\n🔴 LIVE 24 HOURS A DAY — 7 DAYS A WEEK\n\nTurn up the volume, take a drive and enjoy the sound of Vice City.\n\n🎵 All music featured in this stream is original / independently produced music inspired by the atmosphere and aesthetic of GTA VI and Vice City.\n\nThis is a fan-made music stream and is not affiliated with, endorsed by, or sponsored by Rockstar Games or Take-Two Interactive. This stream does not contain the official GTA VI soundtrack unless explicitly stated.\n\nSubscribe and keep the radio running. 🌴\n\n#GTA6 #GTAVI #GTA6Radio #GTAVIRadio #ViceCity #GTA6Music #GTAVIMusic #GTA6Soundtrack #ViceCityRadio #GTA6Live #GamingMusic #GrandTheftAutoVI #Leonida #ViceCityVibes #LiveRadio",
+  "loop_url": "http://127.0.0.1:8790/media/0ace0e7e-0613-4cce-b138-a218f23ba3ca/c27cee7ec1ed464faa25783f1bbd9747d669133182a74b96b6f4bd6d7a6b15f6",
+  "thumbnail_url": "https://peterlofi.odsgn.com.br/media/77161e63-169e-4f74-b382-dfd400bb3e5b/9cac4886909d4065986bb60cc112167566900b100ac343258fce16555f224b00",
+  "requested_at": "2026-10-10T06:38:00Z",
+  "source": "owner-direct-emergency-restore-after-youtube-completed",
+  "recovery_policy": {
+    "reuse_existing_stream": true,
+    "replace_only_officially_complete_broadcast": true,
+    "preserve_video": true,
+    "preserve_thumbnail": true,
+    "preserve_playlist": true,
+    "do_not_touch_other_live_encoders": true,
+    "require_confirmed_audio_video": true
+  }
+}
