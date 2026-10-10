@@ -54,7 +54,9 @@ def main():
     label=" ".join(str(song.get("title") or "Peter Lofi").split())
     label=label[:42]+"..." if len(label)>45 else label
     scratch=KICK/"kick-overlay-preflight.txt"
+    scratch_lock=KICK/"kick-overlay-preflight-lock.txt"
     scratch.write_text(label+"\n",encoding="utf-8")
+    scratch_lock.write_text("\n",encoding="utf-8")
     try:
         vf=(
             f"drawtext=fontfile={FONT}:text='NOW PLAYING':"
@@ -63,7 +65,7 @@ def main():
             f"drawtext=fontfile={FONT}:textfile=/state/kick/{scratch.name}:"
             "fontcolor=white:fontsize=34:x=56:y=h-67:"
             "shadowcolor=black@0.85:shadowx=2:shadowy=2,"
-            f"drawtext=fontfile={LOCK_FONT}:textfile=/state/kick/now-playing-lock-icon.txt:"
+            f"drawtext=fontfile={LOCK_FONT}:textfile=/state/kick/{scratch_lock.name}:"
             "fontcolor=white:fontsize=34:x=56:y=h-67"
         )
         cmd=[
@@ -90,6 +92,7 @@ def main():
         print("No live processes or RTMP connections were restarted.",flush=True)
     finally:
         scratch.unlink(missing_ok=True)
+        scratch_lock.unlink(missing_ok=True)
 
 
 if __name__=="__main__":
