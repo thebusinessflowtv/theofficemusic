@@ -139,8 +139,10 @@ def hourly_tick():
         return
     if instant-float(stored["last_sent_at"])<PERIOD_SECONDS:return
     if not _chat_id:return
-    h=_read_json(ROOT/"health.json")
-    if h.get("status")!="live":return
+    # _chat_id is set only after the authenticated YouTube API confirmed the
+    # broadcast is live. Ignore stale local "starting" health on otherwise
+    # healthy active broadcasts.
+    if _read_json(ROOT/"youtube-chat-bot-runtime.json").get("status")!="subscribed":return
     idx=int(stored.get("next_message_index") or 0)
     if send(INTERACTION_MESSAGES[idx%len(INTERACTION_MESSAGES)]):
         _atomic_json(state_file,{"last_sent_at":time.time(),"next_message_index":idx+1})
@@ -182,7 +184,9 @@ def receive_forever():
             live_id=confirmed_chat()
             _chat_id=live_id
             runtime("subscribed",youtube_live_chat_id=live_id,google_api="streamList")
-            cursor=str(_read_json(cursor_file).get("next_page_token") or "")
+            saved=_read_json(cursor_file)
+            cursor=str(saved.get("next_page_token") or "") if (
+                saved.get("video_id")==VIDEO_ID and saved.get("chat_id")==live_id) else ""
             # Each gRPC session uses one access token. Reconnect before expiry.
             with grpc.secure_channel("dns:///youtube.googleapis.com:443",grpc.ssl_channel_credentials()) as channel:
                 stub=stub_module.V3DataLiveChatMessageServiceStub(channel)
