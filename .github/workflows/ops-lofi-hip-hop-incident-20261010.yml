@@ -51,6 +51,66 @@ jobs:
           path.write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           print(json.dumps(out,ensure_ascii=False,indent=2))
           PY
+      - name: Compare direct OVH telemetry with YouTube ingest
+        shell: bash
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: |
+          set -u
+          python -m pip install --quiet google-api-python-client google-auth google-auth-httplib2 || true
+          python - <<'PY'
+          import os, json, pathlib, ssl, urllib.request, datetime
+          p=pathlib.Path('control/diagnostics/lofi-hip-hop-incident-20261010.json')
+          out=json.loads(p.read_text(encoding='utf-8'))
+          ctx=ssl._create_unverified_context()
+          try:
+            req=urllib.request.Request('https://146.59.156.224:8443/api/ovh/public-health',headers={'cache-control':'no-cache','user-agent':'PeterLofi-Audible-Audit'})
+            with urllib.request.urlopen(req,timeout=18,context=ctx) as r:data=json.load(r)
+            s=(data.get('services') or {}).get('youtube-lofi-hip-hop') or {}
+            out['ovh_direct_detailed']={'service_keys':sorted(s.keys()),'service':{
+              k:s.get(k) for k in ('status','encoder_status','video_status','visual_status','audio_status',
+              'audio_state','audio_stalls','last_audible_at','non_silent_pcm_frames','pcm_frames_emitted',
+              'playlist_track_count','fps','video_bitrate_kbps','updated_at','visual_revision',
+              'restarts','now_playing','last_error','health_age_seconds','last_packet_at') if k in s},
+              'reported_at':data.get('reported_at')}
+          except Exception as e: out['ovh_direct_detailed']={'error':str(e)[:250]}
+          try:
+            from google.oauth2.credentials import Credentials
+            from google.auth.transport.requests import Request
+            from googleapiclient.discovery import build
+            env=os.environ
+            if not all(env.get(k) for k in ['YOUTUBE_CLIENT_ID','YOUTUBE_CLIENT_SECRET','YOUTUBE_REFRESH_TOKEN']):
+              raise RuntimeError('YouTube API credentials not configured for diagnostic')
+            creds=Credentials(token=None,refresh_token=env['YOUTUBE_REFRESH_TOKEN'],token_uri='https://oauth2.googleapis.com/token',client_id=env['YOUTUBE_CLIENT_ID'],client_secret=env['YOUTUBE_CLIENT_SECRET'],scopes=['https://www.googleapis.com/auth/youtube'])
+            creds.refresh(Request())
+            yt=build('youtube','v3',credentials=creds,cache_discovery=False)
+            batches={}
+            for category in ['active','upcoming']:
+              batches[category]=yt.liveBroadcasts().list(part='snippet,status,contentDetails',broadcastStatus=category,mine=True,maxResults=50).execute().get('items') or []
+            result=[]
+            for category,bs in batches.items():
+              for b in bs:
+                title=(b.get('snippet') or {}).get('title') or ''
+                if not (('hip hop' in title.lower() or 'hiphop' in title.lower()) and 'lofi' in title.lower()):
+                  continue
+                status=b.get('status') or {}
+                cd=b.get('contentDetails') or {}
+                sid=cd.get('boundStreamId')
+                s=(yt.liveStreams().list(part='status,cdn',id=sid).execute().get('items') or [None])[0] if sid else None
+                ss=(s or {}).get('status') or {}
+                hs=ss.get('healthStatus') or {}
+                result.append({'category':category,'title':title,'broadcast_id':b.get('id'),
+                 'lifeCycleStatus':status.get('lifeCycleStatus'),'actualStartTime':(b.get('snippet') or {}).get('actualStartTime'),
+                 'boundStreamId':sid,'streamStatus':ss.get('streamStatus'),
+                 'healthStatus':hs.get('status'),'configurationIssues':hs.get('configurationIssues') or []})
+            out['youtube']={'matching_broadcasts':result,'active_checked':len(batches['active']),'upcoming_checked':len(batches['upcoming'])}
+          except Exception as e: out['youtube']={'error':type(e).__name__+': '+str(e)[:350]}
+          out['extended_checked_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          p.write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps({'ovh_direct_detailed':out.get('ovh_direct_detailed'),'youtube':out.get('youtube')},ensure_ascii=False,indent=2))
+          PY
       - name: Persist redacted read-only diagnosis
         if: always()
         shell: bash
