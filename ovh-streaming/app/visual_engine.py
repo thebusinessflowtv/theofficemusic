@@ -253,8 +253,19 @@ class VisualEngine:
         now = read_json(self.state / "now-playing.json", {}) or {}
         title = " ".join(str(now.get("title") or "Peter Lofi").split())
         artists = " ".join(str(now.get("artists") or "").split())
-        # Keep text inside the lower-left 920px panel in 1080p.
+        # Match the freeze to the current track ID, not simply the existence
+        # of an old freeze entry. A song changing unfreezes the display at once.
+        chat_state = read_json(self.state / "chat-bot-state.json", {}) or {}
+        freeze = chat_state.get("freeze")
+        frozen = (
+            isinstance(freeze, dict)
+            and bool(now.get("track_id"))
+            and str(freeze.get("track_id") or "") == str(now.get("track_id"))
+        )
         label = title if not artists else f"{title} - {artists}"
+        if frozen:
+            label = "🔒 " + label
+        # A long title must remain within the bottom-left corner.
         if len(label) > 45:
             label = label[:42].rstrip() + "..."
         label = label.replace("\r", " ").replace("\n", " ")
@@ -407,16 +418,19 @@ class VisualEngine:
             font = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
             title_file = str(self.now_playing_overlay_path)
             overlay = (
-                "drawbox=x=32:y=ih-132:w=920:h=99:color=black@0.52:t=fill,"
+                # Transparent lower corners; avoid opaque bars hiding the
+                # arcade animation. Labels sit 15px lower than the prior layout.
                 f"drawtext=fontfile={font}:text='NOW PLAYING':"
-                "fontcolor=white@0.8:fontsize=23:x=56:y=h-120,"
+                "fontcolor=white@0.85:fontsize=23:x=56:y=h-105:"
+                "shadowcolor=black@0.85:shadowx=2:shadowy=2,"
                 f"drawtext=fontfile={font}:textfile={title_file}:reload=30:"
-                "fontcolor=white:fontsize=34:x=56:y=h-82,"
-                # Four commands on a single horizontal line, bottom right.
-                "drawbox=x=iw-680:y=ih-113:w=648:h=80:color=black@0.52:t=fill,"
+                "fontcolor=white:fontsize=34:x=56:y=h-67:"
+                "shadowcolor=black@0.85:shadowx=2:shadowy=2,"
+                # Full four-command row at the lower right, no black band.
                 f"drawtext=fontfile={font}:"
                 "text='!skip    !song    !back    !freeze':"
-                "fontcolor=white:fontsize=30:x=w-text_w-55:y=h-86"
+                "fontcolor=white:fontsize=30:x=w-text_w-55:y=h-71:"
+                "shadowcolor=black@0.85:shadowx=2:shadowy=2"
             )
             gop = self.fps * 2
             cmd = [
