@@ -1656,10 +1656,8 @@ def main():
         except Exception as exc:
             print("ui test supervisor failed:",exc,flush=True)
 
-        try:
-            ensure_lofi_process()
-        except Exception as exc:
-            print("Lofi Hip Hop YouTube supervisor failed:",exc,flush=True)
+        # Dedicated Lofi Hip Hop is managed in its own Docker container by the
+        # host deploy agent. Never start a duplicate publisher in this agent.
 
         local_handled=poll_local_inbox(processed)
         if local_handled:
