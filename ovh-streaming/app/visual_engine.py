@@ -60,6 +60,8 @@ class VisualEngine:
             )
         )
         self.now_playing_overlay_path = self.state / "now-playing-overlay.txt"
+        self.now_playing_frozen_title_path = self.state / "now-playing-frozen-title.txt"
+        self.now_playing_lock_path = self.state / "now-playing-lock-icon.txt"
         self.sender = None
         self.sender_log = None
         self.running = True
@@ -263,21 +265,28 @@ class VisualEngine:
             and str(freeze.get("track_id") or "") == str(now.get("track_id"))
         )
         label = title if not artists else f"{title} - {artists}"
-        if frozen:
-            label = "🔒 " + label
-        # A long title must remain within the bottom-left corner.
-        if len(label) > 45:
-            label = label[:42].rstrip() + "..."
+        # The frozen title is indented so a real monochrome Unicode padlock
+        # glyph can appear immediately before it. DejaVu Sans lacks U+1F512;
+        # render the lock with the installed scalable Symbola font instead.
+        max_length = 40 if frozen else 45
+        if len(label) > max_length:
+            label = label[:max_length - 3].rstrip() + "..."
         label = label.replace("\r", " ").replace("\n", " ")
-        value = label + "\n"
-        try:
-            if self.now_playing_overlay_path.read_text(encoding="utf-8") == value:
-                return
-        except FileNotFoundError:
-            pass
-        temp = self.now_playing_overlay_path.with_suffix(".txt.tmp")
-        temp.write_text(value, encoding="utf-8")
-        os.replace(temp, self.now_playing_overlay_path)
+        values = (
+            (self.now_playing_overlay_path, "" if frozen else label),
+            (self.now_playing_frozen_title_path, label if frozen else ""),
+            (self.now_playing_lock_path, "🔒" if frozen else ""),
+        )
+        for target, string in values:
+            value = string + "\n"
+            try:
+                if target.read_text(encoding="utf-8") == value:
+                    continue
+            except FileNotFoundError:
+                pass
+            temp = target.with_suffix(".txt.tmp")
+            temp.write_text(value, encoding="utf-8")
+            os.replace(temp, target)
 
     def stop_sender(self):
         proc = self.sender
@@ -416,17 +425,28 @@ class VisualEngine:
             # publisher still uses -c:v copy. Benchmark before enabling.
             self.sync_now_playing_overlay()
             font = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+            # Symbola provides an outline glyph for U+1F512 unlike DejaVu
+            # Sans and bitmap-only color emoji fonts. No need to redraw video.
+            lock_font = "/usr/share/fonts/truetype/ancient-scripts/Symbola_hint.ttf"
             title_file = str(self.now_playing_overlay_path)
+            frozen_title_file = str(self.now_playing_frozen_title_path)
+            lock_file = str(self.now_playing_lock_path)
             overlay = (
-                # Transparent lower corners; avoid opaque bars hiding the
-                # arcade animation. Labels sit 15px lower than the prior layout.
+                # Transparent lower corners with a subtle glyph shadow.
                 f"drawtext=fontfile={font}:text='NOW PLAYING':"
                 "fontcolor=white@0.85:fontsize=23:x=56:y=h-105:"
                 "shadowcolor=black@0.85:shadowx=2:shadowy=2,"
                 f"drawtext=fontfile={font}:textfile={title_file}:reload=30:"
                 "fontcolor=white:fontsize=34:x=56:y=h-67:"
                 "shadowcolor=black@0.85:shadowx=2:shadowy=2,"
-                # Full four-command row at the lower right, no black band.
+                # The lock and indented title are populated together only
+                # while the matching track_id is frozen by a chat viewer.
+                f"drawtext=fontfile={lock_font}:textfile={lock_file}:reload=30:"
+                "fontcolor=white:fontsize=34:x=56:y=h-67:"
+                "shadowcolor=black@0.85:shadowx=2:shadowy=2,"
+                f"drawtext=fontfile={font}:textfile={frozen_title_file}:reload=30:"
+                "fontcolor=white:fontsize=34:x=100:y=h-67:"
+                "shadowcolor=black@0.85:shadowx=2:shadowy=2,"
                 f"drawtext=fontfile={font}:"
                 "text='!skip    !song    !back    !freeze':"
                 "fontcolor=white:fontsize=30:x=w-text_w-55:y=h-71:"
