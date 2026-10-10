@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T09:45:49.390240+00:00",
+  "updated_at": "2026-10-10T09:53:41.154993+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4483,10 +4483,22 @@
           "intro_identity": "A tremolo clean-guitar riff and alternating kick/snare pickups before warm sub-bass",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-62",
+          "title": "Subway Daydream",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-062-38030239136/peter-lofi-lofi-hip-hop-062.mp3",
+          "duration_seconds": 300,
+          "position": 62,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 88,
+          "intro_identity": "A gliding analog synth line answered by cut-up vinyl-style percussion and a steady kick",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 61,
-      "total_duration_seconds": 18300,
+      "track_count": 62,
+      "total_duration_seconds": 18600,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
