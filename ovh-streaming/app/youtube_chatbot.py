@@ -41,6 +41,7 @@ INTERACTION_MESSAGES=(
     "Love the music? Tell us what you're working on today! 💻",
 )
 _send_lock=threading.Lock()
+_oauth_lock=threading.Lock()
 _last_send=0.0
 _chat_id=""
 _credentials=None
@@ -63,7 +64,7 @@ def token():
     global _credentials
     if _credentials is None:
         _credentials=env_credentials()
-    with _send_lock:
+    with _oauth_lock:
         if not _credentials.valid or _credentials.expired:
             _credentials.refresh(Request())
         if not _credentials.token:raise RuntimeError("youtube_oauth_no_access_token")
@@ -76,7 +77,7 @@ def youtube(method,path,params=None,payload=None):
     try:
         r=requests.request(method,url,params=params,json=payload,headers=headers,timeout=22)
         if r.status_code==401:
-            with _send_lock:
+            with _oauth_lock:
                 _credentials.refresh(Request())
                 headers["authorization"]="Bearer "+_credentials.token
             r=requests.request(method,url,params=params,json=payload,headers=headers,timeout=22)
@@ -114,21 +115,20 @@ def send(message):
     global _last_send
     message=" ".join(str(message or "").split())[:200]
     if not message or not _chat_id:return False
+    # Serialize automatic announcements with viewer-command replies.
     with _send_lock:
         delta=MIN_SEND_SECONDS-(time.monotonic()-_last_send)
         if delta>0:time.sleep(delta)
-        # token() acquires _send_lock: request the OAuth token outside this lock instead.
-    payload={"snippet":{"liveChatId":_chat_id,"type":"textMessageEvent",
-                        "textMessageDetails":{"messageText":message}}}
-    try:
-        result=youtube("POST","liveChat/messages",{"part":"snippet"},payload)
-        ok=bool(result.get("id"))
-    except Exception as e:
-        print("YOUTUBE_BOT_SEND_FAILED",type(e).__name__,str(e)[:100],flush=True)
-        return False
-    with _send_lock:_last_send=time.monotonic()
-    return ok
-
+        payload={"snippet":{"liveChatId":_chat_id,"type":"textMessageEvent",
+                            "textMessageDetails":{"messageText":message}}}
+        try:
+            result=youtube("POST","liveChat/messages",{"part":"snippet"},payload)
+            ok=bool(result.get("id"))
+        except Exception as e:
+            print("YOUTUBE_BOT_SEND_FAILED",type(e).__name__,str(e)[:100],flush=True)
+            return False
+        _last_send=time.monotonic()
+        return ok
 
 def hourly_tick():
     state_file=ROOT/"youtube-chat-hourly.json"
