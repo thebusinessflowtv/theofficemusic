@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-10T16:46:28.743027+00:00",
+  "checked_at": "2026-10-10T16:47:49.197157+00:00",
   "routes": {
     "cloudflare": {
       "reachable": true,
@@ -49,13 +49,13 @@
     },
     "ovh_direct": {
       "reachable": true,
-      "reported_at": "2026-10-10T16:46:27.085182Z",
+      "reported_at": "2026-10-10T16:47:42.655451Z",
       "lofi": {
         "status": "live",
         "runtime_slot": null,
         "session_id": null,
         "title": null,
-        "updated_at": "2026-10-10T16:46:27.073994Z",
+        "updated_at": "2026-10-10T16:47:45.169408Z",
         "fps": 60,
         "video_bitrate_kbps": 8000,
         "encoder_pid": null,
@@ -78,35 +78,35 @@
       "other_streams": {
         "kick": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:25.458870Z"
+          "updated_at": "2026-10-10T16:47:41.510633Z"
         },
         "twitch": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:26.400102Z"
+          "updated_at": "2026-10-10T16:47:42.465986Z"
         },
         "youtube-deep-house": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:26.330359Z"
+          "updated_at": "2026-10-10T16:47:42.383326Z"
         },
         "youtube-rainy": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:27.008680Z"
+          "updated_at": "2026-10-10T16:47:41.057551Z"
         },
         "youtube-gta-vi": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:26.318286Z"
+          "updated_at": "2026-10-10T16:47:42.371741Z"
         }
       }
     },
     "panel": {
       "reachable": true,
-      "reported_at": "2026-10-10T16:46:27.085182Z",
+      "reported_at": "2026-10-10T16:47:42.655451Z",
       "lofi": {
         "status": "live",
         "runtime_slot": null,
         "session_id": null,
         "title": null,
-        "updated_at": "2026-10-10T16:46:27.073994Z",
+        "updated_at": "2026-10-10T16:47:45.169408Z",
         "fps": 60,
         "video_bitrate_kbps": 8000,
         "encoder_pid": null,
@@ -129,25 +129,60 @@
       "other_streams": {
         "kick": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:25.458870Z"
+          "updated_at": "2026-10-10T16:47:41.510633Z"
         },
         "twitch": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:26.400102Z"
+          "updated_at": "2026-10-10T16:47:42.465986Z"
         },
         "youtube-deep-house": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:26.330359Z"
+          "updated_at": "2026-10-10T16:47:42.383326Z"
         },
         "youtube-rainy": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:27.008680Z"
+          "updated_at": "2026-10-10T16:47:41.057551Z"
         },
         "youtube-gta-vi": {
           "status": "live",
-          "updated_at": "2026-10-10T16:46:26.318286Z"
+          "updated_at": "2026-10-10T16:47:42.371741Z"
         }
       }
     }
-  }
+  },
+  "ovh_direct_detailed": {
+    "service_keys": [
+      "dj_import",
+      "fps",
+      "hot_swap",
+      "now_playing",
+      "playlist_key",
+      "playlist_track_count",
+      "restarts",
+      "status",
+      "updated_at",
+      "video_bitrate_kbps",
+      "visual_revision"
+    ],
+    "service": {
+      "status": "live",
+      "playlist_track_count": 66,
+      "fps": 60,
+      "video_bitrate_kbps": 8000,
+      "updated_at": "2026-10-10T16:47:51.179815Z",
+      "visual_revision": 1,
+      "restarts": 0,
+      "now_playing": {
+        "state": "playing",
+        "track_id": "lofi-hip-hop-20261008-33",
+        "title": "Grey September",
+        "started_at": "2026-10-10T08:57:06.310464Z"
+      }
+    },
+    "reported_at": "2026-10-10T16:47:53.354750Z"
+  },
+  "youtube": {
+    "error": "HttpError: <HttpError 400 when requesting https://youtube.googleapis.com/youtube/v3/liveBroadcasts?part=snippet%2Cstatus%2CcontentDetails&broadcastStatus=active&mine=true&maxResults=50&alt=json returned \"Incompatible parameters specified in the request: broadcastStatus, mine\". Details: \"[{'message': 'Incompatible parameters specified in the request: broadcast"
+  },
+  "extended_checked_at": "2026-10-10T16:47:56.119829+00:00"
 }
