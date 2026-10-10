@@ -603,6 +603,7 @@ class AudioEngine:
                     "track": target,
                     "reason": action,
                     "started": False,
+                    "prebuffer_started_at": time.monotonic(),
                     "fade_index": 0,
                 }
             except Exception as exc:
@@ -703,12 +704,24 @@ class AudioEngine:
                             pending["started"] = True
                             pending["fade_index"] = 0
                             self.publish(pending["track"], state="crossfading")
-                        elif upcoming.eof:
+                        elif (
+                            (upcoming.proc and upcoming.proc.poll() is not None)
+                            or time.monotonic() - pending.get("prebuffer_started_at", time.monotonic()) >= 10.0
+                        ):
+                            # A failed/blocked HTTP decoder may never emit an EOF
+                            # sentinel while we are waiting for prebuffer. The
+                            # previous branch only inspected upcoming.eof, which
+                            # remains false until read_frame() is called. This
+                            # permanently stranded the playlist and streamed
+                            # silent PCM for hours. Fail fast and try another
+                            # original track without restarting RTMP/video.
                             upcoming.stop()
                             self.write_audio_health({
-                                "state": "transition_prebuffer_failed",
+                                "state": "transition_prebuffer_failed_retry",
                                 "track_id": track["id"],
                                 "next_track_id": pending["track"]["id"],
+                                "reason": pending["reason"],
+                                "timeout_seconds": round(time.monotonic() - pending.get("prebuffer_started_at", time.monotonic()), 2),
                             })
                             pending = None
 
