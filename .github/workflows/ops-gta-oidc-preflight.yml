@@ -28,3 +28,22 @@ jobs:
           cat /tmp/preflight.json
           test "$CODE" = "400"
           jq -e '.error=="youtube_ingest_required"' /tmp/preflight.json >/dev/null
+
+      - name: Validate isolated Lofi YouTube OAuth bridge without creating a live
+        shell: bash
+        run: |
+          set -euo pipefail
+          OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
+          test -n "$OIDC_TOKEN"
+          echo "::add-mask::$OIDC_TOKEN"
+          CODE="$(curl -ksS -o /tmp/lofi-preflight.json -w '%{http_code}' -X POST "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap" -H "authorization: Bearer $OIDC_TOKEN" -H 'content-type: application/json' --data '{"runtime_slot":"youtube-lofi-hip-hop","playlist_key":"lofi-hip-hop"}')"
+          echo "LOFI_AUTHENTICATED_PREFLIGHT_HTTP=$CODE"
+          cat /tmp/lofi-preflight.json
+          test "$CODE" = "400"
+          jq -e '.error=="youtube_ingest_required"' /tmp/lofi-preflight.json >/dev/null
+          CODE="$(curl -ksS -o /tmp/lofi-pairing.json -w '%{http_code}' -X POST "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap" -H "authorization: Bearer $OIDC_TOKEN" -H 'content-type: application/json' --data '{"runtime_slot":"youtube-lofi-hip-hop","playlist_key":"gta-vi-vice-city"}')"
+          echo "ISOLATED_PAIRING_GUARD_HTTP=$CODE"
+          test "$CODE" = "400"
+          jq -e '.error=="playlist_slot_mismatch"' /tmp/lofi-pairing.json >/dev/null
+          echo "LOFI_OAUTH_OIDC_PREFLIGHT_PASSED_NO_LIVE_CREATED"
