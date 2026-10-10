@@ -2,7 +2,7 @@
 """Controlled Kick-only dynamic overlay: preserve publisher and audio.
 
 Preflight and a dry-run are REQUIRED before changing the Kick visual child.
-Never recreates the Kick, Kick, YouTube or Kick-chatbot Docker containers.
+Never recreates the Kick, Twitch, YouTube or Twitch-chatbot Docker containers.
 WARNING: switching visual senders can cause a brief video interruption.
 """
 from __future__ import annotations
@@ -175,7 +175,8 @@ def activate():
         reload_started=True
         reload_visual()
         monitor(initial,"dynamic_now_playing",seconds=45)
-        print("OVERLAY_ACTIVE Kick now-playing (left) and !skip !song !back !freeze (right).",flush=True)
+        print("KICK_OVERLAY_ACTIVE: live song title enabled.",flush=True)
+        print("Commands appear only after the separate Kick chat bot is subscribed.",flush=True)
         print("RTMP ENCODER UNCHANGED. Check picture, audio and track-title updates in Kick preview.",flush=True)
     except Exception as exc:
         try:
