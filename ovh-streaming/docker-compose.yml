@@ -23,6 +23,20 @@ services:
     volumes:
       - ./state:/state
 
+  twitch-chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile.chatbot
+    container_name: peter-lofi-twitch-chatbot
+    restart: unless-stopped
+    network_mode: host
+    mem_limit: 192m
+    cpus: 0.20
+    env_file:
+      - /etc/peterlofi-twitch-chatbot.env
+    volumes:
+      - ./state:/state
+
   twitch:
     build: .
     container_name: peter-lofi-twitch
