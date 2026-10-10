@@ -1,5 +1,5 @@
 {
-  "version": "lofi-ovh-host-authenticated-relay-20261010-v1",
-  "purpose": "Publish OVH host-agent local-inbox OAuth relay and safe Lofi resume without restarting existing media publishers.",
+  "version": "lofi-release-verified-orphan-20261010-v1",
+  "purpose": "Release the verified stuck Lofi STARTING session after GitHub absence check, without changing any active live.",
   "media_publishers_touched": false
 }
