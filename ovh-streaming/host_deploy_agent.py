@@ -1315,6 +1315,95 @@ def repair_gta_runtime():
     raise RuntimeError(f"GTA runtime did not recover after media-pipeline repair: {last}")
 
 
+
+def launch_isolated_lofi_youtube(cmd):
+    """Provision a separate Docker publisher, never recreating an existing live."""
+    import uuid
+    slot="youtube-lofi-hip-hop"
+    container="peter-lofi-youtube-lofi-hip-hop"
+    if str(cmd.get("target") or "")!=slot or str(cmd.get("playlist_key") or "")!="lofi-hip-hop":
+        raise ValueError("Dedicated Lofi-only launch payload required")
+    sid=str(cmd.get("session_id") or "")
+    try: uuid.UUID(sid)
+    except Exception: raise ValueError("Invalid Lofi session ID")
+    stream_url=str(cmd.get("stream_url") or "").strip()
+    stream_key=str(cmd.get("stream_key") or "").strip()
+    loop_url=str(cmd.get("loop_url") or "").strip()
+    title=str(cmd.get("title") or "Lofi Hip Hop Radio")[:140]
+    tracks=cmd.get("tracks")
+    if not stream_url.startswith("rtmp") or not stream_key or not loop_url.startswith("http"):
+        raise ValueError("Missing authenticated YouTube RTMP credentials or video")
+    if not isinstance(tracks,list) or not 1<=len(tracks)<=36:
+        raise ValueError("Lofi launch needs between 1 and 36 tracks")
+    if any(not str(t.get("url") or "").startswith("https://") or
+           not str(t.get("id") or "").startswith("lofi-hip-hop-") or
+           not 295<=int(t.get("duration_seconds") or 0)<=305
+           for t in tracks if isinstance(t,dict)):
+        raise ValueError("Unexpected Lofi track in playlist")
+    if any(not isinstance(t,dict) for t in tracks):
+        raise ValueError("Malformed Lofi playlist")
+    baseline={name:health(name).get("encoder_pid") for name in SLOTS}
+    state_path=OVH/"state"/slot
+    state_path.mkdir(parents=True,exist_ok=True)
+    existing=read_json(state_path/"desired.json",{}) or {}
+    try:
+        running=run(["docker","inspect","-f","{{.State.Running}}",container],timeout=15).strip().lower()=="true"
+    except Exception:
+        running=False
+    if running:
+        if str(existing.get("session_id") or "")==sid:
+            return {"status":"already_running","runtime_slot":slot,"session_id":sid,
+                    "other_publishers_preserved":True}
+        raise RuntimeError("Lofi publisher is already running; refusing to replace or restart it")
+    if existing.get("desired")=="live" and existing.get("session_id") not in ("",sid):
+        raise RuntimeError("Lofi has a previous session marked live: refusing an unsafe takeover")
+    image="mediaforge-lofi-youtube:isolated-v1"
+    run(["docker","build","-t",image,str(OVH)],timeout=1500)
+    atomic_json(state_path/"playlist.json",{
+        "station":slot,"playlist_key":"lofi-hip-hop",
+        "tracks":tracks,"shuffle":True,"repeat":True,"updated_at":now()
+    })
+    atomic_json(state_path/"desired.json",{
+        "runtime":"ovh","runtime_slot":slot,
+        "session_id":sid,"title":title,"loop_url":loop_url,
+        "playlist_key":"lofi-hip-hop","desired":"live",
+        "generation":1,"visual_revision":1,"updated_at":now()
+    })
+    args=[
+        "docker","run","-d","--name",container,"--restart","unless-stopped",
+        "--network","host","--add-host","host.docker.internal:host-gateway",
+        "--cpus","2.0","--memory","1536m",
+        "--pids-limit","250","-v",str(OVH/"state")+":/state",
+        "-e","STREAM_URL="+stream_url,"-e","STREAM_KEY="+stream_key,
+        "-e","LOOP_URL="+loop_url,
+        "-e","PLAYLIST_FILE=/config/youtube-deep-house.json",
+        "-e","VIDEO_FPS=60","-e","VIDEO_BITRATE_KBPS=8000",
+        "-e","VIDEO_BUFSIZE_KBPS=16000","-e","AUDIO_BITRATE_KBPS=192",
+        "-e","VIDEO_PROFILE=main","-e","VIDEO_PRESET=superfast",
+        "-e","STREAM_PROFILE_VERSION=lofi-hip-hop-isolated-v1",
+        "-e","STARTUP_PREROLL_SECONDS=1.5","-e","AUDIO_READY_TIMEOUT_SECONDS=90",
+        "-e","VIDEO_UDP_PORT=19172",
+        "-e","BOOTSTRAP_SESSION_ID="+sid,"-e","BOOTSTRAP_TITLE="+title,
+        image,"python","/app/stream_core.py","--platform",slot
+    ]
+    # Secrets are passed only to Docker locally, never printed or returned.
+    run(args,timeout=120)
+    time.sleep(3)
+    running=run(["docker","inspect","-f","{{.State.Running}}",container],timeout=20).strip().lower()
+    if running!="true":
+        raise RuntimeError("Dedicated Lofi encoder failed to start")
+    changed=[]
+    for name,pid in baseline.items():
+        if pid is not None and health(name).get("encoder_pid")!=pid:
+            changed.append(name)
+    if changed:
+        raise RuntimeError("Existing RTMP publisher PID changed unexpectedly: "+",".join(changed))
+    return {"status":"starting","runtime_slot":slot,"session_id":sid,
+            "playlist_key":"lofi-hip-hop","track_count":len(tracks),
+            "publisher_container":container,"other_publishers_preserved":True,
+            "existing_streams_restarted":False,"checked_at":now()}
+
+
 def execute(cmd):
     action=str(cmd.get("action") or "")
     target=str(cmd.get("target") or "")
@@ -1329,6 +1418,8 @@ def execute(cmd):
         return rollback_service(target),False
 
     old,new=git_sync()
+    if action=="launch_isolated_lofi_youtube":
+        return {"old_head":old,"new_head":new,**launch_isolated_lofi_youtube(cmd)},False
     if action=="hot_patch_streaming":
         return {"old_head":old,"new_head":new,"targets":hot_patch_streaming(target)},False
     if action=="reload_control_agent":
