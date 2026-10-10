@@ -1,5 +1,5 @@
 {
-  "version": "youtube-auto-allocation-ui-v1",
-  "purpose": "Publish slotless YouTube live creation UI and safe automatic compatible encoder selection without changing RTMP publishers.",
+  "version": "youtube-slotless-live-20261009-v2",
+  "purpose": "Publish exact MediaForge /app.html#/peter-lofi/lives production bundle with hidden YouTube slot selector and cache-busted iframe/JS.",
   "media_publishers_touched": false
 }
