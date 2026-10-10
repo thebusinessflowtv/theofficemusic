@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T07:55:50.560869+00:00",
+  "updated_at": "2026-10-10T08:02:54.847209+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4339,10 +4339,22 @@
           "intro_identity": "Two measures of offbeat chord stabs above ticking closed hats then a thick bass drop-in",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-50",
+          "title": "Arcade Walk",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-050-38030239136/peter-lofi-lofi-hip-hop-050.mp3",
+          "duration_seconds": 300,
+          "position": 50,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 99,
+          "intro_identity": "A playful four-step synth-blip motif, clap pickup and cut-up breakbeat on measure two",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 49,
-      "total_duration_seconds": 14700,
+      "track_count": 50,
+      "total_duration_seconds": 15000,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
