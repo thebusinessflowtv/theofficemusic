@@ -63,8 +63,8 @@ class TestChatRequests(unittest.TestCase):
         self.change_song("twitch")
         self.assertTrue(clear_freeze_after_track_change(self.root, "twitch", "t1"))
         self.assertFalse(clear_freeze_after_track_change(self.root, "twitch", "t1"))
-        self.assertEqual(self.req(msg="!freeze", mid="f2", t=1010)["status"], "frozen_now")
         self.assertEqual(self.req(msg="!skip", user="bob", mid="sk2", t=1010)["status"], "accepted")
+        self.assertEqual(self.req(msg="!freeze", mid="f2", t=1010)["status"], "frozen_now")
         self.assertEqual(self.req(msg="!freeze", mid="f3", t=1180)["status"], "already_frozen")
 
     def test_stale_freeze_auto_expires_when_song_changes(self):
