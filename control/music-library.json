@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T01:40:21.029026+00:00",
+  "updated_at": "2026-10-10T01:47:41.844561+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4161,10 +4161,21 @@
           "target_bpm": 83,
           "intro_identity": "An original pitched record-chop effect repeats twice before the piano plays the full chord",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-35",
+          "title": "Lunar Side Street",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-035-37991966107/peter-lofi-lofi-hip-hop-035.mp3",
+          "duration_seconds": 300,
+          "position": 35,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 90,
+          "intro_identity": "Begin with Rhodes chords in an unusual 3+3+2 rhythm, then relax into four-four",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 34,
-      "total_duration_seconds": 10200,
+      "track_count": 35,
+      "total_duration_seconds": 10500,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
