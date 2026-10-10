@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T01:25:40.436757+00:00",
+  "updated_at": "2026-10-10T01:33:49.546486+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4139,10 +4139,21 @@
           "target_bpm": 91,
           "intro_identity": "Four-note soft synth-mallet ostinato enters without kick; rhythm builds gradually",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-33",
+          "title": "Grey September",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-033-37991966107/peter-lofi-lofi-hip-hop-033.mp3",
+          "duration_seconds": 300,
+          "position": 33,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 76,
+          "intro_identity": "A field-recording-like light wind wash resolves into a delicate jazz guitar melody",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 32,
-      "total_duration_seconds": 9600,
+      "track_count": 33,
+      "total_duration_seconds": 9900,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
