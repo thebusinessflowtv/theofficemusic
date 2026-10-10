@@ -54,6 +54,42 @@ services:
     volumes:
       - ./state:/state
 
+  youtube-hip-hop-chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile.youtube-chatbot
+    container_name: peter-lofi-youtube-hip-hop-chatbot
+    command: ["python", "-u", "/app/youtube_chatbot.py"]
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.20
+    env_file:
+      - path: /etc/peterlofi-youtube-chatbot.env
+        required: false
+    environment:
+      YOUTUBE_BOT_SLOT: youtube-lofi-hip-hop
+      YOUTUBE_VIDEO_ID: W89tRiluh_Y
+    volumes:
+      - ./state:/state
+
+  youtube-gta-vi-chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile.youtube-chatbot
+    container_name: peter-lofi-youtube-gta-vi-chatbot
+    command: ["python", "-u", "/app/youtube_chatbot.py"]
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.20
+    env_file:
+      - path: /etc/peterlofi-youtube-chatbot.env
+        required: false
+    environment:
+      YOUTUBE_BOT_SLOT: youtube-gta-vi
+      YOUTUBE_VIDEO_ID: 5O4ad_F5lGI
+    volumes:
+      - ./state:/state
+
   twitch:
     build: .
     container_name: peter-lofi-twitch
