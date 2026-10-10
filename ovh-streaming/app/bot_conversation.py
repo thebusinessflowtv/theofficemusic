@@ -54,7 +54,7 @@ def plan_chat_reply(
     This method never calls an external AI model. The adapter must implement
     an opt-in model, input limits, response moderation and Twitch/Kick sending.
     """
-    if platform not in ("twitch", "kick"):
+    if platform not in ("twitch", "kick", "youtube-lofi-hip-hop", "youtube-gta-vi"):
         raise ValueError("unsupported platform")
     user_id = str(user_id).strip()
     message_id = str(message_id).strip()
