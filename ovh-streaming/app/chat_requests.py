@@ -13,9 +13,9 @@ import time
 import uuid
 from pathlib import Path
 
-SLOTS = frozenset(("twitch", "kick"))
+SLOTS = frozenset(("twitch", "kick", "youtube-lofi-hip-hop", "youtube-gta-vi"))
 COMMANDS = frozenset(("!skip", "!song", "!back", "!freeze"))
-USER_COOLDOWN_SECONDS = {"twitch": 0, "kick": 180}  # Twitch Slow Mode controls viewers; Kick not yet configured.
+USER_COOLDOWN_SECONDS = {"twitch": 0, "kick": 180, "youtube-lofi-hip-hop": 120, "youtube-gta-vi": 120}  # Twitch Slow Mode controls viewers; Kick not yet configured.
 # Protect a station against many viewers causing rapid successive track changes.
 TRACK_CHANGE_GLOBAL_SECONDS = 60
 DEDUP_SECONDS = 24 * 3600
