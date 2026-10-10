@@ -1548,7 +1548,7 @@ def repair_lofi_video_transport(cmd):
     # while a stale visual_engine still writes UDP and the audio feeder is stale.
     # Always deploy these three mutually compatible modules atomically to ONLY
     # the dedicated Lofi container before its controlled recovery restart.
-    modules=("stream_core.py","visual_engine.py","audio_engine.py")
+    modules=("chat_requests.py","audio_engine.py","visual_engine.py","stream_core.py")
     st=OVH/"state"/slot
     for module in modules:
         source=OVH/"app"/module
