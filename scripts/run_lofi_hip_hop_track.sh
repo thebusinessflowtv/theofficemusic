@@ -42,7 +42,7 @@ test "$READY" -eq 1
 
 APPROVED=0
 for VARIANT_ATTEMPT in 1 2 3 4; do
-  echo "Lofi Hip Hop $INDEX/36 — attempt $VARIANT_ATTEMPT — 300 seconds — independent musical identity"
+  echo "Lofi Hip Hop $INDEX/66 — attempt $VARIANT_ATTEMPT — 300 seconds — ${INDEX} original hip hop"
   rm -rf generated
   rm -f build/reference_profile.json build/qc.json build/diversity.json build/approved.mp3
   python scripts/build_lofi_hip_hop_profile.py --index "$INDEX" --variant-attempt "$VARIANT_ATTEMPT" --out build/reference_profile.json
@@ -63,11 +63,12 @@ t=re.sub(r'PROFILE_PAYLOAD_B64 = "[^"]*"',f'PROFILE_PAYLOAD_B64 = "{payload}"',t
 t=t.replace('gta-vice-city','lofi-hip-hop').replace('GTA VI - Vice City','Lofi Hip Hop')
 t=t.replace(
   'Driving original retro-futurist neon night music with a consistent dance pulse and cinematic coastal atmosphere.',
-  'Warm original jazzy instrumental lofi hip hop music with melodic Rhodes chords, soulful bass and relaxed swung boom bap drums for study and work.'
+  ('Original upbeat instrumental lofi hip hop with confident boom-bap kick and snare, bouncy rhythmic bass, short guitar and synth hooks, lively head-nod swing, no saxophone and no jazz lounge. Keep every melody unique.' if idx >= 37 else
+   'Warm original jazzy instrumental lofi hip hop music with melodic Rhodes chords, soulful bass and relaxed swung boom bap drums for study and work.')
 )
 p.write_text(t,encoding="utf-8")
 PY
-  KERNEL_NAME="peter-lofi-lofi36-$INDEX-v$VARIANT_ATTEMPT-$GITHUB_RUN_ID"
+  KERNEL_NAME="peter-lofi-lofi66-$INDEX-v$VARIANT_ATTEMPT-$GITHUB_RUN_ID"
   python - "$TMP" "$KERNEL_NAME" <<'PY'
 import json,os,pathlib,sys
 d=pathlib.Path(sys.argv[1]); name=sys.argv[2]
@@ -156,7 +157,7 @@ for push_attempt in 1 2 3 4 5; do
   git reset --hard origin/main
   python scripts/publish_lofi_hip_hop.py
   git add control/music-library.json control/lofi-hip-hop
-  git diff --cached --quiet || git commit -m "lofi: approve and catalog Hip Hop track $INDEX/36"
+  git diff --cached --quiet || git commit -m "lofi: approve and catalog Hip Hop track $INDEX/66"
   if git push origin HEAD:main; then
     echo "LOFI_TRACK_PUBLISHED=$INDEX"
     exit 0
