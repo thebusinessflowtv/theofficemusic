@@ -1592,6 +1592,94 @@ def execute(cmd):
 
 
 
+
+def report_isolated_lofi_status():
+    """Read-only heartbeat for the separate Lofi container; never restart media."""
+    slot="youtube-lofi-hip-hop"
+    state_dir=OVH/"state"/slot
+    h=health(slot)
+    desired=read_json(state_dir/"desired.json",{}) or {}
+    now_playing=read_json(state_dir/"now-playing.json",{}) or {}
+    playlist=read_json(state_dir/"playlist.json",{}) or {}
+    fresh=False
+    try:
+        timestamp=datetime.fromisoformat(str(h.get("updated_at") or "").replace("Z","+00:00"))
+        age=(datetime.now(timezone.utc)-timestamp.astimezone(timezone.utc)).total_seconds()
+        fresh=-15<=age<=60
+    except Exception:
+        pass
+    try:
+        active_container=(run(["docker","inspect","-f","{{.State.Running}}",
+             "peter-lofi-youtube-lofi-hip-hop"],timeout=12).strip().lower()=="true")
+    except Exception:
+        active_container=False
+    live=fresh and active_container and h.get("status")=="live" and bool(h.get("encoder_pid"))
+    payload={
+        "runtime_slot":slot,"platform":slot,
+        "session_id":str(desired.get("session_id") or ""),
+        "title":str(desired.get("title") or "Lofi Hip Hop Radio")[:150],
+        "playlist_key":str(desired.get("playlist_key") or "lofi-hip-hop"),
+        "status":"live" if live else "unknown",
+        "fps":h.get("fps"),"video_bitrate_kbps":h.get("video_bitrate_kbps"),
+        "restarts":h.get("restarts",0),"updated_at":h.get("updated_at"),
+        "loop_url":str(desired.get("loop_url") or ""),
+        "visual_revision":desired.get("visual_revision",0),
+        "hot_swap":bool(h.get("hot_swap",True)),
+        "encoder_pid":h.get("encoder_pid") if live else None,
+        "audio_pid":h.get("audio_pid") if live else None,
+        "visual_pid":h.get("visual_pid") if live else None,
+        "audio_status":h.get("audio_status"),
+        "audio_stalls":h.get("audio_stalls",0),
+        "visual_status":h.get("visual_status"),
+        "now_playing":{k:now_playing.get(k) for k in
+            ("track_id","title","state","started_at")},
+        "playlist_track_count":len(playlist.get("tracks") or []),
+    }
+    post_json("http://127.0.0.1:8790/api/ovh/agent/isolated-status",
+        {"runtime_slot":slot,"service":payload})
+    return live
+
+
+def apply_isolated_lofi_track_controls():
+    """Only next/previous for Lofi. Independent of the legacy agent image."""
+    slot="youtube-lofi-hip-hop"
+    endpoint="http://127.0.0.1:8790"
+    cmds=fetch_json(endpoint+"/api/ovh/agent/commands?only_slot=youtube-lofi-hip-hop&limit=15").get("commands") or []
+    applied=0
+    for cmd in cmds:
+        cid=str(cmd.get("id") or "")
+        action=str(cmd.get("action") or "").lower()
+        if not cid:continue
+        try:
+            if cmd.get("runtime_slot")!=slot or action not in ("skip","previous"):
+                raise RuntimeError("Unsupported isolated audio command")
+            h=health(slot)
+            if h.get("status")!="live" or not h.get("encoder_pid"):
+                raise RuntimeError("Lofi encoder is not live; music change refused")
+            path=OVH/"state"/slot
+            payload={
+                "id":cid,"action":action,"requested_at":now(),
+                "source":"mediaforge-ovh-dashboard-isolated",
+            }
+            safe_id="".join(x for x in cid if x.isalnum() or x in "-_")[:96]
+            if not safe_id:raise RuntimeError("Invalid command id")
+            queue=path/"audio-commands"
+            queue.mkdir(parents=True,exist_ok=True)
+            # The running AudioEngine drains these individual files in order,
+            # avoiding lost rapid clicks; command.json is the legacy mirror.
+            atomic_json(queue/(f"{time.time_ns():020d}-{safe_id}.json"),payload)
+            atomic_json(path/"command.json",payload)
+            post_json(endpoint+"/api/ovh/agent/command-ack",
+                {"id":cid,"status":"completed"})
+            applied+=1
+        except Exception as exc:
+            try:post_json(endpoint+"/api/ovh/agent/command-ack",
+                {"id":cid,"status":"failed","error":str(exc)[:350]})
+            except Exception:pass
+            print("isolated Lofi audio command failed:",cid,str(exc)[:180],flush=True)
+    return applied
+
+
 def main():
     try:
         result=bootstrap_ui_test_control_agent()
@@ -1638,6 +1726,17 @@ def main():
                 # Cloudflare is only a deploy/control channel. A failure here does
                 # not touch local publishers or the watchdog.
                 print("deploy poll failed:",str(exc)[:800],flush=True)
+        # Read-only isolated publisher telemetry and audio-only controls.
+        # No other stream container is restarted or reconfigured.
+        try:
+            report_isolated_lofi_status()
+        except Exception as exc:
+            print("isolated Lofi telemetry unavailable:",str(exc)[:180],flush=True)
+        try:
+            handled=apply_isolated_lofi_track_controls()
+            if handled:print("isolated Lofi audio controls acknowledged:",handled,flush=True)
+        except Exception as exc:
+            print("isolated Lofi controls unavailable:",str(exc)[:180],flush=True)
         time.sleep(POLL)
 
 
