@@ -22,7 +22,7 @@ BRIDGE=os.environ.get("KICK_BOT_BRIDGE_URL","http://127.0.0.1:8790/api/oauth/kic
 SECRET=os.environ.get("KICK_BOT_BRIDGE_TOKEN","")
 COMMANDS_ENABLED=os.environ.get("KICK_BOT_COMMANDS_ENABLED","1")=="1"
 CONVERSATION_ENABLED=os.environ.get("KICK_BOT_CONVERSATION_ENABLED","1")=="1"
-HOURLY=3600
+HOURLY=90*60
 MESSAGES=(
     "Hey Kick chat! 🎮 What are you playing today? Drop it in chat!",
     "Welcome to PeterLofi Radio! 🎧 Type !song to check the music or !freeze to lock this track.",
