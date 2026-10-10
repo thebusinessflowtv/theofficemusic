@@ -1,0 +1,36 @@
+{
+  "workflow": "office-music-publish.yml",
+  "inputs": {
+    "job_id": "701f7e2c-b596-45cf-afda-ffaba77e6630",
+    "duration_minutes": "150",
+    "track_count": "30",
+    "track_seconds": "300",
+    "publish": "false",
+    "privacy": "private",
+    "title": "Lofi Hip Hop — Upbeat Boom Bap, 30 Original Tracks | Peter Lofi",
+    "loop_url": "",
+    "thumbnail_url": "",
+    "visual_mode": "video",
+    "visual_image_url": ""
+  },
+  "source": "Peter Lofi owner request — +30 upbeat hip-hop tracks, same existing playlist; sample-free original inspirations from broad Lofi Girl hip-hop mood",
+  "production": {
+    "playlist_key": "lofi-hip-hop",
+    "first_index": 37,
+    "last_index": 66,
+    "planned_new_tracks": 30,
+    "total_after_approval": 66,
+    "seconds_each": 300,
+    "genre": "groove-forward upbeat boom bap hip-hop / punchy drums / thick bass / minimal guitar/synth hooks",
+    "avoid": [
+      "saxophone",
+      "smooth jazz",
+      "jazz solos",
+      "soft brushed beats",
+      "copied third-party material"
+    ],
+    "run_strategy": "30 independent GPU jobs, one at a time, publish each QC approved MP3 to same playlist",
+    "do_not_restart_or_stop_active_lives": true,
+    "publish_youtube": false
+  }
+}
