@@ -38,7 +38,8 @@ jobs:
         run: |
           set -euo pipefail
           python -m py_compile ovh-streaming/app/chat_requests.py ovh-streaming/app/bot_conversation.py ovh-streaming/app/visual_engine.py ovh-streaming/app/twitch_chatbot.py ovh-streaming/app/kick_chatbot.py ovh-streaming/scripts/overlay-twitch-commands.py ovh-streaming/scripts/preflight-twitch-now-playing.py ovh-streaming/scripts/activate-twitch-live-overlay.py ovh-streaming/scripts/preflight-kick-now-playing.py ovh-streaming/scripts/activate-kick-live-overlay.py
-          python -m pip install --quiet websockets==15.0.1
+          python -m pip install --quiet websockets==15.0.1 grpcio==1.75.1 grpcio-tools==1.75.1 google-auth==2.41.1 requests==2.32.5
+          python -m grpc_tools.protoc -Iovh-streaming/app --python_out=ovh-streaming/app --grpc_python_out=ovh-streaming/app ovh-streaming/app/youtube_stream_list.proto
           python ovh-streaming/scripts/overlay-twitch-commands.py --help >/dev/null
           python ovh-streaming/scripts/activate-twitch-live-overlay.py --help >/dev/null
           python ovh-streaming/scripts/activate-twitch-live-overlay.py --help | grep -- --refresh >/dev/null
