@@ -481,6 +481,8 @@ def hot_patch_streaming(target="all"):
 
         # Replace child-process code inside the existing container without
         # recreating the container or touching the persistent RTMP encoder.
+        # audio_engine imports chat_requests; copy dependency before restarting audio feeder.
+        run(["docker","cp",str(OVH/"app"/"chat_requests.py"),f"{name}:/app/chat_requests.py"],timeout=30)
         run(["docker","cp",str(OVH/"app"/"audio_engine.py"),f"{name}:/app/audio_engine.py"],timeout=30)
         run(["docker","cp",str(OVH/"app"/"stream_core.py"),f"{name}:/app/stream_core.py"],timeout=30)
         run(["docker","cp",str(OVH/"app"/"visual_engine.py"),f"{name}:/app/visual_engine.py"],timeout=30)
