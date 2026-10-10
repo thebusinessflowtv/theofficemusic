@@ -1,0 +1,37 @@
+name: PeterLofi Chat and Now Playing Safety Checks
+
+on:
+  push:
+    paths:
+      - '.github/workflows/peterlofi-chat-overlay-tests.yml'
+      - 'ovh-streaming/app/chat_requests.py'
+      - 'ovh-streaming/app/visual_engine.py'
+      - 'ovh-streaming/tests/test_chat_requests.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Python syntax and chat cooldown
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile ovh-streaming/app/chat_requests.py ovh-streaming/app/visual_engine.py
+          cd ovh-streaming
+          python -m unittest discover -s tests -v
+      - name: Verify overlay is gated off by default
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          code=Path('ovh-streaming/app/visual_engine.py').read_text()
+          assert 'os.environ.get("VIDEO_NOW_PLAYING_OVERLAY", "0") == "1"' in code
+          assert 'self.sync_now_playing_overlay()' in code
+          print("Now-playing overlay requires explicit opt-in; no live restart.")
+          PY
