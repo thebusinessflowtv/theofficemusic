@@ -125,3 +125,5 @@ jobs:
 # post isolated Lofi A/V recovery ingest verification: 2026-10-10
 
 # last-check yt ingest during isolated FIFO A/V recovery
+
+# Verify ingest after chat_requests.py restored in isolated audio container
