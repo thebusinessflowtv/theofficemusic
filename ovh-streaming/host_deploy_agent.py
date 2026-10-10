@@ -1545,10 +1545,17 @@ def main():
     # unavailable or rate-limited.
     threading.Thread(target=watchdog_loop,name="mediaforge-watchdog",daemon=True).start()
 
+    remote_control="https://mediaforge-api.guilhermeodsgn.workers.dev"
     while True:
-        for inbox_api in dict.fromkeys((API,"http://127.0.0.1:8790")):
+        # The old remote deploy queue contains stale non-Lofi commands and must
+        # not be drained automatically while other broadcasts are live.
+        local_sources=[x for x in dict.fromkeys((API,"http://127.0.0.1:8790"))
+                       if x.rstrip("/")!=remote_control]
+        inboxes=[(x,"?limit=3") for x in local_sources]
+        inboxes.append((remote_control,"?limit=2&only_action=launch_isolated_lofi_youtube"))
+        for inbox_api,query in inboxes:
             try:
-                batch=fetch_json(inbox_api+"/api/ovh/deploy-agent/commands?limit=3")
+                batch=fetch_json(inbox_api+"/api/ovh/deploy-agent/commands"+query)
                 for cmd in batch.get("commands") or []:
                     cid=str(cmd.get("id") or "")
                     if not cid:continue
