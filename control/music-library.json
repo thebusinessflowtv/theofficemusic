@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T06:16:29.694Z",
+  "updated_at": "2026-10-10T06:20:58.566430+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3781,9 +3781,9 @@
       "genre": "Instrumental Lofi Hip Hop / Upbeat Boom Bap",
       "moods": [
         "warm",
-        "upbeat",
-        "groovy",
         "head-nod",
+        "groovy",
+        "relaxed",
         "focused"
       ],
       "source": "peter-lofi-lofi-hip-hop-production",
@@ -4183,10 +4183,22 @@
           "target_bpm": 75,
           "intro_identity": "Open with two measures of upright bass and brushed toms, then a bright diminished piano turnaround",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-37",
+          "title": "Sunset Cypher",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-037-38030239136/peter-lofi-lofi-hip-hop-037.mp3",
+          "duration_seconds": 300,
+          "position": 37,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 84,
+          "intro_identity": "Four punchy dry kick notes and a muted guitar chop before the clap enters on beat four",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 36,
-      "total_duration_seconds": 10800,
+      "track_count": 37,
+      "total_duration_seconds": 11100,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
