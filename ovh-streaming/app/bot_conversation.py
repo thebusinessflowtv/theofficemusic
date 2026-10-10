@@ -94,7 +94,7 @@ def plan_chat_reply(
             reply = f"Now playing: {title}. Type !song for updates! 🎵"
             result = {"status":"reply","text":reply}
         elif any(x in low for x in ("commands", "help", "how do i", "skip")):
-            result = {"status":"reply","text":"Use !skip, !song, !back or !freeze. Each viewer can request a command once every 3 minutes. 🎧"}
+            result = {"status":"reply","text":("Use !skip, !song, !back or !freeze. You can send a command every 2 minutes. 🎧" if platform.startswith("youtube-") else "Use !skip, !song, !back or !freeze. Each viewer can request a command once every 3 minutes. 🎧")}
         elif not ai_enabled:
             result = {"status":"reply","text":"Hey! 🎧 Welcome to PeterLofi Radio. I'm here for music and good vibes. Try !song to see what's playing!"}
         else:
