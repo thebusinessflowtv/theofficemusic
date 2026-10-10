@@ -92,6 +92,48 @@ jobs:
           test "$CODE" = "200"
 
 
+
+      - name: Check existing GTA VI YouTube broadcast and stream (read-only)
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet google-api-python-client google-auth google-auth-httplib2
+          python3 - <<'PY'
+          import os,json
+          from google.oauth2.credentials import Credentials
+          from google.auth.transport.requests import Request
+          from googleapiclient.discovery import build
+          creds=Credentials(token=None,refresh_token=os.environ["YOUTUBE_REFRESH_TOKEN"],
+              token_uri="https://oauth2.googleapis.com/token",
+              client_id=os.environ["YOUTUBE_CLIENT_ID"],
+              client_secret=os.environ["YOUTUBE_CLIENT_SECRET"],
+              scopes=["https://www.googleapis.com/auth/youtube"])
+          creds.refresh(Request())
+          yt=build("youtube","v3",credentials=creds,cache_discovery=False)
+          id="_XpJTdzUoHE"
+          broadcasts=yt.liveBroadcasts().list(part="id,status,contentDetails",id=id).execute().get("items") or []
+          if not broadcasts:
+              print("GTA_YOUTUBE_NOT_FOUND",id,flush=True)
+              raise SystemExit(0)
+          b=broadcasts[0]
+          life=(b.get("status") or {}).get("lifeCycleStatus")
+          content=b.get("contentDetails") or {}
+          stream=content.get("boundStreamId") or ""
+          print("GTA_YOUTUBE_BROADCAST",json.dumps({"id":id,"life_cycle":life,
+              "privacy":(b.get("status") or {}).get("privacyStatus"),
+              "bound_stream":bool(stream),"enable_auto_stop":content.get("enableAutoStop")}),flush=True)
+          if stream:
+              items=yt.liveStreams().list(part="id,status",id=stream).execute().get("items") or []
+              if items:
+                  st=items[0].get("status") or {}
+                  print("GTA_YOUTUBE_INGEST",json.dumps({"status":st.get("streamStatus"),
+                      "health":(st.get("healthStatus") or {}).get("status")}),flush=True)
+          PY
+
       - name: Read actual YouTube broadcast lifecycle with existing OAuth
         env:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
