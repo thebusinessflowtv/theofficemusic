@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T06:28:28.551337+00:00",
+  "updated_at": "2026-10-10T06:34:18.412730+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4207,10 +4207,22 @@
           "intro_identity": "A shuffled breakbeat fill followed by a syncopated sub-bass pickup; chords enter only on bar three",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-39",
+          "title": "Backbeat Boulevard",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-039-38030239136/peter-lofi-lofi-hip-hop-039.mp3",
+          "duration_seconds": 300,
+          "position": 39,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 98,
+          "intro_identity": "A bright kalimba two-note call answered by a deep snare flam and a bass slide",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 38,
-      "total_duration_seconds": 11400,
+      "track_count": 39,
+      "total_duration_seconds": 11700,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
