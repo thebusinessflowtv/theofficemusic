@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T07:48:04.395851+00:00",
+  "updated_at": "2026-10-10T07:55:50.560869+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4327,10 +4327,22 @@
           "intro_identity": "An abrupt kick-on-one with muted strings swelling behind a syncopated clap pattern",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-49",
+          "title": "Block Party Light",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-049-38030239136/peter-lofi-lofi-hip-hop-049.mp3",
+          "duration_seconds": 300,
+          "position": 49,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 92,
+          "intro_identity": "Two measures of offbeat chord stabs above ticking closed hats then a thick bass drop-in",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 48,
-      "total_duration_seconds": 14400,
+      "track_count": 49,
+      "total_duration_seconds": 14700,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
