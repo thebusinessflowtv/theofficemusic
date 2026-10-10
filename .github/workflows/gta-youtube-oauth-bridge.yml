@@ -343,3 +343,38 @@ jobs:
           done
           test "$READY" = "1"
           echo "YOUTUBE_AUTO_OVH_LIVE"
+
+      - name: Publish confirmed YouTube live status back to MediaForge
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime,json,os,pathlib
+          root=pathlib.Path("control")
+          sid=os.environ["SESSION_ID"]
+          result_path=root/"live-results"/(sid+".json")
+          result=json.loads(result_path.read_text(encoding="utf-8"))
+          result["status"]="live"
+          result["live_at"]=datetime.datetime.now(datetime.timezone.utc).isoformat()
+          result["updated_at"]=result["live_at"]
+          result_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+          stations=root/"youtube-stations.json"
+          cfg=json.loads(stations.read_text(encoding="utf-8"))
+          for station in cfg.get("stations",[]):
+              if station.get("ovh_slot")==os.environ["RUNTIME_SLOT"] and station.get("current_session_id")==sid:
+                  station["status"]="live"
+                  station["updated_at"]=result["updated_at"]
+          cfg["updated_at"]=result["updated_at"]
+          stations.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "control/live-results/$SESSION_ID.json" control/youtube-stations.json
+          git commit -m "youtube: confirm verified $PLAYLIST_KEY live $SESSION_ID"
+          for N in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep $((N*2))
+          done
+          exit 1
