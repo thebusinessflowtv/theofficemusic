@@ -1,5 +1,5 @@
 {
-  "version": "lofi-auth-and-orphan-recovery-20261010-v1",
-  "purpose": "Deploy real PeterLofi production backend with authenticated independent Lofi YouTube bridge and safe orphaned STARTING recovery.",
+  "version": "lofi-ovh-host-authenticated-relay-20261010-v1",
+  "purpose": "Publish OVH host-agent local-inbox OAuth relay and safe Lofi resume without restarting existing media publishers.",
   "media_publishers_touched": false
 }
