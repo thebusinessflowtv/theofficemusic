@@ -51,16 +51,22 @@ jobs:
           python - "$FILE" <<'PY'
           import json,os,sys
           d=json.load(open(sys.argv[1],encoding="utf-8"))
-          required=["session_id","title","description","loop_url","thumbnail_url"]
+          required=["session_id","title","loop_url"]
           for k in required:
               if not d.get(k):
                   raise SystemExit(f"Missing {k}")
+          playlist=str(d.get('playlist_key') or 'gta-vi-vice-city')
+          slots={'gta-vi-vice-city':'youtube-gta-vi','lofi-hip-hop':'youtube-lofi-hip-hop'}
+          if playlist not in slots or (d.get('runtime_slot') and d['runtime_slot']!=slots[playlist]):
+              raise SystemExit('Unsupported playlist/encoder pairing')
           vals={
+              "PLAYLIST_KEY":playlist,
+              "RUNTIME_SLOT":slots[playlist],
               "SESSION_ID":d["session_id"],
               "LIVE_TITLE":d["title"],
-              "LIVE_DESCRIPTION":d["description"],
+              "LIVE_DESCRIPTION":d.get("description",""),
               "LOOP_URL":d["loop_url"],
-              "THUMBNAIL_URL":d["thumbnail_url"],
+              "THUMBNAIL_URL":d.get("thumbnail_url",""),
           }
           with open(os.environ["GITHUB_ENV"],"a",encoding="utf-8") as fh:
               for key,val in vals.items():
@@ -78,7 +84,7 @@ jobs:
           OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN"             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
           OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
           test -n "$OIDC_TOKEN"
-          CODE="$(curl -ksS -o /tmp/oidc-preflight.json -w '%{http_code}' -X POST             "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data '{"runtime_slot":"youtube-gta-vi"}')"
+          CODE="$(curl -ksS -o /tmp/oidc-preflight.json -w '%{http_code}' -X POST             "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap"             -H "authorization: Bearer $OIDC_TOKEN"             -H 'content-type: application/json'             --data '{"runtime_slot":os.environ["RUNTIME_SLOT"]}')"
           echo "OIDC_PREFLIGHT_HTTP=$CODE"
           cat /tmp/oidc-preflight.json
           test "$CODE" = "400"
@@ -101,14 +107,14 @@ jobs:
           sid=os.environ["SESSION_ID"]
           stations_path=root/"control/youtube-stations.json"
           cfg=json.loads(stations_path.read_text(encoding="utf-8"))
-          station=next((x for x in cfg.get("stations",[]) if x.get("ovh_slot")=="youtube-gta-vi"),None)
+          station=next((x for x in cfg.get("stations",[]) if x.get("ovh_slot")==os.environ["RUNTIME_SLOT"]),None)
           if not station:
-              raise SystemExit("youtube-gta-vi station missing")
+              raise SystemExit("YouTube encoder station missing: "+os.environ["RUNTIME_SLOT"])
 
           library=json.loads((root/"control/music-library.json").read_text(encoding="utf-8"))
-          playlist=next((p for p in library.get("playlists",[]) if p.get("key")=="gta-vi-vice-city"),None)
+          playlist=next((p for p in library.get("playlists",[]) if p.get("key")==os.environ["PLAYLIST_KEY"]),None)
           if not playlist:
-              raise SystemExit("GTA VI playlist missing")
+              raise SystemExit("Selected playlist missing: "+os.environ["PLAYLIST_KEY"])
           tracks=[{
               "id":str(t.get("id") or ""),
               "title":str(t.get("title") or "Track"),
@@ -118,7 +124,7 @@ jobs:
               "target_bpm":t.get("target_bpm"),
           } for t in (playlist.get("tracks") or []) if t.get("id") and t.get("url")]
           if not tracks:
-              raise SystemExit("GTA VI playlist has no playable tracks")
+              raise SystemExit("Selected playlist has no playable tracks")
 
           creds=Credentials(
               token=None,
@@ -139,6 +145,9 @@ jobs:
           if "peter" not in channel_title.lower():
               raise SystemExit("OAuth belongs to the wrong YouTube channel: "+channel_title)
 
+          if station.get("current_session_id") and str(station.get("status") or "").lower() in ("live","starting"):
+              raise SystemExit("Selected internal encoder is already occupied")
+
           stream=None
           stream_id=str(station.get("youtube_stream_id") or "")
           if stream_id:
@@ -148,7 +157,7 @@ jobs:
               stream=yt.liveStreams().insert(
                   part="snippet,cdn,contentDetails",
                   body={
-                      "snippet":{"title":"Peter Lofi — GTA VI Vice City Radio"},
+                      "snippet":{"title":os.environ["LIVE_TITLE"][:100]},
                       "cdn":{"frameRate":"60fps","ingestionType":"rtmp","resolution":"1080p"},
                       "contentDetails":{"isReusable":True},
                   },
@@ -201,13 +210,13 @@ jobs:
           command={
               "action":"start",
               "platform":"youtube",
-              "runtime_slot":"youtube-gta-vi",
+              "runtime_slot":os.environ["RUNTIME_SLOT"],
               "session_id":sid,
               "title":os.environ["LIVE_TITLE"],
               "description":os.environ["LIVE_DESCRIPTION"],
               "duration_minutes":0,
               "loop_url":os.environ["LOOP_URL"],
-              "playlist_key":"gta-vi-vice-city",
+              "playlist_key":os.environ["PLAYLIST_KEY"],
               "tracks":tracks,
               "shuffle":True,
               "repeat":True,
@@ -220,7 +229,7 @@ jobs:
           result={
               "platform":"youtube",
               "runtime":"ovh",
-              "runtime_slot":"youtube-gta-vi",
+              "runtime_slot":os.environ["RUNTIME_SLOT"],
               "status":"starting",
               "title":os.environ["LIVE_TITLE"],
               "description":os.environ["LIVE_DESCRIPTION"],
@@ -228,7 +237,7 @@ jobs:
               "youtube_stream_id":stream_id,
               "youtube_url":f"https://www.youtube.com/watch?v={bid}",
               "privacy_status":"public",
-              "playlist_key":"gta-vi-vice-city",
+              "playlist_key":os.environ["PLAYLIST_KEY"],
               "playlist_track_count":len(tracks),
               "custom_thumbnail_applied":thumb_ok,
               "created_at":now.isoformat(),
@@ -253,7 +262,7 @@ jobs:
               fh.write(f"YOUTUBE_BROADCAST_ID={bid}\n")
               fh.write(f"YOUTUBE_STREAM_ID={stream_id}\n")
               fh.write(f"YOUTUBE_URL=https://www.youtube.com/watch?v={bid}\n")
-          print("YouTube broadcast prepared for OVH GTA runtime")
+          print("YouTube broadcast prepared for dedicated OVH runtime",os.environ["RUNTIME_SLOT"])
           PY
 
       - name: Send start command to OVH using GitHub Actions OIDC
@@ -271,7 +280,7 @@ jobs:
           jq '{ok,authenticated_repository,runtime_slot,playlist_key,playlist_track_count,command}' /tmp/ovh-bootstrap.json
           jq -e '.ok==true' /tmp/ovh-bootstrap.json >/dev/null
           rm -f /tmp/gta-ovh-command.json
-          echo "GTA_OVH_COMMAND_QUEUED_VIA_OIDC"
+          echo "YOUTUBE_AUTO_COMMAND_QUEUED_VIA_OIDC"
 
       - name: Publish sanitized YouTube state
         shell: bash
@@ -280,7 +289,7 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add "control/live-results/$SESSION_ID.json" control/youtube-stations.json
-          git commit -m "youtube: launch GTA VI OVH live $SESSION_ID"
+          git commit -m "youtube: prepare $PLAYLIST_KEY OVH live $SESSION_ID"
           for N in 1 2 3 4 5; do
             git pull --rebase origin main && git push origin HEAD:main && exit 0
             git rebase --abort 2>/dev/null || true
@@ -295,9 +304,9 @@ jobs:
           READY=0
           for I in $(seq 1 90); do
             if curl -kfsS "https://146.59.156.224:8443/api/ovh/public-health" >/tmp/health.json 2>/dev/null; then
-              STATUS="$(jq -r '.services["youtube-gta-vi"].status // empty' /tmp/health.json)"
-              SONG="$(jq -r '.services["youtube-gta-vi"].now_playing.title // empty' /tmp/health.json)"
-              echo "gta_status=$STATUS now_playing=$SONG"
+              STATUS="$(jq -r --arg slot "$RUNTIME_SLOT" '.services[$slot].status // empty' /tmp/health.json)"
+              SONG="$(jq -r --arg slot "$RUNTIME_SLOT" '.services[$slot].now_playing.title // empty' /tmp/health.json)"
+              echo "youtube_runtime=$RUNTIME_SLOT status=$STATUS now_playing=$SONG"
               if [ "$STATUS" = "live" ] && [ -n "$SONG" ]; then
                 READY=1
                 break
@@ -306,4 +315,4 @@ jobs:
             sleep 5
           done
           test "$READY" = "1"
-          echo "GTA_YOUTUBE_OVH_LIVE"
+          echo "YOUTUBE_AUTO_OVH_LIVE"
