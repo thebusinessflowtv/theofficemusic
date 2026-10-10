@@ -279,6 +279,7 @@ jobs:
           test "$BOOT_CODE" = "202"
           jq '{ok,authenticated_repository,runtime_slot,playlist_key,playlist_track_count,command}' /tmp/ovh-bootstrap.json
           jq -e '.ok==true' /tmp/ovh-bootstrap.json >/dev/null
+          echo "OVH_COMMAND_ID=$(jq -r '.command.id // empty' /tmp/ovh-bootstrap.json)" >> "$GITHUB_ENV"
           rm -f /tmp/gta-ovh-command.json
           echo "YOUTUBE_AUTO_COMMAND_QUEUED_VIA_OIDC"
 
@@ -297,10 +298,36 @@ jobs:
           done
           exit 1
 
-      - name: Confirm GTA publisher becomes live
+      - name: Confirm selected YouTube publisher becomes live without interrupting others
         shell: bash
         run: |
           set -euo pipefail
+          if [ "$RUNTIME_SLOT" = "youtube-lofi-hip-hop" ]; then
+            test -n "$OVH_COMMAND_ID"
+            READY=0
+            for I in $(seq 1 80); do
+              OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
+              OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
+              test -n "$OIDC_TOKEN"
+              STATUS_CODE="$(curl -ksS -o /tmp/lofi-status.json -w '%{http_code}' -X POST "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap-status" -H "authorization: Bearer $OIDC_TOKEN" -H 'content-type: application/json' -d "$(jq -nc --arg id "$OVH_COMMAND_ID" '{id:$id}')")"
+              test "$STATUS_CODE" = "200"
+              STATE="$(jq -r '.status // empty' /tmp/lofi-status.json)"
+              echo "lofi_runtime_status=$STATE"
+              if [ "$STATE" = "failed" ]; then
+                jq '{status,error}' /tmp/lofi-status.json
+                exit 1
+              fi
+              if [ "$STATE" = "completed" ]; then
+                jq -e '.result.status=="live" and .result.other_publishers_preserved==true' /tmp/lofi-status.json >/dev/null
+                READY=1
+                break
+              fi
+              sleep 5
+            done
+            test "$READY" = "1"
+            echo "LOFI_HIP_HOP_INDEPENDENT_YOUTUBE_LIVE_CONFIRMED"
+            exit 0
+          fi
           READY=0
           for I in $(seq 1 90); do
             if curl -kfsS "https://146.59.156.224:8443/api/ovh/public-health" >/tmp/health.json 2>/dev/null; then
