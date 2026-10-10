@@ -37,11 +37,11 @@
       "runtime": "ovh",
       "ovh_slot": "youtube-gta-vi",
       "youtube_stream_id": "xO4Cl7xCdcTsWkmxD_6Wfg1791248187979918",
-      "youtube_broadcast_id": "_XpJTdzUoHE",
-      "current_session_id": "4b0b49d2-f1c3-4e2c-89e7-4ecff6b90e61",
+      "youtube_broadcast_id": "5O4ad_F5lGI",
+      "current_session_id": "84e64b26-24e7-4eb5-8827-a912786a7849",
       "status": "starting",
       "stream_provisioned_at": "2026-10-06T00:56:28.406935+00:00",
-      "last_started_at": "2026-10-06T02:18:45.150727+00:00"
+      "last_started_at": "2026-10-10T06:37:24.156482+00:00"
     },
     {
       "key": "lofi-hip-hop",
@@ -58,5 +58,5 @@
       "last_started_at": "2026-10-10T05:04:15.253946+00:00"
     }
   ],
-  "updated_at": "2026-10-10T05:04:15.253946+00:00"
+  "updated_at": "2026-10-10T06:37:24.156482+00:00"
 }
