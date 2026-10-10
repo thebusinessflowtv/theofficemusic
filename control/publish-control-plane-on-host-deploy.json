@@ -1,5 +1,5 @@
 {
-  "version": "lofi-filtered-remote-queue-20261010-v3",
-  "purpose": "Safely consume only the remote Lofi YouTube launch command while preserving old remote deploy backlog and all existing publishers.",
+  "version": "ovh-dynamic-real-live-controls-20261010-v1",
+  "purpose": "Publish dynamic list of real active OVH live encoders on /app.html#/peter-lofi/ovh; reliable track skip/previous acknowledgements; preserve running streams",
   "media_publishers_touched": false
 }
