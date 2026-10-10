@@ -18,6 +18,8 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
+from chat_requests import clear_freeze_after_track_change
+
 PCM_CHUNK = 32768
 PCM_RATE = 48000
 PCM_CHANNELS = 2
@@ -305,6 +307,7 @@ class AudioEngine:
         self.platform = platform
         self.playlist = Playlist(playlist_file)
         self.state = pathlib.Path(state_dir) / platform
+        self.state_root = pathlib.Path(state_dir)
         self.now_path = self.state / "now-playing.json"
         self.command_path = self.state / "command.json"
         self.command_dir = self.state / "audio-commands"
@@ -486,6 +489,12 @@ class AudioEngine:
                 continue
         return not view
 
+    def track_is_frozen(self):
+        # Read the atomic freeze state; no publisher or media process restart.
+        state = read_json(self.state / "chat-bot-state.json", {}) or {}
+        freeze = state.get("freeze")
+        return isinstance(freeze, dict) and bool(freeze.get("track_id"))
+
     def read_commands(self):
         actions = []
         now_ts = time.time()
@@ -530,6 +539,10 @@ class AudioEngine:
         # Bound memory without affecting durable files already consumed.
         if len(self.seen_command_ids) > 4096:
             self.seen_command_ids = set(list(self.seen_command_ids)[-2048:])
+        # Even legacy MediaForge and queued UI commands cannot override a
+        # viewer's freeze while the current track is protected.
+        if self.track_is_frozen():
+            return []
         return actions
 
     def choose(self):
@@ -656,6 +669,14 @@ class AudioEngine:
                     next_tick = now
                 next_tick += AUDIO_FRAME_SECONDS
 
+                # Freeze overrides both chat and MediaForge UI skip/back requests.
+                # Drop already buffered actions so none fire at natural track end.
+                if self.track_is_frozen():
+                    self.action_queue.clear()
+                    if (pending is not None and pending["reason"] in {"skip", "previous"}
+                            and not pending["started"]):
+                        pending["decoder"].stop()
+                        pending = None
                 for action in self.read_commands():
                     if len(self.action_queue) < 64:
                         self.action_queue.append(action)
@@ -723,6 +744,13 @@ class AudioEngine:
                                     self.history.append(track)
                             self.history = self.history[-50:]
                             self.playlist.last_id = track["id"]
+                            # Natural end releases the freeze. The viewer's
+                            # personal 180s cooldown is deliberately retained.
+                            if (old_track["id"] != track["id"]
+                                    or reason == "natural_end"):
+                                clear_freeze_after_track_change(
+                                    self.state_root, self.platform, old_track["id"]
+                                )
 
                             self.publish(track, state="playing")
                             self.write_audio_health({
