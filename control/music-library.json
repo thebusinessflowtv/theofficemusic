@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T00:27:27.267782+00:00",
+  "updated_at": "2026-10-10T00:36:46.279722+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4073,10 +4073,21 @@
           "target_bpm": 93,
           "intro_identity": "An isolated electric-piano arpeggio in uneven accents followed by a drum break",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-27",
+          "title": "Soft Signal",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-027-37991966107/peter-lofi-lofi-hip-hop-027.mp3",
+          "duration_seconds": 300,
+          "position": 27,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 78,
+          "intro_identity": "A tape-warmed choir-like synth pad chord holds for one bar and cuts to minimal drums",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 26,
-      "total_duration_seconds": 7800,
+      "track_count": 27,
+      "total_duration_seconds": 8100,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
