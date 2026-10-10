@@ -1021,6 +1021,49 @@ def apply_command(cmd):
             return
 
 
+    if slot=="youtube-lofi-hip-hop" and action in {"relay_youtube_oauth","probe_youtube_oauth"}:
+        from urllib.error import HTTPError
+        target=REMOTE_CONTROL_API+"/api/ovh/agent/youtube-github-bridge"
+        if action=="probe_youtube_oauth":
+            # Intentionally invalid; guarantees zero YouTube/GitHub side effects.
+            try:
+                post_json(target,{"session_id":"","playlist_key":"lofi-hip-hop"})
+            except HTTPError as exc:
+                raw=exc.read().decode("utf-8","replace")[:500]
+                try: response=json.loads(raw)
+                except Exception: response={}
+                if exc.code==400 and response.get("error")=="bridge_payload_incomplete":
+                    atomic_json(AGENT_DIR/"lofi-bridge-preflight.json",
+                        {"status":"ready","checked_at":iso_now(),"remote_http":400})
+                    return
+                raise RuntimeError("OAuth bridge rejected OVH agent preflight: HTTP "+str(exc.code))
+            raise RuntimeError("Unexpected OAuth bridge response to invalid preflight")
+
+        session_id=str(cmd.get("session_id") or "")
+        playlist_key=str(cmd.get("playlist_key") or "")
+        loop_url=str(cmd.get("loop_url") or "")
+        if not session_id or playlist_key!="lofi-hip-hop" or not loop_url.startswith("http"):
+            raise ValueError("Invalid dedicated Lofi OAuth dispatch")
+        bridge_payload={
+            "session_id":session_id,
+            "title":str(cmd.get("title") or "Lofi Hip Hop Radio"),
+            "description":str(cmd.get("description") or ""),
+            "loop_url":loop_url,
+            "thumbnail_url":str(cmd.get("thumbnail_url") or ""),
+            "playlist_key":"lofi-hip-hop",
+            "runtime_slot":"youtube-lofi-hip-hop",
+            "requested_at":str(cmd.get("requested_at") or iso_now()),
+            "source":"ovh-agent-authenticated-oauth-relay",
+        }
+        result=post_json(target,bridge_payload)
+        if result.get("ok") is not True or result.get("queued") is not True:
+            raise RuntimeError("GitHub bridge did not confirm queue acceptance")
+        atomic_json(STATE/"youtube-lofi-hip-hop"/"github-bridge.json",{
+            "status":"queued","session_id":session_id,"queued_at":iso_now(),
+            "request_path":str(result.get("path") or ""),
+        })
+        return
+
     if slot=="youtube-lofi-hip-hop":
         if action in {"start","resume","restart"}:
             if (desired.get("desired")=="live" and desired.get("session_id")
