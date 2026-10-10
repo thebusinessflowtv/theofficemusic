@@ -114,7 +114,7 @@ jobs:
               scopes=["https://www.googleapis.com/auth/youtube"])
           creds.refresh(Request())
           yt=build("youtube","v3",credentials=creds,cache_discovery=False)
-          id="_XpJTdzUoHE"
+          id="5O4ad_F5lGI"
           broadcasts=yt.liveBroadcasts().list(part="id,status,contentDetails",id=id).execute().get("items") or []
           if not broadcasts:
               print("GTA_YOUTUBE_NOT_FOUND",id,flush=True)
