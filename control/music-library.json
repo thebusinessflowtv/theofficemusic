@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T01:47:41.844561+00:00",
+  "updated_at": "2026-10-10T01:56:12.454982+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4172,14 +4172,25 @@
           "target_bpm": 90,
           "intro_identity": "Begin with Rhodes chords in an unusual 3+3+2 rhythm, then relax into four-four",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-36",
+          "title": "Last Page",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-036-37991966107/peter-lofi-lofi-hip-hop-036.mp3",
+          "duration_seconds": 300,
+          "position": 36,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 75,
+          "intro_identity": "Open with two measures of upright bass and brushed toms, then a bright diminished piano turnaround",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 35,
-      "total_duration_seconds": 10500,
+      "track_count": 36,
+      "total_duration_seconds": 10800,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
-      "status": "generating"
+      "status": "complete"
     }
   ]
 }
