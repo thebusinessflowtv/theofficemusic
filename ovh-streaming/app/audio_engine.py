@@ -342,6 +342,9 @@ class AudioEngine:
         self.cache_misses = 0
         self.stalls = 0
         self.backpressure_drops = 0
+        self.pcm_frames_emitted = 0
+        self.non_silent_pcm_frames = 0
+        self.last_audible_at = None
         self.cache_thread = threading.Thread(target=self.warm_cache, name=f"audio-cache-{platform}", daemon=True)
         self.cache_thread.start()
 
@@ -353,6 +356,9 @@ class AudioEngine:
             "cache_misses": self.cache_misses,
             "stalls": self.stalls,
             "backpressure_drops": self.backpressure_drops,
+            "pcm_frames_emitted": self.pcm_frames_emitted,
+            "non_silent_pcm_frames": self.non_silent_pcm_frames,
+            "last_audible_at": self.last_audible_at,
             "queued_actions": len(self.action_queue),
             "updated_at": iso_now(),
         }
@@ -783,6 +789,19 @@ class AudioEngine:
                     out = current_frame
 
                 self.write_pcm(dst, out)
+                self.pcm_frames_emitted += 1
+                if any(out):
+                    self.non_silent_pcm_frames += 1
+                    self.last_audible_at = iso_now()
+                if self.pcm_frames_emitted % 250 == 0:
+                    # 5-second read-only proof that actual non-zero PCM is
+                    # being fed to the persistent encoder, not silent padding.
+                    self.write_audio_health({
+                        "state": "playing" if self.last_audible_at
+                                 and self.non_silent_pcm_frames > 0
+                                 else "decoder_silent_pcm_clock",
+                        "track_id": track["id"],
+                    })
 
                 if time.monotonic() - last_audio_at >= AUDIO_STALL_TIMEOUT_SECONDS:
                     self.stalls += 1
