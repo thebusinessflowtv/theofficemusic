@@ -32,7 +32,7 @@ REMOTE_STATUS_SECONDS=max(5,int(os.environ.get("OVH_REMOTE_STATUS_SECONDS","10")
 GTA_PLAYLIST_SYNC_SECONDS=max(10,int(os.environ.get("OVH_GTA_PLAYLIST_SYNC_SECONDS","20")))
 GITHUB_RAW_BASE=os.environ.get("MEDIAFORGE_GITHUB_RAW_BASE","https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main").rstrip("/")
 GITHUB_FALLBACK_MAX_AGE_SECONDS=max(30,int(os.environ.get("OVH_GITHUB_FALLBACK_MAX_AGE_SECONDS","900")))
-SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy","youtube-gta-vi","youtube-ui-test")
+SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy","youtube-gta-vi","youtube-ui-test","youtube-lofi-hip-hop")
 AGENT_DIR=STATE/"agent"
 PROCESSED=AGENT_DIR/"processed.json"
 LOCAL_STATUS=AGENT_DIR/"status.json"
@@ -43,6 +43,8 @@ GTA_PROC=None
 GTA_LOG=None
 UI_TEST_PROC=None
 UI_TEST_LOG=None
+LOFI_PROC=None
+LOFI_LOG=None
 
 # These sources represent ordinary hot changes and are never allowed to
 # interrupt a live RTMP session, even if an upstream bug labels them restart.
@@ -838,6 +840,62 @@ def ensure_gta_process():
     )
 
 
+
+def ensure_lofi_process():
+    """Supervise only the dedicated Lofi Hip Hop publisher; never signal other lives."""
+    global LOFI_PROC, LOFI_LOG
+    st=STATE/"youtube-lofi-hip-hop"
+    desired=read_json(st/"desired.json",{}) or {}
+    wants_live=str(desired.get("desired") or "stopped").lower() not in {"stopped","stop","offline"}
+    if not wants_live:
+        if LOFI_PROC and LOFI_PROC.poll() is None:
+            LOFI_PROC.send_signal(signal.SIGTERM)
+            try:
+                LOFI_PROC.wait(timeout=8)
+            except subprocess.TimeoutExpired:
+                LOFI_PROC.kill()
+        LOFI_PROC=None
+        if LOFI_LOG:
+            LOFI_LOG.close()
+            LOFI_LOG=None
+        return
+    if LOFI_PROC and LOFI_PROC.poll() is None:
+        return
+    secret=read_json(st/"runtime-secret.json",{}) or {}
+    stream_url=str(secret.get("stream_url") or "").strip()
+    stream_key=str(secret.get("stream_key") or "").strip()
+    if not stream_url or not stream_key or not (st/"playlist.json").exists():
+        return
+    loop_url=str(desired.get("loop_url") or "")
+    if not loop_url:
+        raise RuntimeError("Lofi encoder video loop was not selected")
+    env=os.environ.copy()
+    env.update({
+        "STREAM_URL":stream_url,
+        "STREAM_KEY":stream_key,
+        "LOOP_URL":loop_url,
+        "PLAYLIST_FILE":"/config/youtube-deep-house.json",
+        "VIDEO_FPS":"60",
+        "VIDEO_BITRATE_KBPS":"8000",
+        "VIDEO_BUFSIZE_KBPS":"16000",
+        "AUDIO_BITRATE_KBPS":"192",
+        "VIDEO_PROFILE":"main",
+        "VIDEO_PRESET":"superfast",
+        "STREAM_PROFILE_VERSION":"lofi-hip-hop-isolated-v1",
+        "STARTUP_PREROLL_SECONDS":"1.5",
+        "AUDIO_READY_TIMEOUT_SECONDS":"90",
+        "VIDEO_UDP_PORT":"19172",
+        "BOOTSTRAP_SESSION_ID":str(desired.get("session_id") or ""),
+        "BOOTSTRAP_TITLE":str(desired.get("title") or "Lofi Hip Hop Radio"),
+    })
+    st.mkdir(parents=True,exist_ok=True)
+    LOFI_LOG=open(st/"controller.log","ab",buffering=0)
+    LOFI_PROC=subprocess.Popen(
+        ["python","/app/stream_core.py","--platform","youtube-lofi-hip-hop"],
+        env=env,stdout=LOFI_LOG,stderr=LOFI_LOG,
+    )
+
+
 def _ui_test_secret_path():
     return STATE/"youtube-ui-test"/"runtime-secret.json"
 
@@ -960,6 +1018,60 @@ def apply_command(cmd):
             })
             atomic_json(desired_path,desired)
             ensure_gta_process()
+            return
+
+
+    if slot=="youtube-lofi-hip-hop":
+        if action in {"start","resume","restart"}:
+            if (desired.get("desired")=="live" and desired.get("session_id")
+                and str(desired.get("session_id"))!=str(cmd.get("session_id") or "")):
+                raise RuntimeError("Lofi Hip Hop live already active: refusing to replace it")
+            stream_url=str(cmd.get("stream_url") or "").strip()
+            stream_key=str(cmd.get("stream_key") or "").strip()
+            secret_path=st/"runtime-secret.json"
+            if stream_url and stream_key:
+                atomic_json(secret_path,{"stream_url":stream_url,"stream_key":stream_key,"updated_at":iso_now()})
+                os.chmod(secret_path,0o600)
+            elif not secret_path.exists():
+                raise ValueError("Dedicated Lofi YouTube stream credentials are missing")
+            tracks=cmd.get("tracks")
+            if not isinstance(tracks,list) or not tracks:
+                raise ValueError("Lofi launch requires an approved nonempty playlist")
+            if str(cmd.get("playlist_key") or "")!="lofi-hip-hop":
+                raise ValueError("Dedicated Lofi encoder only accepts Lofi Hip Hop")
+            atomic_json(st/"playlist.json",{
+                "station":"youtube-lofi-hip-hop",
+                "playlist_key":"lofi-hip-hop",
+                "shuffle":bool(cmd.get("shuffle",True)),
+                "repeat":True,
+                "updated_at":iso_now(),
+                "tracks":tracks,
+            })
+            desired.update({
+                "runtime":"ovh",
+                "runtime_slot":"youtube-lofi-hip-hop",
+                "session_id":str(cmd.get("session_id") or ""),
+                "title":str(cmd.get("title") or "Lofi Hip Hop Radio"),
+                "loop_url":str(cmd.get("loop_url") or ""),
+                "playlist_key":"lofi-hip-hop",
+                "desired":"live",
+                "generation":next_generation(desired),
+                "visual_revision":next_visual_revision(desired),
+                "updated_at":iso_now(),
+            })
+            atomic_json(desired_path,desired)
+            ensure_lofi_process()
+            return
+        if action=="stop":
+            if desired.get("session_id") and str(cmd.get("session_id") or "")!=str(desired.get("session_id")):
+                raise RuntimeError("Lofi stop session mismatch")
+            desired.update({
+                "desired":"stopped",
+                "generation":next_generation(desired),
+                "updated_at":iso_now(),
+            })
+            atomic_json(desired_path,desired)
+            ensure_lofi_process()
             return
 
     if slot=="youtube-ui-test":
@@ -1543,6 +1655,11 @@ def main():
             ensure_ui_test_process()
         except Exception as exc:
             print("ui test supervisor failed:",exc,flush=True)
+
+        try:
+            ensure_lofi_process()
+        except Exception as exc:
+            print("Lofi Hip Hop YouTube supervisor failed:",exc,flush=True)
 
         local_handled=poll_local_inbox(processed)
         if local_handled:
