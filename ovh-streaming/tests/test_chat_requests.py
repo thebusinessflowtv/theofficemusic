@@ -1,13 +1,13 @@
-"""Regression checks for chat skip cooldown and state isolation."""
+"""Regression tests for verified Twitch and Kick chat commands."""
 import tempfile
 import unittest
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
-from chat_requests import process_chat_message
+from chat_requests import process_chat_message, clear_freeze_after_track_change
 
 
-class TestRequests(unittest.TestCase):
+class TestChatRequests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
@@ -15,35 +15,68 @@ class TestRequests(unittest.TestCase):
             (self.root / slot).mkdir()
             (self.root / slot / "health.json").write_text('{"status":"live"}')
             (self.root / slot / "desired.json").write_text('{"desired":"live"}')
-            (self.root / slot / "now-playing.json").write_text('{"title":"Track 1","artists":"Peter"}')
+            (self.root / slot / "now-playing.json").write_text(
+                '{"track_id":"t1","title":"Track One","artists":"Peter"}')
 
     def tearDown(self):
         self.temp.cleanup()
 
     def req(self, plat="twitch", user="alice", mid="m1", msg="!skip", t=1000):
-        return process_chat_message(self.root, platform=plat, user_id=user, message_id=mid, text=msg, now=t)
+        return process_chat_message(self.root, platform=plat,
+                                    user_id=user, message_id=mid, text=msg, now=t)
 
-    def test_accept_and_dedupe(self):
-        self.assertEqual(self.req()["status"], "accepted")
-        self.assertEqual(len(list((self.root / "twitch" / "audio-commands").glob("*.json"))), 1)
+    def change_song(self, plat, track_id="t2"):
+        (self.root / plat / "now-playing.json").write_text(
+            f'{{"track_id":"{track_id}","title":"Track Two","artists":"Peter"}}')
+
+    def test_skip_queue_and_duplicate(self):
+        self.assertEqual(self.req()["action"], "skip")
         self.assertEqual(self.req()["status"], "duplicate")
+        self.assertEqual(len(list((self.root / "twitch" / "audio-commands").glob("*.json"))), 1)
 
-    def test_individual_and_global_cooldown(self):
-        self.req()
-        self.assertEqual(self.req(user="bob", mid="m2", t=1059)["status"], "cooldown")
-        self.assertEqual(self.req(user="bob", mid="m3", t=1060)["status"], "accepted")
-        self.assertEqual(self.req(user="alice", mid="m4", t=1061)["status"], "cooldown")
-
-    def test_isolated_platforms(self):
+    def test_user_180s_for_all_commands(self):
         self.assertEqual(self.req()["status"], "accepted")
+        self.assertEqual(self.req(mid="m2", msg="!song", t=1179)["status"], "cooldown")
+        self.assertEqual(self.req(mid="m3", msg="!song", t=1180)["status"], "now_playing")
+        self.assertEqual(self.req(mid="m4", msg="!back", t=1181)["status"], "cooldown")
+
+    def test_global_60s_for_skip_and_back(self):
+        self.assertEqual(self.req()["status"], "accepted")
+        self.assertEqual(self.req(user="bob", mid="b", t=1059, msg="!back")["status"], "station_cooldown")
+        self.assertEqual(self.req(user="bob", mid="c", t=1060, msg="!back")["action"], "previous")
+
+    def test_freeze_blocks_skip_back_for_everyone(self):
+        self.assertEqual(self.req(msg="!freeze")["status"], "frozen_now")
+        self.assertEqual(self.req(user="bob", mid="b", t=1010, msg="!skip")["status"], "frozen")
+        self.assertEqual(self.req(user="bob", mid="c", t=1010, msg="!back")["status"], "frozen")
+        self.assertEqual(self.req(user="bob", mid="d", t=1010, msg="!freeze")["status"], "already_frozen")
+        self.assertFalse(list((self.root / "twitch").glob("audio-commands/*.json")))
+
+    def test_freeze_expires_on_natural_song_end_no_cooldown_reset(self):
+        self.assertEqual(self.req(msg="!freeze")["status"], "frozen_now")
+        self.change_song("twitch")
+        self.assertTrue(clear_freeze_after_track_change(self.root, "twitch", "t1"))
+        self.assertFalse(clear_freeze_after_track_change(self.root, "twitch", "t1"))
+        self.assertEqual(self.req(msg="!freeze", mid="f2", t=1010)["status"], "cooldown")
+        self.assertEqual(self.req(msg="!skip", user="bob", mid="sk2", t=1010)["status"], "accepted")
+        self.assertEqual(self.req(msg="!freeze", mid="f3", t=1180)["status"], "frozen_now")
+
+    def test_stale_freeze_auto_expires_when_song_changes(self):
+        self.req(msg="!freeze")
+        self.change_song("twitch")
+        self.assertEqual(self.req(msg="!back", user="bob", mid="b", t=1020)["status"], "accepted")
+
+    def test_platforms_isolated(self):
+        self.assertEqual(self.req(msg="!freeze")["status"], "frozen_now")
         self.assertEqual(self.req(plat="kick")["status"], "accepted")
+        self.assertEqual(self.req(user="bob", mid="b", msg="!back", t=1200)["status"], "frozen")
 
-    def test_normal_chat_unrestricted(self):
-        self.assertEqual(self.req(msg="hello")["status"], "ignored")
+    def test_only_four_english_commands(self):
+        for word in ("!pular", "!musica", "!música", "!previous", "hello"):
+            self.assertEqual(self.req(msg=word)["status"], "ignored")
         self.assertEqual(self.req(msg="!song")["status"], "now_playing")
-        self.assertEqual(self.req()["status"], "accepted")
 
-    def test_no_skip_when_offline(self):
+    def test_no_actions_while_offline(self):
         (self.root / "twitch" / "health.json").write_text('{"status":"stopped"}')
         self.assertEqual(self.req()["status"], "not_live")
         self.assertFalse(list((self.root / "twitch").glob("audio-commands/*.json")))
