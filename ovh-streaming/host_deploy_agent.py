@@ -40,7 +40,7 @@ WATCHDOG_COOLDOWN=max(30,int(os.environ.get("MEDIAFORGE_WATCHDOG_COOLDOWN_SECOND
 # Manual recovery remains possible after diagnosing the affected platform.
 WATCHDOG_PUBLISHER_KILL_ENABLED=os.environ.get("MEDIAFORGE_WATCHDOG_PUBLISHER_KILL_ENABLED","0")=="1"
 SLOTS=("kick","twitch","youtube-deep-house","youtube-rainy")
-DIAGNOSTIC_STATE_SLOTS=SLOTS+("youtube-gta-vi","youtube-ui-test")
+DIAGNOSTIC_STATE_SLOTS=SLOTS+("youtube-gta-vi","youtube-ui-test","youtube-lofi-hip-hop")
 SERVICES=("ovh-agent","control-api")+SLOTS
 CONTAINERS={
     "ovh-agent":"peter-lofi-ovh-agent",
