@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T06:56:49.379572+00:00",
+  "updated_at": "2026-10-10T07:03:53.668672+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4255,10 +4255,22 @@
           "intro_identity": "Two-bar tape-stop texture on a chord stab followed by a double-kick drum answer",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-43",
+          "title": "After Class",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-043-38030239136/peter-lofi-lofi-hip-hop-043.mp3",
+          "duration_seconds": 300,
+          "position": 43,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 88,
+          "intro_identity": "A chopped clean electric guitar phrase with an early backbeat and no pad until bar five",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 42,
-      "total_duration_seconds": 12600,
+      "track_count": 43,
+      "total_duration_seconds": 12900,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
