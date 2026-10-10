@@ -1,0 +1,261 @@
+{
+  "index": 24,
+  "status": "generated",
+  "track": {
+    "id": "lofi-hip-hop-20261008-24",
+    "title": "Sunlit Concrete",
+    "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-024-37991966107/peter-lofi-lofi-hip-hop-024.mp3",
+    "duration_seconds": 300,
+    "position": 24,
+    "source": "lofi-hip-hop-original",
+    "target_bpm": 79,
+    "intro_identity": "Start on one mellow filtered kick and soft handclaps, introduce guitar on the second phrase",
+    "quality_gate": "technical_and_45s_intro_diversity_passed"
+  },
+  "delivery": "pending_ovh_credentials",
+  "quality_gate": {
+    "approved": true,
+    "checked_at": "2026-10-10T00:14:22.304748Z",
+    "reference_index": 24,
+    "attempt": null,
+    "source_wav_sha256": "7fde2de2c0ba1cb483942315218bebfbb4d688d41ff91ca87380510323003d71",
+    "audio": {
+      "duration": 300.0,
+      "size": 52920078,
+      "bit_rate": 1411202,
+      "sample_rate": 44100,
+      "channels": 2,
+      "codec": "pcm_s16le"
+    },
+    "loudness": {
+      "integrated_lufs": -19.06,
+      "true_peak_db": -2.99,
+      "lra": 3.1,
+      "threshold_lufs": -29.3
+    },
+    "silence_seconds": 2.369,
+    "silence_ratio": 0.007898,
+    "checks": {
+      "duration_5min": true,
+      "stereo": true,
+      "sample_rate_ok": true,
+      "file_size_ok": true,
+      "loudness_present": true,
+      "loudness_range_ok": true,
+      "true_peak_sane": true,
+      "silence_ok": true,
+      "fresh_unique": true,
+      "pure_text_generation": true,
+      "reference_audio_excluded": true,
+      "normalized_output_ok": true
+    },
+    "originality_gate": {
+      "mode": "structural",
+      "reference_audio_used": false,
+      "artist_or_title_supplied_to_model": false,
+      "input_to_generation": "non-expressive audio-feature vector + broad genre descriptors",
+      "note": "Automated QC cannot prove absence of all copyright claims; it prevents source-audio reuse and obvious technical failures."
+    },
+    "normalized_audio": {
+      "duration": 300.024,
+      "size": 12001965,
+      "bit_rate": 320026,
+      "sample_rate": 48000,
+      "channels": 2,
+      "codec": "mp3"
+    }
+  },
+  "diversity_gate": {
+    "approved": true,
+    "rule": "Reject if first-45s spectral/envelope/rhythm signatures are excessively close to any already-approved playlist track.",
+    "compared_against": 23,
+    "comparisons": [
+      {
+        "id": "lofi-hip-hop-20261008-01",
+        "title": "Window Seat",
+        "intro_spectral_similarity": 0.738815,
+        "intro_envelope_correlation": 0.078538,
+        "rhythm_signature_correlation": 0.226361,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-02",
+        "title": "Faded Polaroid",
+        "intro_spectral_similarity": 0.763801,
+        "intro_envelope_correlation": -0.117602,
+        "rhythm_signature_correlation": 0.955271,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-03",
+        "title": "Afterglow Avenue",
+        "intro_spectral_similarity": 0.805908,
+        "intro_envelope_correlation": -0.042889,
+        "rhythm_signature_correlation": 0.270171,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-04",
+        "title": "Cafe Balcony",
+        "intro_spectral_similarity": 0.841387,
+        "intro_envelope_correlation": -0.055686,
+        "rhythm_signature_correlation": 0.308428,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-05",
+        "title": "Midnight Notebook",
+        "intro_spectral_similarity": 0.795964,
+        "intro_envelope_correlation": -0.125662,
+        "rhythm_signature_correlation": 0.759159,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-06",
+        "title": "Dusty Hallway",
+        "intro_spectral_similarity": 0.832313,
+        "intro_envelope_correlation": -0.07655,
+        "rhythm_signature_correlation": 0.352114,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-07",
+        "title": "City Library",
+        "intro_spectral_similarity": 0.779736,
+        "intro_envelope_correlation": -0.030351,
+        "rhythm_signature_correlation": 0.247596,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-08",
+        "title": "Golden Vinyl",
+        "intro_spectral_similarity": 0.705452,
+        "intro_envelope_correlation": 0.059868,
+        "rhythm_signature_correlation": 0.712625,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-09",
+        "title": "Amber Skyline",
+        "intro_spectral_similarity": 0.711615,
+        "intro_envelope_correlation": 0.123152,
+        "rhythm_signature_correlation": 0.348067,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-10",
+        "title": "Tape Letters",
+        "intro_spectral_similarity": 0.801763,
+        "intro_envelope_correlation": 0.028861,
+        "rhythm_signature_correlation": 0.292911,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-11",
+        "title": "Sunday Train",
+        "intro_spectral_similarity": 0.690401,
+        "intro_envelope_correlation": 0.197724,
+        "rhythm_signature_correlation": 0.446825,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-12",
+        "title": "Paper Lantern",
+        "intro_spectral_similarity": 0.782685,
+        "intro_envelope_correlation": 0.002652,
+        "rhythm_signature_correlation": 0.369514,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-13",
+        "title": "Neon Margins",
+        "intro_spectral_similarity": 0.794605,
+        "intro_envelope_correlation": -0.043823,
+        "rhythm_signature_correlation": 0.435001,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-14",
+        "title": "Dawn Espresso",
+        "intro_spectral_similarity": 0.762869,
+        "intro_envelope_correlation": -0.068767,
+        "rhythm_signature_correlation": 0.335861,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-15",
+        "title": "Sidewalk Sketches",
+        "intro_spectral_similarity": 0.783686,
+        "intro_envelope_correlation": 0.087558,
+        "rhythm_signature_correlation": 0.473836,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-16",
+        "title": "Quiet Turntable",
+        "intro_spectral_similarity": 0.698643,
+        "intro_envelope_correlation": -0.07042,
+        "rhythm_signature_correlation": 0.300578,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-17",
+        "title": "Blue Pen",
+        "intro_spectral_similarity": 0.770633,
+        "intro_envelope_correlation": -0.028535,
+        "rhythm_signature_correlation": 0.349139,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-18",
+        "title": "Clouded Glass",
+        "intro_spectral_similarity": 0.750638,
+        "intro_envelope_correlation": 0.069137,
+        "rhythm_signature_correlation": 0.240158,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-19",
+        "title": "Velvet Courtyard",
+        "intro_spectral_similarity": 0.834938,
+        "intro_envelope_correlation": -0.102791,
+        "rhythm_signature_correlation": 0.324571,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-20",
+        "title": "Late Bus Home",
+        "intro_spectral_similarity": 0.696315,
+        "intro_envelope_correlation": 0.000691,
+        "rhythm_signature_correlation": 0.300101,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-21",
+        "title": "Warm Static",
+        "intro_spectral_similarity": 0.762432,
+        "intro_envelope_correlation": 0.040715,
+        "rhythm_signature_correlation": 0.517172,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-22",
+        "title": "Paperback Dreams",
+        "intro_spectral_similarity": 0.718904,
+        "intro_envelope_correlation": -0.033072,
+        "rhythm_signature_correlation": 0.403974,
+        "too_close": false
+      },
+      {
+        "id": "lofi-hip-hop-20261008-23",
+        "title": "Cocoa Rain",
+        "intro_spectral_similarity": 0.730237,
+        "intro_envelope_correlation": 0.001207,
+        "rhythm_signature_correlation": 0.219909,
+        "too_close": false
+      }
+    ]
+  },
+  "github_run_id": "37991966107",
+  "generated_at": "2026-10-10T00:15:05.432499+00:00"
+}
