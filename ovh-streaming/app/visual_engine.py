@@ -48,6 +48,8 @@ class VisualEngine:
         self.vprofile = os.environ.get("VIDEO_PROFILE", "main").strip() or "main"
         self.vpreset = os.environ.get("VIDEO_PRESET", "superfast").strip() or "superfast"
         self.udp_port = int(os.environ.get("VIDEO_UDP_PORT", "19000"))
+        self.now_playing_overlay_enabled = (platform in {"twitch", "kick"} and os.environ.get("VIDEO_NOW_PLAYING_OVERLAY", "0") == "1")
+        self.now_playing_overlay_path = self.state / "now-playing-overlay.txt"
         self.sender = None
         self.sender_log = None
         self.running = True
@@ -233,6 +235,28 @@ class VisualEngine:
                 encoding="utf-8",
             )
 
+    def sync_now_playing_overlay(self):
+        """Update the drawtext file atomically without touching the live publisher."""
+        if not self.now_playing_overlay_enabled:
+            return
+        now = read_json(self.state / "now-playing.json", {}) or {}
+        title = " ".join(str(now.get("title") or "Peter Lofi").split())
+        artists = " ".join(str(now.get("artists") or "").split())
+        # Keep text inside the lower-left 920px panel in 1080p.
+        label = title if not artists else f"{title} - {artists}"
+        if len(label) > 45:
+            label = label[:42].rstrip() + "..."
+        label = label.replace("\r", " ").replace("\n", " ")
+        value = label + "\n"
+        try:
+            if self.now_playing_overlay_path.read_text(encoding="utf-8") == value:
+                return
+        except FileNotFoundError:
+            pass
+        temp = self.now_playing_overlay_path.with_suffix(".txt.tmp")
+        temp.write_text(value, encoding="utf-8")
+        os.replace(temp, self.now_playing_overlay_path)
+
     def stop_sender(self):
         proc = self.sender
         self.sender = None
@@ -364,6 +388,38 @@ class VisualEngine:
                 "-muxdelay", "0", "-muxpreload", "0",
                 "-f", "mpegts", target,
             ]
+        elif self.now_playing_overlay_enabled:
+            # Explicit opt-in only. Unlike video-copy mode this composites a
+            # dynamic corner title and encodes the sender ONCE. The RTMP
+            # publisher still uses -c:v copy. Benchmark before enabling.
+            self.sync_now_playing_overlay()
+            font = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+            title_file = str(self.now_playing_overlay_path)
+            overlay = (
+                "drawbox=x=32:y=ih-132:w=920:h=99:color=black@0.52:t=fill,"
+                f"drawtext=fontfile={font}:text='NOW PLAYING':"
+                "fontcolor=white@0.8:fontsize=23:x=56:y=h-120,"
+                f"drawtext=fontfile={font}:textfile={title_file}:reload=30:"
+                "fontcolor=white:fontsize=34:x=56:y=h-82"
+            )
+            gop = self.fps * 2
+            cmd = [
+                "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin", "-y",
+                "-re", "-stream_loop", "-1", "-i", str(path),
+                "-map", "0:v:0", "-an",
+                "-vf", overlay,
+                "-c:v", "libx264", "-preset", self.vpreset, "-tune", "zerolatency",
+                "-profile:v", self.vprofile, "-bf", "0",
+                "-b:v", f"{self.vbitrate}k",
+                "-minrate", f"{self.vbitrate}k", "-maxrate", f"{self.vbitrate}k",
+                "-bufsize", f"{self.bufsize}k",
+                "-g", str(gop), "-keyint_min", str(gop), "-sc_threshold", "0",
+                "-pix_fmt", "yuv420p",
+                "-x264-params", "nal-hrd=cbr:force-cfr=1:repeat-headers=1",
+                "-mpegts_flags", "+resend_headers",
+                "-muxdelay", "0", "-muxpreload", "0",
+                "-f", "mpegts", target,
+            ]
         else:
             cmd = [
                 "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin", "-y",
@@ -386,6 +442,7 @@ class VisualEngine:
     def run(self):
         while self.running:
             self.sync_ui_test_text()
+            self.sync_now_playing_overlay()
             desired, loop_url, revision = self.desired()
             if str(desired.get("desired") or "live").lower() in {"stopped", "stop", "offline"}:
                 self.stop_sender()
