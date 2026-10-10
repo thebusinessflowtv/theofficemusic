@@ -1,5 +1,5 @@
 {
-  "version": "youtube-slotless-live-20261009-v2",
-  "purpose": "Publish exact MediaForge /app.html#/peter-lofi/lives production bundle with hidden YouTube slot selector and cache-busted iframe/JS.",
+  "version": "youtube-lofi-independent-runtime-20261010-v1",
+  "purpose": "Deploy MediaForge YouTube Lofi Hip Hop isolated host publisher control and keep all existing stream containers untouched.",
   "media_publishers_touched": false
 }
