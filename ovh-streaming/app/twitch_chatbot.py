@@ -28,7 +28,7 @@ COMMANDS_ENABLED=os.environ.get("TWITCH_BOT_COMMANDS_ENABLED","0")=="1"
 CONVERSATION_ENABLED=os.environ.get("TWITCH_BOT_CONVERSATION_ENABLED","1")=="1"
 WS_URI="wss://eventsub.wss.twitch.tv/ws"
 MIN_REPLY_INTERVAL=8.0
-HOURLY_INTERACTION_SECONDS=3600
+HOURLY_INTERACTION_SECONDS=90*60
 _last_reply=0.0
 _send_lock=asyncio.Lock()
 HOURLY_MESSAGES=(
@@ -119,7 +119,7 @@ def live_for_interaction():
 
 
 async def hourly_interaction_tick(now=None):
-    """Send at most one hourly message when Twitch is actually live."""
+    """Send at most one automatic message per 90 minutes while Twitch is live."""
     if not live_for_interaction():
         return "offline"
     now=time.time() if now is None else float(now)
