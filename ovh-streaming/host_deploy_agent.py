@@ -1001,9 +1001,30 @@ def rollback_service(service):
 
 
 def health_all():
+    lofi_dir=OVH/"state"/"youtube-lofi-hip-hop"
+    lofi=health("youtube-lofi-hip-hop")
+    audio=read_json(lofi_dir/"audio-health.json",{}) or {}
+    visual=read_json(lofi_dir/"visual-health.json",{}) or {}
+    log_counts={}
+    try:
+        path=lofi_dir/"ffmpeg.log"
+        with path.open("rb") as stream:
+            stream.seek(max(0,path.stat().st_size-32768))
+            chunk=stream.read().decode("utf-8","replace").lower()
+        signatures=("connection refused","connection timed out","end of file",
+           "failed to update header","broken pipe","error writing","server returned",
+           "invalid data found","failed to connect","tls","recovery")
+        log_counts={term:chunk.count(term) for term in signatures if term in chunk}
+    except Exception:
+        log_counts={"available":False}
     return {"git_head":git_head(),
             "capabilities":{"isolated_lofi_youtube":True,"publisher_safe":True},
-            "services":{s:health(s) for s in SERVICES}}
+            "services":{**{s:health(s) for s in SERVICES},
+                        "youtube-lofi-hip-hop":lofi},
+            "lofi_diagnostics":{"audio_state":audio.get("state") or audio.get("status"),
+                  "visual_state":visual.get("status"),
+                  "audio_stalls":audio.get("stalls"),
+                  "error_signatures":log_counts}}
 
 
 def parse_iso(value):
@@ -1464,6 +1485,40 @@ def relay_lofi_youtube_oauth(cmd):
             "source":"authenticated-ovh-host-agent","other_publishers_preserved":True,
             "new_broadcast_pending":True}
 
+
+def repair_lofi_video_transport(cmd):
+    """Patch/restart ONLY the dedicated Lofi publisher; leave all other RTMP alone."""
+    slot="youtube-lofi-hip-hop"
+    name="peter-lofi-youtube-lofi-hip-hop"
+    sid=str(cmd.get("session_id") or "")
+    desired=read_json(OVH/"state"/slot/"desired.json",{}) or {}
+    if not sid or sid!=str(desired.get("session_id") or "") or desired.get("desired")!="live":
+        raise RuntimeError("Isolated Lofi session not active or session id mismatch")
+    pre={key:health(key).get("encoder_pid") for key in DIAGNOSTIC_STATE_SLOTS if key!=slot}
+    run(["docker","inspect","-f","{{.Id}}",name],timeout=20)
+    source=OVH/"app"/"stream_core.py"
+    run(["python3","-m","py_compile",str(source)],timeout=15)
+    # No docker-compose, no service rebuild and no restart of other publishers.
+    run(["docker","cp",str(source),name+":/app/stream_core.py"],timeout=30)
+    run(["docker","restart","--time","12",name],timeout=80)
+    previous=str((read_json(OVH/"state"/slot/"health.json",{}) or {}).get("updated_at") or "")
+    ready=None
+    for attempt in range(65):
+        h=health(slot)
+        if h.get("status")=="live" and h.get("encoder_pid") and str(h.get("updated_at") or "")!=previous:
+            ready=h
+            break
+        time.sleep(2)
+    if not ready:
+        raise RuntimeError("Lofi-only publisher did not regain local encoder health")
+    drift=[key for key,pid in pre.items()
+           if pid is not None and health(key).get("encoder_pid")!=pid]
+    if drift:raise RuntimeError("Unrelated stream encoder changed: "+",".join(drift))
+    return {"status":"lofi_transport_restarted","runtime_slot":slot,
+            "session_id":sid,"encoder_pid_present":bool(ready.get("encoder_pid")),
+            "other_publishers_preserved":True,"other_publishers_restarted":False,
+            "lofi_health":{key:ready.get(key) for key in ("status","audio_status","visual_status","restarts")}}
+
 def execute(cmd):
     action=str(cmd.get("action") or "")
     target=str(cmd.get("target") or "")
@@ -1480,6 +1535,8 @@ def execute(cmd):
     old,new=git_sync()
     if action in ("relay_lofi_youtube_oauth","probe_lofi_youtube_oauth"):
         return {"old_head":old,"new_head":new,**relay_lofi_youtube_oauth(cmd)},False
+    if action=="repair_lofi_video_transport":
+        return {"old_head":old,"new_head":new,**repair_lofi_video_transport(cmd)},False
     if action=="launch_isolated_lofi_youtube":
         return {"old_head":old,"new_head":new,**launch_isolated_lofi_youtube(cmd)},False
     if action=="hot_patch_streaming":
