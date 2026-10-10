@@ -1496,21 +1496,44 @@ def repair_lofi_video_transport(cmd):
         raise RuntimeError("Isolated Lofi session not active or session id mismatch")
     pre={key:health(key).get("encoder_pid") for key in DIAGNOSTIC_STATE_SLOTS if key!=slot}
     run(["docker","inspect","-f","{{.Id}}",name],timeout=20)
-    source=OVH/"app"/"stream_core.py"
-    run(["python3","-m","py_compile",str(source)],timeout=15)
+    # A partially patched publisher can deadlock: stream_core expects FIFO,
+    # while a stale visual_engine still writes UDP and the audio feeder is stale.
+    # Always deploy these three mutually compatible modules atomically to ONLY
+    # the dedicated Lofi container before its controlled recovery restart.
+    modules=("stream_core.py","visual_engine.py","audio_engine.py")
+    for module in modules:
+        source=OVH/"app"/module
+        run(["python3","-m","py_compile",str(source)],timeout=20)
+    before_health=read_json(st/"health.json",{}) or {}
+    previous=str(before_health.get("updated_at") or "")
+    for module in modules:
+        run(["docker","cp",str(OVH/"app"/module),name+":/app/"+module],timeout=30)
     # No docker-compose, no service rebuild and no restart of other publishers.
-    run(["docker","cp",str(source),name+":/app/stream_core.py"],timeout=30)
     run(["docker","restart","--time","12",name],timeout=80)
-    previous=str((read_json(OVH/"state"/slot/"health.json",{}) or {}).get("updated_at") or "")
     ready=None
-    for attempt in range(65):
+    for attempt in range(85):
         h=health(slot)
-        if h.get("status")=="live" and h.get("encoder_pid") and str(h.get("updated_at") or "")!=previous:
+        ah=read_json(st/"audio-health.json",{}) or {}
+        vh=read_json(st/"visual-health.json",{}) or {}
+        now_ts=time.time()
+        audio_ts=parse_iso(ah.get("updated_at"))
+        visual_ts=parse_iso(vh.get("updated_at"))
+        audible_ts=parse_iso(ah.get("last_audible_at"))
+        audio_fresh=bool(audio_ts and -10<=now_ts-audio_ts<=35)
+        visual_fresh=bool(visual_ts and -10<=now_ts-visual_ts<=35)
+        audible_fresh=bool(audible_ts and -10<=now_ts-audible_ts<=35)
+        if (h.get("status")=="live" and h.get("encoder_pid")
+            and str(h.get("updated_at") or "")!=previous
+            and h.get("visual_status")=="streaming" and visual_fresh
+            and h.get("audio_status") in {"playing","crossfading"}
+            and audio_fresh and audible_fresh
+            and int(ah.get("non_silent_pcm_frames") or 0)>=100):
             ready=h
             break
         time.sleep(2)
     if not ready:
-        raise RuntimeError("Lofi-only publisher did not regain local encoder health")
+        raise RuntimeError("Lofi-only A/V stack still unhealthy after synchronized FIFO/audio patch: "+
+                           str({k:h.get(k) for k in ("status","encoder_pid","audio_pid","visual_pid","audio_status","visual_status","error")}))
     drift=[key for key,pid in pre.items()
            if pid is not None and health(key).get("encoder_pid")!=pid]
     if drift:raise RuntimeError("Unrelated stream encoder changed: "+",".join(drift))
