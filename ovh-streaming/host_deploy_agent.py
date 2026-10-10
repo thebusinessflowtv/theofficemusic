@@ -1501,6 +1501,7 @@ def repair_lofi_video_transport(cmd):
     # Always deploy these three mutually compatible modules atomically to ONLY
     # the dedicated Lofi container before its controlled recovery restart.
     modules=("stream_core.py","visual_engine.py","audio_engine.py")
+    st=OVH/"state"/slot
     for module in modules:
         source=OVH/"app"/module
         run(["python3","-m","py_compile",str(source)],timeout=20)
