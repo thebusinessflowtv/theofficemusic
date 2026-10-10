@@ -436,7 +436,7 @@ class StreamCore:
                     "-max_interleave_delta",
                     "1000000",
                 ]
-            if self.platform in {"youtube-gta-vi", "youtube-ui-test"}:
+            if self.platform in {"youtube-gta-vi", "youtube-ui-test", "youtube-lofi-hip-hop"}:
                 # GTA VI uses direct FLV so the output cannot silently discard
                 # H.264 packets when an intermediate fifo queue fills. The
                 # StreamCore watchdog reconnects the publisher if RTMP itself
