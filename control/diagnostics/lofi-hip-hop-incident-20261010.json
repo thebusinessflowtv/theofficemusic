@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-10T16:47:49.197157+00:00",
+  "checked_at": "2026-10-10T16:52:10.766256+00:00",
   "routes": {
     "cloudflare": {
       "reachable": true,
@@ -49,13 +49,13 @@
     },
     "ovh_direct": {
       "reachable": true,
-      "reported_at": "2026-10-10T16:47:42.655451Z",
+      "reported_at": "2026-10-10T16:52:10.475598Z",
       "lofi": {
         "status": "live",
         "runtime_slot": null,
         "session_id": null,
         "title": null,
-        "updated_at": "2026-10-10T16:47:45.169408Z",
+        "updated_at": "2026-10-10T16:51:45.469247Z",
         "fps": 60,
         "video_bitrate_kbps": 8000,
         "encoder_pid": null,
@@ -78,35 +78,35 @@
       "other_streams": {
         "kick": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:41.510633Z"
+          "updated_at": "2026-10-10T16:52:09.685505Z"
         },
         "twitch": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:42.465986Z"
+          "updated_at": "2026-10-10T16:52:08.668818Z"
         },
         "youtube-deep-house": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:42.383326Z"
+          "updated_at": "2026-10-10T16:52:08.554806Z"
         },
         "youtube-rainy": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:41.057551Z"
+          "updated_at": "2026-10-10T16:52:09.220933Z"
         },
         "youtube-gta-vi": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:42.371741Z"
+          "updated_at": "2026-10-10T16:52:08.589965Z"
         }
       }
     },
     "panel": {
       "reachable": true,
-      "reported_at": "2026-10-10T16:47:42.655451Z",
+      "reported_at": "2026-10-10T16:52:10.475598Z",
       "lofi": {
         "status": "live",
         "runtime_slot": null,
         "session_id": null,
         "title": null,
-        "updated_at": "2026-10-10T16:47:45.169408Z",
+        "updated_at": "2026-10-10T16:51:45.469247Z",
         "fps": 60,
         "video_bitrate_kbps": 8000,
         "encoder_pid": null,
@@ -129,23 +129,23 @@
       "other_streams": {
         "kick": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:41.510633Z"
+          "updated_at": "2026-10-10T16:52:09.685505Z"
         },
         "twitch": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:42.465986Z"
+          "updated_at": "2026-10-10T16:52:08.668818Z"
         },
         "youtube-deep-house": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:42.383326Z"
+          "updated_at": "2026-10-10T16:52:08.554806Z"
         },
         "youtube-rainy": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:41.057551Z"
+          "updated_at": "2026-10-10T16:52:09.220933Z"
         },
         "youtube-gta-vi": {
           "status": "live",
-          "updated_at": "2026-10-10T16:47:42.371741Z"
+          "updated_at": "2026-10-10T16:52:08.589965Z"
         }
       }
     }
@@ -169,7 +169,7 @@
       "playlist_track_count": 66,
       "fps": 60,
       "video_bitrate_kbps": 8000,
-      "updated_at": "2026-10-10T16:47:51.179815Z",
+      "updated_at": "2026-10-10T16:51:45.469247Z",
       "visual_revision": 1,
       "restarts": 0,
       "now_playing": {
@@ -179,10 +179,23 @@
         "started_at": "2026-10-10T08:57:06.310464Z"
       }
     },
-    "reported_at": "2026-10-10T16:47:53.354750Z"
+    "reported_at": "2026-10-10T16:52:10.475598Z"
   },
   "youtube": {
-    "error": "HttpError: <HttpError 400 when requesting https://youtube.googleapis.com/youtube/v3/liveBroadcasts?part=snippet%2Cstatus%2CcontentDetails&broadcastStatus=active&mine=true&maxResults=50&alt=json returned \"Incompatible parameters specified in the request: broadcastStatus, mine\". Details: \"[{'message': 'Incompatible parameters specified in the request: broadcast"
+    "matching_broadcasts": [
+      {
+        "category": "mine",
+        "title": "lofi hip hop radio 📚 beats to study, work & focus to | Peter Lofi 24/7 🎧",
+        "broadcast_id": "W89tRiluh_Y",
+        "lifeCycleStatus": "live",
+        "actualStartTime": "2026-10-10T05:14:45Z",
+        "boundStreamId": "xO4Cl7xCdcTsWkmxD_6Wfg1791608654748078",
+        "streamStatus": "inactive",
+        "healthStatus": "noData",
+        "configurationIssues": []
+      }
+    ],
+    "broadcasts_checked": 11
   },
-  "extended_checked_at": "2026-10-10T16:47:56.119829+00:00"
+  "extended_checked_at": "2026-10-10T16:52:17.071085+00:00"
 }
