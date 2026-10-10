@@ -146,7 +146,23 @@ jobs:
               raise SystemExit("OAuth belongs to the wrong YouTube channel: "+channel_title)
 
           if station.get("current_session_id") and str(station.get("status") or "").lower() in ("live","starting"):
-              raise SystemExit("Selected internal encoder is already occupied")
+              # The stored session is NOT proof of a live broadcast: it can be
+              # stranded when YouTube completes the transmission externally.
+              # Only recover if official YouTube says the old video ended AND
+              # its reusable ingest stream is inactive. Never hijack an active live.
+              old_bid=str(station.get("youtube_broadcast_id") or "")
+              if not old_bid:
+                  raise SystemExit("Occupied station has no broadcast ID: refusing takeover")
+              old_items=yt.liveBroadcasts().list(part="id,status",id=old_bid).execute().get("items") or []
+              old_life=str((old_items[0].get("status") or {}).get("lifeCycleStatus") or "") if old_items else ""
+              old_stream=str(station.get("youtube_stream_id") or "")
+              old_stream_items=(yt.liveStreams().list(part="id,status",id=old_stream).execute().get("items") or []) if old_stream else []
+              old_ingest=str((old_stream_items[0].get("status") or {}).get("streamStatus") or "") if old_stream_items else ""
+              if old_life!="complete" or old_ingest=="active":
+                  raise SystemExit(f"Refusing to replace active or uncertain old GTA live: life={old_life}, ingest={old_ingest}")
+              print("GTA_PREVIOUS_BROADCAST_OFFICIALLY_COMPLETED; replacing expired reservation only",old_bid,flush=True)
+              station["status"]="stopped"
+              station["current_session_id"]=None
 
           stream=None
           stream_id=str(station.get("youtube_stream_id") or "")
