@@ -129,6 +129,9 @@ async def connected_loop():
     # reconnect URL must be authenticated to the official EventSub hostname.
     while True:
         try:
+            # When Twitch asks to reconnect, EventSub migrates subscriptions
+            # to the new session. We must not create a duplicate subscription.
+            migrating=(url!=WS_URI)
             async with connect(url,open_timeout=15,ping_interval=20,
                                ping_timeout=20,max_size=1024*1024) as websocket:
                 print("TWITCH_BOT_WS_CONNECTED",flush=True)
@@ -143,10 +146,16 @@ async def connected_loop():
                     if typ=="session_welcome":
                         session=payload.get("session") or {}
                         session_id=str(session.get("id") or "")
-                        result=await api("subscribe",{"session_id":session_id})
-                        if not result.get("ok"):
-                            raise RuntimeError("Twitch EventSub subscription rejected")
-                        broadcaster_id=str(result["broadcaster_id"])
+                        if migrating:
+                            result=await api("status",{})
+                            if not result.get("connected"):
+                                raise RuntimeError("Twitch OAuth not connected after EventSub migration")
+                            broadcaster_id=str(result["broadcaster_id"])
+                        else:
+                            result=await api("subscribe",{"session_id":session_id})
+                            if not result.get("ok"):
+                                raise RuntimeError("Twitch EventSub subscription rejected")
+                            broadcaster_id=str(result["broadcaster_id"])
                         runtime_info("subscribed",subscription_active=True)
                         print("TWITCH_BOT_EVENTSUB_SUBSCRIBED",flush=True)
                     elif typ=="notification" and broadcaster_id:
@@ -160,6 +169,8 @@ async def connected_loop():
                             await on_message(event,broadcaster_id)
                         except Exception as exc:
                             print("TWITCH_BOT_MESSAGE_ERROR",type(exc).__name__,flush=True)
+                    elif typ=="session_keepalive" and broadcaster_id:
+                        runtime_info("subscribed",subscription_active=True)
                     elif typ=="session_reconnect":
                         new_uri=str((payload.get("session") or {}).get("reconnect_url") or "")
                         if valid_websocket_uri(new_uri):
