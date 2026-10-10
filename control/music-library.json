@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T06:34:18.412730+00:00",
+  "updated_at": "2026-10-10T06:44:28.700565+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4219,10 +4219,22 @@
           "intro_identity": "A bright kalimba two-note call answered by a deep snare flam and a bass slide",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-40",
+          "title": "Skate Tape",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-040-38030239136/peter-lofi-lofi-hip-hop-040.mp3",
+          "duration_seconds": 300,
+          "position": 40,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 86,
+          "intro_identity": "A plucky filtered synth ostinato over ticking hi-hats, then the full kick groove arrives",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 39,
-      "total_duration_seconds": 11700,
+      "track_count": 40,
+      "total_duration_seconds": 12000,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
