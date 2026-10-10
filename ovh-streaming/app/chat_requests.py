@@ -15,7 +15,7 @@ from pathlib import Path
 
 SLOTS = frozenset(("twitch", "kick"))
 COMMANDS = frozenset(("!skip", "!song", "!back", "!freeze"))
-USER_COOLDOWN_SECONDS = 180
+USER_COOLDOWN_SECONDS = {"twitch": 0, "kick": 180}  # Twitch Slow Mode controls viewers; Kick not yet configured.
 # Protect a station against many viewers causing rapid successive track changes.
 TRACK_CHANGE_GLOBAL_SECONDS = 60
 DEDUP_SECONDS = 24 * 3600
@@ -61,10 +61,10 @@ def process_chat_message(
 ) -> dict:
     """Return accepted/cooldown/frozen/etc. without restarting encoders.
 
-    Per-user 180s across ALL four commands, including !song. Twitch and Kick
-    are isolated. Freeze prevents !skip and !back from all users (including
-    older queued controls once the AudioEngine is patched). Natural track-end
-    removes the freeze; cooldown stays anchored to last *accepted* request.
+    Twitch relies on Twitch's 120s Slow Mode, without an additional per-user
+    bot cooldown. Kick retains 180s while no Kick-side Slow Mode is connected.
+    Skip/back retain a separate, per-platform 60s station safety limit.
+    Freeze blocks skip/back and expires when the song changes naturally.
     """
     if platform not in SLOTS:
         raise ValueError("unsupported platform")
@@ -86,8 +86,9 @@ def process_chat_message(
         state = _read_json(state_path)
         seen = {str(k): float(v) for k, v in (state.get("seen") or {}).items()
                 if isinstance(v, (float, int)) and 0 <= instant - v < DEDUP_SECONDS}
+        limit = USER_COOLDOWN_SECONDS[platform]
         users = {str(k): float(v) for k, v in (state.get("users") or {}).items()
-                 if isinstance(v, (float, int)) and 0 <= instant - v < USER_COOLDOWN_SECONDS}
+                 if limit > 0 and isinstance(v, (float, int)) and 0 <= instant - v < limit}
         if message_id in seen:
             return {"status": "duplicate"}
         seen[message_id] = instant
@@ -108,7 +109,7 @@ def process_chat_message(
             persist()
             return {"status": "already_frozen", "title": str(song.get("title") or "")}
 
-        remaining_user = max(0.0, USER_COOLDOWN_SECONDS - (instant - users.get(user_id, -1e20)))
+        remaining_user = max(0.0, limit - (instant - users.get(user_id, -1e20)))
         if remaining_user:
             persist()
             return {"status": "cooldown", "retry_after": int(remaining_user + 0.999)}
@@ -163,7 +164,8 @@ def clear_freeze_after_track_change(
 ) -> bool:
     """Called by AudioEngine when the old track has actually ended or changed.
 
-    Never resets user cooldown. Locked against concurrent !freeze requests.
+    Kick cooldown is retained; Twitch follows platform Slow Mode. Locked against
+    concurrent !freeze requests.
     """
     if platform not in SLOTS:
         raise ValueError("unsupported platform")
