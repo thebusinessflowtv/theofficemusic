@@ -1,5 +1,5 @@
 {
-  "version": "lofi-hip-hop-selector-v1",
-  "purpose": "Publish authenticated Lofi Hip Hop local-catalog import endpoint to MediaForge OVH without restarting RTMP publisher containers.",
+  "version": "youtube-auto-allocation-ui-v1",
+  "purpose": "Publish slotless YouTube live creation UI and safe automatic compatible encoder selection without changing RTMP publishers.",
   "media_publishers_touched": false
 }
