@@ -19,6 +19,11 @@ jobs:
       # Recheck chat protection and isolated audio-agent syntax before deployment
       - name: Syntax check non-disruptive host telemetry and isolated audio controls
         run: python3 -m py_compile ovh-streaming/host_deploy_agent.py
+      - name: Compile urgent audio restoration modules without touching live
+        shell: bash
+        run: |
+          python3 -m py_compile ovh-streaming/app/audio_engine.py ovh-streaming/host_deploy_agent.py
+          echo LOFI_AUDIO_RECOVERY_PYTHON_VALID
       - name: Validate 30 upbeat Lofi profiles and original 36 unchanged
         shell: bash
         run: |
