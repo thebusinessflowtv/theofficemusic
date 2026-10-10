@@ -5,8 +5,10 @@ on:
     paths:
       - '.github/workflows/peterlofi-chat-overlay-tests.yml'
       - 'ovh-streaming/app/chat_requests.py'
+      - 'ovh-streaming/app/bot_conversation.py'
       - 'ovh-streaming/app/visual_engine.py'
       - 'ovh-streaming/tests/test_chat_requests.py'
+      - 'ovh-streaming/tests/test_bot_conversation.py'
   workflow_dispatch:
 
 permissions:
@@ -22,7 +24,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m py_compile ovh-streaming/app/chat_requests.py ovh-streaming/app/visual_engine.py
+          python -m py_compile ovh-streaming/app/chat_requests.py ovh-streaming/app/bot_conversation.py ovh-streaming/app/visual_engine.py
           cd ovh-streaming
           python -m unittest discover -s tests -v
       - name: Verify overlay is gated off by default
