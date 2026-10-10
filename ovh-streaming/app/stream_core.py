@@ -231,7 +231,9 @@ class StreamCore:
     def start_visual(self):
         if self.visual_feeder and self.visual_feeder.poll() is None:
             return
-        if self.platform == "youtube-gta-vi":
+        if self.platform in {"youtube-gta-vi", "twitch", "kick"}:
+            # Keep the local MPEG-TS pipe open throughout sender reconnects;
+            # this does not restart the RTMP publisher on visual changes.
             self.ensure_video_fifo()
         self.visual_feeder = subprocess.Popen(
             [
@@ -293,7 +295,10 @@ class StreamCore:
         fifo = self.ensure_audio_fifo()
         self.wait_visual_ready()
         self.wait_audio_ready()
-        if self.platform == "youtube-gta-vi":
+        if self.platform in {"youtube-gta-vi", "twitch", "kick"}:
+            # Replace localhost UDP with a named FIFO for Twitch and Kick:
+            # UDP packet loss produced corrupt H264 frames on both platforms.
+            # A FIFO applies kernel backpressure instead of dropping packets.
             video_input = str(self.ensure_video_fifo())
             # Pace the prepared 60fps stream by its media timestamps. FIFO
             # buffers can release short bursts after backpressure; readrate=1
