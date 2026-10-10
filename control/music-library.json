@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T10:01:31.183373+00:00",
+  "updated_at": "2026-10-10T10:23:08.307932+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4507,10 +4507,22 @@
           "intro_identity": "A low bass riff with syncopated eighth notes and crisp hi-hat chatter for two bars",
           "style_version": "upbeat-hip-hop-vol2",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-64",
+          "title": "Summer Kickdrum",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-064-38030239136/peter-lofi-lofi-hip-hop-064.mp3",
+          "duration_seconds": 300,
+          "position": 64,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 102,
+          "intro_identity": "Fast hand-clap and rim pattern, then a warm detuned guitar hook over punchy drums",
+          "style_version": "upbeat-hip-hop-vol2",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 63,
-      "total_duration_seconds": 18900,
+      "track_count": 64,
+      "total_duration_seconds": 19200,
       "planned_track_count": 66,
       "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
