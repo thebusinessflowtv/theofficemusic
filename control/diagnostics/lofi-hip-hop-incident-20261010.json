@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-10T17:01:49.544127+00:00",
+  "checked_at": "2026-10-10T17:07:05.512568+00:00",
   "routes": {
     "cloudflare": {
       "reachable": true,
@@ -49,13 +49,13 @@
     },
     "ovh_direct": {
       "reachable": true,
-      "reported_at": "2026-10-10T17:01:49.026189Z",
+      "reported_at": "2026-10-10T17:07:00.417905Z",
       "lofi": {
-        "status": "unknown",
+        "status": "live",
         "runtime_slot": null,
         "session_id": null,
         "title": null,
-        "updated_at": "2026-10-10T17:01:49.215454Z",
+        "updated_at": "2026-10-10T17:07:02.573633Z",
         "fps": 60,
         "video_bitrate_kbps": 8000,
         "encoder_pid": null,
@@ -67,9 +67,9 @@
         "playlist_track_count": 66,
         "now_playing": {
           "state": "playing",
-          "track_id": "lofi-hip-hop-20261008-33",
-          "title": "Grey September",
-          "started_at": "2026-10-10T08:57:06.310464Z"
+          "track_id": "lofi-hip-hop-20261008-58",
+          "title": "Midnight Basketball",
+          "started_at": "2026-10-10T17:06:04.984596Z"
         },
         "restarts": 0,
         "last_error": null,
@@ -78,35 +78,35 @@
       "other_streams": {
         "kick": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:48.091844Z"
+          "updated_at": "2026-10-10T17:07:00.311512Z"
         },
         "twitch": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:47.139543Z"
+          "updated_at": "2026-10-10T17:06:59.376892Z"
         },
         "youtube-deep-house": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:48.927580Z"
+          "updated_at": "2026-10-10T17:06:59.141178Z"
         },
         "youtube-rainy": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:47.594113Z"
+          "updated_at": "2026-10-10T17:06:59.807453Z"
         },
         "youtube-gta-vi": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:48.985759Z"
+          "updated_at": "2026-10-10T17:06:59.206906Z"
         }
       }
     },
     "panel": {
       "reachable": true,
-      "reported_at": "2026-10-10T17:01:49.026189Z",
+      "reported_at": "2026-10-10T17:07:00.417905Z",
       "lofi": {
-        "status": "unknown",
+        "status": "live",
         "runtime_slot": null,
         "session_id": null,
         "title": null,
-        "updated_at": "2026-10-10T17:01:49.215454Z",
+        "updated_at": "2026-10-10T17:07:02.573633Z",
         "fps": 60,
         "video_bitrate_kbps": 8000,
         "encoder_pid": null,
@@ -118,9 +118,9 @@
         "playlist_track_count": 66,
         "now_playing": {
           "state": "playing",
-          "track_id": "lofi-hip-hop-20261008-33",
-          "title": "Grey September",
-          "started_at": "2026-10-10T08:57:06.310464Z"
+          "track_id": "lofi-hip-hop-20261008-58",
+          "title": "Midnight Basketball",
+          "started_at": "2026-10-10T17:06:04.984596Z"
         },
         "restarts": 0,
         "last_error": null,
@@ -129,23 +129,23 @@
       "other_streams": {
         "kick": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:48.091844Z"
+          "updated_at": "2026-10-10T17:07:00.311512Z"
         },
         "twitch": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:47.139543Z"
+          "updated_at": "2026-10-10T17:06:59.376892Z"
         },
         "youtube-deep-house": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:48.927580Z"
+          "updated_at": "2026-10-10T17:06:59.141178Z"
         },
         "youtube-rainy": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:47.594113Z"
+          "updated_at": "2026-10-10T17:06:59.807453Z"
         },
         "youtube-gta-vi": {
           "status": "live",
-          "updated_at": "2026-10-10T17:01:48.985759Z"
+          "updated_at": "2026-10-10T17:06:59.206906Z"
         }
       }
     }
@@ -165,21 +165,21 @@
       "visual_revision"
     ],
     "service": {
-      "status": "unknown",
+      "status": "live",
       "playlist_track_count": 66,
       "fps": 60,
       "video_bitrate_kbps": 8000,
-      "updated_at": "2026-10-10T17:01:53.722183Z",
+      "updated_at": "2026-10-10T17:07:06.575696Z",
       "visual_revision": 1,
       "restarts": 0,
       "now_playing": {
         "state": "playing",
-        "track_id": "lofi-hip-hop-20261008-33",
-        "title": "Grey September",
-        "started_at": "2026-10-10T08:57:06.310464Z"
+        "track_id": "lofi-hip-hop-20261008-58",
+        "title": "Midnight Basketball",
+        "started_at": "2026-10-10T17:06:04.984596Z"
       }
     },
-    "reported_at": "2026-10-10T17:01:49.026189Z"
+    "reported_at": "2026-10-10T17:07:00.417905Z"
   },
   "youtube": {
     "matching_broadcasts": [
@@ -190,12 +190,12 @@
         "lifeCycleStatus": "live",
         "actualStartTime": "2026-10-10T05:14:45Z",
         "boundStreamId": "xO4Cl7xCdcTsWkmxD_6Wfg1791608654748078",
-        "streamStatus": "inactive",
-        "healthStatus": "noData",
+        "streamStatus": "active",
+        "healthStatus": "good",
         "configurationIssues": []
       }
     ],
     "broadcasts_checked": 11
   },
-  "extended_checked_at": "2026-10-10T17:01:57.468026+00:00"
+  "extended_checked_at": "2026-10-10T17:07:11.818864+00:00"
 }
