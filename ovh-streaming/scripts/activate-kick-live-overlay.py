@@ -61,9 +61,9 @@ def check_platform():
     d=load(DESIRED)
     h=load(PUBLISH)
     v=load(VISUAL)
-    twitch_health=load(ROOT/"state"/"twitch"/"health.json")
-    if twitch_health.get("status")!="live":
-        raise RuntimeError("Twitch must be live before overlay switching.")
+    # This operation only reloads the Kick VISUAL CHILD. Twitch's independent
+    # health status is not a precondition: Twitch can be "starting" even while
+    # Kick and its publisher are healthy. Keep all Kick PID/health/RAM gates.
     if not all((d.get("desired")=="live",h.get("status")=="live",v.get("status")=="streaming")):
         raise RuntimeError("Kick visual and publisher must be live before switching.")
     if not load(NOW).get("track_id"):
