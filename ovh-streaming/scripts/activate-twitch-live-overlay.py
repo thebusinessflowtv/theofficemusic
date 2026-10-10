@@ -204,6 +204,16 @@ def refresh(undo=False):
     updated=REFRESH_BACKUP if undo else ROOT/"app"/"visual_engine.py"
     if not updated.is_file():
         raise RuntimeError("Updated overlay script not available.")
+    if not undo:
+        font="/usr/share/fonts/truetype/ancient-scripts/Symbola_hint.ttf"
+        check=docker("exec",CONTAINER,"python","-c",
+                     "from pathlib import Path; print(Path("+repr(font)+").is_file())")
+        if check.stdout.strip()!="True":
+            raise RuntimeError(
+                "Lock emoji outline font missing from Twitch container. "
+                "Install fonts-symbola INSIDE that container first; "
+                "do not recreate the live container."
+            )
     subprocess.run([sys.executable,"-m","py_compile",str(updated)],check=True,timeout=20)
     BACKUPS.mkdir(parents=True,exist_ok=True)
     if not undo:
