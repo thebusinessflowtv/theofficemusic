@@ -445,12 +445,23 @@ class VisualEngine:
                 "shadowcolor=black@0.85:shadowx=2:shadowy=2,"
                 f"drawtext=fontfile={font}:textfile={frozen_title_file}:reload=30:"
                 "fontcolor=white:fontsize=34:x=100:y=h-67:"
-                "shadowcolor=black@0.85:shadowx=2:shadowy=2,"
-                f"drawtext=fontfile={font}:"
-                "text='!skip    !song    !back    !freeze':"
-                "fontcolor=white:fontsize=30:x=w-text_w-55:y=h-71:"
                 "shadowcolor=black@0.85:shadowx=2:shadowy=2"
             )
+            # Do not advertise Kick commands until its own authenticated
+            # chatbot is subscribed and music controls have been enabled.
+            kick_bot = read_json(self.state / "chat-bot-runtime.json", {}) or {}
+            show_commands = self.platform == "twitch" or (
+                self.platform == "kick"
+                and kick_bot.get("status") == "subscribed"
+                and kick_bot.get("commands_enabled") is True
+            )
+            if show_commands:
+                overlay += (
+                    f",drawtext=fontfile={font}:"
+                    "text='!skip    !song    !back    !freeze':"
+                    "fontcolor=white:fontsize=30:x=w-text_w-55:y=h-71:"
+                    "shadowcolor=black@0.85:shadowx=2:shadowy=2"
+                )
             gop = self.fps * 2
             cmd = [
                 "ffmpeg", "-hide_banner", "-loglevel", "warning", "-nostdin", "-y",
