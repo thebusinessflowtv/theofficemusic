@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T00:42:58.808813+00:00",
+  "updated_at": "2026-10-10T00:52:56.874390+00:00",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -4095,10 +4095,21 @@
           "target_bpm": 85,
           "intro_identity": "A soft wooden percussion pattern begins alone, then a bass slide and Rhodes respond",
           "quality_gate": "technical_and_45s_intro_diversity_passed"
+        },
+        {
+          "id": "lofi-hip-hop-20261008-29",
+          "title": "Corner Store Lights",
+          "url": "https://github.com/thebusinessflowtv/theofficemusic/releases/download/peter-lofi-lofi-hip-hop-029-37991966107/peter-lofi-lofi-hip-hop-029.mp3",
+          "duration_seconds": 300,
+          "position": 29,
+          "source": "lofi-hip-hop-original",
+          "target_bpm": 92,
+          "intro_identity": "A dry clap and vinyl-like ticking establish rhythm before Rhodes chords appear",
+          "quality_gate": "technical_and_45s_intro_diversity_passed"
         }
       ],
-      "track_count": 28,
-      "total_duration_seconds": 8400,
+      "track_count": 29,
+      "total_duration_seconds": 8700,
       "planned_track_count": 36,
       "planned_duration_seconds": 10800,
       "target_duration_seconds_per_track": 300,
