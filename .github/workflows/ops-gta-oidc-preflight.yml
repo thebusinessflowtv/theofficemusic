@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check non-disruptive host telemetry and isolated audio controls
+        run: python3 -m py_compile ovh-streaming/host_deploy_agent.py
       - name: Validate GitHub Actions OIDC against OVH
         shell: bash
         run: |
