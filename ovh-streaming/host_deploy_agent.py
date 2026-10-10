@@ -1643,6 +1643,72 @@ def report_isolated_lofi_status():
     return live
 
 
+def sync_isolated_lofi_approved_expansion():
+    """Hot-append approved 37-66 tracks to the running Lofi playlist, no restart.
+
+    Never remove, reorder or replace existing live tracks. AudioEngine observes
+    the playlist file mtime and loads the additional tracks when available.
+    """
+    slot="youtube-lofi-hip-hop"
+    st=OVH/"state"/slot
+    playlist_file=st/"playlist.json"
+    current=read_json(playlist_file,{}) or {}
+    existing=current.get("tracks") or []
+    if not isinstance(existing,list) or not existing:
+        return {"status":"not_initialized"}
+    key=str(current.get("playlist_key") or "")
+    if key not in ("lofi-hip-hop",""):
+        return {"status":"different_live_playlist"}
+    existing_ids={str(t.get("id") or "") for t in existing if isinstance(t,dict)}
+    if len(existing_ids)>=66:
+        return {"status":"complete","tracks":len(existing_ids)}
+    sources=[
+      "http://127.0.0.1:8790/api/ovh/agent/runtime-config?path=control/music-library.json&raw=1",
+      "https://raw.githubusercontent.com/thebusinessflowtv/theofficemusic/main/control/music-library.json",
+    ]
+    approved={}
+    for url in sources:
+        try:
+            lib=fetch_json(url)
+            playlist=next((p for p in (lib.get("playlists") or [])
+                           if isinstance(p,dict) and p.get("key")=="lofi-hip-hop"),{})
+            for track in playlist.get("tracks") or []:
+                if not isinstance(track,dict):continue
+                match=re.fullmatch(r"lofi-hip-hop-20261008-(\\d{2})",str(track.get("id") or ""))
+                if not match or not 37<=int(match.group(1))<=66:continue
+                address=str(track.get("url") or "")
+                if not address.startswith(
+                   "https://github.com/thebusinessflowtv/theofficemusic/releases/download/"
+                ) or not address.lower().endswith(".mp3"):
+                    continue
+                if int(track.get("duration_seconds") or 0)!=300 or (
+                        track.get("quality_gate")!="technical_and_45s_intro_diversity_passed"):
+                    continue
+                approved[track["id"]]={
+                    "id":track["id"],"title":str(track.get("title") or track["id"])[:150],
+                    "url":address,"duration_seconds":300,
+                    "position":int(track.get("position") or int(match.group(1))),
+                    "source":"lofi-hip-hop-original",
+                }
+        except Exception as exc:
+            print("Lofi approved catalog source unavailable:",type(exc).__name__,flush=True)
+    additions=[v for k,v in sorted(approved.items(),key=lambda a:a[1]["position"])
+               if k not in existing_ids]
+    if not additions:
+        return {"status":"no_new_approved_tracks","tracks":len(existing_ids)}
+    if len(existing)+len(additions)>66:
+        raise RuntimeError("Lofi hot-append would exceed 66 tracks; refusing")
+    # Preserve the live session, now-playing pointer, current track order, and
+    # the pre-existing settings; only add the new approved releases.
+    current.update({"station":slot,"playlist_key":"lofi-hip-hop",
+                    "tracks":[*existing,*additions],"updated_at":now()})
+    atomic_json(playlist_file,current)
+    return {"status":"appended","new_tracks":len(additions),
+            "total_tracks":len(current["tracks"]),
+            "first_new":additions[0]["id"],"last_new":additions[-1]["id"],
+            "publisher_restart":False}
+
+
 def apply_isolated_lofi_track_controls():
     """Only next/previous for Lofi. Independent of the legacy agent image."""
     slot="youtube-lofi-hip-hop"
@@ -1699,6 +1765,7 @@ def main():
     threading.Thread(target=watchdog_loop,name="mediaforge-watchdog",daemon=True).start()
 
     remote_control="https://mediaforge-api.guilhermeodsgn.workers.dev"
+    last_lofi_expansion_sync=0.0
     while True:
         # The old remote deploy queue contains stale non-Lofi commands and must
         # not be drained automatically while other broadcasts are live.
@@ -1743,6 +1810,14 @@ def main():
             if handled:print("isolated Lofi audio controls acknowledged:",handled,flush=True)
         except Exception as exc:
             print("isolated Lofi controls unavailable:",str(exc)[:180],flush=True)
+        if time.monotonic()-last_lofi_expansion_sync>=45:
+            last_lofi_expansion_sync=time.monotonic()
+            try:
+                delta=sync_isolated_lofi_approved_expansion()
+                if delta.get("status")=="appended":
+                    print("LOFI_EXPANSION_HOT_APPENDED",delta,flush=True)
+            except Exception as exc:
+                print("Lofi expansion hot-append unavailable:",str(exc)[:240],flush=True)
         time.sleep(POLL)
 
 
