@@ -47,3 +47,16 @@ jobs:
           test "$CODE" = "400"
           jq -e '.error=="playlist_slot_mismatch"' /tmp/lofi-pairing.json >/dev/null
           echo "LOFI_OAUTH_OIDC_PREFLIGHT_PASSED_NO_LIVE_CREATED"
+
+      - name: Read-only check of current Lofi host provisioning command
+        shell: bash
+        run: |
+          set -euo pipefail
+          OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
+          test -n "$OIDC_TOKEN"
+          echo "::add-mask::$OIDC_TOKEN"
+          CODE="$(curl -ksS -o /tmp/lofi-host-check.json -w '%{http_code}' -X POST "https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/github-youtube-bootstrap-status" -H "authorization: Bearer $OIDC_TOKEN" -H 'content-type: application/json' -d '{"id":"lofi-youtube-1dd4373d-351c-40cc-aa67-774a540fd991"}')"
+          echo "CURRENT_LOFI_HOST_COMMAND_HTTP=$CODE"
+          jq '{id,status,error,result}' /tmp/lofi-host-check.json
+          test "$CODE" = "200"
