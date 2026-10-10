@@ -47,6 +47,9 @@ services:
       STREAM_URL: "rtmps://ingest.global-contribute.live-video.net/app"
       STREAM_KEY: ${TWITCH_STREAM_KEY}
       LOOP_URL: ${LOOP_URL}
+      # Off by default: enables 1080p re-encoding in VisualEngine and must
+      # only be switched after a CPU benchmark and controlled stream window.
+      VIDEO_NOW_PLAYING_OVERLAY: "${TWITCH_NOW_PLAYING_OVERLAY:-0}"
       PLAYLIST_FILE: /config/gaming.json
       VIDEO_FPS: "30"
       VIDEO_BITRATE_KBPS: "4500"
