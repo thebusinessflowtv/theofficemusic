@@ -6,5 +6,7 @@
   "thumbnail_url": "http://127.0.0.1:8790/media/498aa85d-8ccf-43e2-94b2-f93fb7a46335/3e9ea7e659a14a6eb436cc3ad8b8fbfab470dcbca82041999815306f388c9019",
   "playlist_key": "lofi-hip-hop",
   "requested_at": "2026-10-10T04:58:23.788Z",
-  "source": "mediaforge-ovh-remote-bridge"
+  "source": "mediaforge-ovh-remote-bridge",
+  "retry_reason": "correct_runtime_slot_oidc_preflight_and_independent_lofi_health",
+  "retry_number": 1
 }
