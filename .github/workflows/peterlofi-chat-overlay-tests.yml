@@ -49,7 +49,9 @@ jobs:
           import sys
           sys.path.insert(0,'app')
           import kick_chatbot
-          assert kick_chatbot.HOURLY == 3600
+          assert kick_chatbot.HOURLY == 5400
+          from twitch_chatbot import HOURLY_INTERACTION_SECONDS
+          assert HOURLY_INTERACTION_SECONDS == 5400
           assert kick_chatbot.COMMANDS_ENABLED in (True, False)
           from twitch_chatbot import valid_websocket_uri
           assert valid_websocket_uri('wss://eventsub.wss.twitch.tv/ws')
