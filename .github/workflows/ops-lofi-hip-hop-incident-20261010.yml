@@ -1,0 +1,65 @@
+name: "Ops — Lofi Hip Hop live read-only diagnosis"
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ops-lofi-hip-hop-incident-20261010.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Read live OVH health from independent routes
+        shell: bash
+        run: |
+          set -u
+          mkdir -p control/diagnostics
+          python - <<'PY'
+          import datetime, json, urllib.request, ssl, pathlib
+          out={"checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"routes":{}}
+          routes={
+           "cloudflare":"https://mediaforge-api.guilhermeodsgn.workers.dev/api/ovh/public-health",
+           "ovh_direct":"https://146.59.156.224:8443/api/ovh/public-health",
+           "panel":"https://peterlofi.odsgn.com.br/api/ovh/public-health",
+          }
+          ctx=ssl._create_unverified_context()
+          for name,url in routes.items():
+            try:
+              req=urllib.request.Request(url,headers={"user-agent":"PeterLofi-Isolated-Lofi-ReadOnly-Probe/1.0","cache-control":"no-cache"})
+              with urllib.request.urlopen(req,timeout=18,context=ctx) as response:
+                j=json.load(response)
+              services=j.get("services") or {}
+              s=services.get("youtube-lofi-hip-hop") or {}
+              out["routes"][name]={
+               "reachable":True,"reported_at":j.get("reported_at") or j.get("updated_at"),
+               "lofi":{k:s.get(k) for k in (
+                 "status","runtime_slot","session_id","title","updated_at","fps",
+                 "video_bitrate_kbps","encoder_pid","audio_pid","visual_pid",
+                 "audio_status","audio_stalls","visual_status",
+                 "playlist_track_count","now_playing","restarts","last_error","last_command")},
+               "other_streams":{k:{"status":v.get("status"),"updated_at":v.get("updated_at")} for k,v in services.items() if k!="youtube-lofi-hip-hop" and isinstance(v,dict)}
+              }
+            except Exception as exc:
+              out["routes"][name]={"reachable":False,"error":str(exc)[:250]}
+          path=pathlib.Path("control/diagnostics/lofi-hip-hop-incident-20261010.json")
+          path.write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          print(json.dumps(out,ensure_ascii=False,indent=2))
+          PY
+      - name: Persist redacted read-only diagnosis
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f control/diagnostics/lofi-hip-hop-incident-20261010.json ]; then exit 1; fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add control/diagnostics/lofi-hip-hop-incident-20261010.json
+          git commit -m "ops: record isolated Lofi health from independent routes" || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
