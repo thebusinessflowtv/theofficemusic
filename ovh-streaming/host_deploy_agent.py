@@ -999,7 +999,9 @@ def rollback_service(service):
 
 
 def health_all():
-    return {"git_head":git_head(),"services":{s:health(s) for s in SERVICES}}
+    return {"git_head":git_head(),
+            "capabilities":{"isolated_lofi_youtube":True,"publisher_safe":True},
+            "services":{s:health(s) for s in SERVICES}}
 
 
 def parse_iso(value):
