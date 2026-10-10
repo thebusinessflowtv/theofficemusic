@@ -42,7 +42,19 @@
       "status": "starting",
       "stream_provisioned_at": "2026-10-06T00:56:28.406935+00:00",
       "last_started_at": "2026-10-06T02:18:45.150727+00:00"
+    },
+    {
+      "key": "lofi-hip-hop",
+      "name": "Lofi Hip Hop",
+      "enabled": true,
+      "runtime": "ovh",
+      "ovh_slot": "youtube-lofi-hip-hop",
+      "youtube_stream_id": null,
+      "youtube_broadcast_id": null,
+      "current_session_id": null,
+      "status": "stopped",
+      "purpose": "Independent encoder for Peter Lofi Lofi Hip Hop, no interruption of other lives"
     }
   ],
-  "updated_at": "2026-10-06T02:18:45.150727+00:00"
+  "updated_at": "2026-10-10T04:27:15.662Z"
 }
