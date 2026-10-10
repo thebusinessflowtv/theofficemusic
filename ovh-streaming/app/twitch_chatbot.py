@@ -5,6 +5,7 @@ owns OAuth, session subscription, token rotation and chat posting.
 """
 from __future__ import annotations
 import asyncio
+import fcntl
 import json
 import os
 import random
@@ -17,7 +18,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 from websockets.asyncio.client import connect
 
-from chat_requests import COMMANDS, english_chat_reply, process_chat_message
+from chat_requests import COMMANDS, _atomic_json, _read_json, english_chat_reply, process_chat_message
 from bot_conversation import plan_chat_reply
 
 STATE=Path(os.environ.get("CHAT_STATE_ROOT","/state"))
@@ -90,6 +91,30 @@ async def send(text):
         print("TWITCH_BOT_SEND_REJECTED",flush=True)
 
 
+def allow_command_notice(platform,user_id,now=None):
+    """Prevent spammy cooldown replies (one per viewer each 60 seconds).
+
+    Accepted commands, current song, and freeze confirmations always reply.
+    Rejected-command notices are separately throttled, without affecting the
+    user's 180-second music-command cooldown.
+    """
+    now=time.time() if now is None else float(now)
+    folder=STATE/platform
+    folder.mkdir(parents=True,exist_ok=True)
+    path=folder/"chat-bot-notices.json"
+    lockpath=folder/"chat-bot-notices.lock"
+    with lockpath.open("a+b") as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX)
+        ledger=_read_json(path)
+        viewers={str(k):float(v) for k,v in (ledger.get("viewers") or {}).items()
+                 if isinstance(v,(int,float)) and 0<=now-v<60}
+        if user_id in viewers:
+            return False
+        viewers[user_id]=now
+        _atomic_json(path,{"viewers":viewers})
+        return True
+
+
 async def on_message(event,broadcaster_id):
     msg=event.get("message") or {}
     chatter=str(event.get("chatter_user_id") or "")
@@ -109,10 +134,17 @@ async def on_message(event,broadcaster_id):
             process_chat_message,STATE,platform="twitch",
             user_id=chatter,message_id=message_id,text=cmd
         )
-        if result.get("status") in ("accepted","now_playing","frozen_now","frozen","already_frozen"):
-            answer=english_chat_reply(result)
-            if answer:
-                await send(answer)
+        status=result.get("status")
+        # Accepted actions and freeze confirmations always get an answer.
+        # Previously cooldown/no_song/not_live responses were dropped silently.
+        reportable=("accepted","now_playing","frozen_now","frozen","already_frozen",
+                    "cooldown","station_cooldown","no_song","not_live")
+        denied=("cooldown","station_cooldown","no_song","not_live")
+        if status in reportable:
+            if status not in denied or allow_command_notice("twitch",chatter):
+                answer=english_chat_reply(result)
+                if answer:
+                    await send(answer)
         return
     if not CONVERSATION_ENABLED:
         return
