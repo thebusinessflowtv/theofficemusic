@@ -6,6 +6,7 @@ on:
       - '.github/workflows/peterlofi-chat-overlay-tests.yml'
       - 'ovh-streaming/app/chat_requests.py'
       - 'ovh-streaming/app/twitch_chatbot.py'
+      - 'ovh-streaming/app/kick_chatbot.py'
       - 'ovh-streaming/scripts/overlay-twitch-commands.py'
       - 'ovh-streaming/scripts/preflight-twitch-now-playing.py'
       - 'ovh-streaming/scripts/preflight-kick-now-playing.py'
@@ -36,7 +37,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m py_compile ovh-streaming/app/chat_requests.py ovh-streaming/app/bot_conversation.py ovh-streaming/app/visual_engine.py ovh-streaming/app/twitch_chatbot.py ovh-streaming/scripts/overlay-twitch-commands.py ovh-streaming/scripts/preflight-twitch-now-playing.py ovh-streaming/scripts/activate-twitch-live-overlay.py ovh-streaming/scripts/preflight-kick-now-playing.py ovh-streaming/scripts/activate-kick-live-overlay.py
+          python -m py_compile ovh-streaming/app/chat_requests.py ovh-streaming/app/bot_conversation.py ovh-streaming/app/visual_engine.py ovh-streaming/app/twitch_chatbot.py ovh-streaming/app/kick_chatbot.py ovh-streaming/scripts/overlay-twitch-commands.py ovh-streaming/scripts/preflight-twitch-now-playing.py ovh-streaming/scripts/activate-twitch-live-overlay.py ovh-streaming/scripts/preflight-kick-now-playing.py ovh-streaming/scripts/activate-kick-live-overlay.py
           python -m pip install --quiet websockets==15.0.1
           python ovh-streaming/scripts/overlay-twitch-commands.py --help >/dev/null
           python ovh-streaming/scripts/activate-twitch-live-overlay.py --help >/dev/null
@@ -47,6 +48,9 @@ jobs:
           python - <<'PY'
           import sys
           sys.path.insert(0,'app')
+          import kick_chatbot
+          assert kick_chatbot.HOURLY == 3600
+          assert kick_chatbot.COMMANDS_ENABLED in (True, False)
           from twitch_chatbot import valid_websocket_uri
           assert valid_websocket_uri('wss://eventsub.wss.twitch.tv/ws')
           assert not valid_websocket_uri('wss://evil.example/ws')
