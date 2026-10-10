@@ -30,6 +30,25 @@ def mem_available():
     return 0
 
 
+def sample_cpu_idle(seconds=2.0):
+    """Sample actual host CPU idle, not Linux runnable-task load average.
+
+    A 1-minute load >2.5 can coexist with ~50% idle on four vCores.
+    The benchmark still measures real FFmpeg throughput under live load.
+    """
+    def counters():
+        fields=Path("/proc/stat").read_text().splitlines()[0].split()[1:]
+        parts=[int(field) for field in fields]
+        return sum(parts), parts[3], parts[4], parts[7] if len(parts)>7 else 0
+    a=counters()
+    time.sleep(seconds)
+    b=counters()
+    total=max(1,b[0]-a[0])
+    return ((b[1]-a[1])/total,
+            (b[2]-a[2])/total,
+            (b[3]-a[3])/total)
+
+
 def main():
     if os.geteuid()!=0:
         raise RuntimeError("Run with sudo on the OVH host.")
@@ -43,10 +62,21 @@ def main():
     source=PurePosixPath(str(v.get("prepared_file") or ""))
     if source.parent!=PurePosixPath("/state/kick/visual-cache") or not source.name:
         raise RuntimeError("Kick prepared_file must be a verified local cache MP4.")
-    if mem_available()<2.5*1024**3:
-        raise RuntimeError("Insufficient available RAM for a second video encoder.")
-    if os.getloadavg()[0]>2.5:
-        raise RuntimeError("Host CPU is already busy; keep Kick copy-only.")
+    if mem_available()<3.0*1024**3:
+        raise RuntimeError("Insufficient available RAM (need >=3 GiB) for dual overlay encoding.")
+    idle,iowait,steal=sample_cpu_idle()
+    print(f"HOST_LOAD_1M: {os.getloadavg()[0]:.2f}",flush=True)
+    print(f"HOST_IDLE_SAMPLE: {idle*100:.1f}%",flush=True)
+    print(f"HOST_IOWAIT_SAMPLE: {iowait*100:.1f}%",flush=True)
+    print(f"HOST_STEAL_SAMPLE: {steal*100:.1f}%",flush=True)
+    if idle<0.35:
+        raise RuntimeError(
+            "Less than 35% CPU idle with other stations live. Keep Kick copy-only."
+        )
+    if iowait>0.12 or steal>0.10:
+        raise RuntimeError(
+            "Elevated I/O wait or hypervisor CPU steal; leave live video unchanged."
+        )
     has_font=subprocess.run(["docker","exec",CONTAINER,"test","-r",LOCK_FONT],capture_output=True)
     if has_font.returncode:
         raise RuntimeError("Kick container is missing fonts-symbola; install font without restarting.")
@@ -86,7 +116,7 @@ def main():
         print(f"AVAILABLE_RAM: {mem_available()/1024**3:.1f} GiB")
         if speed<1.45:
             raise RuntimeError("Kick encoder speed margin is too low while Twitch is live.")
-        if mem_available()<2.5*1024**3:
+        if mem_available()<3.0*1024**3:
             raise RuntimeError("Memory pressure after benchmark.")
         print("KICK_OVERLAY_PREFLIGHT_PASSED",flush=True)
         print("No live processes or RTMP connections were restarted.",flush=True)
