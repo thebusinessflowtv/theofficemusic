@@ -1,5 +1,5 @@
 {
-  "version": "ovh-dynamic-real-live-controls-20261010-v3",
-  "purpose": "Publish chat-protected track indication and honest blocked next/previous responses on real OVH dashboard; keep all active RTMP publishers unchanged",
+  "version": "lofi-66-audio-hot-recovery-20261010-v1",
+  "purpose": "Release original 66-track Lofi playlist audio from 3200 PCM stalls using one isolated feeder hot-recovery, without restarting video/RTMP",
   "media_publishers_touched": false
 }
