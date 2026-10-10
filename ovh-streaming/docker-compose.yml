@@ -33,7 +33,8 @@ services:
     mem_limit: 192m
     cpus: 0.20
     env_file:
-      - /etc/peterlofi-twitch-chatbot.env
+      - path: /etc/peterlofi-twitch-chatbot.env
+        required: false
     volumes:
       - ./state:/state
 
