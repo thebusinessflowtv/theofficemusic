@@ -73,6 +73,55 @@ def build(index,attempt):
         ],
         "output":{"format":"wav","sample_rate":44100,"directory":"/kaggle/working/output","write_manifest":True}
     }
+
+    if index >= 37:
+        # Volume 2: upbeat instrumental hip-hop, NEVER sax/jazz-lounge.
+        # The original 36 QC-approved track profiles remain byte-for-byte equivalent.
+        dna=profile["music_dna"]
+        dna.update({
+            "energy":track.get("energy_level",7),
+            "bpm_min":track["target_bpm"],
+            "bpm_max":track["target_bpm"],
+            "style_pool":[
+                "upbeat original lofi hip hop radio, punchy laid-back boom bap and warm urban head-nod grooves, sample-free",
+                "groovy instrumental hip-hop with crisp kicks, confident snare, rolling rhythmic bass and short synth/guitar chops",
+                "energetic but relaxed golden-hour beats, tight breakbeat-inspired boom bap, catchy minimalist melodies"
+            ],
+            "mood":["upbeat","groovy","head-nod","warm","confident","relaxed-focus"],
+            "preferred_instruments":[
+                "punchy dry kick, sharp rim and snare, lively humanized hi-hat swing",
+                track["lead_identity"],
+                track["bass_identity"],
+                "short rhythmic electric guitar chops or synth stabs (original notes)",
+                track["texture_identity"],
+            ],
+            "listening_context":"energetic hip hop listening for work, drawing, gaming, late-night studying, city walks",
+            "groove":groove+"; strong head-nod pocket without becoming trap or club music",
+            "percussion":groove+"; upfront punchy kick and snare, lively rolling hats, creative original break variations",
+            "bass":track["bass_identity"]+"; bass is active and punchy, always locked to drums",
+            "melody_density":"short original synth, guitar, mallet or organ hooks around "+
+                track["lead_identity"]+"; simple rhythmic motifs, not jazz improvisation. "+
+                "Harmonic color: "+track["harmonic_identity"],
+            "brightness":"clear punchy drum transients, warm bass, bright but never piercing hooks",
+            "arrangement":"Distinct first 45 seconds: "+intro+
+                ". Make a complete ORIGINAL 300-second instrumental: punchy intro, "+
+                "A/B grooves, original contrasting bridge at ~2 minutes, fresh melodic variation, "+
+                "return of hook, non-abrupt outro. Vary drum placement, fills and melodies. "+
+                "Never loop the same eight bars for five minutes.",
+            "production":"polished sample-free lofi hip hop, organic swung breakbeat and thick controlled kick/snare, "+
+                "warm bass and tight short synth or guitar phrases. Medium-to-high head-nod energy, "+
+                "not soft jazzy lounge. No saxophone, no brass solos, no acoustic jazz, "+
+                "no piano-dominated ballad, no recognizable Lofi Girl songs or melodies. "+
+                "Remain original Peter Lofi instrumental hip hop, NOT trap, house or EDM."
+        })
+        profile["channel"]["concept"]="Lofi Hip Hop — 30 upbeat new original instrumentals (tracks 37-66)"
+        profile["negative_prompt"] += [
+            "saxophone","jazz sax","trumpet solo","horn section","jazz lounge",
+            "slow sleepy jazz","brushed jazz swing","lengthy Rhodes improvisation",
+            "smooth-jazz chords","lofi girl track replication","recognizable third-party melody",
+            "sampled recording","trap rolls","four-on-the-floor club drums",
+            "non-hip-hop percussion","soft acoustic ambient","washed out drums",
+        ]
     return {
         "reference_index":index,"variant_attempt":attempt,"playlist":data["playlist_name"],
         "diversity_contract":data["diversity_policy"],
