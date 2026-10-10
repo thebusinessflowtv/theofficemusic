@@ -427,7 +427,7 @@ class VisualEngine:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--platform", required=True, choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy", "youtube-gta-vi", "youtube-ui-test"])
+    ap.add_argument("--platform", required=True, choices=["kick", "twitch", "youtube-deep-house", "youtube-rainy", "youtube-gta-vi", "youtube-ui-test", "youtube-lofi-hip-hop"])
     ap.add_argument("--state-dir", default="/state")
     args = ap.parse_args()
     engine = VisualEngine(args.platform, args.state_dir)
