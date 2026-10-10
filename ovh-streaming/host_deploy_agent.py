@@ -1601,6 +1601,8 @@ def report_isolated_lofi_status():
     desired=read_json(state_dir/"desired.json",{}) or {}
     now_playing=read_json(state_dir/"now-playing.json",{}) or {}
     playlist=read_json(state_dir/"playlist.json",{}) or {}
+    chat_state=read_json(state_dir/"chat-bot-state.json",{}) or {}
+    controls_frozen=bool((chat_state.get("freeze") or {}).get("track_id"))
     fresh=False
     try:
         timestamp=datetime.fromisoformat(str(h.get("updated_at") or "").replace("Z","+00:00"))
@@ -1634,6 +1636,7 @@ def report_isolated_lofi_status():
         "now_playing":{k:now_playing.get(k) for k in
             ("track_id","title","state","started_at")},
         "playlist_track_count":len(playlist.get("tracks") or []),
+        "controls_frozen":controls_frozen,
     }
     post_json("http://127.0.0.1:8790/api/ovh/agent/isolated-status",
         {"runtime_slot":slot,"service":payload})
@@ -1657,6 +1660,9 @@ def apply_isolated_lofi_track_controls():
             if h.get("status")!="live" or not h.get("encoder_pid"):
                 raise RuntimeError("Lofi encoder is not live; music change refused")
             path=OVH/"state"/slot
+            chat=read_json(path/"chat-bot-state.json",{}) or {}
+            if (chat.get("freeze") or {}).get("track_id"):
+                raise RuntimeError("Faixa protegida pelo chat; aguarde o desbloqueio antes de usar os controles.")
             payload={
                 "id":cid,"action":action,"requested_at":now(),
                 "source":"mediaforge-ovh-dashboard-isolated",
