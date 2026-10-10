@@ -48,7 +48,17 @@ class VisualEngine:
         self.vprofile = os.environ.get("VIDEO_PROFILE", "main").strip() or "main"
         self.vpreset = os.environ.get("VIDEO_PRESET", "superfast").strip() or "superfast"
         self.udp_port = int(os.environ.get("VIDEO_UDP_PORT", "19000"))
-        self.now_playing_overlay_enabled = (platform in {"twitch", "kick"} and os.environ.get("VIDEO_NOW_PLAYING_OVERLAY", "0") == "1")
+        # Toggle file is used only on the Twitch visual-feeder child. This
+        # lets an operator swap that child without recreating the Twitch RTMP
+        # publisher (recreating the publisher would end the ongoing live).
+        overlay_toggle = read_json(self.state / "visual-overlay-toggle.json", {}) or {}
+        self.now_playing_overlay_enabled = (
+            platform in {"twitch", "kick"}
+            and (
+                os.environ.get("VIDEO_NOW_PLAYING_OVERLAY", "0") == "1"
+                or (platform == "twitch" and overlay_toggle.get("enabled") is True)
+            )
+        )
         self.now_playing_overlay_path = self.state / "now-playing-overlay.txt"
         self.sender = None
         self.sender_log = None
@@ -73,6 +83,7 @@ class VisualEngine:
             "video_bitrate_kbps": self.vbitrate,
             "udp_port": self.udp_port,
             "switches": self.switches,
+            "overlay_mode": "dynamic_now_playing" if self.now_playing_overlay_enabled else "copy",
             "updated_at": iso_now(),
         }
         if self.sender and self.sender.poll() is None:
