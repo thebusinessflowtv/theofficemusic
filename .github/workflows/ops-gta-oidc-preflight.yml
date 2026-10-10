@@ -60,3 +60,18 @@ jobs:
           echo "CURRENT_LOFI_HOST_COMMAND_HTTP=$CODE"
           jq '{id,status,error,result}' /tmp/lofi-host-check.json
           test "$CODE" = "200"
+
+      - name: Read-only validate OIDC on OVH local control queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          OIDC_JSON="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=mediaforge-ovh")"
+          OIDC_TOKEN="$(printf '%s' "$OIDC_JSON" | jq -r '.value // empty')"
+          test -n "$OIDC_TOKEN"
+          echo "::add-mask::$OIDC_TOKEN"
+          CODE="$(curl -ksS -o /tmp/ovh-local-preflight.json -w '%{http_code}' -X POST "https://peterlofi.odsgn.com.br/api/ovh/github-youtube-bootstrap" -H "authorization: Bearer $OIDC_TOKEN" -H 'content-type: application/json' --data '{"runtime_slot":"youtube-lofi-hip-hop","playlist_key":"lofi-hip-hop"}')"
+          echo "OVH_LOCAL_OIDC_HTTP=$CODE"
+          jq '{error,message}' /tmp/ovh-local-preflight.json
+          test "$CODE" = "400"
+          jq -e '.error=="youtube_ingest_required"' /tmp/ovh-local-preflight.json >/dev/null
+          echo "OVH_LOCAL_OIDC_READY_NO_LIVE_CREATED"
