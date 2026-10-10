@@ -1,7 +1,7 @@
 {
   "version": 1,
   "brand": "Peter Lofi",
-  "updated_at": "2026-10-10T01:56:12.454982+00:00",
+  "updated_at": "2026-10-10T06:16:29.694Z",
   "rules": {
     "live_playback": "individual_tracks_only",
     "masters_for": "long_form_video_exports_only",
@@ -3189,7 +3189,7 @@
           "title": "Digifunk",
           "artist": "DivKid",
           "filename": "Digifunk - DivKid.mp3",
-          "source_duration_seconds": 192.0,
+          "source_duration_seconds": 192,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3197,7 +3197,7 @@
           "title": "Icelandic Arpeggios",
           "artist": "DivKid",
           "filename": "Icelandic Arpeggios - DivKid.mp3",
-          "source_duration_seconds": 170.0,
+          "source_duration_seconds": 170,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3213,7 +3213,7 @@
           "title": "Rinse Repeat",
           "artist": "DivKid",
           "filename": "Rinse Repeat - DivKid.mp3",
-          "source_duration_seconds": 156.0,
+          "source_duration_seconds": 156,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         },
@@ -3221,7 +3221,7 @@
           "title": "Visions",
           "artist": "Patrick Jordan Patrikios",
           "filename": "Visions - Patrick Jordan Patrikios.mp3",
-          "source_duration_seconds": 148.0,
+          "source_duration_seconds": 148,
           "target_duration_seconds": 300,
           "ingest_processing": "extend_or_restructure_to_exact_300s_then_loudness_normalize"
         }
@@ -3778,12 +3778,12 @@
       "name": "Lofi Hip Hop",
       "category": "Live Radio",
       "series": "Lofi Hip Hop",
-      "genre": "Instrumental Lofi Hip Hop / Jazzy Boom Bap",
+      "genre": "Instrumental Lofi Hip Hop / Upbeat Boom Bap",
       "moods": [
         "warm",
-        "jazzy",
-        "chill",
-        "relaxed",
+        "upbeat",
+        "groovy",
+        "head-nod",
         "focused"
       ],
       "source": "peter-lofi-lofi-hip-hop-production",
@@ -4187,10 +4187,20 @@
       ],
       "track_count": 36,
       "total_duration_seconds": 10800,
-      "planned_track_count": 36,
-      "planned_duration_seconds": 10800,
+      "planned_track_count": 66,
+      "planned_duration_seconds": 19800,
       "target_duration_seconds_per_track": 300,
-      "status": "complete"
+      "status": "expansion_generating",
+      "expansion": {
+        "phase": "generating",
+        "batch_id": "lofi-hip-hop-upbeat-20261010",
+        "new_tracks_target": 30,
+        "first_new_position": 37,
+        "last_new_position": 66,
+        "existing_tracks_preserved": true,
+        "track_addition": "only_after_quality_and_intro_diversity_gates",
+        "live_restart_required": false
+      }
     }
   ]
 }
