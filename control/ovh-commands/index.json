@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-15T13:45:42.386Z",
+  "updated_at": "2026-10-15T13:50:22.137Z",
   "commands": [
     {
       "id": "bootstrap-kick-ovh",
@@ -200,6 +200,12 @@
       "id": "twitch-stop-user-20261015134542",
       "path": "control/ovh-commands/twitch-stop-user-20261015134542.json",
       "created_at": "2026-10-15T13:45:42.386Z",
+      "realtime": false
+    },
+    {
+      "id": "4a9ebfe0-76ba-428e-aa2c-e17f227dcc22",
+      "path": "control/ovh-commands/4a9ebfe0-76ba-428e-aa2c-e17f227dcc22.json",
+      "created_at": "2026-10-15T13:50:22.137Z",
       "realtime": false
     }
   ]
