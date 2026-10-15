@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-10T16:25:40.561Z",
+  "updated_at": "2026-10-15T13:45:42.386Z",
   "commands": [
     {
       "id": "bootstrap-kick-ovh",
@@ -194,6 +194,12 @@
       "id": "lofi-hip-hop-66-hot-playlist-20261010-1322brt",
       "path": "control/ovh-commands/lofi-hip-hop-66-hot-playlist-20261010-1322brt.json",
       "created_at": "2026-10-10T16:25:40.561Z",
+      "realtime": false
+    },
+    {
+      "id": "twitch-stop-user-20261015134542",
+      "path": "control/ovh-commands/twitch-stop-user-20261015134542.json",
+      "created_at": "2026-10-15T13:45:42.386Z",
       "realtime": false
     }
   ]
