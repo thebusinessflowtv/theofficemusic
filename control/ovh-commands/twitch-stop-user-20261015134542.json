@@ -1,0 +1,10 @@
+{
+  "id": "twitch-stop-user-20261015134542",
+  "action": "stop",
+  "runtime": "ovh",
+  "runtime_slot": "twitch",
+  "platform": "twitch",
+  "source": "user-request-twitch-only",
+  "requested_at": "2026-10-15T13:45:42.386Z",
+  "reason": "User explicitly requested to end only the Twitch PeterLofi live. Do not stop Kick or any YouTube stream."
+}
