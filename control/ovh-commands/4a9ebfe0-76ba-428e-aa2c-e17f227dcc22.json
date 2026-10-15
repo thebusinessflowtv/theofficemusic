@@ -1,0 +1,12 @@
+{
+  "action": "stop",
+  "runtime_slot": "twitch",
+  "platform": "twitch",
+  "session_id": "b43d8f63-6e1a-4c47-a4c5-10fd2e4a5c8f",
+  "title": "Peter Lofi Gaming Radio 🎮 Lofi Beats to Play, Focus & Chill 🔴 LIVE",
+  "loop_url": "",
+  "source": "mediaforge-ovh-panel",
+  "id": "4a9ebfe0-76ba-428e-aa2c-e17f227dcc22",
+  "runtime": "ovh",
+  "requested_at": "2026-10-15T13:50:22.137Z"
+}
