@@ -2,14 +2,14 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-10-21T19:32:55.133260+00:00",
+  "generated_at": "2026-10-21T20:29:50.104642+00:00",
   "playlist_count": 4,
   "playlists": [
     {
       "id": "PLbK4jLdXsde4",
       "title": "Late Night Lofi 🌙 | Peter Lofi",
       "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
-      "thumbnail_url": "https://i.ytimg.com/vi/W89tRiluh_Y/mqdefault_live.jpg",
+      "thumbnail_url": "https://i.ytimg.com/vi/W89tRiluh_Y/mqdefault.jpg?v=6aca7e58",
       "item_count": 2,
       "privacy_status": "public",
       "items": [
@@ -94,7 +94,7 @@
           "video_id": "u-Ocp29k1_0",
           "title": "1 hour lofi for work 💻 beats for focus & productivity | Peter Lofi",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CLil5NYG&rs=AOn4CLBs02wO7QjwQ-t39OoZoiEGvzF_2g",
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CJy_5NYG&rs=AOn4CLCR0__6fVfISVDNu3ksRIRI2x-zcQ",
           "privacy_status": "private"
         }
       ]
@@ -152,7 +152,7 @@
           "video_id": "W89tRiluh_Y",
           "title": "lofi hip hop radio 📚 beats to study, work & focus to | Peter Lofi 24/7 🎧",
           "position": 5,
-          "thumbnail_url": "https://i.ytimg.com/vi/W89tRiluh_Y/mqdefault_live.jpg",
+          "thumbnail_url": "https://i.ytimg.com/vi/W89tRiluh_Y/mqdefault.jpg?v=6aca7e58",
           "privacy_status": "public"
         },
         {
@@ -160,7 +160,7 @@
           "video_id": "5O4ad_F5lGI",
           "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA VI Inspired Soundtrack | Peter Lofi 🎧",
           "position": 6,
-          "thumbnail_url": "https://i.ytimg.com/vi/5O4ad_F5lGI/mqdefault_live.jpg",
+          "thumbnail_url": "https://i.ytimg.com/vi/5O4ad_F5lGI/mqdefault.jpg?v=6ac9dd2c",
           "privacy_status": "public"
         }
       ]
