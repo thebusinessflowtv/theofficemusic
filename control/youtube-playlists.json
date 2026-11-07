@@ -2,30 +2,22 @@
   "channel_id": "UCxO4Cl7xCdcTsWkmxD_6Wfg",
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-11-07T09:54:19.482292+00:00",
+  "generated_at": "2026-11-07T16:17:31.119188+00:00",
   "playlist_count": 4,
   "playlists": [
     {
       "id": "PLbK4jLdXsde4",
       "title": "Late Night Lofi 🌙 | Peter Lofi",
       "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
-      "thumbnail_url": "https://i.ytimg.com/vi/W89tRiluh_Y/mqdefault.jpg?v=6aca7e58",
-      "item_count": 2,
+      "thumbnail_url": "https://i.ytimg.com/vi/5O4ad_F5lGI/mqdefault.jpg?v=6ac9dd2c",
+      "item_count": 1,
       "privacy_status": "public",
       "items": [
-        {
-          "playlist_item_id": "UExiSzRqTGRYc2RlNC4wMTcyMDhGQUE4NTIzM0Y5",
-          "video_id": "W89tRiluh_Y",
-          "title": "lofi hip hop radio 📚 beats to study, work & focus to | Peter Lofi 24/7 🎧",
-          "position": 0,
-          "thumbnail_url": "https://i.ytimg.com/vi/W89tRiluh_Y/mqdefault.jpg?v=6aca7e58",
-          "privacy_status": "public"
-        },
         {
           "playlist_item_id": "UExiSzRqTGRYc2RlNC41MjE1MkI0OTQ2QzJGNzNG",
           "video_id": "5O4ad_F5lGI",
           "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA VI Inspired Soundtrack | Peter Lofi 🎧",
-          "position": 1,
+          "position": 0,
           "thumbnail_url": "https://i.ytimg.com/vi/5O4ad_F5lGI/mqdefault.jpg?v=6ac9dd2c",
           "privacy_status": "public"
         }
@@ -94,7 +86,7 @@
           "video_id": "u-Ocp29k1_0",
           "title": "1 hour lofi for work 💻 beats for focus & productivity | Peter Lofi",
           "position": 0,
-          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CMjou9cG&rs=AOn4CLCGQJ5czya6dZtw_N2rxaORLLnD1w",
+          "thumbnail_url": "https://i9.ytimg.com/vi/u-Ocp29k1_0/mqdefault.jpg?sqp=CISdvdcG&rs=AOn4CLDW_hQ8__UZ90ZCCTaNa2C7ZuRqww",
           "privacy_status": "private"
         }
       ]
