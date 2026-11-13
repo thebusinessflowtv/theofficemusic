@@ -1,7 +1,7 @@
 {
   "brand": "Peter Lofi",
   "handle_url": "https://www.youtube.com/@PeterLofiSounds",
-  "generated_at": "2026-11-13T00:06:35.983555+00:00",
+  "generated_at": "2026-11-13T07:47:01.615237+00:00",
   "public_video_count": 7,
   "active_managed_playlists": {
     "all_music": {
@@ -10,14 +10,6 @@
       "description": "Every public Peter Lofi release in one place — original lofi music, chill beats, focus mixes and late-night sounds for study, work and relaxing.",
       "legacy": [
         "All Songs 🎧 | The Office Music"
-      ]
-    },
-    "late_night": {
-      "id": "PLbK4jLdXsde4",
-      "title": "Late Night Lofi 🌙 | Peter Lofi",
-      "description": "Nighttime lofi, neon city moods and calm after-dark beats from Peter Lofi.",
-      "legacy": [
-        "Late Night Chill 🎧 | The Office Music"
       ]
     },
     "lofi_mixes": {
@@ -31,20 +23,20 @@
   },
   "videos": [
     {
+      "video_id": "5O4ad_F5lGI",
+      "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA VI Inspired Soundtrack | Peter Lofi 🎧",
+      "related_playlist_key": "lofi_mixes",
+      "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
+      "duration_seconds": 2905709,
+      "published_at": "2026-10-10T06:37:24Z"
+    },
+    {
       "video_id": "W89tRiluh_Y",
       "title": "lofi hip hop radio 📚 beats to study, work & focus to | Peter Lofi 24/7 🎧",
       "related_playlist_key": "lofi_mixes",
       "related_playlist_title": "Lofi Mixes 🎧 | Peter Lofi",
       "duration_seconds": 2432635,
       "published_at": "2026-10-10T05:04:15Z"
-    },
-    {
-      "video_id": "5O4ad_F5lGI",
-      "title": "GTA 6 Radio LIVE 24/7 🔴 Vice City Music | GTA VI Inspired Soundtrack | Peter Lofi 🎧",
-      "related_playlist_key": "late_night",
-      "related_playlist_title": "Late Night Lofi 🌙 | Peter Lofi",
-      "duration_seconds": 0,
-      "published_at": "2026-10-10T06:37:24Z"
     },
     {
       "video_id": "EQrlzc_IR2M",
